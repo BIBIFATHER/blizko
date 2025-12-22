@@ -125,8 +125,16 @@ ALWAYS reply in ${lang === 'ru' ? 'Russian' : 'English'}.
   }, [messages, isOpen, isTyping]);
 
   const handleSend = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!inputValue.trim()) return;
+  e?.preventDefault();
+
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  console.log("VITE_GEMINI_API_KEY:", apiKey ? apiKey.slice(0, 6) : "undefined");
+
+  if (!inputValue.trim()) return;
+
+
+
+  
 
     const userText = inputValue;
     const userMsg: ChatMessage = {
@@ -147,6 +155,12 @@ ALWAYS reply in ${lang === 'ru' ? 'Russian' : 'English'}.
       }).join('\n');
 
       const userPrompt = `${recent ? `Conversation so far:\n${recent}\n\n` : ''}User: ${userText}\nAnna:`;
+console.log(
+  "VITE_GEMINI_API_KEY:",
+  import.meta.env.VITE_GEMINI_API_KEY?.slice(0, 6),
+  "MODE:",
+  import.meta.env.MODE
+);
 
       const aiResponseText = await aiText(userPrompt, {
         systemPrompt: systemInstructionRef.current || undefined,

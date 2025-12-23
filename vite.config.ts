@@ -13,7 +13,8 @@ export default defineConfig({
     port: 3000,
     strictPort: true,
 
-    // ВАЖНО: фикс для HMR WS
+    // Вариант B: если реально нужен HMR и он почему-то лезет на другой порт
+    // (обычно не нужно, но если нужно — вот так фиксируем)
     hmr: {
       protocol: "ws",
       host: "localhost",

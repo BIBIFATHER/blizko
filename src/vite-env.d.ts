@@ -1,11 +1,19 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  readonly VITE_GEMINI_API_KEY?: string;
-  // если будут другие переменные — добавляй так же:
-  // readonly VITE_API_URL?: string;
-}
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    proxy: {
+      '/api/ai': {
+        target: 'https://ai-proxy.blizko-ai.workers.dev',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api\/ai/, ''),
+      },
+    },
+  },
+});

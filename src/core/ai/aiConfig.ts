@@ -1,26 +1,13 @@
-// Centralized AI configuration for Blizko
+// src/core/ai/aiConfig.ts
 
-export const GEMINI_TEXT_MODEL = "gemini-3-flash-preview" as const;
-export const GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image" as const;
+export const AI_TEXT_MODEL = 'models/gemini-2.5-flash';
 
-/**
- * Reads Gemini API key from environment.
- *
- * - Vite: import.meta.env.GEMINI_API_KEY
- * - Fallback: process.env.GEMINI_API_KEY (non-vite runtimes)
- */
-export function getGeminiApiKey(): string | null {
-  // Vite style
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const viteKey = (import.meta as any)?.env?.GEMINI_API_KEY as
-    | string
-    | undefined;
-  if (viteKey && viteKey.trim()) return viteKey.trim();
+export const GEMINI_API_KEY: string | undefined = import.meta.env.VITE_GEMINI_API_KEY;
 
-  // Fallback
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const nodeKey = (process as any)?.env?.GEMINI_API_KEY as string | undefined;
-  if (nodeKey && nodeKey.trim()) return nodeKey.trim();
+// Флаг "AI настроен" — чтобы UI мог показывать fallback без падения
+export const IS_AI_CONFIGURED = Boolean(GEMINI_API_KEY && GEMINI_API_KEY.trim().length > 0);
 
-  return null;
-}
+// Если вдруг где-то нужно отображать статус
+export const AI_STATUS_MESSAGE = IS_AI_CONFIGURED
+  ? 'AI configured'
+  : 'AI is not configured (VITE_GEMINI_API_KEY is missing)';

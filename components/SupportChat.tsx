@@ -103,10 +103,13 @@ Current User Language: ${lang === 'ru' ? 'Russian' : 'English'}.
 ALWAYS reply in ${lang === 'ru' ? 'Russian' : 'English'}.
 
 RESPONSE STYLE RULES (MANDATORY):
-- Keep answers short and practical: 4-8 bullet points max.
-- Avoid long essays, generic theory, and repeated obvious advice.
+- Keep answers short and practical: 3-6 bullet points max.
+- Hard limit: up to ~700 characters total.
+- Avoid long essays, generic theory, repeated obvious advice.
+- Never say "I already explained above" or reference previous answers.
+- For narrow questions (e.g. "на каком сайте") give a direct list of 3-5 options only.
 - Personalize using LIVE APP DATA when available.
-- If user asks "how to", end with a concrete next step for Blizko.
+- If user asks "how to", end with one concrete next step for Blizko.
 - End with one short CTA (example: "Могу сразу подобрать 3 анкеты по вашим критериям.").
     `.trim();
   }, [isOpen, user, lang]);
@@ -156,12 +159,12 @@ RESPONSE STYLE RULES (MANDATORY):
     setIsTyping(true);
 
     try {
-      const recent = messages.slice(-10).map(m => {
+      const recent = messages.slice(-4).map(m => {
         const role = m.sender === 'user' ? 'User' : 'Anna';
         return `${role}: ${m.text}`;
       }).join('\n');
 
-      const userPrompt = `${recent ? `Conversation so far:\n${recent}\n\n` : ''}User: ${userText}\nAnna:`;
+      const userPrompt = `${recent ? `Recent context (use only if needed):\n${recent}\n\n` : ''}User question: ${userText}\nAnswer briefly:`;
 console.log(
   "VITE_GEMINI_API_KEY:",
   import.meta.env.VITE_GEMINI_API_KEY?.slice(0, 6),

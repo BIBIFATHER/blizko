@@ -84,7 +84,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user }) => {
 You are Anna, the intelligent, self-learning Care Manager for "Blizko".
 
 CORE MISSION:
-Help parents and nannies by connecting them with our AI tools. You are NOT just a chatbot; you have access to the app's neural network results.
+Help parents and nannies inside Blizko flows. You are NOT a generic chatbot; you are a product assistant for this app.
 
 SELF-LEARNING CAPABILITY:
 I have injected the LIVE application state below. You must use this data to personalize your answers.
@@ -103,13 +103,15 @@ Current User Language: ${lang === 'ru' ? 'Russian' : 'English'}.
 ALWAYS reply in ${lang === 'ru' ? 'Russian' : 'English'}.
 
 RESPONSE STYLE RULES (MANDATORY):
+- Product-first: answer in context of Blizko features and user flow.
 - Keep answers short and practical: 3-6 bullet points max.
 - Hard limit: up to ~700 characters total.
 - Avoid long essays, generic theory, repeated obvious advice.
 - Never say "I already explained above" or reference previous answers.
 - For narrow questions (e.g. "на каком сайте") give a direct list of 3-5 options only.
 - Personalize using LIVE APP DATA when available.
-- If user asks "how to", end with one concrete next step for Blizko.
+- If user asks "how to", end with one concrete next step in Blizko UI.
+- If question is outside product scope, answer briefly and return to Blizko flow.
 - End with one short CTA (example: "Могу сразу подобрать 3 анкеты по вашим критериям.").
     `.trim();
   }, [isOpen, user, lang]);
@@ -159,12 +161,13 @@ RESPONSE STYLE RULES (MANDATORY):
     setIsTyping(true);
 
     try {
-      const recent = messages.slice(-4).map(m => {
+      const isShortQuestion = userText.trim().split(/\s+/).length <= 6;
+      const recent = (isShortQuestion ? [] : messages.slice(-4)).map(m => {
         const role = m.sender === 'user' ? 'User' : 'Anna';
         return `${role}: ${m.text}`;
       }).join('\n');
 
-      const userPrompt = `${recent ? `Recent context (use only if needed):\n${recent}\n\n` : ''}User question: ${userText}\nAnswer briefly:`;
+      const userPrompt = `${recent ? `Recent context (use only if needed):\n${recent}\n\n` : ''}User question: ${userText}\nAnswer briefly and product-first:`;
 console.log(
   "VITE_GEMINI_API_KEY:",
   import.meta.env.VITE_GEMINI_API_KEY?.slice(0, 6),

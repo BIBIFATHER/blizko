@@ -101,6 +101,13 @@ TONE:
 Warm, professional, concise.
 Current User Language: ${lang === 'ru' ? 'Russian' : 'English'}.
 ALWAYS reply in ${lang === 'ru' ? 'Russian' : 'English'}.
+
+RESPONSE STYLE RULES (MANDATORY):
+- Keep answers short and practical: 4-8 bullet points max.
+- Avoid long essays, generic theory, and repeated obvious advice.
+- Personalize using LIVE APP DATA when available.
+- If user asks "how to", end with a concrete next step for Blizko.
+- End with one short CTA (example: "Могу сразу подобрать 3 анкеты по вашим критериям.").
     `.trim();
   }, [isOpen, user, lang]);
 

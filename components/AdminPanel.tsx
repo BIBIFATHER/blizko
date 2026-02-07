@@ -29,6 +29,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [nannies, setNannies] = useState<NannyProfile[]>([]);
   const [tab, setTab] = useState<AdminTab>("overview");
   const [query, setQuery] = useState("");
+  const [onlyProblematic, setOnlyProblematic] = useState(false);
 
   const loadData = () => {
     setParents(getParentRequests());
@@ -89,14 +90,25 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const filteredNannies = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return nannies;
-    return nannies.filter((n) =>
+
+    const byQuery = (n: NannyProfile) =>
+      !q ||
       [n.name, n.city, n.about, n.contact, (n.skills || []).join(" ")]
         .join(" ")
         .toLowerCase()
-        .includes(q)
-    );
-  }, [nannies, query]);
+        .includes(q);
+
+    const hasProblem = (n: NannyProfile) => {
+      const docs = n.documents || [];
+      const hasRejected = docs.some((d) => d.status === "rejected");
+      const hasPending = docs.some((d) => d.status === "pending");
+      const hasNoDocs = docs.length === 0;
+      const lowConfidence = docs.some((d) => (d.aiConfidence || 0) < 70);
+      return !n.isVerified || hasNoDocs || hasRejected || hasPending || lowConfidence;
+    };
+
+    return nannies.filter((n) => byQuery(n) && (!onlyProblematic || hasProblem(n)));
+  }, [nannies, query, onlyProblematic]);
 
   const stats = useMemo(() => {
     const verified = nannies.filter((n) => n.isVerified).length;
@@ -160,6 +172,14 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               Няни
             </button>
           </div>
+          <label className="flex items-center gap-2 text-xs text-stone-600 bg-stone-50 border border-stone-200 rounded-xl px-3 py-2">
+            <input
+              type="checkbox"
+              checked={onlyProblematic}
+              onChange={(e) => setOnlyProblematic(e.target.checked)}
+            />
+            Только проблемные анкеты
+          </label>
           <div className="sm:w-56">
             <Button onClick={handleClear} variant="secondary">
               <Trash2 size={16} /> Очистить данные
@@ -247,7 +267,14 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <p className="text-stone-400 text-sm">Пусто</p>
               ) : (
                 <div className="space-y-3">
-                  {filteredNannies.map((n) => (
+                  {filteredNannies.map((n) => {
+                    const docs = n.documents || [];
+                    const isProblematic =
+                      !n.isVerified ||
+                      docs.length === 0 ||
+                      docs.some((d) => d.status === "rejected" || d.status === "pending" || (d.aiConfidence || 0) < 70);
+
+                    return (
                     <Card
                       key={n.id}
                       className={`!p-4 ${
@@ -257,6 +284,11 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       <div className="flex justify-between text-xs text-stone-400 mb-1">
                         <span>{new Date(n.createdAt).toLocaleString()}</span>
                         <div className="flex items-center gap-2">
+                          {isProblematic && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+                              issue
+                            </span>
+                          )}
                           {n.isVerified && <ShieldCheck size={14} className="text-green-600" />}
                           <span className="font-mono">{n.id.slice(0, 6)}</span>
                         </div>

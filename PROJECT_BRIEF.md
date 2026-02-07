@@ -126,3 +126,16 @@ Endpoint: `POST /api/ai`
 - Не менять публичные типы без явной миграции (если они используются в UI).
 - Не коммитить `.env` и любые секреты.
 - Если меняются пути/регистры (`UI` vs `ui`) — привести к реальному регистру на диске (CI/Linux может упасть).
+
+## 9) What NOT to do (hard rules)
+- Do NOT move AI provider keys into client-side code (Vite/React). Keys must remain server-only.
+- Do NOT change `/api/ai` response format. Client expects `{ text: string }`.
+- Do NOT break the aiGateway contract:
+  - `aiText(prompt, options?)`
+  - `aiImage(prompt, image, options?)`
+- Do NOT rename/move `src/core/types/types.ts` without updating all imports.
+- Do NOT change file/folder casing (UI vs ui) unless the actual filesystem matches. CI/Linux builds are case-sensitive.
+- Do NOT commit `.env` or any secrets.
+- Do NOT add heavy dependencies unless necessary (keep build fast).
+- Do NOT silently change business meaning of fields like: `isVerified`, `aiConfidence`, `status`.
+- If refactoring types, keep backward compatibility or update all consumers in the same commit.

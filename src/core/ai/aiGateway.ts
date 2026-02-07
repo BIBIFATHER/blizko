@@ -22,8 +22,23 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
   });
 
   if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    throw new Error(`AI request failed (${res.status}): ${errText || res.statusText}`);
+    let errPayload: any = null;
+    const contentType = res.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      errPayload = await res.json().catch(() => null);
+    } else {
+      const errText = await res.text().catch(() => '');
+      errPayload = { error: errText || res.statusText };
+    }
+
+    const details = errPayload?.details?.error?.message || errPayload?.error || res.statusText;
+
+    if (res.status === 429) {
+      throw new Error(`RATE_LIMIT: ${details}`);
+    }
+
+    throw new Error(`AI request failed (${res.status}): ${details}`);
   }
 
   const data = (await res.json()) as AITextResponse;

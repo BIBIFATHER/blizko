@@ -189,9 +189,19 @@ console.log(
       }
     } catch (error) {
       console.error("Chat error:", error);
+
+      const message = error instanceof Error ? error.message : String(error ?? '');
+      const isRateLimit = message.includes('RATE_LIMIT') || message.includes('429') || message.includes('RESOURCE_EXHAUSTED');
+
       const errorMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        text: "Error connecting to Anna.",
+        text: isRateLimit
+          ? (lang === 'ru'
+              ? 'Анна сейчас перегружена (лимит AI-запросов временно исчерпан). Попробуйте снова через минуту.'
+              : 'Anna is temporarily overloaded (AI quota reached). Please try again in about a minute.')
+          : (lang === 'ru'
+              ? 'Не удалось связаться с Анной. Попробуйте ещё раз чуть позже.'
+              : 'Error connecting to Anna. Please try again later.'),
         sender: 'agent',
         timestamp: Date.now()
       };

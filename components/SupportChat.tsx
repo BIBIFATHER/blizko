@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, Minimize2, Loader2, Sparkles } from 'lucide-react';
+import { MessageCircle, Send, Minimize2, Loader2, Sparkles, RotateCcw } from 'lucide-react';
 import { Language, ChatMessage, User } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { aiText } from '../src/core/ai/aiGateway';
@@ -326,6 +326,23 @@ console.log(
     }
   };
 
+  const resetLearningMemory = () => {
+    setLearningState(defaultLearningState);
+    try {
+      localStorage.removeItem(LEARNING_STORAGE_KEY);
+    } catch {
+      // ignore storage errors
+    }
+
+    const resetMsg: ChatMessage = {
+      id: (Date.now() + 2).toString(),
+      text: lang === 'ru' ? 'Память чата сброшена. Продолжаем с чистого контекста.' : 'Chat memory has been reset. Continuing with a clean context.',
+      sender: 'agent',
+      timestamp: Date.now()
+    };
+    setMessages(prev => [...prev, resetMsg]);
+  };
+
   if (!isOpen) {
     return (
       <button 
@@ -360,9 +377,18 @@ console.log(
               </span>
             </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-white transition-colors z-10">
-            <Minimize2 size={18} />
-          </button>
+          <div className="flex items-center gap-1 z-10">
+            <button
+              onClick={resetLearningMemory}
+              title={lang === 'ru' ? 'Сбросить память чата' : 'Reset chat memory'}
+              className="text-stone-400 hover:text-white transition-colors p-1"
+            >
+              <RotateCcw size={16} />
+            </button>
+            <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-white transition-colors">
+              <Minimize2 size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Messages */}

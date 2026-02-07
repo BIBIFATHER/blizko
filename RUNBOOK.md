@@ -1,0 +1,111 @@
+# RUNBOOK.md
+
+## Quick start
+
+### 1) Install
+
+```bash
+npm install
+```
+
+### 2) Create env file (no secrets in git)
+
+Create `.env` locally based on `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+### 3) Run dev
+
+```bash
+npm run dev
+```
+
+Open the printed local URL (usually `http://localhost:5173`).
+
+## Quality gates (must pass before merge/deploy)
+
+### Typecheck
+
+```bash
+npx tsc --noEmit
+```
+
+### Production build
+
+```bash
+npm run build
+```
+
+## Environment variables
+
+### `.env.example` (template)
+
+Create/keep this file in repo. Put only variable names and safe placeholders.
+
+Recommended minimum (adjust to your actual server implementation):
+
+```env
+# Server-side AI proxy (api/ai.ts)
+AI_PROVIDER=google
+AI_MODEL_TEXT=gemini-1.5-flash
+AI_MODEL_IMAGE=gemini-1.5-flash
+
+# Provider keys (never commit real values)
+GOOGLE_GENAI_API_KEY=your_key_here
+```
+
+Rules:
+- `.env` must be in `.gitignore`
+- Keys must be used only by server code (e.g. `api/ai.ts`), not by Vite client.
+
+## Common issues & fixes
+
+### A) `Expected 1 arguments, but got 2` for `aiText(...)`
+
+Cause: `aiText` defined with one argument but called with `(prompt, options)`.
+
+Fix: Update `src/core/ai/aiGateway.ts`:
+- `aiText(prompt: string, options?: ...)`
+- export `aiImage(...)` if used by `documentAi.ts`
+
+### B) `aiImage is not exported by aiGateway.ts`
+
+Cause: `documentAi.ts` imports `aiImage` but `aiGateway.ts` does not export it.
+
+Fix: Export `aiImage` from `aiGateway.ts` and ensure it calls `/api/ai` in `mode: "image"`.
+
+### C) Vite build warning: `/index.css` doesn't exist at build time
+
+Cause: `index.html` links to `/index.css` but the file does not exist in `public/`.
+
+Fix (recommended):
+- Remove `<link rel="stylesheet" href="/index.css">` from `index.html`
+- Import CSS in `src/main.tsx`: `import "./index.css"`
+
+### D) Alias `@/...` not resolving
+
+Fix:
+- `vite.config.ts`: alias `@` -> `<root>/src`
+- `tsconfig.json`: `"baseUrl": ".", "paths": { "@/*": ["src/*"] }`
+
+### E) `/api/ai` works in dev but fails in prod
+
+Likely causes:
+- serverless function not deployed / route mismatch
+- env vars missing in deployment
+- wrong payload fields
+
+Fix:
+- Ensure deployment includes `api/ai.ts` (Vercel/Netlify config as needed)
+- Ensure env vars exist in hosting provider
+- Confirm payload matches `API_CONTRACT.md`
+
+## Release checklist
+
+- `git status` clean
+- `npx tsc --noEmit` passes
+- `npm run build` passes
+- `.env` not committed
+- `API_CONTRACT.md` reflects actual `/api/ai` implementation

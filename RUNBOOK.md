@@ -44,16 +44,14 @@ npm run build
 
 Create/keep this file in repo. Put only variable names and safe placeholders.
 
-Recommended minimum (adjust to your actual server implementation):
+Recommended minimum (matches current `api/ai.ts`):
 
 ```env
 # Server-side AI proxy (api/ai.ts)
-AI_PROVIDER=google
-AI_MODEL_TEXT=gemini-1.5-flash
-AI_MODEL_IMAGE=gemini-1.5-flash
+GEMINI_API_KEY=your_gemini_api_key_here
 
-# Provider keys (never commit real values)
-GOOGLE_GENAI_API_KEY=your_key_here
+# Optional future override
+# GEMINI_MODEL=gemini-2.0-flash
 ```
 
 Rules:

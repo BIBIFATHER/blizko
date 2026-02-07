@@ -163,7 +163,9 @@ RESPONSE STYLE RULES (MANDATORY):
 
     try {
       const normalized = userText.toLowerCase();
-      const isNannySearchIntent = /как\s+найти\s+нян|поиск\s+нян|найти\s+нян/.test(normalized);
+      const hasNannyWord = /нян|бебисит|babysit/.test(normalized);
+      const hasSearchIntent = /найд|поиск|подбор|подобрат|ищу|нужн/.test(normalized);
+      const isNannySearchIntent = hasNannyWord && hasSearchIntent;
 
       if (isNannySearchIntent) {
         const deterministicText = lang === 'ru'

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, Download, Share, PlusSquare, MoreHorizontal, Globe } from 'lucide-react';
 import { Button } from '@/components/UI';
-import { Language } from '@/types';
+import { Language } from '@/core/types';
 import { t } from "@/core/i18n/translations";
 
 interface InstallPwaModalProps {

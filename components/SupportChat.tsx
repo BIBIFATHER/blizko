@@ -176,6 +176,7 @@ RESPONSE STYLE RULES (MANDATORY):
               '3) Запустите подбор и откройте список совпадений.',
               '4) Отфильтруйте анкеты по верификации и релевантности.',
               '5) Напишите 2–3 кандидатам и договоритесь о пробном знакомстве.',
+              'Если нужна помощь по шагам — используйте чат поддержки в приложении (я помогу здесь же).',
               'Могу помочь заполнить запрос по шагам прямо сейчас.'
             ].join('\n')
           : [
@@ -185,6 +186,7 @@ RESPONSE STYLE RULES (MANDATORY):
               '3) Run matching and review candidates.',
               '4) Filter by verification and relevance.',
               '5) Contact 2–3 candidates and schedule a trial meeting.',
+              'If you need help at any step, use the in-app support chat (I can guide you here).',
               'I can help you fill the request step by step now.'
             ].join('\n');
 

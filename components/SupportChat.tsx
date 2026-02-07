@@ -162,6 +162,40 @@ RESPONSE STYLE RULES (MANDATORY):
     setIsTyping(true);
 
     try {
+      const normalized = userText.toLowerCase();
+      const isNannySearchIntent = /как\s+найти\s+нян|поиск\s+нян|найти\s+нян/.test(normalized);
+
+      if (isNannySearchIntent) {
+        const deterministicText = lang === 'ru'
+          ? [
+              'Вот как найти няню прямо в Blizko:',
+              '1) Откройте форму запроса родителя и укажите город, возраст ребёнка, график и бюджет.',
+              '2) Добавьте требования (опыт, документы, навыки).',
+              '3) Запустите подбор и откройте список совпадений.',
+              '4) Отфильтруйте анкеты по верификации и релевантности.',
+              '5) Напишите 2–3 кандидатам и договоритесь о пробном знакомстве.',
+              'Могу помочь заполнить запрос по шагам прямо сейчас.'
+            ].join('\n')
+          : [
+              'Here is how to find a nanny inside Blizko:',
+              '1) Open the parent request form and set city, child age, schedule, and budget.',
+              '2) Add requirements (experience, documents, skills).',
+              '3) Run matching and review candidates.',
+              '4) Filter by verification and relevance.',
+              '5) Contact 2–3 candidates and schedule a trial meeting.',
+              'I can help you fill the request step by step now.'
+            ].join('\n');
+
+        const agentMsg: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          text: deterministicText,
+          sender: 'agent',
+          timestamp: Date.now()
+        };
+        setMessages(prev => [...prev, agentMsg]);
+        return;
+      }
+
       const isShortQuestion = userText.trim().split(/\s+/).length <= 6;
       const recent = (isShortQuestion ? [] : messages.slice(-4)).map(m => {
         const role = m.sender === 'user' ? 'User' : 'Anna';

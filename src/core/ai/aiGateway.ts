@@ -13,10 +13,12 @@ export type AIRequestOptions = {
 };
 
 async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promise<string> {
+  const prompt = [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
+
   const res = await fetch('/api/ai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, ...options }),
+    body: JSON.stringify({ prompt, messages, ...options }),
   });
 
   if (!res.ok) {

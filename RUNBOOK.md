@@ -107,3 +107,14 @@ Fix:
 - `npm run build` passes
 - `.env` not committed
 - `API_CONTRACT.md` reflects actual `/api/ai` implementation
+- Smoke tests passed:
+  - Parent → Matching
+  - Nanny → Profile
+  - Document upload → Verification
+- Production AI checks:
+  - `/api/ai` curl returns expected shape
+  - quota/key verified
+  - backup key available
+- Rollback readiness:
+  - previous stable commit/tag noted
+  - rollback command prepared (`git revert` or redeploy previous production)

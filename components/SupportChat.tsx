@@ -10,12 +10,33 @@ interface SupportChatProps {
   user: User | null;
 }
 
+type FeedbackKind = 'neutral' | 'positive' | 'negative';
+
+type ChatLearningState = {
+  preferredStyle: 'product-first';
+  positiveSignals: number;
+  negativeSignals: number;
+  frictionTags: string[];
+  lastFeedback: FeedbackKind;
+};
+
+const LEARNING_STORAGE_KEY = 'blizko.supportchat.learning.v1';
+
+const defaultLearningState: ChatLearningState = {
+  preferredStyle: 'product-first',
+  positiveSignals: 0,
+  negativeSignals: 0,
+  frictionTags: [],
+  lastFeedback: 'neutral',
+};
+
 export const SupportChat: React.FC<SupportChatProps> = ({ lang, user }) => {
   const text = t[lang];
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [learningState, setLearningState] = useState<ChatLearningState>(defaultLearningState);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const systemInstructionRef = useRef<string | null>(null);
@@ -75,6 +96,27 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user }) => {
     return contextStr;
   };
 
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(LEARNING_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as Partial<ChatLearningState>;
+      setLearningState({ ...defaultLearningState, ...parsed });
+    } catch {
+      // ignore corrupted local learning state
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningState));
+    } catch {
+      // ignore storage quota/private mode issues
+    }
+  }, [learningState]);
+
+  const learningContext = `\n--- LEARNING MEMORY ---\nPreferred style: ${learningState.preferredStyle}\nPositive signals: ${learningState.positiveSignals}\nNegative signals: ${learningState.negativeSignals}\nLast feedback: ${learningState.lastFeedback}\nFriction tags: ${learningState.frictionTags.length ? learningState.frictionTags.join(', ') : 'none'}\nIf last feedback is negative, improve relevance and provide a shorter, more concrete Blizko UI next step.\n-----------------------\n`;
+
   // Recompute system instruction when chat opens or user/lang changes.
   useEffect(() => {
     if (!isOpen) return;
@@ -91,6 +133,7 @@ I have injected the LIVE application state below. You must use this data to pers
 If the data shows the user has completed a test (Soft Skills) or uploaded documents, REFER TO IT specifically.
 
 ${dynamicContext}
+${learningContext}
 
 KNOWLEDGE BASE:
 1. Document AI: We verify docs using computer vision.
@@ -115,7 +158,7 @@ RESPONSE STYLE RULES (MANDATORY):
 - If question is outside product scope, answer briefly and return to Blizko flow.
 - End with one short CTA (example: "Могу сразу подобрать 3 анкеты по вашим критериям.").
     `.trim();
-  }, [isOpen, user, lang]);
+  }, [isOpen, user, lang, learningContext]);
 
   // Initial welcome message
   useEffect(() => {
@@ -156,6 +199,26 @@ RESPONSE STYLE RULES (MANDATORY):
       sender: 'user',
       timestamp: Date.now()
     };
+
+    const normalizedFeedback = userText.toLowerCase();
+    const isNegativeFeedback = /не то|не подходит|плохо|неверно|неправильно|ужас|bad|wrong|not what/.test(normalizedFeedback);
+    const isPositiveFeedback = /спасибо|отлично|супер|класс|helped|great|thanks/.test(normalizedFeedback);
+    const frictionTags = [
+      /внешн|сайт|профи|youdo|avito/.test(normalizedFeedback) ? 'external-sites' : null,
+      /длинн|короче|кратк|много текста/.test(normalizedFeedback) ? 'too-verbose' : null,
+      /нян/.test(normalizedFeedback) ? 'nanny-search' : null,
+    ].filter(Boolean) as string[];
+
+    setLearningState(prev => {
+      const mergedTags = Array.from(new Set([...prev.frictionTags, ...frictionTags])).slice(-8);
+      return {
+        ...prev,
+        positiveSignals: prev.positiveSignals + (isPositiveFeedback ? 1 : 0),
+        negativeSignals: prev.negativeSignals + (isNegativeFeedback ? 1 : 0),
+        frictionTags: mergedTags,
+        lastFeedback: isNegativeFeedback ? 'negative' : isPositiveFeedback ? 'positive' : 'neutral',
+      };
+    });
 
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');

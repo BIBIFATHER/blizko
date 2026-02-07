@@ -7,48 +7,156 @@ import {
 } from "../types";
 import { aiText } from "./aiGateway";
 
+type RankedCandidate = {
+  nanny: NannyProfile;
+  score: number;
+  reasons: string[];
+};
+
+function norm(v?: string): string {
+  return String(v ?? "").trim().toLowerCase();
+}
+
+function includesAny(haystack: string, needles: string[]): boolean {
+  return needles.some((n) => n && haystack.includes(n));
+}
+
+function rankCandidates(
+  request: Omit<ParentRequest, "id" | "createdAt" | "type">,
+  candidates: NannyProfile[]
+): RankedCandidate[] {
+  const city = norm(request.city);
+  const childAge = norm(request.childAge);
+  const schedule = norm(request.schedule);
+  const reqs = request.requirements.map(norm).filter(Boolean);
+
+  return candidates
+    .map((nanny) => {
+      let score = 40;
+      const reasons: string[] = [];
+
+      const nannyCity = norm(nanny.city);
+      const about = norm(nanny.about);
+      const experience = norm(nanny.experience);
+      const skills = (nanny.skills || []).map(norm).join(" ");
+      const childAges = (nanny.childAges || []).map(norm).join(" ");
+      const profileText = [about, experience, skills, childAges].join(" ");
+
+      if (city && nannyCity && (nannyCity.includes(city) || city.includes(nannyCity))) {
+        score += 20;
+        reasons.push("Локация совпадает");
+      }
+
+      if (nanny.isVerified) {
+        score += 12;
+        reasons.push("Профиль верифицирован");
+      }
+
+      if (childAge && (childAges.includes(childAge) || about.includes(childAge))) {
+        score += 10;
+        reasons.push("Есть релевантный опыт по возрасту ребёнка");
+      }
+
+      if (schedule && includesAny(profileText, [schedule])) {
+        score += 6;
+        reasons.push("Похожий график/доступность");
+      }
+
+      if (reqs.length) {
+        const matchedReq = reqs.filter((r) => profileText.includes(r));
+        if (matchedReq.length > 0) {
+          score += Math.min(18, matchedReq.length * 6);
+          reasons.push(`Совпали требования: ${matchedReq.slice(0, 2).join(", ")}`);
+        }
+      }
+
+      if (nanny.softSkills?.rawScore) {
+        score += Math.min(8, Math.round(nanny.softSkills.rawScore / 20));
+        reasons.push("Есть AI-оценка soft skills");
+      }
+
+      score = Math.max(0, Math.min(100, score));
+      return { nanny, score, reasons };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
+function buildHeuristicFallback(
+  ranked: RankedCandidate[],
+  lang: Language
+): SubmissionResult {
+  if (!ranked.length) {
+    return {
+      matchScore: 72,
+      recommendations:
+        lang === "ru"
+          ? [
+              "В базе пока нет кандидатов с точным совпадением",
+              "Расширьте требования или бюджет для большего выбора",
+              "Добавьте детали по графику и обязанностям",
+            ]
+          : [
+              "No exact candidates found in the current database",
+              "Broaden requirements or budget to increase matches",
+              "Add more details for schedule and responsibilities",
+            ],
+    };
+  }
+
+  const top = ranked[0];
+  const score = Math.max(55, Math.min(98, top.score));
+
+  const recsRu = [
+    `Лучший текущий матч: ${top.nanny.name || "кандидат"} (${score}%)`,
+    top.reasons[0] || "Проверьте опыт по вашему возрасту ребёнка",
+    "Проведите короткое пробное знакомство и сверку графика",
+  ];
+
+  const recsEn = [
+    `Best current match: ${top.nanny.name || "candidate"} (${score}%)`,
+    top.reasons[0] || "Validate relevant childcare experience",
+    "Run a short trial meeting and confirm schedule fit",
+  ];
+
+  return {
+    matchScore: score,
+    recommendations: lang === "ru" ? recsRu : recsEn,
+  };
+}
+
 export const findBestMatch = async (
   request: Omit<ParentRequest, "id" | "createdAt" | "type">,
   candidates: NannyProfile[],
   lang: Language
 ): Promise<SubmissionResult> => {
-  // Keep the original demo behavior intact
-  const demoFallback: SubmissionResult = {
-    matchScore: 89,
-    recommendations:
-      lang === "ru"
-        ? [
-            "(Демо режим) API ключ не найден",
-            "Проверьте .env файл",
-            "Показан случайный результат",
-          ]
-        : [
-            "(Demo Mode) API Key missing",
-            "Check .env file",
-            "Random result shown",
-          ],
-  };
+  const ranked = rankCandidates(request, candidates);
+  const topCandidates = ranked.slice(0, 25); // keep prompt compact for large datasets (e.g. 120+)
+  const heuristicFallback = buildHeuristicFallback(ranked, lang);
 
-  // If no candidates exist - generate a “dream nanny” based on request
   const candidateData =
-    candidates.length > 0
+    topCandidates.length > 0
       ? JSON.stringify(
-          candidates.map((n) => ({
-            id: n.id,
-            name: n.name,
-            about: n.about,
-            experience: n.experience,
-            softSkills: n.softSkills?.dominantStyle || "Unknown",
-            verified: n.isVerified,
+          topCandidates.map((r) => ({
+            id: r.nanny.id,
+            name: r.nanny.name,
+            city: r.nanny.city,
+            about: r.nanny.about,
+            experience: r.nanny.experience,
+            skills: r.nanny.skills || [],
+            childAges: r.nanny.childAges || [],
+            softSkills: r.nanny.softSkills?.dominantStyle || "Unknown",
+            verified: r.nanny.isVerified,
+            heuristicScore: r.score,
           }))
         )
-      : "No candidates in database. Imagine the perfect candidate exists.";
+      : "No candidates in database. Provide recommendations to improve request quality.";
 
   const prompt = `
-Role: You are an expert HR algorithm for a Nanny Matching Service.
+Role: You are an expert HR matching algorithm for a Nanny Matching Service.
 
-Task: Analyze the PARENT REQUEST and the list of CANDIDATES.
-Find the best match or evaluate the compatibility if only one candidate or "ideal" candidate is considered.
+Task:
+Analyze PARENT REQUEST and TOP CANDIDATES shortlist.
+Return realistic compatibility score and practical recommendations for parent.
 
 PARENT REQUEST:
 City: ${request.city}
@@ -58,21 +166,24 @@ Budget: ${request.budget}
 Requirements: ${request.requirements.join(", ")}
 Comment: ${request.comment}
 
-CANDIDATES DATABASE:
+TOP CANDIDATES (already pre-ranked heuristically):
 ${candidateData}
 
-Output JSON:
-- matchScore: integer (0-100). Be realistic.
-- recommendations: Array of 3 short strings in ${
-    lang === "ru" ? "Russian" : "English"
-  }.
-  These should be advice for the parent on how to work with this nanny OR why this is a good match.
-  Example: "Discuss overtime payment", "Ask about medical aid skills".
+Rules:
+- Keep matchScore realistic (0-100).
+- Do not output generic advice; make it specific to this request.
+- recommendations must be exactly 3 short strings in ${lang === "ru" ? "Russian" : "English"}.
+
+Output JSON only:
+{
+  "matchScore": <integer>,
+  "recommendations": ["...", "...", "..."]
+}
 `;
 
   try {
     const responseText = await aiText(prompt, {
-      temperature: 0.7,
+      temperature: 0.4,
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -88,23 +199,27 @@ Output JSON:
     });
 
     if (!responseText) {
-      console.warn("GEMINI_API_KEY missing, using mock matching.");
-      return demoFallback;
+      return heuristicFallback;
     }
 
     const result = JSON.parse(responseText || "{}") as any;
+    const safeScore = Number.isFinite(result?.matchScore)
+      ? Math.max(0, Math.min(100, Math.round(result.matchScore)))
+      : heuristicFallback.matchScore;
+
+    const safeRecommendations = Array.isArray(result?.recommendations)
+      ? result.recommendations.filter(Boolean).slice(0, 3)
+      : [];
 
     return {
-      matchScore: result.matchScore || 85,
+      matchScore: safeScore,
       recommendations:
-        result.recommendations ||
-        (lang === "ru" ? ["Рекомендации недоступны"] : ["No recommendations"]),
+        safeRecommendations.length === 3
+          ? safeRecommendations
+          : heuristicFallback.recommendations,
     };
   } catch (error) {
     console.error("AI Matching Failed:", error);
-    return {
-      matchScore: 0,
-      recommendations: lang === "ru" ? ["Ошибка AI сервиса"] : ["AI Service Error"],
-    };
+    return heuristicFallback;
   }
 };

@@ -27,7 +27,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
   // Steps: 'method' -> 'otp' -> 'success'
   const [step, setStep] = useState<'method' | 'otp' | 'success'>('method');
-  const [method, setMethod] = useState<'phone' | 'email'>('phone');
+  const phoneAuthEnabled = String(import.meta.env.VITE_ENABLE_PHONE_AUTH || 'false') === 'true';
+  const [method, setMethod] = useState<'phone' | 'email'>(phoneAuthEnabled ? 'phone' : 'email');
   const [role, setRole] = useState<'parent' | 'nanny'>('parent');
 
   // Inputs
@@ -209,19 +210,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               </div>
 
               <div className="flex bg-stone-100 p-1 rounded-xl mb-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMethod('phone');
-                    setContactValue('');
-                    setError('');
-                  }}
-                  className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${
-                    method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                  }`}
-                >
-                  <Phone size={14} /> Phone
-                </button>
+                {phoneAuthEnabled && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMethod('phone');
+                      setContactValue('');
+                      setError('');
+                    }}
+                    className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${
+                      method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                    }`}
+                  >
+                    <Phone size={14} /> Phone
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
@@ -236,6 +239,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                   <Mail size={14} /> Email
                 </button>
               </div>
+
+              {!phoneAuthEnabled && (
+                <p className="text-[11px] text-stone-500 -mt-2">{lang === 'ru' ? 'Вход по телефону скоро будет доступен.' : 'Phone auth will be available soon.'}</p>
+              )}
 
               <Input
                 label={method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'}

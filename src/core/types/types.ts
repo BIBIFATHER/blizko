@@ -24,6 +24,12 @@ export interface RejectionInfo {
   rejectedBy?: 'admin';
 }
 
+export interface ParentRiskProfile {
+  priorityStyle?: 'warmth' | 'discipline' | 'balanced';
+  reportingFrequency?: 'daily' | '2_3_times' | 'frequent';
+  trustLevel?: 1 | 2 | 3 | 4 | 5;
+}
+
 export interface ParentRequest {
   id: string;
   type: 'parent';
@@ -36,6 +42,7 @@ export interface ParentRequest {
   comment: string;
   documents?: DocumentVerification[];
   requesterEmail?: string;
+  riskProfile?: ParentRiskProfile;
   createdAt: number;
   updatedAt?: number;
   rejectionInfo?: RejectionInfo;
@@ -72,6 +79,12 @@ export interface DocumentVerification {
   normalizedResume?: NormalizedResume;
 }
 
+export interface NannyRiskProfile {
+  tantrumFirstStep?: 'calm' | 'distract' | 'boundaries';
+  routineStyle?: 'structured' | 'balanced' | 'adaptive';
+  conflictStyle?: 'discuss_now' | 'pause_then_discuss' | 'avoid';
+}
+
 export interface NannyProfile {
   id: string;
   type: 'nanny';
@@ -90,6 +103,7 @@ export interface NannyProfile {
   video?: string; // URL to video
   reviews?: Review[]; // New field for reviews
   resumeNormalized?: NormalizedResume; // unified resume format from OCR/AI
+  riskProfile?: NannyRiskProfile;
   createdAt: number;
 }
 

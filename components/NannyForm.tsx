@@ -50,6 +50,11 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
   
   const [childAges, setChildAges] = useState<string[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
+  const [riskProfile, setRiskProfile] = useState<NannyProfile['riskProfile']>({
+    tantrumFirstStep: 'calm',
+    routineStyle: 'balanced',
+    conflictStyle: 'discuss_now',
+  });
 
   // Initialize data if editing
   useEffect(() => {
@@ -69,6 +74,11 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
       setSoftSkills(initialData.softSkills);
       setDocuments(initialData.documents || []);
       setResumeNormalized(initialData.resumeNormalized);
+      setRiskProfile({
+        tantrumFirstStep: initialData.riskProfile?.tantrumFirstStep || 'calm',
+        routineStyle: initialData.riskProfile?.routineStyle || 'balanced',
+        conflictStyle: initialData.riskProfile?.conflictStyle || 'discuss_now',
+      });
     }
   }, [initialData]);
 
@@ -98,6 +108,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         videoIntro: !!videoUrl,
         documents,
         resumeNormalized,
+        riskProfile,
       });
       setLoading(false);
     }, 600);
@@ -559,6 +570,43 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           onChange={e => setFormData({...formData, contact: e.target.value})}
           required
         />
+
+        <div className="bg-violet-50 border border-violet-200 rounded-xl p-3 space-y-3">
+          <div className="text-sm font-semibold text-violet-800">Психологический профиль няни (для лучшего мэтчинга)</div>
+
+          <label className="block text-xs text-stone-600">Если у ребенка истерика, ваш первый шаг:</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.tantrumFirstStep || 'calm'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), tantrumFirstStep: e.target.value as any }))}
+          >
+            <option value="calm">Сначала успокоить эмоции</option>
+            <option value="distract">Переключить внимание</option>
+            <option value="boundaries">Сразу обозначить границы</option>
+          </select>
+
+          <label className="block text-xs text-stone-600">Ваш стиль режима дня:</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.routineStyle || 'balanced'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), routineStyle: e.target.value as any }))}
+          >
+            <option value="structured">Чёткая структура</option>
+            <option value="balanced">Баланс</option>
+            <option value="adaptive">Гибкая адаптация по ситуации</option>
+          </select>
+
+          <label className="block text-xs text-stone-600">Как вы обычно решаете конфликт с родителями?</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.conflictStyle || 'discuss_now'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), conflictStyle: e.target.value as any }))}
+          >
+            <option value="discuss_now">Обсуждаю сразу</option>
+            <option value="pause_then_discuss">Беру паузу и возвращаюсь к диалогу</option>
+            <option value="avoid">Стараюсь избегать обсуждения</option>
+          </select>
+        </div>
 
         <Button type="submit" isLoading={loading} className="mt-8">
           {initialData ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : text.submitNanny}

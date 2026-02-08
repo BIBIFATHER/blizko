@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  getParentRequests,
-  getNannyProfiles,
   clearAllData,
   clearTestData,
   saveNannyProfile,
@@ -45,7 +43,15 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [previewDoc, setPreviewDoc] = useState<{ url: string; name?: string } | null>(null);
 
   const loadData = async () => {
-    const [p, n] = await Promise.all([getParentRequests(), getNannyProfiles()]);
+    // Админ-режим: читаем через server API (service role), чтобы видеть все анкеты даже без входа
+    const [pr, nr] = await Promise.all([
+      fetch('/api/data/parents').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch('/api/data/nannies').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+    ]);
+
+    const p = Array.isArray(pr?.items) ? pr.items : [];
+    const n = Array.isArray(nr?.items) ? nr.items : [];
+
     setParents(p);
     setNannies(n);
 

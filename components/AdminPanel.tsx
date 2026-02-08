@@ -101,15 +101,27 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const docs = [...(nanny.documents || [])];
     if (!docs[idx]) return;
 
+    let adminNote =
+      status === "verified"
+        ? "Статус подтверждён администратором"
+        : status === "rejected"
+        ? "Отклонено администратором"
+        : "Ожидает ручной проверки";
+
+    if (status === "rejected") {
+      const reason = prompt('Комментарий к отклонению документа (минимум 8 символов):', 'Нужен более читаемый документ или исправление данных');
+      const text = (reason || '').trim();
+      if (text.length < 8) {
+        alert('Отклонение отменено: добавьте понятный комментарий (минимум 8 символов).');
+        return;
+      }
+      adminNote = `Отклонено администратором: ${text}`;
+    }
+
     docs[idx] = {
       ...docs[idx],
       status,
-      aiNotes:
-        status === "verified"
-          ? "Статус подтверждён администратором"
-          : status === "rejected"
-          ? "Отклонено администратором"
-          : "Ожидает ручной проверки",
+      aiNotes: adminNote,
       verifiedAt: Date.now(),
     };
 
@@ -222,10 +234,17 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       other: 'Другая причина',
     } as const;
 
-    const reasonText = (rejectReasonText || '').trim();
+    let reasonText = (rejectReasonText || '').trim();
+    if (reasonText.length < 8) {
+      const typed = prompt('Добавьте комментарий к отклонению анкеты (минимум 8 символов):', 'Пожалуйста, дополните анкету и исправьте замечания модератора');
+      reasonText = (typed || '').trim();
+    }
     if (reasonText.length < 8) {
       alert('Укажи комментарий минимум 8 символов, чтобы пользователь понял что исправить.');
       return;
+    }
+    if (reasonText !== rejectReasonText) {
+      setRejectReasonText(reasonText);
     }
 
     const note = `Отклонено: ${reasonMap[rejectReasonCode]}. ${reasonText}`;

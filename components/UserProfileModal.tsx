@@ -8,6 +8,7 @@ import { PaymentModal } from './PaymentModal';
 import { LeaveReviewModal } from './LeaveReviewModal';
 import { getNannyProfiles, getParentRequests, addReview, resubmitParentRequest } from '../services/storage';
 import { notifyAdminResubmitted } from '../services/notifications';
+import { supabase } from '../services/supabase';
 
 interface UserProfileModalProps {
   user: User;
@@ -38,6 +39,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
   const [myNannyProfile, setMyNannyProfile] = useState<NannyProfile | undefined>(undefined);
   const [myParentRequests, setMyParentRequests] = useState<ParentRequest[]>([]);
   const [moderationSeenMap, setModerationSeenMap] = useState<Record<string, number>>({});
+  const [phoneInput, setPhoneInput] = useState(user.phone || '');
+  const [phoneCode, setPhoneCode] = useState('');
+  const [phoneStep, setPhoneStep] = useState<'idle' | 'code' | 'verified'>('idle');
+  const [phoneVerifyLoading, setPhoneVerifyLoading] = useState(false);
+  const [phoneVerifyError, setPhoneVerifyError] = useState('');
   
   // Mock Earnings
   const earnedTotal = 12500;
@@ -70,6 +76,67 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
       // ignore
     }
   }, [isNanny, user.name]);
+
+  useEffect(() => {
+    const loadPhoneMeta = async () => {
+      if (!supabase) return;
+      const { data } = await supabase.auth.getUser();
+      const phoneVerified = Boolean(data.user?.user_metadata?.phone_verified);
+      const phoneE164 = String(data.user?.user_metadata?.phone_e164 || data.user?.phone || user.phone || '');
+      if (phoneE164) setPhoneInput(phoneE164);
+      if (phoneVerified) setPhoneStep('verified');
+    };
+    loadPhoneMeta();
+  }, [user.phone]);
+
+  const sendPhoneCode = async () => {
+    setPhoneVerifyLoading(true);
+    setPhoneVerifyError('');
+    try {
+      const r = await fetch('/api/auth/send-otp-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneInput }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить код');
+      setPhoneStep('code');
+    } catch (e: any) {
+      setPhoneVerifyError(String(e?.message || e));
+    } finally {
+      setPhoneVerifyLoading(false);
+    }
+  };
+
+  const verifyPhoneCode = async () => {
+    setPhoneVerifyLoading(true);
+    setPhoneVerifyError('');
+    try {
+      const r = await fetch('/api/auth/verify-otp-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneInput, code: phoneCode }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || !data?.ok) throw new Error(data?.error || 'Неверный код');
+
+      if (supabase) {
+        await supabase.auth.updateUser({
+          data: {
+            phone_verified: true,
+            phone_e164: data.phone || phoneInput,
+          },
+        });
+      }
+
+      setPhoneStep('verified');
+      setPhoneCode('');
+    } catch (e: any) {
+      setPhoneVerifyError(String(e?.message || e));
+    } finally {
+      setPhoneVerifyLoading(false);
+    }
+  };
 
   // --- MOCK DATA for Demo ---
   const nannyRequests = [
@@ -301,6 +368,57 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                          <Mail size={12} /> {user.email} <BadgeCheck size={12} fill="currentColor" className="text-sky-500" />
                        </div>
                      )}
+                  </div>
+
+                  {/* Phone verification */}
+                  <div className="mt-4 border-t border-stone-100 pt-4 text-left">
+                    <div className="text-xs font-semibold text-stone-600 mb-2">Подтверждение телефона</div>
+
+                    {phoneStep === 'verified' ? (
+                      <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-2.5 py-1.5 rounded-md text-xs font-medium">
+                        <BadgeCheck size={12} fill="currentColor" className="text-green-500" /> Телефон подтвержден
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <input
+                          type="tel"
+                          value={phoneInput}
+                          onChange={(e) => setPhoneInput(e.target.value)}
+                          placeholder="+7 999 000-00-00"
+                          className="w-full text-sm bg-stone-50 border border-stone-200 rounded-lg px-3 py-2"
+                        />
+
+                        {phoneStep === 'code' && (
+                          <input
+                            type="text"
+                            value={phoneCode}
+                            onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                            placeholder="Код из SMS"
+                            className="w-full text-sm bg-stone-50 border border-stone-200 rounded-lg px-3 py-2"
+                          />
+                        )}
+
+                        {phoneVerifyError && <div className="text-[11px] text-red-500">{phoneVerifyError}</div>}
+
+                        {phoneStep !== 'code' ? (
+                          <button
+                            onClick={sendPhoneCode}
+                            disabled={phoneVerifyLoading || !phoneInput.trim()}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-900 text-white hover:bg-stone-700 disabled:opacity-50"
+                          >
+                            {phoneVerifyLoading ? 'Отправка...' : 'Отправить код'}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={verifyPhoneCode}
+                            disabled={phoneVerifyLoading || phoneCode.length < 4}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50"
+                          >
+                            {phoneVerifyLoading ? 'Проверка...' : 'Подтвердить код'}
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   {isNanny && (

@@ -15,10 +15,10 @@
 - `RESEND_FROM_EMAIL` (must use verified domain)
 - `ADMIN_EMAIL`
 
-## Optional (if phone auth by Twilio)
-- `TWILIO_ACCOUNT_SID`
-- `TWILIO_AUTH_TOKEN`
-- `TWILIO_VERIFY_SERVICE_SID`
+## Optional (phone verification by SMSAero)
+- `SMSAERO_EMAIL`
+- `SMSAERO_API_KEY`
+- `SMSAERO_SIGN`
 
 ## Notes
 - Keep `.env.local` local only.

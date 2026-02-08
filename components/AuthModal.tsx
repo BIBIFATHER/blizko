@@ -25,8 +25,8 @@ const normalizePhone = (raw: string) => {
 export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) => {
   const text = t[lang];
 
-  // Steps: 'method' -> 'otp' -> 'success'
-  const [step, setStep] = useState<'method' | 'otp' | 'success'>('method');
+  // Steps: 'method' -> 'otp' -> 'email_wait' -> 'success'
+  const [step, setStep] = useState<'method' | 'otp' | 'email_wait' | 'success'>('method');
   const phoneAuthEnabled = String(import.meta.env.VITE_ENABLE_PHONE_AUTH || 'false') === 'true';
   const [method, setMethod] = useState<'phone' | 'email'>(phoneAuthEnabled ? 'phone' : 'email');
   const [role, setRole] = useState<'parent' | 'nanny'>('parent');
@@ -48,6 +48,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     }
     return () => clearInterval(interval);
   }, [timer]);
+
+  useEffect(() => {
+    if (!supabase) return;
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const u = session?.user;
+      if (!u) return;
+      const nextUser: User = {
+        id: u.id,
+        role,
+        name: name || u.user_metadata?.name || (lang === 'ru' ? 'Пользователь' : 'User'),
+        phone: u.phone || undefined,
+        email: u.email || undefined,
+      };
+      onLogin(nextUser);
+      setStep('success');
+      setTimeout(() => onClose(), 600);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [role, name, lang, onLogin, onClose]);
 
   const sendOtp = async () => {
     if (!supabase) {
@@ -100,7 +119,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
     try {
       await sendOtp();
-      setStep('otp');
+      if (method === 'phone') {
+        setStep('otp');
+      } else {
+        setStep('email_wait');
+      }
       setTimer(30);
     } catch (err: any) {
       setError(String(err?.message || err));
@@ -176,6 +199,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               {step === 'method' && (lang === 'ru' ? 'Войдите или зарегистрируйтесь' : 'Login or Register')}
               {step === 'otp' &&
                 (lang === 'ru' ? `Код отправлен на ${contactValue}` : `Code sent to ${contactValue}`)}
+              {step === 'email_wait' &&
+                (lang === 'ru' ? `Отправили ссылку на ${contactValue}. Подтвердите вход в письме.` : `Login link sent to ${contactValue}. Confirm sign-in from the email.`)}
               {step === 'success' && (lang === 'ru' ? 'Переходим в профиль...' : 'Redirecting to profile...')}
             </p>
           </div>
@@ -264,7 +289,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               {error && <p className="text-xs text-red-500">{error}</p>}
 
               <Button type="submit" isLoading={loading} className="mt-4">
-                {lang === 'ru' ? 'Получить код' : 'Get Code'} <ArrowRight size={18} />
+                {method === 'email'
+                  ? (lang === 'ru' ? 'Отправить ссылку' : 'Send login link')
+                  : (lang === 'ru' ? 'Получить код' : 'Get Code')}
+                <ArrowRight size={18} />
               </Button>
             </form>
           )}
@@ -329,6 +357,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 </div>
               </div>
             </form>
+          )}
+
+          {step === 'email_wait' && (
+            <div className="space-y-4">
+              <div className="bg-sky-50 border border-sky-100 text-sky-700 text-sm rounded-xl p-4">
+                {lang === 'ru'
+                  ? 'Откройте письмо и нажмите ссылку подтверждения. После подтверждения вход выполнится автоматически.'
+                  : 'Open your email and tap the confirmation link. You will be signed in automatically.'}
+              </div>
+
+              {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+
+              <div className="text-center">
+                {timer > 0 ? (
+                  <span className="text-xs text-stone-400 font-mono">
+                    {lang === 'ru'
+                      ? `Отправить повторно через 00:${timer.toString().padStart(2, '0')}`
+                      : `Resend in 00:${timer.toString().padStart(2, '0')}`}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    className="text-xs text-amber-600 font-bold hover:underline"
+                  >
+                    {lang === 'ru' ? 'Отправить ссылку повторно' : 'Resend link'}
+                  </button>
+                )}
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('method');
+                      setError('');
+                    }}
+                    className="text-xs text-stone-400 hover:text-stone-600"
+                  >
+                    {lang === 'ru' ? 'Изменить email' : 'Change email'}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           {step === 'success' && (

@@ -1,13 +1,29 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import fs from 'fs';
+import path from 'path';
 
 const TABLE = 'nannies';
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
 
+function envWithLocalFallback(key: string): string | undefined {
+  const direct = process.env[key];
+  if (direct) return direct;
+
+  try {
+    const envPath = path.join(process.cwd(), '.env.local');
+    const raw = fs.readFileSync(envPath, 'utf8');
+    const m = raw.match(new RegExp(`^${key}=(.*)$`, 'm'));
+    return m?.[1]?.trim();
+  } catch {
+    return undefined;
+  }
+}
+
 function env() {
   return {
-    url: process.env.SUPABASE_URL,
-    key: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    url: envWithLocalFallback('SUPABASE_URL'),
+    key: envWithLocalFallback('SUPABASE_SERVICE_ROLE_KEY'),
   };
 }
 

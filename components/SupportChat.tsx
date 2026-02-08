@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, Minimize2, Loader2, Sparkles, RotateCcw } from 'lucide-react';
-import { Language, ChatMessage, User } from '../types';
+import { Language, ChatMessage, User, NannyProfile, ParentRequest } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { aiText } from '../src/core/ai/aiGateway';
 import { getNannyProfiles, getParentRequests } from '../services/storage';
@@ -8,6 +8,7 @@ import { getNannyProfiles, getParentRequests } from '../services/storage';
 interface SupportChatProps {
   lang: Language;
   user: User | null;
+  hideLauncher?: boolean;
 }
 
 type FeedbackKind = 'neutral' | 'positive' | 'negative';
@@ -30,23 +31,40 @@ const defaultLearningState: ChatLearningState = {
   lastFeedback: 'neutral',
 };
 
-export const SupportChat: React.FC<SupportChatProps> = ({ lang, user }) => {
+export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLauncher = false }) => {
   const text = t[lang];
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [learningState, setLearningState] = useState<ChatLearningState>(defaultLearningState);
+  const [nanniesCache, setNanniesCache] = useState<NannyProfile[]>([]);
+  const [parentsCache, setParentsCache] = useState<ParentRequest[]>([]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const systemInstructionRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const loadContextData = async () => {
+      const [nannies, parents] = await Promise.all([getNannyProfiles(), getParentRequests()]);
+      setNanniesCache(nannies);
+      setParentsCache(parents);
+    };
+    loadContextData();
+  }, [user]);
+
+  useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('blizko:open-support-chat', handler as EventListener);
+    return () => window.removeEventListener('blizko:open-support-chat', handler as EventListener);
+  }, []);
 
   // --- CONTEXT GATHERING (The "Self-Learning" Part) ---
   const gatherAppContext = (): string => {
     if (!user) return "User is a guest (not logged in).";
 
-    const nannies = getNannyProfiles();
-    const parents = getParentRequests();
+    const nannies = nanniesCache;
+    const parents = parentsCache;
     
     // Find current user data in storage
     const nannyProfile = nannies.find(n => n.name === user.name || (user.email && n.contact?.includes(user.email)));
@@ -158,7 +176,7 @@ RESPONSE STYLE RULES (MANDATORY):
 - If question is outside product scope, answer briefly and return to Blizko flow.
 - End with one short CTA (example: "Могу сразу подобрать 3 анкеты по вашим критериям.").
     `.trim();
-  }, [isOpen, user, lang, learningContext]);
+  }, [isOpen, user, lang, learningContext, nanniesCache, parentsCache]);
 
   // Initial welcome message
   useEffect(() => {
@@ -344,10 +362,11 @@ console.log(
   };
 
   if (!isOpen) {
+    if (hideLauncher) return null;
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 bg-stone-900 hover:bg-stone-800 text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
+        className="fixed bottom-6 right-6 z-[70] bg-stone-900 hover:bg-stone-800 text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
       >
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse" />
         <MessageCircle size={28} className="group-hover:rotate-12 transition-transform" />
@@ -356,7 +375,7 @@ console.log(
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 w-full max-w-[340px] flex flex-col items-end animate-slide-up">
+    <div className="fixed bottom-6 right-6 z-[70] w-full max-w-[340px] flex flex-col items-end animate-slide-up">
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full h-[480px] flex flex-col">
         {/* Header */}
         <div className="bg-stone-900 text-white p-4 flex justify-between items-center relative overflow-hidden">

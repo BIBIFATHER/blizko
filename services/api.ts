@@ -1,9 +1,17 @@
-// Заглушка для будущей интеграции с Make/Zapier
+// Универсальная отправка событий уведомлений
 export const sendToWebhook = async (payload: any): Promise<void> => {
-  console.log('--- WEBHOOK OUTGOING ---');
-  console.log('Payload:', JSON.stringify(payload, null, 2));
-  console.log('------------------------');
-  
-  // Имитация задержки сети
-  return new Promise((resolve) => setTimeout(resolve, 800));
+  try {
+    const r = await fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!r.ok) {
+      const err = await r.text().catch(() => '');
+      console.warn('notify failed:', r.status, err);
+    }
+  } catch (e) {
+    console.warn('notify error:', e);
+  }
 };

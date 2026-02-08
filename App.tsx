@@ -10,11 +10,13 @@ import { UserProfileModal } from './components/UserProfileModal';
 import { InstallPwaModal } from './src/web/pwa/InstallPwaPrompt';
 import { ShareModal } from './components/ShareModal';
 import { ViewState, ParentRequest, NannyProfile, SubmissionResult, Language, User } from './types';
-import { saveParentRequest, saveNannyProfile, getNannyProfiles } from './services/storage';
+import { saveParentRequest, saveNannyProfile, getNannyProfiles, updateParentRequest } from './services/storage';
 import { sendToWebhook } from './services/api';
 import { findBestMatch } from './src/core/ai/matchingAi';
 import { User as UserIcon, Share2 } from 'lucide-react';
 import { t } from './src/core/i18n/translations';
+import { supabase } from './services/supabase';
+import { notifyAdminNewRequest } from './services/notifications';
 
 export default function App() {
   const [view, setView] = useState<ViewState>('home');
@@ -28,6 +30,7 @@ export default function App() {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [isShareModalOpen, setShareModalOpen] = useState(false);
   const [nannyEditData, setNannyEditData] = useState<NannyProfile | undefined>(undefined);
+  const [parentEditData, setParentEditData] = useState<ParentRequest | undefined>(undefined);
 
   // PWA Install State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -60,6 +63,40 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!supabase) return;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      setUser((prev) => ({
+        role: prev?.role,
+        name: prev?.name || data.user.user_metadata?.name || 'User',
+        id: data.user.id,
+        phone: data.user.phone || undefined,
+        email: data.user.email || undefined,
+      }));
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const u = session?.user;
+      if (!u) {
+        setUser(null);
+        return;
+      }
+      setUser((prev) => ({
+        role: prev?.role,
+        name: prev?.name || u.user_metadata?.name || 'User',
+        id: u.id,
+        phone: u.phone || undefined,
+        email: u.email || undefined,
+      }));
+    });
+
+    return () => {
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
   const handleInstallClick = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -80,7 +117,10 @@ export default function App() {
     setUser(newUser);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setUser(null);
     setProfileOpen(false);
     setNannyEditData(undefined);
@@ -90,6 +130,12 @@ export default function App() {
     setNannyEditData(profile);
     setProfileOpen(false);
     setView('nanny-form');
+  };
+
+  const handleEditParentRequest = (request?: ParentRequest) => {
+    setParentEditData(request);
+    setProfileOpen(false);
+    setView('parent-form');
   };
   
   const handleShare = async () => {
@@ -117,17 +163,40 @@ export default function App() {
      };
   };
 
-  const handleParentSubmit = async (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'>) => {
-    const saved = saveParentRequest(data);
+  const handleParentSubmit = async (
+    data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }
+  ) => {
+    if (data.id) {
+      const updated = await updateParentRequest(data as Partial<ParentRequest> & { id: string }, {
+        actor: 'user',
+        note: 'Пользователь обновил заявку',
+      });
+      if (!updated) {
+        alert('Эту заявку нельзя редактировать после одобрения');
+        setParentEditData(undefined);
+        setView('home');
+        return;
+      }
+      await sendToWebhook(updated);
+      setParentEditData(undefined);
+      setView('home');
+      return;
+    }
+
+    const saved = await saveParentRequest({
+      ...data,
+      requesterEmail: user?.email,
+    });
     await sendToWebhook(saved);
-    const allNannies = getNannyProfiles();
+    await notifyAdminNewRequest(saved);
+    const allNannies = await getNannyProfiles();
     const aiMatchResult = await findBestMatch(data, allNannies, lang);
     setResult(aiMatchResult);
     setView('success');
   };
 
   const handleNannySubmit = async (data: Partial<NannyProfile>) => {
-    const saved = saveNannyProfile(data);
+    const saved = await saveNannyProfile(data);
     await sendToWebhook(saved);
     if (nannyEditData) {
       setView('home');
@@ -178,7 +247,10 @@ export default function App() {
       <main className="flex-1 w-full max-w-md mx-auto p-6 pb-24 relative pt-safe pl-safe pr-safe">
         {view === 'home' && (
           <Home 
-            onFindNanny={() => setView('parent-form')}
+            onFindNanny={() => {
+              setParentEditData(undefined);
+              setView('parent-form');
+            }}
             onBecomeNanny={() => {
               setNannyEditData(undefined);
               setView('nanny-form');
@@ -190,8 +262,12 @@ export default function App() {
         {view === 'parent-form' && (
           <ParentForm 
             onSubmit={handleParentSubmit} 
-            onBack={() => setView('home')} 
+            onBack={() => {
+              setParentEditData(undefined);
+              setView('home');
+            }} 
             lang={lang}
+            initialData={parentEditData}
           />
         )}
 
@@ -254,6 +330,7 @@ export default function App() {
           onLogout={handleLogout}
           lang={lang}
           onEditProfile={handleEditProfile}
+          onEditParentRequest={handleEditParentRequest}
         />
       )}
 
@@ -265,7 +342,7 @@ export default function App() {
       )}
 
       {/* Global Support Chat */}
-      <SupportChat lang={lang} user={user} />
+      <SupportChat lang={lang} user={user} hideLauncher={view === 'home'} />
     </div>
   );
 }

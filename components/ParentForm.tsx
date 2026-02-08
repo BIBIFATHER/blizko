@@ -1,30 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Input, Textarea, ChipGroup } from './UI';
 import { ParentRequest, Language } from '../types';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Upload, MapPin } from 'lucide-react';
 import { ParentOfferModal } from './ParentOfferModal';
+import { DocumentUploadModal } from './DocumentUploadModal';
 import { t } from '../src/core/i18n/translations';
 
 interface ParentFormProps {
-  onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'>) => Promise<void>;
+  onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }) => Promise<void>;
   onBack: () => void;
   lang: Language;
+  initialData?: ParentRequest;
 }
 
-export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang }) => {
+export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, initialData }) => {
   const text = t[lang];
   const [loading, setLoading] = useState(false);
   const [showOffer, setShowOffer] = useState(false);
+  const [showDocUpload, setShowDocUpload] = useState(false);
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+
+  const parseBudget = (raw?: string) => {
+    const text = String(raw || '');
+    const hourMatch = text.match(/за час:\s*([^\n;]+)/i);
+    const monthMatch = text.match(/за месяц:\s*([^\n;]+)/i);
+    return {
+      hourly: hourMatch?.[1]?.trim() || '',
+      monthly: monthMatch?.[1]?.trim() || '',
+    };
+  };
+
+  const parsedBudget = parseBudget(initialData?.budget);
 
   const [formData, setFormData] = useState({
-    city: '',
-    childAge: '',
-    schedule: '',
-    budget: '',
-    comment: ''
+    city: initialData?.city || '',
+    childAge: initialData?.childAge || '',
+    schedule: initialData?.schedule || '',
+    budgetHourly: parsedBudget.hourly,
+    budgetMonthly: parsedBudget.monthly,
+    comment: initialData?.comment || ''
   });
   
-  const [requirements, setRequirements] = useState<string[]>([]);
+  const [requirements, setRequirements] = useState<string[]>(initialData?.requirements || []);
+  const [documents, setDocuments] = useState(initialData?.documents || []);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,9 +56,18 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang }
     setLoading(true);
     
     try {
+      const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
+
       await onSubmit({
-        ...formData,
-        requirements
+        city: formData.city,
+        childAge: formData.childAge,
+        schedule: formData.schedule,
+        budget,
+        comment: formData.comment,
+        requirements,
+        documents,
+        id: initialData?.id,
+        status: initialData?.status,
       });
     } catch (e) {
       console.error(e);
@@ -47,6 +76,68 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang }
     }
   };
 
+  const detectLocation = async () => {
+    if (!navigator.geolocation) {
+      alert(lang === 'ru' ? 'Геолокация не поддерживается браузером' : 'Geolocation is not supported');
+      return;
+    }
+
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=${lang}`;
+          const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+          const data = await r.json().catch(() => null);
+
+          const city = data?.address?.city || data?.address?.town || data?.address?.village || '';
+          const district = data?.address?.suburb || data?.address?.city_district || data?.address?.neighbourhood || '';
+          const value = [city, district].filter(Boolean).join(', ');
+
+          setFormData((prev) => ({ ...prev, city: value || prev.city }));
+          if (!value) {
+            alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
+          }
+        } catch {
+          alert(lang === 'ru' ? 'Ошибка при определении местоположения' : 'Location detection failed');
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      () => {
+        setDetectingLocation(false);
+        alert(lang === 'ru' ? 'Нет доступа к геолокации' : 'Location permission denied');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  useEffect(() => {
+    const q = formData.city.trim();
+    if (q.length < 3) {
+      setCitySuggestions([]);
+      return;
+    }
+
+    const tmr = setTimeout(async () => {
+      try {
+        const nr = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&limit=5`);
+        const nj = await nr.json().catch(() => []);
+        const list = (Array.isArray(nj) ? nj : [])
+          .map((x: any) => x?.display_name)
+          .filter(Boolean)
+          .slice(0, 5);
+
+        setCitySuggestions(list);
+      } catch {
+        setCitySuggestions([]);
+      }
+    }, 350);
+
+    return () => clearTimeout(tmr);
+  }, [formData.city]);
+
   return (
     <div className="animate-slide-up">
       <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-6 flex items-center gap-2">
@@ -54,18 +145,53 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang }
       </button>
 
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-stone-800">{text.pFormTitle}</h2>
-        <p className="text-stone-500">{text.pFormSubtitle}</p>
+        <h2 className="text-2xl font-semibold text-stone-800">{initialData ? 'Редактировать заявку' : text.pFormTitle}</h2>
+        <p className="text-stone-500">{initialData ? 'Обновите данные вашей заявки' : text.pFormSubtitle}</p>
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
-        <Input 
-          label={text.cityLabel}
-          placeholder={lang === 'ru' ? "Москва, Хамовники" : "New York, Brooklyn"} 
-          value={formData.city}
-          onChange={e => setFormData({...formData, city: e.target.value})}
-          required
-        />
+        <div className="relative">
+          <Input 
+            label={text.cityLabel}
+            placeholder={lang === 'ru' ? "Москва, Хамовники" : "New York, Brooklyn"} 
+            value={formData.city}
+            onChange={e => {
+              setFormData({...formData, city: e.target.value});
+              setShowCitySuggestions(true);
+            }}
+            required
+          />
+
+          {showCitySuggestions && citySuggestions.length > 0 && (
+            <div className="mt-1 border border-stone-200 rounded-lg bg-white shadow-sm max-h-40 overflow-auto">
+              {citySuggestions.map((s, i) => (
+                <button
+                  key={`${s}-${i}`}
+                  type="button"
+                  onClick={() => {
+                    setFormData((prev) => ({ ...prev, city: s }));
+                    setShowCitySuggestions(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-stone-50"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={detectLocation}
+            disabled={detectingLocation}
+            className={`mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 ${detectingLocation ? 'bg-stone-100 text-stone-400' : 'bg-sky-100 text-sky-700 hover:bg-sky-200'}`}
+          >
+            <MapPin size={14} />
+            {detectingLocation
+              ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
+              : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
+          </button>
+        </div>
 
         <ChipGroup 
           label={text.childAgeLabel}
@@ -83,13 +209,22 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang }
           single
         />
 
-        <Input 
-          label={text.budgetLabel}
-          placeholder={lang === 'ru' ? "600 - 800 руб/час" : "20 - 30 $/hour"}
-          value={formData.budget}
-          onChange={e => setFormData({...formData, budget: e.target.value})}
-          required
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Input 
+            label={lang === 'ru' ? 'Цена за час' : 'Price per hour'}
+            placeholder={lang === 'ru' ? '600 - 800 ₽/час' : '20 - 30 $/hour'}
+            value={formData.budgetHourly}
+            onChange={e => setFormData({...formData, budgetHourly: e.target.value})}
+            required
+          />
+          <Input 
+            label={lang === 'ru' ? 'Цена за месяц' : 'Price per month'}
+            placeholder={lang === 'ru' ? '120 000 - 180 000 ₽/мес' : '2500 - 4000 $/month'}
+            value={formData.budgetMonthly}
+            onChange={e => setFormData({...formData, budgetMonthly: e.target.value})}
+            required
+          />
+        </div>
 
         <ChipGroup 
           label={text.importantLabel}
@@ -105,8 +240,27 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang }
           onChange={e => setFormData({...formData, comment: e.target.value})}
         />
 
-        <Button type="submit" isLoading={loading} className="mt-8">
-          {loading ? (lang === 'ru' ? 'AI подбирает няню...' : 'AI is searching...') : text.submitParent}
+        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm text-stone-600">
+              {lang === 'ru' ? `Документы: ${documents.length}` : `Documents: ${documents.length}`}
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowDocUpload(true)}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200 flex items-center gap-1"
+            >
+              <Upload size={14} /> {lang === 'ru' ? 'Загрузить документ' : 'Upload document'}
+            </button>
+          </div>
+        </div>
+
+        <Button type="submit" isLoading={loading} className="mt-8" disabled={initialData?.status === 'approved'}>
+          {initialData?.status === 'approved'
+            ? 'Редактирование заблокировано (заявка одобрена)'
+            : loading
+            ? (lang === 'ru' ? 'AI подбирает няню...' : 'AI is searching...')
+            : text.submitParent}
         </Button>
       </form>
 
@@ -114,6 +268,14 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang }
         <ParentOfferModal
           onClose={() => setShowOffer(false)}
           onAccept={handleOfferAccept}
+          lang={lang}
+        />
+      )}
+
+      {showDocUpload && (
+        <DocumentUploadModal
+          onClose={() => setShowDocUpload(false)}
+          onVerify={(doc) => setDocuments((prev) => [...prev, doc])}
           lang={lang}
         />
       )}

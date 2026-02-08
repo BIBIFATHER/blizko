@@ -78,11 +78,12 @@ export const t = {
 
     // Documents
     docsTitle: 'Документы',
-    docsDesc: 'Загрузите фото паспорта или медкнижки. AI проверит их подлинность за 5 секунд.',
+    docsDesc: 'Загрузите документ. Мы проверим качество, читаемость и подлинность.',
     uploadDoc: 'Загрузить документ',
     docPas: 'Паспорт РФ',
     docMed: 'Медкнижка',
-    docPol: 'Справка о несудимости',
+    docRec: 'Рекомендательные письма',
+    docEdu: 'Документы об образовании',
     docUploaded: 'Проверено AI',
     scanTitle: 'AI Сканирование',
     scanHint: 'Анализируем водяные знаки и читаемость текста...',
@@ -384,11 +385,12 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
 
     // Documents
     docsTitle: 'Documents',
-    docsDesc: 'Upload a photo of your passport or medical book. AI will verify authenticity in 5 seconds.',
+    docsDesc: 'Upload a document. We will check quality, readability, and authenticity.',
     uploadDoc: 'Upload Document',
     docPas: 'Passport',
     docMed: 'Medical Book',
-    docPol: 'Police Record',
+    docRec: 'Recommendation Letters',
+    docEdu: 'Education Documents',
     docUploaded: 'Verified by AI',
     scanTitle: 'AI Scanning',
     scanHint: 'Analyzing watermarks and text readability...',

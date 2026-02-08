@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card } from './UI';
-import { X, User as UserIcon, LogOut, Clock, Calendar, MessageSquare, CheckCircle, Wallet, Star, ShieldCheck, MapPin, Briefcase, MessageCircle, Edit, Lock, Phone, Mail, BadgeCheck } from 'lucide-react';
-import { Language, User, Booking, Review, NannyProfile } from '../types';
+import { X, User as UserIcon, LogOut, Clock, Calendar, MessageSquare, CheckCircle, Wallet, Star, ShieldCheck, MapPin, Briefcase, MessageCircle, Edit, Lock, Phone, Mail, BadgeCheck, LifeBuoy } from 'lucide-react';
+import { Language, User, Booking, Review, NannyProfile, ParentRequest } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { NannyChatModal } from './NannyChatModal';
 import { PaymentModal } from './PaymentModal';
 import { LeaveReviewModal } from './LeaveReviewModal';
-import { getNannyProfiles, addReview } from '../services/storage';
+import { getNannyProfiles, getParentRequests, addReview, resubmitParentRequest } from '../services/storage';
+import { notifyAdminResubmitted } from '../services/notifications';
 
 interface UserProfileModalProps {
   user: User;
@@ -14,9 +15,10 @@ interface UserProfileModalProps {
   onLogout: () => void;
   lang: Language;
   onEditProfile?: (profile?: NannyProfile) => void;
+  onEditParentRequest?: (request?: ParentRequest) => void;
 }
 
-export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClose, onLogout, lang, onEditProfile }) => {
+export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClose, onLogout, lang, onEditProfile, onEditParentRequest }) => {
   const text = t[lang];
   const isNanny = user.role === 'nanny';
   
@@ -34,6 +36,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
   // Data States
   const [reviews, setReviews] = useState<Review[]>([]);
   const [myNannyProfile, setMyNannyProfile] = useState<NannyProfile | undefined>(undefined);
+  const [myParentRequests, setMyParentRequests] = useState<ParentRequest[]>([]);
+  const [moderationSeenMap, setModerationSeenMap] = useState<Record<string, number>>({});
   
   // Mock Earnings
   const earnedTotal = 12500;
@@ -41,16 +45,29 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
   const commissionDue = earnedTotal * commissionRate; 
 
   useEffect(() => {
-    if (isNanny) {
-      const storedNannies = getNannyProfiles();
-      const myProfile = storedNannies.find(n => n.name === user.name);
-      setMyNannyProfile(myProfile);
+    const load = async () => {
+      if (isNanny) {
+        const storedNannies = await getNannyProfiles();
+        const myProfile = storedNannies.find(n => n.name === user.name) || storedNannies[0];
+        setMyNannyProfile(myProfile);
 
-      if (myProfile && myProfile.reviews) {
-        setReviews(myProfile.reviews);
-      } else if (storedNannies.length > 0 && storedNannies[0].reviews) {
-        setReviews(storedNannies[0].reviews);
+        if (myProfile && myProfile.reviews) {
+          setReviews(myProfile.reviews);
+        } else {
+          setReviews([]);
+        }
+      } else {
+        const requests = await getParentRequests();
+        setMyParentRequests(requests);
       }
+    };
+    load();
+
+    try {
+      const raw = localStorage.getItem('blizko_parent_moderation_seen');
+      if (raw) setModerationSeenMap(JSON.parse(raw));
+    } catch {
+      // ignore
     }
   }, [isNanny, user.name]);
 
@@ -107,6 +124,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
     }
   ]);
 
+  const parentStatusLabel = (status?: ParentRequest['status']) => {
+    if (status === 'in_review') return 'На проверке';
+    if (status === 'approved') return 'Одобрена';
+    if (status === 'rejected') return 'Отклонена';
+    return 'Новая';
+  };
+
+  const parentRejectReasonLabel = (code?: string) => {
+    if (code === 'profile_incomplete') return 'Анкета заполнена не полностью';
+    if (code === 'docs_missing') return 'Не хватает документов';
+    if (code === 'budget_invalid') return 'Некорректный бюджет';
+    if (code === 'contact_invalid') return 'Некорректные контактные данные';
+    return 'Требуется доработка';
+  };
+
   const handlePaymentClick = (type: 'registration' | 'commission') => {
     setPaymentType(type);
     setPaymentAmount(type === 'registration' ? '5 000 ₽' : `${commissionDue.toLocaleString('ru-RU')} ₽`);
@@ -120,10 +152,50 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
     setShowPayment(false);
   };
 
-  const handleReviewSubmit = (review: Review) => {
+  const handleReviewSubmit = async (review: Review) => {
     setHistoryBookings(prev => prev.map(b => b.id === review.bookingId ? { ...b, hasReview: true } : b));
-    addReview(review);
+    await addReview(review);
     setReviewBookingId(null);
+  };
+
+  const handleResubmit = async (id: string) => {
+    const updated = await resubmitParentRequest(id);
+    if (updated) await notifyAdminResubmitted(updated);
+    const requests = await getParentRequests();
+    setMyParentRequests(requests);
+  };
+
+  const getLastAdminStatusTs = (req: ParentRequest) => {
+    const e = [...(req.changeLog || [])]
+      .reverse()
+      .find((x) => x.type === 'status_changed' && x.by === 'admin');
+    return e?.at || 0;
+  };
+
+  const hasNewModerationUpdate = (req: ParentRequest) => {
+    const lastTs = getLastAdminStatusTs(req);
+    const seenTs = Number(moderationSeenMap[req.id] || 0);
+    return lastTs > 0 && lastTs > seenTs;
+  };
+
+  const markModerationAsSeen = () => {
+    const next = { ...moderationSeenMap };
+    myParentRequests.forEach((req) => {
+      const ts = getLastAdminStatusTs(req);
+      if (ts > 0) next[req.id] = ts;
+    });
+    setModerationSeenMap(next);
+    try {
+      localStorage.setItem('blizko_parent_moderation_seen', JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+  };
+
+  const hasAnyNewModeration = myParentRequests.some((req) => hasNewModerationUpdate(req));
+
+  const openSupportChat = () => {
+    window.dispatchEvent(new CustomEvent('blizko:open-support-chat'));
   };
 
   return (
@@ -288,17 +360,95 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                 {!isNanny && (
                   <div className="text-left space-y-4">
                     <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest">{text.myApplications}</h4>
-                    <Card className="!p-4 bg-white border border-stone-100 flex items-center gap-3">
-                      <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm">
-                        <Clock size={20} />
+
+                    {myParentRequests.length === 0 ? (
+                      <Card className="!p-4 bg-white border border-stone-100">
+                        <div className="text-sm text-stone-500">
+                          У вас пока нет заявок
+                        </div>
+                      </Card>
+                    ) : (
+                      <div className="space-y-2">
+                        {hasAnyNewModeration && (
+                          <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-center justify-between gap-2">
+                            <div className="text-xs text-amber-700 font-medium">Есть новое решение модерации</div>
+                            <button
+                              onClick={markModerationAsSeen}
+                              className="text-[11px] px-2 py-1 rounded bg-amber-100 text-amber-700 hover:bg-amber-200"
+                            >
+                              Прочитано
+                            </button>
+                          </div>
+                        )}
+                        {myParentRequests.map((req) => {
+                          const lastAdminStatusEvent = [...(req.changeLog || [])]
+                            .reverse()
+                            .find((e) => e.type === 'status_changed' && e.by === 'admin');
+
+                          return (
+                          <Card key={req.id} className="!p-4 bg-white border border-stone-100 flex items-center gap-3 justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm">
+                                <Clock size={20} />
+                              </div>
+                              <div>
+                                <div className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                                  {parentStatusLabel(req.status)}
+                                  {hasNewModerationUpdate(req) && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">Новое</span>
+                                  )}
+                                </div>
+                                <div className="text-xs text-stone-400">
+                                  ID: {req.id.slice(0, 8)} • {new Date(req.createdAt).toLocaleDateString()}
+                                </div>
+                                {req.status === 'rejected' && (
+                                  <div className="mt-1 text-[11px] text-red-600 max-w-[220px]">
+                                    Причина: {parentRejectReasonLabel(req.rejectionInfo?.reasonCode)}
+                                    {req.rejectionInfo?.reasonText ? ` — ${req.rejectionInfo.reasonText}` : ''}
+                                  </div>
+                                )}
+
+                                {lastAdminStatusEvent && (
+                                  <div className="mt-1 text-[11px] text-stone-500 max-w-[220px]">
+                                    Обновлено модерацией: {new Date(lastAdminStatusEvent.at).toLocaleString()}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <button
+                                onClick={() => onEditParentRequest && onEditParentRequest(req)}
+                                disabled={req.status === 'approved'}
+                                title={req.status === 'approved' ? 'Одобренную заявку редактировать нельзя' : 'Редактировать заявку'}
+                                className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${
+                                  req.status === 'approved'
+                                    ? 'bg-stone-100 text-stone-400 cursor-not-allowed'
+                                    : 'bg-sky-100 text-sky-700 hover:bg-sky-200'
+                                }`}
+                              >
+                                Редактировать
+                              </button>
+
+                              {req.status === 'rejected' && (
+                                <button
+                                  onClick={() => handleResubmit(req.id)}
+                                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200"
+                                >
+                                  Отправить повторно
+                                </button>
+                              )}
+                            </div>
+                          </Card>
+                          );
+                        })}
                       </div>
-                      <div>
-                        <div className="text-sm font-semibold text-stone-700">{lang === 'ru' ? 'Заявка на проверке' : 'Application Pending'}</div>
-                        <div className="text-xs text-stone-400">ID: #4829 • {new Date().toLocaleDateString()}</div>
-                      </div>
-                    </Card>
+                    )}
                   </div>
                 )}
+
+                <Button variant="outline" onClick={openSupportChat} className="w-full border-sky-100 text-sky-700 hover:bg-sky-50 hover:border-sky-200">
+                  <LifeBuoy size={18} /> Связаться с поддержкой
+                </Button>
 
                 <Button variant="outline" onClick={onLogout} className="w-full text-red-500 border-red-100 hover:bg-red-50 hover:border-red-200">
                   <LogOut size={18} /> {text.logout}

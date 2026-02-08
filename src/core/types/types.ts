@@ -10,16 +10,36 @@ export interface Review {
   bookingId?: string;
 }
 
+export interface ParentChangeEvent {
+  at: number;
+  type: 'created' | 'updated' | 'status_changed' | 'resubmitted';
+  by?: 'user' | 'admin';
+  note?: string;
+}
+
+export interface RejectionInfo {
+  reasonCode?: 'profile_incomplete' | 'docs_missing' | 'budget_invalid' | 'contact_invalid' | 'other';
+  reasonText?: string;
+  rejectedAt?: number;
+  rejectedBy?: 'admin';
+}
+
 export interface ParentRequest {
   id: string;
   type: 'parent';
+  status?: 'new' | 'in_review' | 'approved' | 'rejected';
   city: string;
   childAge: string;
   schedule: string;
   budget: string;
   requirements: string[];
   comment: string;
+  documents?: DocumentVerification[];
+  requesterEmail?: string;
   createdAt: number;
+  updatedAt?: number;
+  rejectionInfo?: RejectionInfo;
+  changeLog?: ParentChangeEvent[];
 }
 
 export interface SoftSkillsProfile {
@@ -29,14 +49,27 @@ export interface SoftSkillsProfile {
   completedAt: number;
 }
 
+export interface NormalizedResume {
+  fullName?: string;
+  city?: string;
+  phone?: string;
+  email?: string;
+  summary?: string;
+  experienceYears?: number;
+  skills?: string[];
+}
+
 export interface DocumentVerification {
-  type: 'passport' | 'medical_book' | 'police_record';
+  type: 'passport' | 'medical_book' | 'recommendation_letter' | 'education_document' | 'resume' | 'other';
   status: 'verified' | 'rejected' | 'pending';
   documentNumber?: string;
   expiryDate?: string;
   aiConfidence: number; // 0-100
   aiNotes: string;
   verifiedAt: number;
+  fileName?: string;
+  fileDataUrl?: string;
+  normalizedResume?: NormalizedResume;
 }
 
 export interface NannyProfile {
@@ -56,6 +89,7 @@ export interface NannyProfile {
   videoIntro?: boolean; // Legacy flag
   video?: string; // URL to video
   reviews?: Review[]; // New field for reviews
+  resumeNormalized?: NormalizedResume; // unified resume format from OCR/AI
   createdAt: number;
 }
 
@@ -67,6 +101,7 @@ export interface SubmissionResult {
 }
 
 export interface User {
+  id?: string;
   email?: string;
   phone?: string;
   name?: string;

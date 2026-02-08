@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Textarea, ChipGroup, Card } from './UI';
-import { NannyProfile, Language, SoftSkillsProfile, DocumentVerification } from '../types';
-import { ArrowLeft, ShieldCheck, Check, BrainCircuit, Video, PlayCircle, FileText, Upload, Camera } from 'lucide-react';
+import { NannyProfile, Language, SoftSkillsProfile, DocumentVerification, NormalizedResume } from '../types';
+import { ArrowLeft, ShieldCheck, Check, BrainCircuit, Video, PlayCircle, FileText, Upload, Camera, MapPin } from 'lucide-react';
 import { GosUslugiModal } from './GosUslugiModal';
 import { BehavioralTestModal } from './BehavioralTestModal';
 import { VideoRecorderModal } from './VideoRecorderModal';
@@ -26,11 +26,15 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
   const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const [showDocUpload, setShowDocUpload] = useState(false);
   const [showOffer, setShowOffer] = useState(false);
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   
   // Data States
   const [isVerified, setIsVerified] = useState(false);
   const [softSkills, setSoftSkills] = useState<SoftSkillsProfile | undefined>(undefined);
   const [documents, setDocuments] = useState<DocumentVerification[]>([]);
+  const [resumeNormalized, setResumeNormalized] = useState<NormalizedResume | undefined>(undefined);
   
   // Media States
   const [photo, setPhoto] = useState<string | undefined>(undefined);
@@ -64,6 +68,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
       setIsVerified(initialData.isVerified);
       setSoftSkills(initialData.softSkills);
       setDocuments(initialData.documents || []);
+      setResumeNormalized(initialData.resumeNormalized);
     }
   }, [initialData]);
 
@@ -91,7 +96,8 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         softSkills,
         video: videoUrl,
         videoIntro: !!videoUrl,
-        documents
+        documents,
+        resumeNormalized,
       });
       setLoading(false);
     }, 600);
@@ -122,6 +128,27 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
 
   const handleDocumentVerified = (doc: DocumentVerification) => {
     setDocuments(prev => [...prev, doc]);
+
+    if (doc.type === 'resume' && doc.normalizedResume) {
+      const r = doc.normalizedResume;
+      setResumeNormalized(r);
+
+      // Автозаполняем только при достаточно уверенном распознавании
+      if ((doc.aiConfidence || 0) >= 80) {
+        setFormData((prev) => ({
+          ...prev,
+          name: prev.name || r.fullName || '',
+          city: prev.city || r.city || '',
+          contact: prev.contact || r.phone || r.email || '',
+          about: prev.about || r.summary || '',
+          experience: prev.experience || (typeof r.experienceYears === 'number' ? String(r.experienceYears) : ''),
+        }));
+
+        if (Array.isArray(r.skills) && r.skills.length > 0) {
+          setSkills((prev) => Array.from(new Set([...(prev || []), ...r.skills!])));
+        }
+      }
+    }
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,6 +162,68 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+
+  const detectLocation = async () => {
+    if (!navigator.geolocation) {
+      alert(lang === 'ru' ? 'Геолокация не поддерживается браузером' : 'Geolocation is not supported');
+      return;
+    }
+
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=${lang}`;
+          const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+          const data = await r.json().catch(() => null);
+
+          const city = data?.address?.city || data?.address?.town || data?.address?.village || '';
+          const district = data?.address?.suburb || data?.address?.city_district || data?.address?.neighbourhood || '';
+          const value = [city, district].filter(Boolean).join(', ');
+
+          setFormData((prev) => ({ ...prev, city: value || prev.city }));
+          if (!value) {
+            alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
+          }
+        } catch {
+          alert(lang === 'ru' ? 'Ошибка при определении местоположения' : 'Location detection failed');
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      () => {
+        setDetectingLocation(false);
+        alert(lang === 'ru' ? 'Нет доступа к геолокации' : 'Location permission denied');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  useEffect(() => {
+    const q = formData.city.trim();
+    if (q.length < 3) {
+      setCitySuggestions([]);
+      return;
+    }
+
+    const tmr = setTimeout(async () => {
+      try {
+        const nr = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&limit=5`);
+        const nj = await nr.json().catch(() => []);
+        const list = (Array.isArray(nj) ? nj : [])
+          .map((x: any) => x?.display_name)
+          .filter(Boolean)
+          .slice(0, 5);
+
+        setCitySuggestions(list);
+      } catch {
+        setCitySuggestions([]);
+      }
+    }, 350);
+
+    return () => clearTimeout(tmr);
+  }, [formData.city]);
 
   return (
     <div className="animate-slide-up relative">
@@ -239,14 +328,56 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
                   {documents.map((doc, i) => (
                     <div key={i} className="bg-white/60 p-2 rounded-lg flex justify-between items-center border border-sky-100">
                        <div className="flex items-center gap-2">
-                         <span className="text-xs font-bold text-stone-700 uppercase">{doc.type === 'passport' ? 'PAS' : 'MED'}</span>
+                         <span className="text-xs font-bold text-stone-700 uppercase">
+                           {doc.type === 'passport'
+                             ? 'Паспорт'
+                             : doc.type === 'medical_book'
+                             ? 'Медкнижка'
+                             : doc.type === 'recommendation_letter'
+                             ? 'Рекомендация'
+                             : doc.type === 'education_document'
+                             ? 'Образование'
+                             : doc.type === 'resume'
+                             ? 'Резюме'
+                             : 'Документ'}
+                         </span>
                          {doc.documentNumber && <span className="text-xs font-mono text-stone-500">{doc.documentNumber}</span>}
                        </div>
-                       <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-bold">
-                         AI {doc.aiConfidence}%
-                       </span>
+                       <div className="flex items-center gap-2">
+                         {doc.fileDataUrl && (
+                           <button
+                             type="button"
+                             onClick={() => {
+                               const a = document.createElement('a');
+                               a.href = doc.fileDataUrl!;
+                               a.target = '_blank';
+                               a.rel = 'noopener noreferrer';
+                               a.download = doc.fileName || 'document';
+                               document.body.appendChild(a);
+                               a.click();
+                               a.remove();
+                             }}
+                             className="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-700 hover:bg-stone-200"
+                           >
+                             Открыть
+                           </button>
+                         )}
+                         <span className="text-[10px] bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded font-bold">
+                           {doc.status === 'verified' ? 'Проверено' : doc.status === 'rejected' ? 'Отклонено' : 'Загружено'}
+                         </span>
+                       </div>
                     </div>
                   ))}
+
+                  {resumeNormalized && (
+                    <div className="bg-white border border-sky-100 rounded-lg p-2 text-xs text-stone-600">
+                      <div className="font-semibold text-stone-700 mb-1">Резюме распознано в едином формате</div>
+                      <div>Имя: {resumeNormalized.fullName || '—'}</div>
+                      <div>Город: {resumeNormalized.city || '—'}</div>
+                      <div>Опыт: {typeof resumeNormalized.experienceYears === 'number' ? `${resumeNormalized.experienceYears} лет` : '—'}</div>
+                    </div>
+                  )}
+
                   <button 
                     type="button"
                     onClick={() => setShowDocUpload(true)}
@@ -347,13 +478,48 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           required
         />
 
-        <Input 
-          label={text.cityLabel}
-          placeholder={lang === 'ru' ? "Москва, ЮАО" : "London, Soho"}
-          value={formData.city}
-          onChange={e => setFormData({...formData, city: e.target.value})}
-          required
-        />
+        <div className="relative">
+          <Input 
+            label={text.cityLabel}
+            placeholder={lang === 'ru' ? "Москва, ЮАО" : "London, Soho"}
+            value={formData.city}
+            onChange={e => {
+              setFormData({...formData, city: e.target.value});
+              setShowCitySuggestions(true);
+            }}
+            required
+          />
+
+          {showCitySuggestions && citySuggestions.length > 0 && (
+            <div className="mt-1 border border-stone-200 rounded-lg bg-white shadow-sm max-h-40 overflow-auto">
+              {citySuggestions.map((s, i) => (
+                <button
+                  key={`${s}-${i}`}
+                  type="button"
+                  onClick={() => {
+                    setFormData((prev) => ({ ...prev, city: s }));
+                    setShowCitySuggestions(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-stone-50"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={detectLocation}
+            disabled={detectingLocation}
+            className={`mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 ${detectingLocation ? 'bg-stone-100 text-stone-400' : 'bg-sky-100 text-sky-700 hover:bg-sky-200'}`}
+          >
+            <MapPin size={14} />
+            {detectingLocation
+              ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
+              : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
+          </button>
+        </div>
 
         <Input 
           label={text.expLabel}

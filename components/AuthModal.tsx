@@ -290,7 +290,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
               <Button type="submit" isLoading={loading} className="mt-4">
                 {method === 'email'
-                  ? (lang === 'ru' ? 'Отправить ссылку' : 'Send login link')
+                  ? (lang === 'ru' ? 'Получить ссылку' : 'Get login link')
                   : (lang === 'ru' ? 'Получить код' : 'Get Code')}
                 <ArrowRight size={18} />
               </Button>

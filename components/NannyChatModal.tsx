@@ -2,14 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, ArrowLeft, Phone, PhoneOff, Mic, MicOff, Video as VideoIcon, VideoOff } from 'lucide-react';
 import { Language, ChatMessage } from '../types';
 import { t } from '../src/core/i18n/translations';
+import { appendChatMessage, getChatMessages } from '../services/chat';
 
 interface NannyChatModalProps {
+  bookingId: string;
   nannyName: string;
+  currentUserName?: string;
+  currentUserId?: string;
   onClose: () => void;
   lang: Language;
 }
 
-export const NannyChatModal: React.FC<NannyChatModalProps> = ({ nannyName, onClose, lang }) => {
+export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nannyName, currentUserName, currentUserId, onClose, lang }) => {
   const text = t[lang];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -26,17 +30,19 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ nannyName, onClo
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
-  // Initial messages mock
   useEffect(() => {
-    setMessages([
-      {
-        id: '1',
-        text: lang === 'ru' ? 'Здравствуйте! Я буду у вас ровно к 14:00.' : 'Hello! I will be there exactly at 2:00 PM.',
-        sender: 'agent', 
-        timestamp: Date.now() - 3600000
+    setMessages(getChatMessages(bookingId));
+  }, [bookingId]);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === `blizko_chat_${bookingId}`) {
+        setMessages(getChatMessages(bookingId));
       }
-    ]);
-  }, [lang]);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [bookingId]);
 
   // Call Timer Logic
   useEffect(() => {
@@ -103,26 +109,14 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ nannyName, onClo
       id: Date.now().toString(),
       text: inputValue,
       sender: 'user',
+      senderId: currentUserId,
+      senderName: currentUserName,
       timestamp: Date.now()
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    const next = appendChatMessage(bookingId, userMsg);
+    setMessages(next);
     setInputValue('');
-
-    // Simulate Nanny typing reply
-    setTimeout(() => {
-      const response = lang === 'ru' 
-        ? 'Хорошо, поняла! Спасибо.' 
-        : 'Okay, got it! Thanks.';
-      
-      const nannyMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: response,
-        sender: 'agent',
-        timestamp: Date.now()
-      };
-      setMessages(prev => [...prev, nannyMsg]);
-    }, 2000);
   };
 
   const handleStartAudioCall = () => {
@@ -193,25 +187,28 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ nannyName, onClo
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#EFEAE2]">
-          {messages.map(msg => (
+          {messages.map(msg => {
+            const isMine = !!currentUserId && msg.senderId === currentUserId;
+            return (
             <div 
               key={msg.id} 
-              className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
             >
               <div 
                 className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                  msg.sender === 'user' 
+                  isMine
                     ? 'bg-[#E7FFDB] text-stone-800 rounded-tr-sm' 
                     : 'bg-white text-stone-800 rounded-tl-sm'
                 }`}
               >
+                {msg.senderName && !isMine && <div className="text-[10px] opacity-60 mb-0.5">{msg.senderName}</div>}
                 {msg.text}
-                <div className={`text-[10px] text-right mt-1 opacity-50 ${msg.sender === 'user' ? 'text-green-900' : 'text-stone-400'}`}>
+                <div className={`text-[10px] text-right mt-1 opacity-50 ${isMine ? 'text-green-900' : 'text-stone-400'}`}>
                    {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </div>
               </div>
             </div>
-          ))}
+          )})}
           <div ref={messagesEndRef} />
         </div>
 

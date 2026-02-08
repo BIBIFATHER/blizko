@@ -74,7 +74,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
   // --- MOCK DATA for Demo ---
   const nannyRequests = [
     {
-      id: 'r1',
+      id: 'order-1',
       parentName: lang === 'ru' ? 'Семья Смирновых' : 'The Smith Family',
       location: lang === 'ru' ? 'Хамовники' : 'Soho',
       details: lang === 'ru' ? '2 детей (3г, 5л)' : '2 kids (3y, 5y)',
@@ -92,7 +92,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
   ];
 
   const [activeBooking, setActiveBooking] = useState<Booking | null>({
-    id: 'b1',
+    id: 'order-1',
     nannyName: lang === 'ru' ? 'Мария И.' : 'Maria I.',
     date: lang === 'ru' ? 'Сегодня, 14:00 - 18:00' : 'Today, 2:00 PM - 6:00 PM',
     status: 'active',
@@ -504,13 +504,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                            </div>
                          </div>
 
-                         <div className="flex gap-2">
-                           <Button className="py-2 text-sm flex-1 bg-stone-800 text-white hover:bg-stone-700">
-                             {text.accept}
+                         <div className="grid grid-cols-1 gap-2">
+                           <Button 
+                             onClick={() => setChatBooking({ id: req.id, nannyName: req.parentName, date: req.schedule, status: 'active', amount: req.rate })}
+                             className="py-2 text-sm w-full bg-stone-800 text-white hover:bg-stone-700"
+                           >
+                             <MessageSquare size={14} /> Чат по заказу
                            </Button>
-                           <Button variant="outline" className="py-2 text-sm flex-1">
-                             {text.decline}
-                           </Button>
+                           <div className="flex gap-2">
+                             <Button className="py-2 text-sm flex-1 bg-stone-800 text-white hover:bg-stone-700">
+                               {text.accept}
+                             </Button>
+                             <Button variant="outline" className="py-2 text-sm flex-1">
+                               {text.decline}
+                             </Button>
+                           </div>
                          </div>
                       </Card>
                     ))}
@@ -658,7 +666,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
 
       {chatBooking && (
         <NannyChatModal 
+          bookingId={chatBooking.id}
           nannyName={chatBooking.nannyName}
+          currentUserId={user.id}
+          currentUserName={user.name || user.email}
           onClose={() => setChatBooking(null)}
           lang={lang}
         />

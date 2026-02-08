@@ -112,6 +112,8 @@ export interface ChatMessage {
   id: string;
   text: string;
   sender: 'user' | 'agent';
+  senderId?: string;
+  senderName?: string;
   timestamp: number;
 }
 

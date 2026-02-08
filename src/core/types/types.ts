@@ -83,6 +83,7 @@ export interface NannyRiskProfile {
   tantrumFirstStep?: 'calm' | 'distract' | 'boundaries';
   routineStyle?: 'structured' | 'balanced' | 'adaptive';
   conflictStyle?: 'discuss_now' | 'pause_then_discuss' | 'avoid';
+  emergencyReady?: 'yes' | 'no';
 }
 
 export interface NannyProfile {

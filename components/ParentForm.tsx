@@ -296,7 +296,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
             <option value="balanced">Баланс</option>
           </select>
 
-          <label className="block text-xs text-stone-600">Какой формат отчетности комфортен?</label>
+          <label className="block text-xs text-stone-600">Какой формат фото/видео-отчётности комфортен?</label>
           <select
             className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
             value={riskProfile?.reportingFrequency || '2_3_times'}

@@ -302,7 +302,7 @@ export const t = {
 
     // Arrays / Options
     scheduleOptions: ['День', 'Ночь', 'Присмотр 24 часа'],
-    reqOptions: ['Опыт с нужным возрастом', 'Первая помощь', 'Пунктуальность', 'Вечер/выходные', 'Фото/видео отчёты', 'Работа с 2 детьми', 'Комфорт с животными', 'Без вредных привычек'],
+    reqOptions: ['Опыт с нужным возрастом', 'Первая помощь', 'Пунктуальность', 'Вечер/выходные', 'Фото/видео отчёты', 'Работа с 2 детьми', 'Комфорт с животными', 'Подтверждённая надёжность'],
     ageOptions: ['Груднички (0-1)', 'Тоддлеры (1-3)', 'Дошкольники (3-6)', 'Школьники (7+)'],
     skillOptions: ['Пед. образование', 'Мед. образование', 'Знание английского', 'Уход за двойней', 'Вождение авто'],
   },
@@ -610,7 +610,7 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
 
     // Arrays
     scheduleOptions: ['Day', 'Night', '24-hour care'],
-    reqOptions: ['Relevant age experience', 'First aid', 'Punctuality', 'Evenings/weekends', 'Photo/video updates', 'Can handle 2 kids', 'Pet-friendly', 'No bad habits'],
+    reqOptions: ['Relevant age experience', 'First aid', 'Punctuality', 'Evenings/weekends', 'Photo/video updates', 'Can handle 2 kids', 'Pet-friendly', 'Verified reliability'],
     ageOptions: ['Infants (0-1)', 'Toddlers (1-3)', 'Preschool (3-6)', 'School (7+)'],
     skillOptions: ['Pedagogical edu', 'Medical edu', 'English knowledge', 'Twins care', 'Driving license'],
   }

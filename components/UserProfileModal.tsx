@@ -146,6 +146,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
     return 'Требуется доработка';
   };
 
+  const formatRuDate = (ts?: number) => {
+    if (!ts) return '—';
+    return new Date(ts).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
   const handlePaymentClick = (type: 'registration' | 'commission') => {
     setPaymentType(type);
     setPaymentAmount(type === 'registration' ? '5 000 ₽' : `${commissionDue.toLocaleString('ru-RU')} ₽`);
@@ -408,7 +413,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                                   )}
                                 </div>
                                 <div className="text-xs text-stone-400">
-                                  Создана: {new Date(req.createdAt).toLocaleDateString()} • #{req.id.slice(0, 6)}
+                                  Создана: {formatRuDate(req.createdAt)} • заявка {req.id.slice(0, 4).toUpperCase()}
                                 </div>
                                 {req.status === 'rejected' && (
                                   <div className="mt-1 text-[11px] text-red-600 max-w-[220px]">

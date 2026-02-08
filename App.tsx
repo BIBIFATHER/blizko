@@ -236,14 +236,19 @@ export default function App() {
             {t[lang].login}
           </button>
         ) : (
-          <button 
-            onClick={() => setProfileOpen(true)}
-            className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
-            title={user.email || user.name}
-          >
-            <UserIcon size={16} />
-            <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline text-[11px] text-stone-500 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full px-2.5 py-1" title={user.email || user.name}>
+              {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
+            </span>
+            <button 
+              onClick={() => setProfileOpen(true)}
+              className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
+              title={user.email || user.name}
+            >
+              <UserIcon size={16} />
+              <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
+            </button>
+          </div>
         )}
       </div>
 

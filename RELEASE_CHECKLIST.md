@@ -12,11 +12,11 @@
 - [ ] Service keys rotated if leaked
 
 ## 3) Notifications
-- [ ] Resend domain is Verified
-- [ ] `RESEND_API_KEY` set
-- [ ] `RESEND_FROM_EMAIL` set to verified domain
-- [ ] `ADMIN_EMAIL` set
-- [ ] `curl /api/notify-test` returns `ok:true`
+- [x] Resend domain is Verified
+- [x] `RESEND_API_KEY` set
+- [x] `RESEND_FROM_EMAIL` set to verified domain
+- [x] `ADMIN_EMAIL` set
+- [x] `curl /api/notify-test` returns `ok:true` (tested to `anton.anosovv@yandex.ru`)
 
 ## 4) Data / Supabase
 - [ ] RLS enabled on parents/nannies

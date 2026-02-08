@@ -21,6 +21,14 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [advanced, setAdvanced] = useState({
+    cameras: 'ok',
+    travel: 'no',
+    household: 'light',
+    pets: 'has_pets',
+    night: 'sometimes',
+  });
 
   const parseBudget = (raw?: string) => {
     const text = String(raw || '');
@@ -62,13 +70,16 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     
     try {
       const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
+      const advancedNotes = showAdvanced
+        ? `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`
+        : '';
 
       await onSubmit({
         city: formData.city,
         childAge: formData.childAge,
         schedule: formData.schedule,
         budget,
-        comment: formData.comment,
+        comment: `${formData.comment || ''}${advancedNotes}`.trim(),
         requirements,
         documents,
         riskProfile,
@@ -285,7 +296,42 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
         </div>
 
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
-          <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200"
+          >
+            {showAdvanced ? 'Скрыть дополнительные параметры' : 'Показать дополнительные параметры'}
+          </button>
+
+          {showAdvanced && (
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <select className="text-xs border rounded px-2 py-2" value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
+                <option value="ok">Камеры: допустимо</option>
+                <option value="not_ok">Камеры: нежелательно</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
+                <option value="no">Поездки: не нужны</option>
+                <option value="yes">Поездки: возможны</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
+                <option value="light">Дом: только легкая помощь</option>
+                <option value="none">Дом: не требуется</option>
+                <option value="extended">Дом: расширенная помощь</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
+                <option value="has_pets">Дома есть животные</option>
+                <option value="no_pets">Животных нет</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
+                <option value="sometimes">Ночные смены: иногда</option>
+                <option value="no">Ночные смены: не нужны</option>
+                <option value="yes">Ночные смены: да</option>
+              </select>
+            </div>
+          )}
+
+          <div className="mt-3 flex items-center justify-between gap-3">
             <div className="text-sm text-stone-600">
               {lang === 'ru' ? `Документы: ${documents.length}` : `Documents: ${documents.length}`}
             </div>

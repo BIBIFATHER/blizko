@@ -1,5 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import fs from 'fs';
+import path from 'path';
 
 type NotifyPayload = {
   event?: string;
@@ -10,9 +12,23 @@ type NotifyPayload = {
   status?: string;
 };
 
+function envWithLocalFallback(key: string): string | undefined {
+  const direct = process.env[key];
+  if (direct) return direct;
+
+  try {
+    const envPath = path.join(process.cwd(), '.env.local');
+    const raw = fs.readFileSync(envPath, 'utf8');
+    const m = raw.match(new RegExp(`^${key}=(.*)$`, 'm'));
+    return m?.[1]?.trim();
+  } catch {
+    return undefined;
+  }
+}
+
 async function sendResendEmail(to: string, subject: string, text: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL || 'Blizko <no-reply@blizko.app>';
+  const apiKey = envWithLocalFallback('RESEND_API_KEY');
+  const from = envWithLocalFallback('RESEND_FROM_EMAIL') || 'Blizko <no-reply@blizko.app>';
   if (!apiKey) {
     throw new Error('RESEND_API_KEY is missing');
   }
@@ -61,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let to = String(body.to || '').trim();
 
     if (!to && event.startsWith('admin.')) {
-      to = String(process.env.ADMIN_EMAIL || '').trim();
+      to = String(envWithLocalFallback('ADMIN_EMAIL') || '').trim();
     }
 
     if (!to) {

@@ -1,9 +1,25 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import fs from 'fs';
+import path from 'path';
+
+function envWithLocalFallback(key: string): string | undefined {
+  const direct = process.env[key];
+  if (direct) return direct;
+
+  try {
+    const envPath = path.join(process.cwd(), '.env.local');
+    const raw = fs.readFileSync(envPath, 'utf8');
+    const m = raw.match(new RegExp(`^${key}=(.*)$`, 'm'));
+    return m?.[1]?.trim();
+  } catch {
+    return undefined;
+  }
+}
 
 async function sendResendEmail(to: string, subject: string, text: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL || 'Blizko <no-reply@blizko.app>';
+  const apiKey = envWithLocalFallback('RESEND_API_KEY');
+  const from = envWithLocalFallback('RESEND_FROM_EMAIL') || 'Blizko <no-reply@blizko.app>';
   if (!apiKey) throw new Error('RESEND_API_KEY is missing');
 
   const controller = new AbortController();
@@ -33,10 +49,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (!['GET', 'POST'].includes(req.method || '')) return res.status(405).json({ error: 'Method not allowed' });
 
-  const to = String(req.query.to || req.body?.to || process.env.ADMIN_EMAIL || '').trim();
+  const to = String(req.query.to || req.body?.to || envWithLocalFallback('ADMIN_EMAIL') || '').trim();
   if (!to) return res.status(400).json({ ok: false, error: 'Recipient email is required (?to=...) or ADMIN_EMAIL' });
 
-  if (!process.env.RESEND_API_KEY) {
+  if (!envWithLocalFallback('RESEND_API_KEY')) {
     return res.status(200).json({ ok: false, skipped: true, error: 'RESEND_API_KEY is missing in environment' });
   }
 

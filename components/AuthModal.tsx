@@ -25,6 +25,31 @@ const normalizePhone = (raw: string) => {
 export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) => {
   const text = t[lang];
 
+  const mapAuthError = (err: any) => {
+    const raw = String(err?.message || err || '');
+    const lower = raw.toLowerCase();
+
+    if (lang !== 'ru') return raw;
+
+    if (lower.includes('email rate limit exceeded')) {
+      return 'Слишком много запросов на отправку письма. Подождите 5–15 минут и попробуйте снова.';
+    }
+    if (lower.includes('invalid login credentials')) {
+      return 'Неверные данные для входа.';
+    }
+    if (lower.includes('supabase client is not configured') || lower.includes('supabase не настроен')) {
+      return 'Сервис авторизации временно не настроен. Попробуйте позже.';
+    }
+    if (lower.includes('invalid') && lower.includes('otp')) {
+      return 'Неверный код подтверждения.';
+    }
+    if (lower.includes('expired')) {
+      return 'Срок действия ссылки или кода истёк. Запросите новый.';
+    }
+
+    return raw || 'Не удалось выполнить вход. Попробуйте ещё раз.';
+  };
+
   // Steps: 'method' -> 'otp' -> 'email_wait' -> 'success'
   const [step, setStep] = useState<'method' | 'otp' | 'email_wait' | 'success'>('method');
   const phoneAuthEnabled = String(import.meta.env.VITE_ENABLE_PHONE_AUTH || 'false') === 'true';
@@ -126,7 +151,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       }
       setTimer(30);
     } catch (err: any) {
-      setError(String(err?.message || err));
+      setError(mapAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -158,7 +183,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       }, 1200);
     } catch (err: any) {
       setOtp('');
-      setError(String(err?.message || err));
+      setError(mapAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -174,7 +199,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       await sendOtp();
       setTimer(30);
     } catch (err: any) {
-      setError(String(err?.message || err));
+      setError(mapAuthError(err));
     } finally {
       setLoading(false);
     }

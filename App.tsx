@@ -238,9 +238,11 @@ export default function App() {
         ) : (
           <button 
             onClick={() => setProfileOpen(true)}
-            className="bg-white/80 backdrop-blur-md border border-stone-200 p-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm"
+            className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
+            title={user.email || user.name}
           >
-            <UserIcon size={20} />
+            <UserIcon size={16} />
+            <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
           </button>
         )}
       </div>

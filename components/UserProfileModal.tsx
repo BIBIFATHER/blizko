@@ -131,6 +131,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
     return 'Новая';
   };
 
+  const parentStatusClass = (status?: ParentRequest['status']) => {
+    if (status === 'in_review') return 'bg-sky-100 text-sky-700';
+    if (status === 'approved') return 'bg-green-100 text-green-700';
+    if (status === 'rejected') return 'bg-red-100 text-red-700';
+    return 'bg-amber-100 text-amber-700';
+  };
+
   const parentRejectReasonLabel = (code?: string) => {
     if (code === 'profile_incomplete') return 'Анкета заполнена не полностью';
     if (code === 'docs_missing') return 'Не хватает документов';
@@ -393,13 +400,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                               </div>
                               <div>
                                 <div className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                                  {parentStatusLabel(req.status)}
+                                  <span className={`text-[11px] px-2 py-0.5 rounded-full ${parentStatusClass(req.status)}`}>
+                                    {parentStatusLabel(req.status)}
+                                  </span>
                                   {hasNewModerationUpdate(req) && (
                                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">Новое</span>
                                   )}
                                 </div>
                                 <div className="text-xs text-stone-400">
-                                  ID: {req.id.slice(0, 8)} • {new Date(req.createdAt).toLocaleDateString()}
+                                  Создана: {new Date(req.createdAt).toLocaleDateString()} • #{req.id.slice(0, 6)}
                                 </div>
                                 {req.status === 'rejected' && (
                                   <div className="mt-1 text-[11px] text-red-600 max-w-[220px]">

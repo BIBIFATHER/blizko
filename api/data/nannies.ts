@@ -24,7 +24,35 @@ function env() {
   return {
     url: envWithLocalFallback('SUPABASE_URL'),
     key: envWithLocalFallback('SUPABASE_SERVICE_ROLE_KEY'),
+    anon: envWithLocalFallback('SUPABASE_ANON_KEY'),
+    admins: envWithLocalFallback('ADMIN_EMAILS') || envWithLocalFallback('ADMIN_EMAIL') || '',
   };
+}
+
+async function requireAdmin(req: VercelRequest, url: string, anonKey: string, adminsRaw: string): Promise<boolean> {
+  const auth = String(req.headers.authorization || '');
+  if (!auth.toLowerCase().startsWith('bearer ')) return false;
+  const token = auth.slice(7).trim();
+  if (!token) return false;
+
+  const admins = adminsRaw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+  if (!admins.length) return false;
+
+  try {
+    const r = await fetch(`${url}/auth/v1/user`, {
+      method: 'GET',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!r.ok) return false;
+    const u = await r.json().catch(() => ({}));
+    const email = String(u?.email || '').toLowerCase();
+    return !!email && admins.includes(email);
+  } catch {
+    return false;
+  }
 }
 
 async function sb(path: string, init: RequestInit, url: string, key: string) {
@@ -56,8 +84,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(204).end();
 
-  const { url, key } = env();
-  if (!url || !key) return json(res, 500, { error: 'Supabase is not configured' });
+  const { url, key, anon, admins } = env();
+  if (!url || !key || !anon) return json(res, 500, { error: 'Supabase is not configured' });
+
+  const isAdmin = await requireAdmin(req, url, anon, admins);
+  if (!isAdmin) return json(res, 403, { error: 'Admin access required' });
 
   try {
     if (req.method === 'GET') {

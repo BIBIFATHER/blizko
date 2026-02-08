@@ -20,6 +20,7 @@ import { notifyAdminNewRequest } from './services/notifications';
 
 export default function App() {
   const [view, setView] = useState<ViewState>('home');
+  const adminEmails = String(import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map((s: string) => s.trim().toLowerCase()).filter(Boolean);
   const [lang, setLang] = useState<Language>('ru');
   const [isAdminOpen, setAdminOpen] = useState(false);
   const [result, setResult] = useState<SubmissionResult | null>(null);
@@ -293,12 +294,14 @@ export default function App() {
       <footer className="py-6 text-center text-stone-400 text-xs fixed bottom-0 bottom-safe left-0 right-0 pointer-events-none">
         <div className="max-w-md mx-auto relative pointer-events-auto">
           <p>© 2024 Blizko</p>
-          <button 
-            onClick={() => setAdminOpen(true)} 
-            className="mt-2 opacity-30 hover:opacity-100 transition-opacity"
-          >
-            Admin
-          </button>
+          {user?.email && adminEmails.includes(user.email.toLowerCase()) && (
+            <button 
+              onClick={() => setAdminOpen(true)} 
+              className="mt-2 opacity-30 hover:opacity-100 transition-opacity"
+            >
+              Admin
+            </button>
+          )}
         </div>
       </footer>
 
@@ -313,7 +316,7 @@ export default function App() {
       />
 
       {/* Overlays / Modals */}
-      {isAdminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+      {isAdminOpen && user?.email && adminEmails.includes(user.email.toLowerCase()) && <AdminPanel onClose={() => setAdminOpen(false)} />}
       
       {isAuthOpen && (
         <AuthModal 

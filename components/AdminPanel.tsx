@@ -8,6 +8,7 @@ import {
 import { ParentRequest, NannyProfile, DocumentVerification } from "../types";
 import { Button, Card } from "./UI";
 import { notifyUserStatusChanged } from "../services/notifications";
+import { supabase } from "../services/supabase";
 import {
   Trash2,
   X,
@@ -43,10 +44,13 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [previewDoc, setPreviewDoc] = useState<{ url: string; name?: string } | null>(null);
 
   const loadData = async () => {
-    // Админ-режим: читаем через server API (service role), чтобы видеть все анкеты даже без входа
+    const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // Админ-режим: читаем через server API (service role), но только для авторизованного администратора
     const [pr, nr] = await Promise.all([
-      fetch('/api/data/parents').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-      fetch('/api/data/nannies').then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch('/api/data/parents', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch('/api/data/nannies', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     ]);
 
     const p = Array.isArray(pr?.items) ? pr.items : [];

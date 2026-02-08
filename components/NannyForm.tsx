@@ -568,6 +568,43 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           onChange={setSkills}
         />
 
+        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200"
+          >
+            {showAdvanced ? 'Скрыть дополнительные параметры' : 'Показать дополнительные параметры'}
+          </button>
+
+          {showAdvanced && (
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <select className="text-xs border rounded px-2 py-2" value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
+                <option value="ok">Камеры: готова работать</option>
+                <option value="not_ok">Камеры: нежелательно</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
+                <option value="yes">Поездки/сопровождение: готова</option>
+                <option value="no">Поездки/сопровождение: не готова</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
+                <option value="light">Дом: лёгкая помощь</option>
+                <option value="none">Дом: без помощи</option>
+                <option value="extended">Дом: расширенная помощь</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
+                <option value="ok">Животные: ок</option>
+                <option value="allergy">Животные: аллергия/нежелательно</option>
+              </select>
+              <select className="text-xs border rounded px-2 py-2" value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
+                <option value="sometimes">Ночные смены: иногда</option>
+                <option value="yes">Ночные смены: да</option>
+                <option value="no">Ночные смены: нет</option>
+              </select>
+            </div>
+          )}
+        </div>
+
         <Textarea 
           label={text.aboutLabel}
           placeholder={lang === 'ru' ? "Люблю детей, добрая..." : "I love children, kind..."}
@@ -619,43 +656,6 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
             <option value="pause_then_discuss">Беру паузу и возвращаюсь к диалогу</option>
             <option value="avoid">Стараюсь избегать обсуждения</option>
           </select>
-        </div>
-
-        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
-          <button
-            type="button"
-            onClick={() => setShowAdvanced((v) => !v)}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200"
-          >
-            {showAdvanced ? 'Скрыть дополнительные параметры' : 'Показать дополнительные параметры'}
-          </button>
-
-          {showAdvanced && (
-            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <select className="text-xs border rounded px-2 py-2" value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
-                <option value="ok">Камеры: готова работать</option>
-                <option value="not_ok">Камеры: нежелательно</option>
-              </select>
-              <select className="text-xs border rounded px-2 py-2" value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
-                <option value="yes">Поездки/сопровождение: готова</option>
-                <option value="no">Поездки/сопровождение: не готова</option>
-              </select>
-              <select className="text-xs border rounded px-2 py-2" value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
-                <option value="light">Дом: лёгкая помощь</option>
-                <option value="none">Дом: без помощи</option>
-                <option value="extended">Дом: расширенная помощь</option>
-              </select>
-              <select className="text-xs border rounded px-2 py-2" value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
-                <option value="ok">Животные: ок</option>
-                <option value="allergy">Животные: аллергия/нежелательно</option>
-              </select>
-              <select className="text-xs border rounded px-2 py-2" value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
-                <option value="sometimes">Ночные смены: иногда</option>
-                <option value="yes">Ночные смены: да</option>
-                <option value="no">Ночные смены: нет</option>
-              </select>
-            </div>
-          )}
         </div>
 
         <Button type="submit" isLoading={loading} className="mt-8">

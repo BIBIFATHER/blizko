@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input } from './UI';
-import { X, Baby, Briefcase, Phone, Mail, ArrowRight, CheckCircle, Lock } from 'lucide-react';
+import { X, Baby, Briefcase, Phone, ArrowRight, CheckCircle, Lock } from 'lucide-react';
 import { Language, User } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { supabase } from '../services/supabase';
@@ -52,8 +52,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
   // Steps: 'method' -> 'otp' -> 'email_wait' -> 'success'
   const [step, setStep] = useState<'method' | 'otp' | 'email_wait' | 'success'>('method');
-  const phoneAuthEnabled = String(import.meta.env.VITE_ENABLE_PHONE_AUTH || 'false') === 'true';
-  const [method, setMethod] = useState<'phone' | 'email'>(phoneAuthEnabled ? 'phone' : 'email');
+  const phoneAuthEnabled = true;
+  const [method, setMethod] = useState<'phone' | 'email'>('phone');
   const [role, setRole] = useState<'parent' | 'nanny'>('parent');
 
   // Inputs
@@ -283,39 +283,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               </div>
 
               <div className="flex bg-stone-100 p-1 rounded-xl mb-4">
-                {phoneAuthEnabled && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMethod('phone');
-                      setContactValue('');
-                      setError('');
-                    }}
-                    className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${
-                      method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                    }`}
-                  >
-                    <Phone size={14} /> Phone
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMethod('email');
-                    setContactValue('');
-                    setError('');
-                  }}
-                  className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${
-                    method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                  }`}
-                >
-                  <Mail size={14} /> Email
-                </button>
+                <div className="flex-1 py-2 text-xs font-bold uppercase rounded-lg bg-white text-stone-900 shadow-sm flex items-center justify-center gap-2">
+                  <Phone size={14} /> Phone
+                </div>
               </div>
-
-              {!phoneAuthEnabled && (
-                <p className="text-[11px] text-stone-500 -mt-2">{lang === 'ru' ? 'Вход по телефону скоро будет доступен.' : 'Phone auth will be available soon.'}</p>
-              )}
 
               <Input
                 label={method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'}
@@ -337,9 +308,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               {error && <p className="text-xs text-red-500">{error}</p>}
 
               <Button type="submit" isLoading={loading} className="mt-4">
-                {method === 'email'
-                  ? (lang === 'ru' ? 'Получить ссылку' : 'Get login link')
-                  : (lang === 'ru' ? 'Получить код' : 'Get Code')}
+                {lang === 'ru' ? 'Получить код' : 'Get Code'}
                 <ArrowRight size={18} />
               </Button>
             </form>

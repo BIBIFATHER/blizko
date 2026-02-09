@@ -52,7 +52,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
   // Steps: 'method' -> 'otp' -> 'email_wait' -> 'success'
   const [step, setStep] = useState<'method' | 'otp' | 'email_wait' | 'success'>('method');
-  const phoneAuthEnabled = String(import.meta.env.VITE_ENABLE_PHONE_AUTH || 'false') === 'true';
+  const phoneAuthEnabled = String(import.meta.env.VITE_ENABLE_PHONE_AUTH || 'true') === 'true';
   const [method, setMethod] = useState<'phone' | 'email'>(phoneAuthEnabled ? 'phone' : 'email');
   const [role, setRole] = useState<'parent' | 'nanny'>('parent');
 

@@ -284,7 +284,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     URL.revokeObjectURL(url);
   };
 
-  const exportNanniesOpsCsv = () => {
+  const getNanniesOpsMatrix = () => {
     const header = [
       'created_at',
       'candidate_name',
@@ -323,7 +323,12 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       r.status === 'READY_FOR_MATCH' ? 'TRUE' : 'FALSE',
     ]);
 
-    const csv = [header, ...rows].map((row) => row.map(escapeCsv).join(',')).join('\n');
+    return [header, ...rows];
+  };
+
+  const exportNanniesOpsCsv = () => {
+    const matrix = getNanniesOpsMatrix();
+    const csv = matrix.map((row) => row.map(escapeCsv).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -333,6 +338,17 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  };
+
+  const copyNanniesOpsForTable = async () => {
+    const matrix = getNanniesOpsMatrix();
+    const tsv = matrix.map((row) => row.map((v) => String(v ?? '')).join('\t')).join('\n');
+    try {
+      await navigator.clipboard.writeText(tsv);
+      alert('Скопировано. Вставьте в Google Sheets в ячейку A1.');
+    } catch {
+      alert('Не удалось скопировать автоматически. Скачайте CSV и импортируйте в таблицу.');
+    }
   };
 
   const parentStatusLabel = (status?: ParentRequest['status']) => {
@@ -696,6 +712,12 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   Анкеты нянь ({filteredNannies.length})
                 </h3>
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={copyNanniesOpsForTable}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200"
+                  >
+                    Скопировать для таблицы
+                  </button>
                   <button
                     onClick={exportNanniesOpsCsv}
                     className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200"

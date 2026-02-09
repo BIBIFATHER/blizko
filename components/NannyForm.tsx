@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Textarea, ChipGroup, Card } from './UI';
 import { NannyProfile, Language, SoftSkillsProfile, DocumentVerification, NormalizedResume } from '../types';
-import { ArrowLeft, ShieldCheck, Check, BrainCircuit, Video, PlayCircle, FileText, Upload, Camera, MapPin } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Check, BrainCircuit, FileText, Upload, Camera, MapPin } from 'lucide-react';
 import { GosUslugiModal } from './GosUslugiModal';
 import { BehavioralTestModal } from './BehavioralTestModal';
-import { VideoRecorderModal } from './VideoRecorderModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { NannyOfferModal } from './NannyOfferModal';
 import { t } from '../src/core/i18n/translations';
@@ -23,7 +22,6 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
   // Modals
   const [showGosUslugi, setShowGosUslugi] = useState(false);
   const [showAssessment, setShowAssessment] = useState(false);
-  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const [showDocUpload, setShowDocUpload] = useState(false);
   const [showOffer, setShowOffer] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
@@ -45,12 +43,13 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
   
   // Media States
   const [photo, setPhoto] = useState<string | undefined>(undefined);
-  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined);
 
   const [formData, setFormData] = useState({
     name: '',
     city: '',
     experience: '',
+    schedule: '',
+    expectedRate: '',
     about: '',
     contact: ''
   });
@@ -71,13 +70,14 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         name: initialData.name || '',
         city: initialData.city || '',
         experience: initialData.experience || '',
+        schedule: initialData.schedule || '',
+        expectedRate: initialData.expectedRate || '',
         about: initialData.about || '',
         contact: initialData.contact || ''
       });
       setChildAges(initialData.childAges || []);
       setSkills(initialData.skills || []);
       setPhoto(initialData.photo);
-      setVideoUrl(initialData.video);
       setIsVerified(initialData.isVerified);
       setSoftSkills(initialData.softSkills);
       setDocuments(initialData.documents || []);
@@ -91,8 +91,17 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     }
   }, [initialData]);
 
+  const hasResumeUploaded = documents.some((d) => d.type === 'resume' && !!d.fileDataUrl);
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!hasResumeUploaded) {
+      alert(lang === 'ru' ? 'Загрузите резюме (обязательное поле *).' : 'Please upload a resume (required field *).');
+      setShowDocUpload(true);
+      return;
+    }
+
     if (!initialData) {
       // Show offer only for new registrations
       setShowOffer(true);
@@ -116,8 +125,6 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         skills,
         isVerified,
         softSkills,
-        video: videoUrl,
-        videoIntro: !!videoUrl,
         documents,
         resumeNormalized,
         riskProfile,
@@ -143,12 +150,6 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     setSoftSkills(result);
     setShowAssessment(false);
   };
-
-  const handleVideoSaved = (url: string) => {
-    setVideoUrl(url);
-    setShowVideoRecorder(false);
-  };
-
   const handleDocumentVerified = (doc: DocumentVerification) => {
     setDocuments(prev => [...prev, doc]);
 
@@ -262,6 +263,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
+        <div className="text-xs text-stone-500">{lang === 'ru' ? 'Поля, отмеченные *, обязательны' : 'Fields marked with * are required'}</div>
         
         {/* 0. Photo Upload Block */}
         <div className="flex justify-center mb-6">
@@ -327,7 +329,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-stone-800 mb-1">
-                {text.docsTitle}
+                {text.docsTitle} *
               </h3>
               
               {documents.length === 0 && (
@@ -452,49 +454,10 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           </div>
         </Card>
 
-        {/* 4. Video Interview Block */}
-        <Card className={`transition-all duration-300 ${videoUrl ? 'bg-purple-50 border-purple-200' : 'bg-white'}`}>
-          <div className="flex items-start gap-4">
-            <div className={`p-3 rounded-full flex-shrink-0 ${videoUrl ? 'bg-purple-200 text-purple-700' : 'bg-stone-100 text-stone-400'}`}>
-              <Video size={24} />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-stone-800 mb-1">
-                {text.videoTitle}
-              </h3>
-              
-              {!videoUrl && (
-                <>
-                  <p className="text-sm text-stone-500 mb-3">{text.videoDesc}</p>
-                  <button
-                    type="button"
-                    onClick={() => setShowVideoRecorder(true)}
-                    className="text-sm font-medium text-purple-700 bg-purple-100 px-4 py-2 rounded-lg hover:bg-purple-200 transition-colors flex items-center gap-2"
-                  >
-                    <PlayCircle size={16} /> {text.recordVideo}
-                  </button>
-                </>
-              )}
-
-              {videoUrl && (
-                <div className="animate-fade-in">
-                  <div className="flex items-center gap-2 text-sm text-purple-700 font-medium mb-2">
-                    <Check size={16} /> {text.videoRecorded}
-                  </div>
-                  <div className="bg-white/60 p-2 rounded-lg flex items-center gap-3 border border-purple-100">
-                     <div className="w-10 h-10 bg-stone-900 rounded flex items-center justify-center">
-                       <PlayCircle size={16} className="text-white" />
-                     </div>
-                     <span className="text-xs text-stone-500">video_intro.mp4 (00:30)</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </Card>
+        {/* 4. Video Interview Block (temporarily disabled) */}
 
         <Input 
-          label={text.nameLabel}
+          label={`${text.nameLabel} *`}
           placeholder={lang === 'ru' ? "Мария Иванова" : "Maria Ivanova"}
           value={formData.name}
           onChange={e => setFormData({...formData, name: e.target.value})}
@@ -503,7 +466,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
 
         <div className="relative">
           <Input 
-            label={text.cityLabel}
+            label={`${text.cityLabel} *`}
             placeholder={lang === 'ru' ? "Москва, ЮАО" : "London, Soho"}
             value={formData.city}
             onChange={e => {
@@ -545,11 +508,27 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         </div>
 
         <Input 
-          label={text.expLabel}
+          label={`${text.expLabel} *`}
           type="number"
           placeholder="5" 
           value={formData.experience}
           onChange={e => setFormData({...formData, experience: e.target.value})}
+          required
+        />
+
+        <Input
+          label={lang === 'ru' ? 'График работы *' : 'Work schedule *'}
+          placeholder={lang === 'ru' ? '5/2, 09:00–18:00' : 'Mon-Fri, 09:00-18:00'}
+          value={formData.schedule}
+          onChange={e => setFormData({...formData, schedule: e.target.value})}
+          required
+        />
+
+        <Input
+          label={lang === 'ru' ? 'Желаемая ставка *' : 'Expected rate *'}
+          placeholder={lang === 'ru' ? '700 ₽/час или 120 000 ₽/мес' : '€15/hour or $2500/month'}
+          value={formData.expectedRate}
+          onChange={e => setFormData({...formData, expectedRate: e.target.value})}
           required
         />
 
@@ -596,7 +575,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         </div>
 
         <Textarea 
-          label={text.aboutLabel}
+          label={`${text.aboutLabel} *`}
           placeholder={lang === 'ru' ? "Люблю детей, добрая..." : "I love children, kind..."}
           value={formData.about}
           onChange={e => setFormData({...formData, about: e.target.value})}
@@ -604,7 +583,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         />
 
         <Input 
-          label={text.contactLabel}
+          label={`${text.contactLabel} *`}
           placeholder="+7 900 000 00 00" 
           value={formData.contact}
           onChange={e => setFormData({...formData, contact: e.target.value})}
@@ -682,15 +661,6 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           }}
         />
       )}
-
-      {showVideoRecorder && (
-        <VideoRecorderModal
-          onClose={() => setShowVideoRecorder(false)}
-          onSave={handleVideoSaved}
-          lang={lang}
-        />
-      )}
-
       {showDocUpload && (
         <DocumentUploadModal
           onClose={() => setShowDocUpload(false)}

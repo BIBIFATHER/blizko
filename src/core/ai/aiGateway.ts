@@ -14,6 +14,7 @@ export type AIRequestOptions = {
 
 async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promise<string> {
   const prompt = [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
+  if (!prompt.trim()) return '';
 
   const res = await fetch('/api/ai', {
     method: 'POST',
@@ -46,6 +47,8 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
 }
 
 export async function aiText(prompt: string, options?: AIRequestOptions): Promise<string> {
+  if (!prompt?.trim()) return '';
+
   const messages: AIMessage[] = [];
 
   if (options?.systemPrompt) {

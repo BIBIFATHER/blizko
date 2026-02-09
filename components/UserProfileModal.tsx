@@ -101,6 +101,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
       const data = await r.json().catch(() => ({}));
       if (!r.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить код');
       setPhoneStep('code');
+      if (data?.demoCode) {
+        setPhoneVerifyError(`Тестовый код: ${data.demoCode}`);
+      }
     } catch (e: any) {
       setPhoneVerifyError(String(e?.message || e));
     } finally {
@@ -355,6 +358,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                   </div>
                   
                   <h3 className="text-xl font-bold text-stone-800">{user.name || 'User'}</h3>
+                  {user.id && (
+                    <div className="mt-1 inline-flex items-center gap-1.5 bg-stone-100 text-stone-700 px-2 py-1 rounded-md text-[11px] font-mono" title="User ID">
+                      ID: {user.id}
+                    </div>
+                  )}
                   
                   {/* Verified Contact Info */}
                   <div className="flex flex-col items-center gap-1.5 mt-2">

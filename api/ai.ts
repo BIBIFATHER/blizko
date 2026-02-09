@@ -113,7 +113,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const body = (req.body || {}) as BodyLike;
   const userContent = extractUserContent(body);
-  if (!userContent) return res.status(400).json({ error: 'Empty prompt' });
+  if (!userContent) {
+    return res.status(200).json({ text: '' });
+  }
 
   const models = getModels();
   let lastStatus = 500;

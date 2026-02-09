@@ -66,7 +66,7 @@ export const NannyOfferModal: React.FC<NannyOfferModalProps> = ({ onClose, onAcc
         <div className="p-4 bg-stone-50 border-t border-stone-100 space-y-3">
           <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
             <Checkbox 
-              label={text.offerAccept}
+              label={`${text.offerAccept} *`}
               checked={termsAccepted}
               onChange={() => {
                 setTermsAccepted(!termsAccepted);
@@ -77,7 +77,7 @@ export const NannyOfferModal: React.FC<NannyOfferModalProps> = ({ onClose, onAcc
           
           <div className="bg-stone-100 border border-stone-200 rounded-xl p-3">
             <Checkbox 
-              label={text.offerPrivacyAccept}
+              label={`${text.offerPrivacyAccept} *`}
               checked={privacyAccepted}
               onChange={() => {
                 setPrivacyAccepted(!privacyAccepted);

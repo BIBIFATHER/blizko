@@ -300,7 +300,7 @@ export default function App() {
       {/* Footer Area */}
       <footer className="py-6 text-center text-stone-400 text-xs fixed bottom-0 bottom-safe left-0 right-0 pointer-events-none">
         <div className="max-w-md mx-auto relative pointer-events-auto">
-          <p>© 2024 Blizko</p>
+          <p>© 2026 Blizko</p>
           {user?.email && adminEmails.includes(user.email.toLowerCase()) && (
             <button 
               onClick={() => setAdminOpen(true)} 

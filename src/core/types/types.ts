@@ -93,6 +93,8 @@ export interface NannyProfile {
   photo?: string; // Base64 or URL
   city: string;
   experience: string;
+  schedule?: string;
+  expectedRate?: string;
   childAges: string[];
   skills: string[];
   about: string;

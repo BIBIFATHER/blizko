@@ -94,15 +94,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
   }, [role, name, lang, onLogin, onClose]);
 
   const sendOtp = async () => {
-    if (!supabase) {
-      throw new Error(lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured');
+    if (method === 'phone') {
+      if (!contactValue.trim()) {
+        throw new Error(lang === 'ru' ? 'Введите номер телефона' : 'Enter phone number');
+      }
+      const r = await fetch('/api/auth/send-otp-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: contactValue }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить код');
+      if (data?.demoCode) {
+        setError(`Тестовый код: ${data.demoCode}`);
+      }
+      return;
     }
 
-    if (method === 'phone') {
-      const phone = normalizePhone(contactValue);
-      const { error } = await supabase.auth.signInWithOtp({ phone });
-      if (error) throw new Error(error.message);
-      return;
+    if (!supabase) {
+      throw new Error(lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured');
     }
 
     const email = contactValue.trim();
@@ -111,19 +121,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
   };
 
   const verifyOtp = async () => {
-    if (!supabase) {
-      throw new Error(lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured');
+    if (method === 'phone') {
+      if (!contactValue.trim() || !otp.trim()) {
+        throw new Error(lang === 'ru' ? 'Введите номер и код' : 'Enter phone and code');
+      }
+      const r = await fetch('/api/auth/verify-otp-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: contactValue, code: otp }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || !data?.ok) throw new Error(data?.error || 'Неверный код');
+
+      onLogin({
+        id: `phone:${data.phone || normalizePhone(contactValue)}`,
+        role,
+        name: name || (lang === 'ru' ? 'Пользователь' : 'User'),
+        phone: data.phone || normalizePhone(contactValue),
+        email: undefined,
+      });
+      setStep('success');
+      setTimeout(() => onClose(), 600);
+      return;
     }
 
-    if (method === 'phone') {
-      const phone = normalizePhone(contactValue);
-      const { error } = await supabase.auth.verifyOtp({
-        phone,
-        token: otp,
-        type: 'sms',
-      });
-      if (error) throw new Error(error.message);
-      return;
+    if (!supabase) {
+      throw new Error(lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured');
     }
 
     const email = contactValue.trim();

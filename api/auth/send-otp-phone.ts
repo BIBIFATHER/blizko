@@ -50,9 +50,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const email = process.env.SMSAERO_EMAIL;
   const sign = process.env.SMSAERO_SIGN || 'SMS Aero';
 
-  if (!apiKey || !email) {
-    return json(res, 500, { ok: false, error: 'SMSAero is not configured (SMSAERO_EMAIL / SMSAERO_API_KEY)' });
-  }
+  const isProd = process.env.NODE_ENV === 'production';
+  const smsConfigured = Boolean(apiKey && email);
 
   const phone = normalizePhone(req.body?.phone);
   if (!isValidE164(phone)) return json(res, 400, { ok: false, error: 'Некорректный номер телефона' });
@@ -67,6 +66,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const code = String(Math.floor(100000 + Math.random() * 900000));
   const text = `Код Blizko: ${code}. Никому не сообщайте код.`;
+
+  if (!smsConfigured) {
+    if (isProd) {
+      return json(res, 500, { ok: false, error: 'SMS-сервис временно не настроен' });
+    }
+
+    otpStore.set(phone, {
+      code,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+      attempts: 0,
+      sentAt: Date.now(),
+    });
+
+    return json(res, 200, { ok: true, expiresInSec: 300, demoCode: code, demo: true });
+  }
 
   try {
     const smsRes = await fetch('https://gate.smsaero.ru/v2/sms/send', {

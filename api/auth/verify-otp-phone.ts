@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getServiceSupabase } from './_supabase';
+import { setCors } from '../_cors';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
 
@@ -15,9 +16,7 @@ function normalizePhone(raw: string): string {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return json(res, 405, { ok: false, error: 'Method not allowed' });
 

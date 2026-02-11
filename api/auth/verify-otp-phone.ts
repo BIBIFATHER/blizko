@@ -1,14 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getServiceSupabase } from './_supabase';
 
-type OtpEntry = { code: string; expiresAt: number; attempts: number; sentAt: number };
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __blizkoPhoneOtp: Map<string, OtpEntry> | undefined;
-}
-
-const otpStore = global.__blizkoPhoneOtp || (global.__blizkoPhoneOtp = new Map<string, OtpEntry>());
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
 
 function normalizePhone(raw: string): string {
@@ -35,24 +28,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return json(res, 400, { ok: false, error: 'Некорректные данные' });
   }
 
-  const entry = otpStore.get(phone);
+  const supabase = getServiceSupabase();
+  if (!supabase) return json(res, 500, { ok: false, error: 'OTP storage is not configured' });
+
+  const { data: entry, error } = await supabase
+    .from('phone_otps')
+    .select('phone,code,expires_at,attempts')
+    .eq('phone', phone)
+    .maybeSingle();
+
+  if (error) return json(res, 500, { ok: false, error: 'Failed to load OTP state' });
   if (!entry) return json(res, 400, { ok: false, error: 'Код не найден. Запросите новый.' });
-  if (Date.now() > entry.expiresAt) {
-    otpStore.delete(phone);
+
+  const expiresAt = new Date(entry.expires_at).getTime();
+  if (Date.now() > expiresAt) {
+    await supabase.from('phone_otps').delete().eq('phone', phone);
     return json(res, 400, { ok: false, error: 'Срок действия кода истёк. Запросите новый.' });
   }
 
-  entry.attempts += 1;
-  if (entry.attempts > 5) {
-    otpStore.delete(phone);
+  const nextAttempts = Number(entry.attempts || 0) + 1;
+  if (nextAttempts > 5) {
+    await supabase.from('phone_otps').delete().eq('phone', phone);
     return json(res, 429, { ok: false, error: 'Слишком много попыток. Запросите новый код.' });
   }
 
   if (entry.code !== code) {
-    otpStore.set(phone, entry);
+    await supabase.from('phone_otps').update({ attempts: nextAttempts }).eq('phone', phone);
     return json(res, 400, { ok: false, error: 'Неверный код' });
   }
 
-  otpStore.delete(phone);
+  await supabase.from('phone_otps').delete().eq('phone', phone);
   return json(res, 200, { ok: true, phone });
 }

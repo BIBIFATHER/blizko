@@ -1,17 +1,6 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-type OtpEntry = { code: string; expiresAt: number; attempts: number; sentAt: number };
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __blizkoPhoneOtp: Map<string, OtpEntry> | undefined;
-  // eslint-disable-next-line no-var
-  var __blizkoPhoneOtpRate: Map<string, number[]> | undefined;
-}
-
-const otpStore = global.__blizkoPhoneOtp || (global.__blizkoPhoneOtp = new Map<string, OtpEntry>());
-const rateStore = global.__blizkoPhoneOtpRate || (global.__blizkoPhoneOtpRate = new Map<string, number[]>());
+import { getServiceSupabase } from './_supabase';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
 
@@ -29,14 +18,25 @@ function isValidE164(phone: string): boolean {
   return /^\+[1-9]\d{7,14}$/.test(phone);
 }
 
-function checkRateLimit(phone: string): boolean {
-  const now = Date.now();
-  const arr = rateStore.get(phone) || [];
-  const recent = arr.filter((t) => now - t < 60 * 60 * 1000); // 1h
-  if (recent.length >= 5) return false;
-  recent.push(now);
-  rateStore.set(phone, recent);
-  return true;
+type OtpRow = {
+  phone: string;
+  code: string;
+  expires_at: string;
+  attempts: number;
+  sent_at: string;
+  window_start: string;
+  send_count: number;
+};
+
+const HOUR_MS = 60 * 60 * 1000;
+
+function canSend(now: number, row?: OtpRow | null): { ok: boolean; windowStart: number; sendCount: number } {
+  if (!row) return { ok: true, windowStart: now, sendCount: 0 };
+  const windowStart = row.window_start ? new Date(row.window_start).getTime() : now;
+  const sendCount = Number(row.send_count || 0);
+  if (now - windowStart > HOUR_MS) return { ok: true, windowStart: now, sendCount: 0 };
+  if (sendCount >= 5) return { ok: false, windowStart, sendCount };
+  return { ok: true, windowStart, sendCount };
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -56,11 +56,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const phone = normalizePhone(req.body?.phone);
   if (!isValidE164(phone)) return json(res, 400, { ok: false, error: 'Некорректный номер телефона' });
 
-  const existing = otpStore.get(phone);
-  if (existing && Date.now() - existing.sentAt < 60 * 1000) {
+  const supabase = getServiceSupabase();
+  if (!supabase) return json(res, 500, { ok: false, error: 'OTP storage is not configured' });
+
+  const { data: existing, error: existingError } = await supabase
+    .from('phone_otps')
+    .select('phone,code,expires_at,attempts,sent_at,window_start,send_count')
+    .eq('phone', phone)
+    .maybeSingle();
+
+  if (existingError) {
+    return json(res, 500, { ok: false, error: 'Failed to load OTP state' });
+  }
+
+  if (existing?.sent_at && Date.now() - new Date(existing.sent_at).getTime() < 60 * 1000) {
     return json(res, 429, { ok: false, error: 'Повторная отправка возможна через 60 секунд' });
   }
-  if (!checkRateLimit(phone)) {
+
+  const rate = canSend(Date.now(), existing as OtpRow | null);
+  if (!rate.ok) {
     return json(res, 429, { ok: false, error: 'Слишком много попыток. Попробуйте позже.' });
   }
 
@@ -72,12 +86,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return json(res, 500, { ok: false, error: 'SMS-сервис временно не настроен' });
     }
 
-    otpStore.set(phone, {
-      code,
-      expiresAt: Date.now() + 5 * 60 * 1000,
-      attempts: 0,
-      sentAt: Date.now(),
-    });
+    const now = new Date();
+    const { error } = await supabase.from('phone_otps').upsert(
+      {
+        phone,
+        code,
+        expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+        attempts: 0,
+        sent_at: now.toISOString(),
+        window_start: new Date(rate.windowStart).toISOString(),
+        send_count: rate.sendCount + 1,
+      },
+      { onConflict: 'phone' }
+    );
+
+    if (error) return json(res, 500, { ok: false, error: 'Failed to store OTP' });
 
     return json(res, 200, { ok: true, expiresInSec: 300, demoCode: code, demo: true });
   }
@@ -100,12 +123,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    otpStore.set(phone, {
-      code,
-      expiresAt: Date.now() + 5 * 60 * 1000,
-      attempts: 0,
-      sentAt: Date.now(),
-    });
+    const now = new Date();
+    const { error } = await supabase.from('phone_otps').upsert(
+      {
+        phone,
+        code,
+        expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+        attempts: 0,
+        sent_at: now.toISOString(),
+        window_start: new Date(rate.windowStart).toISOString(),
+        send_count: rate.sendCount + 1,
+      },
+      { onConflict: 'phone' }
+    );
+
+    if (error) return json(res, 500, { ok: false, error: 'Failed to store OTP' });
 
     return json(res, 200, { ok: true, expiresInSec: 300 });
   } catch (e: any) {

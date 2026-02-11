@@ -9,7 +9,7 @@
 ## Server
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (required for server-side OTP storage)
 - `NOTIFY_TOKEN` (optional, if set then /api/notify требует header `x-notify-token`)
 
 ## Notifications (Resend)

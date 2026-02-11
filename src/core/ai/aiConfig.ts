@@ -2,12 +2,13 @@
 
 export const AI_TEXT_MODEL = 'models/gemini-2.5-flash';
 
-export const GEMINI_API_KEY: string | undefined = import.meta.env.VITE_GEMINI_API_KEY;
+// В клиенте ключей быть не должно. Управляем флагом доступности AI через env.
+export const AI_CLIENT_ENABLED = String(import.meta.env.VITE_AI_ENABLED ?? 'true') === 'true';
 
 // Флаг "AI настроен" — чтобы UI мог показывать fallback без падения
-export const IS_AI_CONFIGURED = Boolean(GEMINI_API_KEY && GEMINI_API_KEY.trim().length > 0);
+export const IS_AI_CONFIGURED = AI_CLIENT_ENABLED;
 
 // Если вдруг где-то нужно отображать статус
 export const AI_STATUS_MESSAGE = IS_AI_CONFIGURED
-  ? 'AI configured'
-  : 'AI is not configured (VITE_GEMINI_API_KEY is missing)';
+  ? 'AI configured (server-side)'
+  : 'AI is disabled (VITE_AI_ENABLED=false)';

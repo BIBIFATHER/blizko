@@ -68,6 +68,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  const requiredToken = process.env.NOTIFY_TOKEN;
+  if (requiredToken) {
+    const incoming = String(req.headers['x-notify-token'] || '').trim();
+    if (!incoming || incoming !== requiredToken) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+
   const body = (req.body || {}) as NotifyPayload;
   const event = String(body.event || 'unknown');
   const subject = String(body.subject || 'Blizko уведомление');

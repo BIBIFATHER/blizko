@@ -3,7 +3,7 @@
 _Learn about the person you're helping. Update this as you go._
 
 - **Name:** Антон
-- **What to call them:**
+- **What to call them:** как друг
 - **Pronouns:** _(optional)_
 - **Timezone:** Europe/Moscow
 - **Notes:**

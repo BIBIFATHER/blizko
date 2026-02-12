@@ -5,6 +5,7 @@
 - `VITE_SUPABASE_ANON_KEY`
 - `VITE_AI_ENABLED` (optional, default true)
 - `VITE_NOTIFY_TOKEN` (optional, **not secret**, if you want to protect /api/notify)
+- `VITE_SENTRY_DSN` (Sentry client DSN)
 
 ## Server
 - `SUPABASE_URL`
@@ -12,6 +13,9 @@
 - `SUPABASE_SERVICE_ROLE_KEY` (required for server-side OTP storage)
 - `NOTIFY_TOKEN` (optional, if set then /api/notify требует header `x-notify-token`)
 - `CORS_ALLOW_ORIGINS` (optional, comma-separated allowlist, e.g. https://blizko-3.vercel.app,http://localhost:5173)
+- `SENTRY_ORG` (build-time for sourcemaps)
+- `SENTRY_PROJECT` (build-time for sourcemaps)
+- `SENTRY_AUTH_TOKEN` (build-time token for sourcemap upload)
 
 ## Notifications (Resend)
 - `RESEND_API_KEY`

@@ -1,9 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, Minimize2, Loader2, Sparkles, RotateCcw } from 'lucide-react';
-import { Language, ChatMessage, User, NannyProfile, ParentRequest } from '../types';
+import React, { useEffect, useRef, useState } from 'react';
+import { MessageCircle, Send, Minimize2, Loader2, Paperclip } from 'lucide-react';
+import { Language, ChatMessage, User } from '../types';
 import { t } from '../src/core/i18n/translations';
-import { aiText } from '../src/core/ai/aiGateway';
-import { getNannyProfiles, getParentRequests } from '../services/storage';
+import {
+  fetchSupportMessages,
+  getOrCreateSupportThread,
+  sendSupportMessage,
+  subscribeToSupportMessages,
+  uploadSupportAttachment,
+} from '../services/supportChat';
 
 interface SupportChatProps {
   lang: Language;
@@ -11,360 +16,96 @@ interface SupportChatProps {
   hideLauncher?: boolean;
 }
 
-type FeedbackKind = 'neutral' | 'positive' | 'negative';
-
-type ChatLearningState = {
-  preferredStyle: 'product-first';
-  positiveSignals: number;
-  negativeSignals: number;
-  frictionTags: string[];
-  lastFeedback: FeedbackKind;
-};
-
-const LEARNING_STORAGE_KEY = 'blizko.supportchat.learning.v1';
-
-const defaultLearningState: ChatLearningState = {
-  preferredStyle: 'product-first',
-  positiveSignals: 0,
-  negativeSignals: 0,
-  frictionTags: [],
-  lastFeedback: 'neutral',
-};
-
 export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLauncher = false }) => {
   const text = t[lang];
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [learningState, setLearningState] = useState<ChatLearningState>(defaultLearningState);
-  const [nanniesCache, setNanniesCache] = useState<NannyProfile[]>([]);
-  const [parentsCache, setParentsCache] = useState<ParentRequest[]>([]);
-  
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const systemInstructionRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const loadContextData = async () => {
-      const [nannies, parents] = await Promise.all([getNannyProfiles(), getParentRequests()]);
-      setNanniesCache(nannies);
-      setParentsCache(parents);
+    if (!isOpen || !user?.id) return;
+
+    let unsubscribe: (() => void) | null = null;
+
+    const init = async () => {
+      const thread = await getOrCreateSupportThread(user.id as string);
+      if (!thread) return;
+      setThreadId(thread.id);
+
+      const existing = await fetchSupportMessages(thread.id);
+      setMessages(
+        existing.map((m) => ({
+          id: m.id,
+          text: m.text,
+          sender: m.sender_id === user.id ? 'user' : 'agent',
+          senderId: m.sender_id,
+          timestamp: new Date(m.created_at).getTime(),
+        }))
+      );
+
+      unsubscribe = subscribeToSupportMessages(thread.id, (m) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: m.id,
+            text: m.text,
+            sender: m.sender_id === user.id ? 'user' : 'agent',
+            senderId: m.sender_id,
+            timestamp: new Date(m.created_at).getTime(),
+          },
+        ]);
+      });
     };
-    loadContextData();
-  }, [user]);
+
+    init();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [isOpen, user?.id]);
 
   useEffect(() => {
-    const handler = () => setIsOpen(true);
-    window.addEventListener('blizko:open-support-chat', handler as EventListener);
-    return () => window.removeEventListener('blizko:open-support-chat', handler as EventListener);
-  }, []);
-
-  // --- CONTEXT GATHERING (The "Self-Learning" Part) ---
-  const gatherAppContext = (): string => {
-    if (!user) return "User is a guest (not logged in).";
-
-    const nannies = nanniesCache;
-    const parents = parentsCache;
-    
-    // Find current user data in storage
-    const nannyProfile = nannies.find(n => n.name === user.name || (user.email && n.contact?.includes(user.email)));
-    const parentReq = parents.find(p => p.id); // In a real app we'd match ID, here we grab the latest for demo
-    
-    let contextStr = `\n--- LIVE APP DATA FOR CONTEXT ---\n`;
-    contextStr += `User Role: ${user.role}\n`;
-    contextStr += `User Name: ${user.name}\n`;
-
-    if (user.role === 'nanny' && nannyProfile) {
-      contextStr += `[Profile Status]\n`;
-      contextStr += `- City: ${nannyProfile.city}\n`;
-      contextStr += `- Experience: ${nannyProfile.experience} years\n`;
-      contextStr += `- Verified Identity: ${nannyProfile.isVerified ? 'YES (GosUslugi)' : 'NO'}\n`;
-      
-      if (nannyProfile.softSkills) {
-        contextStr += `[AI Soft Skills Analysis Result]\n`;
-        contextStr += `- Dominant Style: ${nannyProfile.softSkills.dominantStyle}\n`;
-        contextStr += `- Raw Score: ${nannyProfile.softSkills.rawScore}/100\n`;
-        contextStr += `- AI Summary: ${nannyProfile.softSkills.summary}\n`;
-      } else {
-        contextStr += `[Soft Skills]: Test NOT taken yet. Encourge them to take it.\n`;
-      }
-
-      if (nannyProfile.documents && nannyProfile.documents.length > 0) {
-        contextStr += `[AI Document Verification]\n`;
-        nannyProfile.documents.forEach(doc => {
-          contextStr += `- ${doc.type}: ${doc.status} (Confidence: ${doc.aiConfidence}%)\n`;
-        });
-      } else {
-        contextStr += `[Documents]: None uploaded yet.\n`;
-      }
-
-      if (nannyProfile.video) {
-        contextStr += `[Video Intro]: Uploaded and analyzed.\n`;
-      }
-    }
-
-    if (user.role === 'parent' && parentReq) {
-      contextStr += `[Parent Request Data]\n`;
-      contextStr += `- Looking for nanny in: ${parentReq.city}\n`;
-      contextStr += `- Child age: ${parentReq.childAge}\n`;
-      contextStr += `- Budget: ${parentReq.budget}\n`;
-    }
-
-    contextStr += `---------------------------------\n`;
-    return contextStr;
-  };
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LEARNING_STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as Partial<ChatLearningState>;
-      setLearningState({ ...defaultLearningState, ...parsed });
-    } catch {
-      // ignore corrupted local learning state
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningState));
-    } catch {
-      // ignore storage quota/private mode issues
-    }
-  }, [learningState]);
-
-  const learningContext = `\n--- LEARNING MEMORY ---\nPreferred style: ${learningState.preferredStyle}\nPositive signals: ${learningState.positiveSignals}\nNegative signals: ${learningState.negativeSignals}\nLast feedback: ${learningState.lastFeedback}\nFriction tags: ${learningState.frictionTags.length ? learningState.frictionTags.join(', ') : 'none'}\nIf last feedback is negative, improve relevance and provide a shorter, more concrete Blizko UI next step.\n-----------------------\n`;
-
-  // Recompute system instruction when chat opens or user/lang changes.
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const dynamicContext = gatherAppContext();
-    systemInstructionRef.current = `
-You are Anna, the intelligent, self-learning Care Manager for "Blizko".
-
-CORE MISSION:
-Help parents and nannies inside Blizko flows. You are NOT a generic chatbot; you are a product assistant for this app.
-
-SELF-LEARNING CAPABILITY:
-I have injected the LIVE application state below. You must use this data to personalize your answers.
-If the data shows the user has completed a test (Soft Skills) or uploaded documents, REFER TO IT specifically.
-
-${dynamicContext}
-${learningContext}
-
-KNOWLEDGE BASE:
-1. Document AI: We verify docs using computer vision.
-2. Behavioral AI: We analyze psychotypes (Empathetic, Structured, Balanced).
-3. Video AI: We analyze non-verbal cues.
-
-TONE:
-Warm, professional, concise.
-Current User Language: ${lang === 'ru' ? 'Russian' : 'English'}.
-ALWAYS reply in ${lang === 'ru' ? 'Russian' : 'English'}.
-
-RESPONSE STYLE RULES (MANDATORY):
-- Product-first: answer in context of Blizko features and user flow.
-- Keep answers short and practical: 3-6 bullet points max.
-- Hard limit: up to ~700 characters total.
-- Avoid long essays, generic theory, repeated obvious advice.
-- Never say "I already explained above" or reference previous answers.
-- For narrow questions (e.g. "на каком сайте") give a direct list of 3-5 options only.
-- For "как найти няню" answer only with Blizko in-app flow steps (create request -> set filters -> review matches -> contact candidates). Do not suggest external sites unless user explicitly asks for external alternatives.
-- Personalize using LIVE APP DATA when available.
-- If user asks "how to", end with one concrete next step in Blizko UI.
-- If question is outside product scope, answer briefly and return to Blizko flow.
-- End with one short CTA (example: "Могу сразу подобрать 3 анкеты по вашим критериям.").
-    `.trim();
-  }, [isOpen, user, lang, learningContext, nanniesCache, parentsCache]);
-
-  // Initial welcome message
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([{
-        id: 'welcome',
-        text: text.chatWelcome,
-        sender: 'agent',
-        timestamp: Date.now()
-      }]);
-    }
-  }, [lang]);
-
-  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    if (isOpen) scrollToBottom();
   }, [messages, isOpen, isTyping]);
 
   const handleSend = async (e?: React.FormEvent) => {
-  e?.preventDefault();
+    e?.preventDefault();
+    if (!inputValue.trim() || !user?.id || !threadId) return;
 
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  console.log("VITE_GEMINI_API_KEY:", apiKey ? apiKey.slice(0, 6) : "undefined");
-
-  if (!inputValue.trim()) return;
-
-
-
-  
-
-    const userText = inputValue;
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      text: userText,
-      sender: 'user',
-      timestamp: Date.now()
-    };
-
-    const normalizedFeedback = userText.toLowerCase();
-    const isNegativeFeedback = /не то|не подходит|плохо|неверно|неправильно|ужас|bad|wrong|not what/.test(normalizedFeedback);
-    const isPositiveFeedback = /спасибо|отлично|супер|класс|helped|great|thanks/.test(normalizedFeedback);
-    const frictionTags = [
-      /внешн|сайт|профи|youdo|avito/.test(normalizedFeedback) ? 'external-sites' : null,
-      /длинн|короче|кратк|много текста/.test(normalizedFeedback) ? 'too-verbose' : null,
-      /нян/.test(normalizedFeedback) ? 'nanny-search' : null,
-    ].filter(Boolean) as string[];
-
-    setLearningState(prev => {
-      const mergedTags = Array.from(new Set([...prev.frictionTags, ...frictionTags])).slice(-8);
-      return {
-        ...prev,
-        positiveSignals: prev.positiveSignals + (isPositiveFeedback ? 1 : 0),
-        negativeSignals: prev.negativeSignals + (isNegativeFeedback ? 1 : 0),
-        frictionTags: mergedTags,
-        lastFeedback: isNegativeFeedback ? 'negative' : isPositiveFeedback ? 'positive' : 'neutral',
-      };
-    });
-
-    setMessages(prev => [...prev, userMsg]);
-    setInputValue('');
     setIsTyping(true);
+    const text = inputValue.trim();
+    setInputValue('');
 
-    try {
-      const normalized = userText.toLowerCase();
-      const hasNannyWord = /нян|бебисит|babysit/.test(normalized);
-      const hasSearchIntent = /найд|поиск|подбор|подобрат|ищу|нужн/.test(normalized);
-      const isNannySearchIntent = hasNannyWord && hasSearchIntent;
-
-      if (isNannySearchIntent) {
-        const deterministicText = lang === 'ru'
-          ? [
-              'Вот как найти няню прямо в Blizko:',
-              '1) Откройте форму запроса родителя и укажите город, возраст ребёнка, график и бюджет.',
-              '2) Добавьте требования (опыт, документы, навыки).',
-              '3) Запустите подбор и откройте список совпадений.',
-              '4) Отфильтруйте анкеты по верификации и релевантности.',
-              '5) Напишите 2–3 кандидатам и договоритесь о пробном знакомстве.',
-              'Если нужна помощь по шагам — используйте чат поддержки в приложении (я помогу здесь же).',
-              'Могу помочь заполнить запрос по шагам прямо сейчас.'
-            ].join('\n')
-          : [
-              'Here is how to find a nanny inside Blizko:',
-              '1) Open the parent request form and set city, child age, schedule, and budget.',
-              '2) Add requirements (experience, documents, skills).',
-              '3) Run matching and review candidates.',
-              '4) Filter by verification and relevance.',
-              '5) Contact 2–3 candidates and schedule a trial meeting.',
-              'If you need help at any step, use the in-app support chat (I can guide you here).',
-              'I can help you fill the request step by step now.'
-            ].join('\n');
-
-        const agentMsg: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          text: deterministicText,
-          sender: 'agent',
-          timestamp: Date.now()
-        };
-        setMessages(prev => [...prev, agentMsg]);
-        return;
-      }
-
-      const isShortQuestion = userText.trim().split(/\s+/).length <= 6;
-      const recent = (isShortQuestion ? [] : messages.slice(-4)).map(m => {
-        const role = m.sender === 'user' ? 'User' : 'Anna';
-        return `${role}: ${m.text}`;
-      }).join('\n');
-
-      const userPrompt = `${recent ? `Recent context (use only if needed):\n${recent}\n\n` : ''}User question: ${userText}\nAnswer briefly and product-first:`;
-console.log(
-  "VITE_GEMINI_API_KEY:",
-  import.meta.env.VITE_GEMINI_API_KEY?.slice(0, 6),
-  "MODE:",
-  import.meta.env.MODE
-);
-
-      const aiResponseText = await aiText(userPrompt, {
-        systemPrompt: systemInstructionRef.current || undefined,
-        temperature: 0.7,
-      });
-
-      if (aiResponseText) {
-        const agentMsg: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          text: aiResponseText || "...",
-          sender: 'agent',
-          timestamp: Date.now()
-        };
-        setMessages(prev => [...prev, agentMsg]);
-      } else {
-        // Demo / missing key fallback (keep behavior)
-        setTimeout(() => {
-          const agentMsg: ChatMessage = {
-            id: (Date.now() + 1).toString(),
-            text: lang === 'ru' ? "Связь с AI сервером устанавливается..." : "Connecting to AI server...",
-            sender: 'agent',
-            timestamp: Date.now()
-          };
-          setMessages(prev => [...prev, agentMsg]);
-        }, 1000);
-      }
-    } catch (error) {
-      console.error("Chat error:", error);
-
-      const message = error instanceof Error ? error.message : String(error ?? '');
-      const isRateLimit = message.includes('RATE_LIMIT') || message.includes('429') || message.includes('RESOURCE_EXHAUSTED');
-
-      const errorMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: isRateLimit
-          ? (lang === 'ru'
-              ? 'Анна сейчас перегружена (лимит AI-запросов временно исчерпан). Попробуйте снова через минуту.'
-              : 'Anna is temporarily overloaded (AI quota reached). Please try again in about a minute.')
-          : (lang === 'ru'
-              ? 'Не удалось связаться с Анной. Попробуйте ещё раз чуть позже.'
-              : 'Error connecting to Anna. Please try again later.'),
-        sender: 'agent',
-        timestamp: Date.now()
-      };
-      setMessages(prev => [...prev, errorMsg]);
-    } finally {
+    const sent = await sendSupportMessage(threadId, user.id, text);
+    if (!sent) {
       setIsTyping(false);
+      return;
     }
+    setIsTyping(false);
   };
 
-  const resetLearningMemory = () => {
-    setLearningState(defaultLearningState);
-    try {
-      localStorage.removeItem(LEARNING_STORAGE_KEY);
-    } catch {
-      // ignore storage errors
-    }
+  const handleAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.id || !threadId) return;
 
-    const resetMsg: ChatMessage = {
-      id: (Date.now() + 2).toString(),
-      text: lang === 'ru' ? 'Память чата сброшена. Продолжаем с чистого контекста.' : 'Chat memory has been reset. Continuing with a clean context.',
-      sender: 'agent',
-      timestamp: Date.now()
-    };
-    setMessages(prev => [...prev, resetMsg]);
+    setIsTyping(true);
+    const placeholderText = file.type.startsWith('image/') ? 'Изображение' : 'Вложение';
+    const sent = await sendSupportMessage(threadId, user.id, placeholderText);
+    if (sent) {
+      await uploadSupportAttachment(threadId, sent.id, file);
+    }
+    setIsTyping(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   if (!isOpen) {
     if (hideLauncher) return null;
     return (
-      <button 
+      <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 z-[70] bg-stone-900 hover:bg-stone-800 text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
       >
@@ -374,53 +115,43 @@ console.log(
     );
   }
 
+  if (!user?.id) {
+    return (
+      <div className="fixed bottom-6 right-6 z-[70] w-full max-w-[340px] flex flex-col items-end animate-slide-up">
+        <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full h-[220px] flex flex-col p-4">
+          <div className="text-sm text-stone-700">{lang === 'ru' ? 'Для чата нужна авторизация.' : 'Please sign in to use support chat.'}</div>
+          <button onClick={() => setIsOpen(false)} className="mt-4 text-stone-500">{lang === 'ru' ? 'Закрыть' : 'Close'}</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="fixed bottom-6 right-6 z-[70] w-full max-w-[340px] flex flex-col items-end animate-slide-up">
+    <div className="fixed bottom-6 right-6 z-[70] w-full max-w-[360px] flex flex-col items-end animate-slide-up">
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full h-[480px] flex flex-col">
-        {/* Header */}
         <div className="bg-stone-900 text-white p-4 flex justify-between items-center relative overflow-hidden">
-          {/* Decorative AI Glow */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 blur-3xl rounded-full pointer-events-none"></div>
-          
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 blur-3xl rounded-full pointer-events-none" />
           <div className="flex items-center gap-3 z-10">
-            <div className="relative">
-              <div className="w-2.5 h-2.5 rounded-full bg-green-400 border border-stone-900 animate-pulse absolute -bottom-0.5 -right-0.5" />
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-200 to-amber-500 rounded-full flex items-center justify-center text-stone-900 font-bold text-sm shadow-inner">
-                <Sparkles size={18} />
-              </div>
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-200 to-amber-500 rounded-full flex items-center justify-center text-stone-900 font-bold text-sm shadow-inner">
+              <MessageCircle size={18} />
             </div>
             <div>
-              <span className="font-bold block text-sm tracking-wide">Anna AI</span>
-              <span className="text-[10px] text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                {user ? (lang === 'ru' ? 'Персональный менеджер' : 'Personal Manager') : (lang === 'ru' ? 'Ассистент' : 'Assistant')}
-              </span>
+              <span className="font-bold block text-sm tracking-wide">Support</span>
+              <span className="text-[10px] text-stone-400 uppercase tracking-wider">{lang === 'ru' ? 'Команда Blizko' : 'Blizko Team'}</span>
             </div>
           </div>
-          <div className="flex items-center gap-1 z-10">
-            <button
-              onClick={resetLearningMemory}
-              title={lang === 'ru' ? 'Сбросить память чата' : 'Reset chat memory'}
-              className="text-stone-400 hover:text-white transition-colors p-1"
-            >
-              <RotateCcw size={16} />
-            </button>
-            <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-white transition-colors">
-              <Minimize2 size={18} />
-            </button>
-          </div>
+          <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-white transition-colors">
+            <Minimize2 size={18} />
+          </button>
         </div>
 
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-stone-50">
-          {messages.map(msg => (
-            <div 
-              key={msg.id} 
-              className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div 
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div
                 className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                  msg.sender === 'user' 
-                    ? 'bg-amber-100 text-stone-900 rounded-tr-sm' 
+                  msg.sender === 'user'
+                    ? 'bg-amber-100 text-stone-900 rounded-tr-sm'
                     : 'bg-white border border-stone-100 text-stone-700 rounded-tl-sm'
                 }`}
               >
@@ -428,30 +159,38 @@ console.log(
               </div>
             </div>
           ))}
-          
+
           {isTyping && (
             <div className="flex justify-start">
-               <div className="bg-white border border-stone-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex gap-1 items-center">
-                 <div className="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                 <div className="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                 <div className="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-               </div>
+              <div className="bg-white border border-stone-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex gap-1 items-center">
+                <div className="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-1.5 h-1.5 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
-        <form onSubmit={handleSend} className="p-3 bg-white border-t border-stone-100 flex gap-2">
+        <form onSubmit={handleSend} className="p-3 bg-white border-t border-stone-100 flex gap-2 items-center">
           <input
             type="text"
             value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder={text.chatPlaceholder}
             className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-300 transition-all"
           />
-          <button 
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="text-stone-500 hover:text-stone-800"
+            title={lang === 'ru' ? 'Прикрепить файл' : 'Attach file'}
+          >
+            <Paperclip size={18} />
+          </button>
+          <input ref={fileInputRef} type="file" className="hidden" onChange={handleAttachment} />
+          <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
             className="bg-stone-900 text-white p-2.5 rounded-xl hover:bg-stone-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-md"

@@ -48,6 +48,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (!['GET', 'POST'].includes(req.method || '')) return res.status(405).json({ error: 'Method not allowed' });
 
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  const requiredToken = envWithLocalFallback('NOTIFY_TOKEN');
+  if (requiredToken) {
+    const incoming = String(req.headers['x-notify-token'] || '').trim();
+    if (!incoming || incoming !== requiredToken) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+
   const to = String(req.query.to || req.body?.to || envWithLocalFallback('ADMIN_EMAIL') || '').trim();
   if (!to) return res.status(400).json({ ok: false, error: 'Recipient email is required (?to=...) or ADMIN_EMAIL' });
 

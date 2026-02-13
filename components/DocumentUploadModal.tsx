@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from './UI';
 import { X, UploadCloud, CheckCircle, FileText } from 'lucide-react';
 import { Language, DocumentVerification } from '../types';
@@ -14,12 +14,15 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
   const text = t[lang];
   const [step, setStep] = useState<'select' | 'result'>('select');
   const [docType, setDocType] = useState<DocumentVerification['type']>('other');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
+    setFileName(file.name);
 
-    // Use an object URL for immediate preview/attachment (faster, reliable for MVP).
+    // Use an object URL for immediate preview/attachment (fast + reliable for MVP).
     const objectUrl = URL.createObjectURL(file);
 
     const doc: DocumentVerification = {
@@ -34,6 +37,8 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
 
     onVerify(doc);
     setStep('result');
+    // Close automatically after a short delay so the counter is visible in the form.
+    setTimeout(() => onClose(), 600);
   };
 
   return (
@@ -70,7 +75,8 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
               </div>
               <span className="font-semibold text-stone-600">{text.uploadDoc}</span>
               <span className="text-xs text-stone-400 mt-1">JPG, PNG, PDF</span>
-              <input type="file" className="hidden" accept="image/*,.pdf" onChange={handleFileUpload} />
+              {fileName && <span className="text-[11px] text-stone-500 mt-2">{fileName}</span>}
+              <input ref={fileInputRef} type="file" className="hidden" accept="image/*,.pdf" onChange={handleFileUpload} />
             </label>
           </div>
         )}

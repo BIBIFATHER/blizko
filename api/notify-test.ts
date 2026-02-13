@@ -1,21 +1,9 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import fs from 'fs';
-import path from 'path';
 import { setCors } from './_cors';
 
 function envWithLocalFallback(key: string): string | undefined {
-  const direct = process.env[key];
-  if (direct) return direct;
-
-  try {
-    const envPath = path.join(process.cwd(), '.env.local');
-    const raw = fs.readFileSync(envPath, 'utf8');
-    const m = raw.match(new RegExp(`^${key}=(.*)$`, 'm'));
-    return m?.[1]?.trim();
-  } catch {
-    return undefined;
-  }
+  return process.env[key];
 }
 
 async function sendResendEmail(to: string, subject: string, text: string) {
@@ -48,9 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (!['GET', 'POST'].includes(req.method || '')) return res.status(405).json({ error: 'Method not allowed' });
 
-  if (process.env.NODE_ENV === 'production') {
-    return res.status(404).json({ error: 'Not found' });
-  }
+  // Allow in production for diagnostics if token is set.
 
   const requiredToken = envWithLocalFallback('NOTIFY_TOKEN');
   if (requiredToken) {

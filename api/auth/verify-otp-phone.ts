@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getServiceSupabase } from './_supabase';
+import { getServiceSupabase } from './_supabase.js';
 import { setCors } from '../_cors.js';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);

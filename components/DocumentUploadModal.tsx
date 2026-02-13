@@ -19,22 +19,21 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const doc: DocumentVerification = {
-        type: docType,
-        status: 'pending',
-        aiConfidence: 0,
-        aiNotes: lang === 'ru' ? 'Документ загружен и ожидает проверки.' : 'Document uploaded and awaiting review.',
-        verifiedAt: Date.now(),
-        fileName: file.name,
-        fileDataUrl: String(reader.result || ''),
-      };
+    // Use an object URL for immediate preview/attachment (faster, reliable for MVP).
+    const objectUrl = URL.createObjectURL(file);
 
-      onVerify(doc);
-      setStep('result');
+    const doc: DocumentVerification = {
+      type: docType,
+      status: 'pending',
+      aiConfidence: 0,
+      aiNotes: lang === 'ru' ? 'Документ загружен и ожидает проверки.' : 'Document uploaded and awaiting review.',
+      verifiedAt: Date.now(),
+      fileName: file.name,
+      fileDataUrl: objectUrl,
     };
-    reader.readAsDataURL(file);
+
+    onVerify(doc);
+    setStep('result');
   };
 
   return (

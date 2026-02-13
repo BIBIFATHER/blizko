@@ -91,7 +91,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     }
   }, [initialData]);
 
-  const hasResumeUploaded = documents.some((d) => d.type === 'resume' && !!d.fileDataUrl);
+  const hasResumeUploaded = documents.some((d) => !!d.fileDataUrl);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();

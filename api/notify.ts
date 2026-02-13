@@ -2,7 +2,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import fs from 'fs';
 import path from 'path';
-import { setCors } from './_cors';
+import { setCors } from './_cors.js';
 
 type NotifyPayload = {
   event?: string;

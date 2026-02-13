@@ -14,15 +14,6 @@ export type SupportMessage = {
   created_at: string;
 };
 
-export type SupportAttachment = {
-  id: string;
-  message_id: string;
-  url: string;
-  type: 'image' | 'file';
-  size?: number | null;
-  created_at: string;
-};
-
 export async function getOrCreateSupportThread(userId: string): Promise<SupportThread | null> {
   if (!supabase) return null;
 
@@ -70,37 +61,6 @@ export async function sendSupportMessage(threadId: string, senderId: string, tex
     .single();
   if (error) return null;
   return data as SupportMessage;
-}
-
-export async function uploadSupportAttachment(
-  threadId: string,
-  messageId: string,
-  file: File
-): Promise<SupportAttachment | null> {
-  if (!supabase) return null;
-
-  const path = `${threadId}/${messageId}/${Date.now()}-${file.name}`;
-  const { data, error } = await supabase.storage
-    .from('chat-attachments')
-    .upload(path, file, { upsert: false });
-
-  if (error || !data?.path) return null;
-
-  const { data: publicUrl } = supabase.storage.from('chat-attachments').getPublicUrl(data.path);
-
-  const { data: inserted, error: insertError } = await supabase
-    .from('chat_attachments')
-    .insert({
-      message_id: messageId,
-      url: publicUrl.publicUrl,
-      type: file.type.startsWith('image/') ? 'image' : 'file',
-      size: file.size,
-    })
-    .select('id,message_id,url,type,size,created_at')
-    .single();
-
-  if (insertError) return null;
-  return inserted as SupportAttachment;
 }
 
 export function subscribeToSupportMessages(threadId: string, onMessage: (m: SupportMessage) => void) {

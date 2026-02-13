@@ -1,58 +1,93 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, Loader2 } from 'lucide-react';
 import { Language, ChatMessage } from '../types';
 import { t } from '../src/core/i18n/translations';
-import { appendChatMessage, getChatMessages } from '../services/chat';
+import { fetchMatchMessages, getOrCreateMatchThread, sendMatchMessage, subscribeToMatchMessages } from '../services/matchChat';
 
 interface NannyChatModalProps {
   bookingId: string;
   nannyName: string;
   currentUserName?: string;
   currentUserId?: string;
+  currentUserRole?: 'parent' | 'nanny';
   onClose: () => void;
   lang: Language;
 }
 
-export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nannyName, currentUserName, currentUserId, onClose, lang }) => {
+export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nannyName, currentUserName, currentUserId, currentUserRole, onClose, lang }) => {
   const text = t[lang];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMessages(getChatMessages(bookingId));
-  }, [bookingId]);
+    if (!currentUserId || !currentUserRole) return;
 
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === `blizko_chat_${bookingId}`) {
-        setMessages(getChatMessages(bookingId));
+    let unsubscribe: (() => void) | null = null;
+
+    const init = async () => {
+      setIsLoading(true);
+      const thread = await getOrCreateMatchThread({
+        matchId: bookingId,
+        currentUserId,
+        currentUserRole: currentUserRole === 'parent' ? 'family' : 'nanny',
+      });
+      if (!thread) {
+        setIsLoading(false);
+        return;
       }
+      setThreadId(thread.id);
+
+      const existing = await fetchMatchMessages(thread.id);
+      setMessages(
+        existing.map((m) => ({
+          id: m.id,
+          text: m.text,
+          sender: m.sender_id === currentUserId ? 'user' : 'agent',
+          senderId: m.sender_id,
+          senderName: m.sender_id === currentUserId ? currentUserName : nannyName,
+          timestamp: new Date(m.created_at).getTime(),
+        }))
+      );
+
+      unsubscribe = subscribeToMatchMessages(thread.id, (m) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: m.id,
+            text: m.text,
+            sender: m.sender_id === currentUserId ? 'user' : 'agent',
+            senderId: m.sender_id,
+            senderName: m.sender_id === currentUserId ? currentUserName : nannyName,
+            timestamp: new Date(m.created_at).getTime(),
+          },
+        ]);
+      });
+
+      setIsLoading(false);
     };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, [bookingId]);
+
+    init();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [bookingId, currentUserId, currentUserName, currentUserRole, nannyName]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = (e?: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !currentUserId || !threadId) return;
 
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(),
-      text: inputValue,
-      sender: 'user',
-      senderId: currentUserId,
-      senderName: currentUserName,
-      timestamp: Date.now(),
-    };
-
-    const next = appendChatMessage(bookingId, userMsg);
-    setMessages(next);
+    const textValue = inputValue.trim();
     setInputValue('');
+
+    await sendMatchMessage(threadId, currentUserId, textValue);
   };
 
   return (
@@ -76,6 +111,11 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nanny
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#EFEAE2]">
+          {isLoading && (
+            <div className="flex justify-center text-xs text-stone-500">
+              <Loader2 size={14} className="animate-spin" />
+            </div>
+          )}
           {messages.map((msg) => {
             const isMine = !!currentUserId && msg.senderId === currentUserId;
             return (
@@ -107,7 +147,7 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nanny
           />
           <button
             type="submit"
-            disabled={!inputValue.trim()}
+            disabled={!inputValue.trim() || !threadId}
             className="bg-amber-400 text-stone-900 p-2.5 rounded-full hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-transform active:scale-95"
           >
             <Send size={20} />

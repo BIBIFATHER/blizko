@@ -796,6 +796,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
           nannyName={chatBooking.nannyName}
           currentUserId={user.id}
           currentUserName={user.name || user.email}
+          currentUserRole={user.role}
           onClose={() => setChatBooking(null)}
           lang={lang}
         />

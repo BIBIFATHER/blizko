@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MessageCircle, Send, Minimize2, Loader2, Paperclip } from 'lucide-react';
+import { MessageCircle, Send, Minimize2, Loader2 } from 'lucide-react';
 import { Language, ChatMessage, User } from '../types';
 import { t } from '../src/core/i18n/translations';
 import {
@@ -7,7 +7,6 @@ import {
   getOrCreateSupportThread,
   sendSupportMessage,
   subscribeToSupportMessages,
-  uploadSupportAttachment,
 } from '../services/supportChat';
 
 interface SupportChatProps {
@@ -23,7 +22,6 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [threadId, setThreadId] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -88,19 +86,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
     setIsTyping(false);
   };
 
-  const handleAttachment = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user?.id || !threadId) return;
-
-    setIsTyping(true);
-    const placeholderText = file.type.startsWith('image/') ? 'Изображение' : 'Вложение';
-    const sent = await sendSupportMessage(threadId, user.id, placeholderText);
-    if (sent) {
-      await uploadSupportAttachment(threadId, sent.id, file);
-    }
-    setIsTyping(false);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
+  // Attachments are disabled for MVP.
 
   if (!isOpen) {
     if (hideLauncher) return null;
@@ -181,15 +167,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
             placeholder={text.chatPlaceholder}
             className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-300 transition-all"
           />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="text-stone-500 hover:text-stone-800"
-            title={lang === 'ru' ? 'Прикрепить файл' : 'Attach file'}
-          >
-            <Paperclip size={18} />
-          </button>
-          <input ref={fileInputRef} type="file" className="hidden" onChange={handleAttachment} />
+          {/* Attachments disabled for MVP */}
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}

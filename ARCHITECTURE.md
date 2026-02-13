@@ -8,6 +8,7 @@
 - **Resend** — email‑уведомления
 - **SMSAero** — SMS‑верификация
 - **Sentry** — мониторинг ошибок
+- **Chat (Supabase Realtime)** — support и match чаты (MVP, без вложений)
 
 ## Поток данных (упрощённо)
 1) Пользователь заполняет форму → Client
@@ -22,3 +23,6 @@
 - `.env` не в git
 - RLS закрывает доступ per‑user
 - `/api/notify` защищён токеном
+
+## TODO
+- Вложения в чат (Supabase Storage + chat_attachments)

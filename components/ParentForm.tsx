@@ -335,7 +335,13 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           </div>
         </div>
 
-        <Button type="submit" isLoading={loading} className="mt-8" disabled={initialData?.status === 'approved'}>
+        <Button
+          type="button"
+          isLoading={loading}
+          className="mt-8"
+          disabled={initialData?.status === 'approved'}
+          onClick={() => setShowOffer(true)}
+        >
           {initialData?.status === 'approved'
             ? 'Редактирование заблокировано (заявка одобрена)'
             : loading

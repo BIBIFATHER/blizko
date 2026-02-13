@@ -637,7 +637,12 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           </select>
         </div>
 
-        <Button type="submit" isLoading={loading} className="mt-8">
+        <Button
+          type="button"
+          isLoading={loading}
+          className="mt-8"
+          onClick={handleFormSubmit}
+        >
           {initialData ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : text.submitNanny}
         </Button>
       </form>

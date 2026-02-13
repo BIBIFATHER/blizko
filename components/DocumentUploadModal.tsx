@@ -69,14 +69,20 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
               </select>
             </div>
 
-            <label className="flex-1 border-2 border-dashed border-stone-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-stone-50 transition-colors group">
+            <label className="relative flex-1 border-2 border-dashed border-stone-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-stone-50 transition-colors group">
               <div className="w-16 h-16 bg-sky-50 rounded-full flex items-center justify-center text-sky-500 mb-4 group-hover:scale-110 transition-transform">
                 <UploadCloud size={32} />
               </div>
               <span className="font-semibold text-stone-600">{text.uploadDoc}</span>
               <span className="text-xs text-stone-400 mt-1">JPG, PNG, PDF</span>
               {fileName && <span className="text-[11px] text-stone-500 mt-2">{fileName}</span>}
-              <input ref={fileInputRef} type="file" className="hidden" accept="image/*,.pdf" onChange={handleFileUpload} />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.pdf"
+                onChange={handleFileUpload}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
             </label>
           </div>
         )}

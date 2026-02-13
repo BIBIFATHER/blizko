@@ -97,9 +97,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     e.preventDefault();
 
     if (!hasResumeUploaded) {
-      alert(lang === 'ru' ? 'Загрузите резюме (обязательное поле *).' : 'Please upload a resume (required field *).');
-      setShowDocUpload(true);
-      return;
+      // MVP: allow submission without documents; attach later in moderation.
     }
 
     if (!initialData) {

@@ -676,26 +676,6 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
 
           <div className="text-[11px] text-stone-500">Подскажем семьи с похожим стилем общения.</div>
 
-          <label className="block text-xs text-stone-600">Как вы обычно решаете конфликт с родителями?</label>
-          <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
-            value={riskProfile?.conflictStyle || 'discuss_now'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), conflictStyle: e.target.value as any }))}
-          >
-            <option value="discuss_now">Обсуждаю сразу</option>
-            <option value="pause_then_discuss">Беру паузу и возвращаюсь к диалогу</option>
-            <option value="avoid">Стараюсь избегать обсуждения</option>
-          </select>
-
-          <label className="block text-xs text-stone-600">Готовы действовать по экстренному алгоритму (температура/травма)?</label>
-          <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
-            value={riskProfile?.emergencyReady || 'yes'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), emergencyReady: e.target.value as any }))}
-          >
-            <option value="yes">Да, готова</option>
-            <option value="no">Нет / не уверена</option>
-          </select>
         </div>
 
         <Button

@@ -414,39 +414,6 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
 
           <div className="text-[11px] text-stone-500">Подскажем няню со схожим стилем общения.</div>
 
-          <label className="block text-xs text-stone-600">Что важнее в стиле няни?</label>
-          <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
-            value={riskProfile?.priorityStyle || 'balanced'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), priorityStyle: e.target.value as any }))}
-          >
-            <option value="warmth">Теплый контакт и эмпатия</option>
-            <option value="discipline">Дисциплина и четкие правила</option>
-            <option value="balanced">Баланс</option>
-          </select>
-
-          <label className="block text-xs text-stone-600">Какой формат фото/видео-отчётности комфортен?</label>
-          <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
-            value={riskProfile?.reportingFrequency || '2_3_times'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), reportingFrequency: e.target.value as any }))}
-          >
-            <option value="daily">Итоговый отчёт в конце дня</option>
-            <option value="2_3_times">2–3 коротких апдейта в день</option>
-            <option value="frequent">Частые апдейты по ходу дня</option>
-          </select>
-
-          <label className="block text-xs text-stone-600">Готовность доверять решениям няни (1–5)</label>
-          <input
-            type="range"
-            min={1}
-            max={5}
-            step={1}
-            value={riskProfile?.trustLevel || 3}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), trustLevel: Number(e.target.value) as 1|2|3|4|5 }))}
-            className="w-full"
-          />
-          <div className="text-[11px] text-stone-500">Текущее значение: {riskProfile?.trustLevel || 3}</div>
         </div>
 
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">

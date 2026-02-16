@@ -33,7 +33,7 @@ export interface ParentRiskProfile {
   triggers?: string[];
   nannyStylePreference?: 'gentle' | 'strict' | 'playful';
   communicationPreference?: 'minimal' | 'regular' | 'frequent';
-  deficitNeeds?: string[];
+  needs?: string[];
   pcmType?: 'thinker' | 'persister' | 'harmonizer' | 'rebel' | 'imaginer' | 'promoter';
 }
 

@@ -34,7 +34,7 @@ function rankCandidates(
   const communicationPreference = request.riskProfile?.communicationPreference;
   const nannyStylePref = request.riskProfile?.nannyStylePreference;
   const childStress = request.riskProfile?.childStress;
-  const deficitNeeds = request.riskProfile?.deficitNeeds || [];
+  const needs = request.riskProfile?.needs || [];
   const parentPcm = request.riskProfile?.pcmType;
 
   return candidates
@@ -104,11 +104,11 @@ function rankCandidates(
       }
 
       const strengths = nannyBehavior.strengths || [];
-      if (deficitNeeds.length && strengths.length) {
-        const matched = deficitNeeds.filter((x) => strengths.includes(x));
+      if (needs.length && strengths.length) {
+        const matched = needs.filter((x) => strengths.includes(x));
         if (matched.length) {
           growthScore += Math.min(12, matched.length * 6);
-          reasons.push(`Дополняет семью: ${matched.slice(0, 2).join(", ")}`);
+          reasons.push(`Учитывает потребности семьи: ${matched.slice(0, 2).join(", ")}`);
         }
       }
 

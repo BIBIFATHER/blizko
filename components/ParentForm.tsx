@@ -67,7 +67,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     triggers: initialData?.riskProfile?.triggers || [],
     nannyStylePreference: initialData?.riskProfile?.nannyStylePreference || 'gentle',
     communicationPreference: initialData?.riskProfile?.communicationPreference || 'regular',
-    deficitNeeds: initialData?.riskProfile?.deficitNeeds || [],
+    needs: initialData?.riskProfile?.needs || [],
     pcmType: initialData?.riskProfile?.pcmType || 'harmonizer',
   });
 
@@ -400,10 +400,10 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           </select>
 
           <ChipGroup
-            label={lang === 'ru' ? 'Чего не хватает семье' : 'What family needs more of'}
+            label={lang === 'ru' ? 'Потребности семьи' : 'Family needs'}
             options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
-            selected={riskProfile?.deficitNeeds || []}
-            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), deficitNeeds: list }))}
+            selected={riskProfile?.needs || []}
+            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), needs: list }))}
           />
 
           <label className="block text-xs text-stone-600">Стиль общения (PCM)</label>

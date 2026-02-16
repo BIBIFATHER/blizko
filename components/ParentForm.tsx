@@ -61,6 +61,12 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     priorityStyle: initialData?.riskProfile?.priorityStyle || 'balanced',
     reportingFrequency: initialData?.riskProfile?.reportingFrequency || '2_3_times',
     trustLevel: initialData?.riskProfile?.trustLevel || 3,
+    familyStyle: initialData?.riskProfile?.familyStyle || 'balanced',
+    childStress: initialData?.riskProfile?.childStress || 'tantrum',
+    triggers: initialData?.riskProfile?.triggers || [],
+    nannyStylePreference: initialData?.riskProfile?.nannyStylePreference || 'gentle',
+    communicationPreference: initialData?.riskProfile?.communicationPreference || 'regular',
+    deficitNeeds: initialData?.riskProfile?.deficitNeeds || [],
   });
 
   const toggleSlot = (dayIndex: number, slotIndex: number) => {
@@ -331,6 +337,65 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
 
         <div className="bg-violet-50 border border-violet-200 rounded-xl p-3 space-y-3">
           <div className="text-sm font-semibold text-violet-800">Психологический профиль семьи (для лучшего мэтчинга)</div>
+
+          <label className="block text-xs text-stone-600">Стиль семьи</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.familyStyle || 'balanced'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: e.target.value as any }))}
+          >
+            <option value="warm">Мягкий, эмпатичный</option>
+            <option value="structured">Структурный, с правилами</option>
+            <option value="balanced">Баланс</option>
+          </select>
+
+          <label className="block text-xs text-stone-600">Как ребёнок реагирует на стресс?</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.childStress || 'tantrum'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: e.target.value as any }))}
+          >
+            <option value="cry">Плачет и ищет поддержку</option>
+            <option value="withdraw">Замыкается</option>
+            <option value="aggressive">Злится/агрессия</option>
+            <option value="tantrum">Истерики</option>
+          </select>
+
+          <ChipGroup
+            label={lang === 'ru' ? 'Триггеры ребёнка (выберите 1–3)' : 'Child triggers (1–3)'}
+            options={lang === 'ru' ? ['Шум', 'Смена режима', 'Новые люди', 'Запреты', 'Усталость'] : ['Noise', 'Routine changes', 'New people', 'Restrictions', 'Fatigue']}
+            selected={riskProfile?.triggers || []}
+            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), triggers: list }))}
+          />
+
+          <label className="block text-xs text-stone-600">Комфортный стиль няни</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.nannyStylePreference || 'gentle'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: e.target.value as any }))}
+          >
+            <option value="gentle">Мягкая и спокойная</option>
+            <option value="strict">Структурная/строгая</option>
+            <option value="playful">Игровая и творческая</option>
+          </select>
+
+          <label className="block text-xs text-stone-600">Коммуникация от няни</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.communicationPreference || 'regular'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: e.target.value as any }))}
+          >
+            <option value="minimal">Минимум сообщений</option>
+            <option value="regular">Регулярно (2–3 апдейта)</option>
+            <option value="frequent">Часто в течение дня</option>
+          </select>
+
+          <ChipGroup
+            label={lang === 'ru' ? 'Чего не хватает семье' : 'What family needs more of'}
+            options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
+            selected={riskProfile?.deficitNeeds || []}
+            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), deficitNeeds: list }))}
+          />
 
           <label className="block text-xs text-stone-600">Что важнее в стиле няни?</label>
           <select

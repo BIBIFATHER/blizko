@@ -30,6 +30,12 @@ function rankCandidates(
   const schedule = norm(request.schedule);
   const reqs = request.requirements.map(norm).filter(Boolean);
 
+  const familyStyle = request.riskProfile?.familyStyle;
+  const communicationPreference = request.riskProfile?.communicationPreference;
+  const nannyStylePref = request.riskProfile?.nannyStylePreference;
+  const childStress = request.riskProfile?.childStress;
+  const deficitNeeds = request.riskProfile?.deficitNeeds || [];
+
   return candidates
     .map((nanny) => {
       let score = 40;
@@ -70,10 +76,52 @@ function rankCandidates(
         }
       }
 
+      const nannyBehavior = nanny.riskProfile || {};
+      let mirrorScore = 0;
+      let growthScore = 0;
+
+      if (familyStyle && nannyBehavior.routineStyle) {
+        if (familyStyle === 'structured' && nannyBehavior.routineStyle === 'structured') mirrorScore += 10;
+        if (familyStyle === 'balanced' && nannyBehavior.routineStyle === 'balanced') mirrorScore += 8;
+        if (familyStyle === 'warm' && nannyBehavior.disciplineStyle === 'gentle') mirrorScore += 10;
+      }
+
+      if (nannyStylePref && nannyBehavior.disciplineStyle) {
+        if (nannyStylePref === 'gentle' && nannyBehavior.disciplineStyle === 'gentle') mirrorScore += 6;
+        if (nannyStylePref === 'strict' && nannyBehavior.disciplineStyle === 'strict') mirrorScore += 6;
+        if (nannyStylePref === 'playful' && (nannyBehavior.strengths || []).includes('Игра')) mirrorScore += 6;
+      }
+
+      if (communicationPreference && nannyBehavior.communicationStyle) {
+        if (communicationPreference === nannyBehavior.communicationStyle) mirrorScore += 6;
+      }
+
+      if (childStress && nannyBehavior.tantrumFirstStep) {
+        if (['tantrum', 'cry'].includes(childStress) && nannyBehavior.tantrumFirstStep === 'calm') mirrorScore += 6;
+        if (childStress === 'aggressive' && nannyBehavior.tantrumFirstStep === 'boundaries') mirrorScore += 6;
+        if (childStress === 'withdraw' && nannyBehavior.tantrumFirstStep === 'distract') mirrorScore += 4;
+      }
+
+      const strengths = nannyBehavior.strengths || [];
+      if (deficitNeeds.length && strengths.length) {
+        const matched = deficitNeeds.filter((x) => strengths.includes(x));
+        if (matched.length) {
+          growthScore += Math.min(12, matched.length * 6);
+          reasons.push(`Дополняет семью: ${matched.slice(0, 2).join(", ")}`);
+        }
+      }
+
+      if (mirrorScore > 0) {
+        score += Math.min(18, mirrorScore);
+        reasons.push("Совпадение по стилю семьи");
+      }
+
       if (nanny.softSkills?.rawScore) {
         score += Math.min(8, Math.round(nanny.softSkills.rawScore / 20));
         reasons.push("Есть AI-оценка soft skills");
       }
+
+      score += growthScore;
 
       score = Math.max(0, Math.min(100, score));
       return { nanny, score, reasons };

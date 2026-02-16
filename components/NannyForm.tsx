@@ -61,6 +61,10 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     routineStyle: 'balanced',
     conflictStyle: 'discuss_now',
     emergencyReady: 'yes',
+    disciplineStyle: 'gentle',
+    communicationStyle: 'regular',
+    strengths: [],
+    notBestAt: '',
   });
 
   // Initialize data if editing
@@ -87,6 +91,10 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         routineStyle: initialData.riskProfile?.routineStyle || 'balanced',
         conflictStyle: initialData.riskProfile?.conflictStyle || 'discuss_now',
         emergencyReady: initialData.riskProfile?.emergencyReady || 'yes',
+        disciplineStyle: initialData.riskProfile?.disciplineStyle || 'gentle',
+        communicationStyle: initialData.riskProfile?.communicationStyle || 'regular',
+        strengths: initialData.riskProfile?.strengths || [],
+        notBestAt: initialData.riskProfile?.notBestAt || '',
       });
     }
   }, [initialData]);
@@ -602,6 +610,17 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
             <option value="boundaries">Сразу обозначить границы</option>
           </select>
 
+          <label className="block text-xs text-stone-600">Ваш стиль дисциплины:</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.disciplineStyle || 'gentle'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), disciplineStyle: e.target.value as any }))}
+          >
+            <option value="gentle">Мягкая, поддерживающая</option>
+            <option value="structured">Структурная, с правилами</option>
+            <option value="strict">Строгая</option>
+          </select>
+
           <label className="block text-xs text-stone-600">Ваш стиль режима дня:</label>
           <select
             className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
@@ -612,6 +631,32 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
             <option value="balanced">Баланс</option>
             <option value="adaptive">Гибкая адаптация по ситуации</option>
           </select>
+
+          <label className="block text-xs text-stone-600">Коммуникация с родителями</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.communicationStyle || 'regular'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationStyle: e.target.value as any }))}
+          >
+            <option value="minimal">Минимум сообщений</option>
+            <option value="regular">Регулярно (2–3 апдейта)</option>
+            <option value="frequent">Часто в течение дня</option>
+          </select>
+
+          <ChipGroup
+            label={lang === 'ru' ? 'Мои сильные стороны' : 'My strengths'}
+            options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
+            selected={riskProfile?.strengths || []}
+            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), strengths: list }))}
+          />
+
+          <label className="block text-xs text-stone-600">Что даётся сложнее (честно)</label>
+          <input
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.notBestAt || ''}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), notBestAt: e.target.value }))}
+            placeholder={lang === 'ru' ? 'Например: строгая дисциплина' : 'For example: strict discipline'}
+          />
 
           <label className="block text-xs text-stone-600">Как вы обычно решаете конфликт с родителями?</label>
           <select

@@ -28,6 +28,12 @@ export interface ParentRiskProfile {
   priorityStyle?: 'warmth' | 'discipline' | 'balanced';
   reportingFrequency?: 'daily' | '2_3_times' | 'frequent';
   trustLevel?: 1 | 2 | 3 | 4 | 5;
+  familyStyle?: 'warm' | 'structured' | 'balanced';
+  childStress?: 'cry' | 'withdraw' | 'aggressive' | 'tantrum';
+  triggers?: string[];
+  nannyStylePreference?: 'gentle' | 'strict' | 'playful';
+  communicationPreference?: 'minimal' | 'regular' | 'frequent';
+  deficitNeeds?: string[];
 }
 
 export interface ParentRequest {
@@ -84,6 +90,10 @@ export interface NannyRiskProfile {
   routineStyle?: 'structured' | 'balanced' | 'adaptive';
   conflictStyle?: 'discuss_now' | 'pause_then_discuss' | 'avoid';
   emergencyReady?: 'yes' | 'no';
+  disciplineStyle?: 'gentle' | 'structured' | 'strict';
+  communicationStyle?: 'minimal' | 'regular' | 'frequent';
+  strengths?: string[];
+  notBestAt?: string;
 }
 
 export interface NannyProfile {

@@ -121,6 +121,29 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
         </div>
       </Card>
 
+      <Card className="bg-white border border-stone-100 text-left">
+        <div className="text-sm font-semibold text-stone-800 mb-2">Почему важна минимальная смена нянь</div>
+        <p className="text-sm text-stone-600 leading-relaxed">
+          Для ребёнка няня — это не услуга, а человек привязанности. Частая смена взрослых
+          повышает тревожность, сбивает режим и ухудшает доверие. Стабильность создаёт
+          спокойствие, предсказуемость и лучшее развитие.
+        </p>
+        <div className="mt-3 text-xs text-stone-500">
+          Мы подбираем так, чтобы «свой человек» оставался надолго.
+        </div>
+      </Card>
+
+      <Card className="bg-white border border-stone-100 text-left">
+        <div className="text-sm font-semibold text-stone-800 mb-2">Типы нянь (и как они помогают)</div>
+        <div className="space-y-2 text-sm text-stone-600">
+          <div><span className="font-semibold text-stone-700">Тёплая‑опорная:</span> мягкая, поддерживающая, даёт безопасность.</div>
+          <div><span className="font-semibold text-stone-700">Структурная:</span> режим, границы, устойчивость, меньше хаоса.</div>
+          <div><span className="font-semibold text-stone-700">Игровая‑творческая:</span> раскрывает эмоции и любознательность.</div>
+          <div><span className="font-semibold text-stone-700">Обучающая:</span> развивает навыки и самостоятельность.</div>
+          <div><span className="font-semibold text-stone-700">Активная:</span> энергия, прогулки, движение, спорт.</div>
+        </div>
+      </Card>
+
       <Button onClick={onHome} variant="outline" className="active:scale-95 transition-transform">
         {text.returnHome}
       </Button>

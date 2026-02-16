@@ -67,6 +67,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     nannyStylePreference: initialData?.riskProfile?.nannyStylePreference || 'gentle',
     communicationPreference: initialData?.riskProfile?.communicationPreference || 'regular',
     deficitNeeds: initialData?.riskProfile?.deficitNeeds || [],
+    pcmType: initialData?.riskProfile?.pcmType || 'harmonizer',
   });
 
   const toggleSlot = (dayIndex: number, slotIndex: number) => {
@@ -396,6 +397,22 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
             selected={riskProfile?.deficitNeeds || []}
             onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), deficitNeeds: list }))}
           />
+
+          <label className="block text-xs text-stone-600">Стиль общения (PCM)</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.pcmType || 'harmonizer'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
+          >
+            <option value="thinker">Мыслитель — логика, структура</option>
+            <option value="persister">Надёжный — ценности, ответственность</option>
+            <option value="harmonizer">Тёплый — эмпатия, забота</option>
+            <option value="rebel">Игривый — лёгкость, юмор</option>
+            <option value="imaginer">Спокойный — тишина, пространство</option>
+            <option value="promoter">Действенный — результат, скорость</option>
+          </select>
+
+          <div className="text-[11px] text-stone-500">Подскажем няню со схожим стилем общения.</div>
 
           <label className="block text-xs text-stone-600">Что важнее в стиле няни?</label>
           <select

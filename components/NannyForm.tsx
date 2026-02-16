@@ -65,6 +65,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     communicationStyle: 'regular',
     strengths: [],
     notBestAt: '',
+    pcmType: 'harmonizer',
   });
 
   // Initialize data if editing
@@ -95,6 +96,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         communicationStyle: initialData.riskProfile?.communicationStyle || 'regular',
         strengths: initialData.riskProfile?.strengths || [],
         notBestAt: initialData.riskProfile?.notBestAt || '',
+        pcmType: initialData.riskProfile?.pcmType || 'harmonizer',
       });
     }
   }, [initialData]);
@@ -650,6 +652,20 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
             onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), strengths: list }))}
           />
 
+          <label className="block text-xs text-stone-600">Стиль общения (PCM)</label>
+          <select
+            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            value={riskProfile?.pcmType || 'harmonizer'}
+            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
+          >
+            <option value="thinker">Мыслитель — логика, структура</option>
+            <option value="persister">Надёжный — ценности, ответственность</option>
+            <option value="harmonizer">Тёплый — эмпатия, забота</option>
+            <option value="rebel">Игривый — лёгкость, юмор</option>
+            <option value="imaginer">Спокойный — тишина, пространство</option>
+            <option value="promoter">Действенный — результат, скорость</option>
+          </select>
+
           <label className="block text-xs text-stone-600">Что даётся сложнее (честно)</label>
           <input
             className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
@@ -657,6 +673,8 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
             onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), notBestAt: e.target.value }))}
             placeholder={lang === 'ru' ? 'Например: строгая дисциплина' : 'For example: strict discipline'}
           />
+
+          <div className="text-[11px] text-stone-500">Подскажем семьи с похожим стилем общения.</div>
 
           <label className="block text-xs text-stone-600">Как вы обычно решаете конфликт с родителями?</label>
           <select

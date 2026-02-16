@@ -34,6 +34,7 @@ export interface ParentRiskProfile {
   nannyStylePreference?: 'gentle' | 'strict' | 'playful';
   communicationPreference?: 'minimal' | 'regular' | 'frequent';
   deficitNeeds?: string[];
+  pcmType?: 'thinker' | 'persister' | 'harmonizer' | 'rebel' | 'imaginer' | 'promoter';
 }
 
 export interface ParentRequest {
@@ -94,6 +95,7 @@ export interface NannyRiskProfile {
   communicationStyle?: 'minimal' | 'regular' | 'frequent';
   strengths?: string[];
   notBestAt?: string;
+  pcmType?: 'thinker' | 'persister' | 'harmonizer' | 'rebel' | 'imaginer' | 'promoter';
 }
 
 export interface NannyProfile {

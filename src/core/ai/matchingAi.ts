@@ -35,6 +35,7 @@ function rankCandidates(
   const nannyStylePref = request.riskProfile?.nannyStylePreference;
   const childStress = request.riskProfile?.childStress;
   const deficitNeeds = request.riskProfile?.deficitNeeds || [];
+  const parentPcm = request.riskProfile?.pcmType;
 
   return candidates
     .map((nanny) => {
@@ -109,6 +110,11 @@ function rankCandidates(
           growthScore += Math.min(12, matched.length * 6);
           reasons.push(`Дополняет семью: ${matched.slice(0, 2).join(", ")}`);
         }
+      }
+
+      if (parentPcm && nannyBehavior.pcmType && parentPcm === nannyBehavior.pcmType) {
+        mirrorScore += 6;
+        reasons.push("Совпадение по стилю общения (PCM)");
       }
 
       if (mirrorScore > 0) {

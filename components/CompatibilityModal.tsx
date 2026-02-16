@@ -215,7 +215,7 @@ const COMPATIBILITY_DATA = {
   ru: [
     {
       id: 1,
-      title: "Blizko Mirror+.\nСовместимость, которая чувствуется.",
+      title: "Blizko+ — подбор, который объясним.",
       text: "Няня = продолжение семьи + добавляет то, чего не хватает.\n\nМы подбираем по ценностям, стилю общения и поведенческому совпадению — с гарантией прихода и объяснимым выбором.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
@@ -261,7 +261,7 @@ const COMPATIBILITY_DATA = {
   en: [
     {
       id: 1,
-      title: "Blizko Mirror+.\nCompatibility you can feel.",
+      title: "Blizko+ — explainable matching.",
       text: "A nanny is an extension of the family + brings what’s missing.\n\nWe match by values, communication style, and behavioral fit — with arrival guarantee and explainable selection.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />

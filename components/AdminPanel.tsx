@@ -477,7 +477,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <h2 className="font-bold text-lg text-stone-800">Админ-панель</h2>
             <p className="text-xs text-stone-500">Локальные данные / модерация / управление</p>
             <div className="mt-2 text-[10px] text-amber-700 bg-amber-50 border border-amber-100 rounded-md px-2 py-1 inline-block">
-              Blizko Mirror+ • объяснимый подбор + гарантия прихода
+              Blizko+ — подбор, который объясним • гарантия прихода
             </div>
           </div>
           <button

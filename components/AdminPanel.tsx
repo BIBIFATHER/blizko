@@ -1106,7 +1106,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             )}
           </div>
         </div>
-
+      )}
 
       {calendarNanny && (
         <div className="fixed inset-0 z-[80] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -1134,7 +1134,6 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             </div>
           </div>
         </div>
-      )}
       )}
     </div>
   );

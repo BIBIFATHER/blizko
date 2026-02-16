@@ -90,13 +90,6 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
           </p>
         </div>
 
-        {/* Brand Core */}
-        <Card className="bg-white border border-amber-100 text-left">
-          <div className="text-[11px] font-bold text-amber-600 uppercase tracking-widest mb-1">Blizko Mirror+</div>
-          <div className="text-sm text-stone-700">Няня = продолжение семьи + добавляет то, чего не хватает.</div>
-          <div className="text-xs text-stone-500 mt-1">Гарантия прихода и объяснимый подбор.</div>
-        </Card>
-
         {/* Actions */}
         <div className="space-y-4">
           <Button onClick={onFindNanny}>

@@ -215,8 +215,8 @@ const COMPATIBILITY_DATA = {
   ru: [
     {
       id: 1,
-      title: "Human + AI.\nНовый стандарт поиска.",
-      text: "«Близко» объединяет эмпатию людей и точность нейросетей.\n\nМы используем технологии не чтобы заменить живое общение, а чтобы увидеть то, что обычно скрыто от глаз.",
+      title: "Blizko Mirror+.\nСовместимость, которая чувствуется.",
+      text: "Няня = продолжение семьи + добавляет то, чего не хватает.\n\nМы подбираем по ценностям, стилю общения и поведенческому совпадению — с гарантией прихода и объяснимым выбором.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },
@@ -261,8 +261,8 @@ const COMPATIBILITY_DATA = {
   en: [
     {
       id: 1,
-      title: "Human + AI.\nThe New Standard.",
-      text: "Blizko combines human empathy with the precision of neural networks.\n\nWe use technology not to replace human connection, but to see what is usually hidden from the eye.",
+      title: "Blizko Mirror+.\nCompatibility you can feel.",
+      text: "A nanny is an extension of the family + brings what’s missing.\n\nWe match by values, communication style, and behavioral fit — with arrival guarantee and explainable selection.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },

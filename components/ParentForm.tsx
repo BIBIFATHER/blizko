@@ -190,9 +190,6 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-stone-800">{initialData ? 'Редактировать заявку' : text.pFormTitle}</h2>
         <p className="text-stone-500">{initialData ? 'Обновите данные вашей заявки' : text.pFormSubtitle}</p>
-        <div className="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2">
-          <span className="font-semibold">Blizko Mirror+</span> — продолжение семьи + добавляет дефицит. Подбор объяснимый.
-        </div>
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">

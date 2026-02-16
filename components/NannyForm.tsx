@@ -268,9 +268,6 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           {initialData ? (lang === 'ru' ? 'Редактирование профиля' : 'Edit Profile') : text.nFormTitle}
         </h2>
         <p className="text-stone-500">{text.nFormSubtitle}</p>
-        <div className="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2">
-          <span className="font-semibold">Blizko Mirror+</span> — мы подбираем семьи, с которыми ваш стиль совпадает и дополняет их.
-        </div>
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">

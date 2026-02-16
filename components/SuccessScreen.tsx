@@ -108,10 +108,12 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
             <div className="bg-white/80 border border-amber-100 rounded-xl p-3">
               <div className="text-[11px] font-bold text-amber-600 uppercase tracking-widest mb-1">Mirror</div>
               <div className="text-sm text-stone-600">Совпали по стилю: мягкая дисциплина, спокойная коммуникация</div>
+              <div className="mt-2 text-[11px] text-stone-500">PCM‑совместимость: «Тёплый ↔ Тёплый» — легко выстраивается контакт</div>
             </div>
             <div className="bg-white/80 border border-sky-100 rounded-xl p-3">
               <div className="text-[11px] font-bold text-sky-600 uppercase tracking-widest mb-1">Growth</div>
               <div className="text-sm text-stone-600">Добавляет: структура и устойчивость к стрессу</div>
+              <div className="mt-2 text-[11px] text-stone-500">PCM‑канал общения: тёплый, поддерживающий, без давления</div>
             </div>
             <div className="bg-white/80 border border-green-100 rounded-xl p-3">
               <div className="text-[11px] font-bold text-green-600 uppercase tracking-widest mb-1">Stability</div>

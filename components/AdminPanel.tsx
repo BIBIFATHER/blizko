@@ -1120,7 +1120,10 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <X size={16} />
               </button>
             </div>
-            <div className="p-4">
+            <div className="p-4 space-y-3">
+              <div className="bg-amber-50 border border-amber-100 text-amber-700 text-[11px] rounded-lg p-2">
+                Гарантия: активна • Резерв: назначен • Подтверждения: T‑24ч ✅ · T‑3–4ч ⏳
+              </div>
               <AvailabilityCalendar
                 title="Сетка недели"
                 subtitle="Слоты: свободно / резерв / занято"

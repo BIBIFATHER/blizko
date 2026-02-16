@@ -706,6 +706,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                              </div>
 
                              <div className="grid grid-cols-1 gap-2">
+                               <div className="bg-white/70 border border-amber-200 rounded-lg p-2 text-[11px] text-amber-700">
+                                 <div className="font-semibold">Гарантия активна</div>
+                                 <div>Резерв: Ольга П. (на подмене)</div>
+                                 <div>Подтверждения: T‑24ч ✅ · T‑3ч ⏳</div>
+                               </div>
                                <Button 
                                  onClick={() => setChatBooking(activeBooking)} 
                                  className="py-3 text-sm bg-stone-800 text-white hover:bg-stone-700"
@@ -856,7 +861,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                 <X size={16} />
               </button>
             </div>
-            <div className="p-4">
+            <div className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-2 text-[11px] text-stone-600">
+                <div className="bg-stone-50 border border-stone-200 rounded-lg p-2">Подтверждение T‑24ч: ✅</div>
+                <div className="bg-stone-50 border border-stone-200 rounded-lg p-2">Подтверждение T‑3–4ч: ⏳</div>
+              </div>
               <AvailabilityCalendar
                 title="Сетка недели"
                 subtitle="Клик — сменить статус (резерв → занято → свободно)"

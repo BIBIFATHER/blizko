@@ -51,6 +51,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     comment: initialData?.comment || '',
     dateFrom: '',
     dateTo: '',
+    analysisNotes: '',
   });
 
   const [selectedSlots, setSelectedSlots] = useState<Record<string, boolean>>({});
@@ -99,13 +100,16 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
       const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
       const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
       const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
+      const analysisNotes = formData.analysisNotes?.trim()
+        ? `\n\n[Для анализа]\n${formData.analysisNotes.trim()}`
+        : '';
 
       await onSubmit({
         city: formData.city,
         childAge: formData.childAge,
         schedule: formData.schedule,
         budget,
-        comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}`.trim(),
+        comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}${analysisNotes}`.trim(),
         requirements,
         documents,
         riskProfile,
@@ -294,12 +298,6 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           />
         </div>
 
-        <ChipGroup 
-          label={text.importantLabel}
-          options={text.reqOptions}
-          selected={requirements}
-          onChange={setRequirements}
-        />
 
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
           <div className="text-xs font-semibold text-violet-700 mb-2">Дополнительные параметры</div>
@@ -327,6 +325,16 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
               <option value="yes">Ночные смены: да</option>
             </select>
           </div>
+        </div>
+
+        <div className="bg-white border border-stone-200 rounded-xl p-3">
+          <div className="text-xs font-semibold text-stone-700 mb-2">Для точного анализа</div>
+          <Textarea
+            label={lang === 'ru' ? 'Что важно знать о ребёнке и семье?' : 'What should we know about your family?'}
+            placeholder={lang === 'ru' ? 'Режим, привычки, триггеры, что недопустимо — всё, что поможет подобрать идеального человека.' : 'Routine, triggers, non-negotiables — anything that helps match the right person.'}
+            value={formData.analysisNotes}
+            onChange={e => setFormData({...formData, analysisNotes: e.target.value})}
+          />
         </div>
 
         <Textarea 

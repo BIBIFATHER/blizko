@@ -303,7 +303,7 @@ export default function App() {
           <div className="text-[10px] leading-snug text-stone-400">
             <div className="flex items-center justify-center gap-3">
               <a href="/privacy" className="underline hover:text-stone-500">Политика конфиденциальности</a>
-              <a href="/offer" className="underline hover:text-stone-500">Оферта</a>
+              <a href="/offer.html" className="underline hover:text-stone-500">Оферта</a>
             </div>
             <div className="mt-2">
               ИП Аносов Антон Владимирович · ИНН 710513782849 · ОГРНИП 324344300006654

@@ -7,6 +7,7 @@ import {
 } from "../services/storage";
 import { ParentRequest, NannyProfile, DocumentVerification } from "../types";
 import { Button, Card } from "./UI";
+import { AvailabilityCalendar, SlotStatus } from "./AvailabilityCalendar";
 import { notifyUserStatusChanged } from "../services/notifications";
 import { supabase } from "../services/supabase";
 import {
@@ -42,6 +43,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [rejectReasonCode, setRejectReasonCode] = useState<'profile_incomplete' | 'docs_missing' | 'budget_invalid' | 'contact_invalid' | 'other'>('profile_incomplete');
   const [rejectReasonText, setRejectReasonText] = useState('');
   const [previewDoc, setPreviewDoc] = useState<{ url: string; name?: string } | null>(null);
+  const [calendarNanny, setCalendarNanny] = useState<NannyProfile | null>(null);
 
   const loadData = async () => {
     const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
@@ -143,6 +145,19 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const isProblematicNanny = (n: NannyProfile) => {
     const f = getNannyFlags(n);
     return f.noDocs || f.hasRejected || f.hasPending || f.unverified || f.lowConfidence;
+  };
+
+  const buildCalendarMap = (nanny: NannyProfile): Record<string, SlotStatus> => {
+    const map: Record<string, SlotStatus> = {};
+    const seed = (nanny.id || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    for (let d = 0; d < 7; d++) {
+      for (let s = 0; s < 6; s++) {
+        const v = (seed + d * 7 + s * 13) % 10;
+        if (v < 2) map[`${d}-${s}`] = 'busy';
+        else if (v < 4) map[`${d}-${s}`] = 'reserved';
+      }
+    }
+    return map;
   };
 
   const filteredParents = useMemo(() => {
@@ -842,6 +857,13 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             <PlayCircle size={14} /> Смотреть видео
                           </button>
                         )}
+
+                        <button
+                          onClick={() => setCalendarNanny(n)}
+                          className="text-xs font-bold px-3 py-2 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200"
+                        >
+                          Календарь занятости
+                        </button>
                       </div>
 
                       {n.softSkills && (
@@ -1084,6 +1106,32 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             )}
           </div>
         </div>
+
+
+      {calendarNanny && (
+        <div className="fixed inset-0 z-[80] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden">
+            <div className="p-4 border-b border-stone-100 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold text-stone-800">Календарь няни: {calendarNanny.name}</div>
+                <div className="text-xs text-stone-500">Просмотр администратором</div>
+              </div>
+              <button onClick={() => setCalendarNanny(null)} className="p-2 rounded-full hover:bg-stone-100">
+                <X size={16} />
+              </button>
+            </div>
+            <div className="p-4">
+              <AvailabilityCalendar
+                title="Сетка недели"
+                subtitle="Слоты: свободно / резерв / занято"
+                statusMap={buildCalendarMap(calendarNanny)}
+                readonly
+                legend
+              />
+            </div>
+          </div>
+        </div>
+      )}
       )}
     </div>
   );

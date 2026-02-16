@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card } from './UI';
+import { AvailabilityCalendar, SlotStatus } from './AvailabilityCalendar';
 import { X, User as UserIcon, LogOut, Clock, Calendar, MessageSquare, CheckCircle, Wallet, Star, ShieldCheck, MapPin, Briefcase, MessageCircle, Edit, Lock, Phone, Mail, BadgeCheck, LifeBuoy } from 'lucide-react';
 import { Language, User, Booking, Review, NannyProfile, ParentRequest } from '../types';
 import { t } from '../src/core/i18n/translations';
@@ -44,6 +45,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
   const [phoneStep, setPhoneStep] = useState<'idle' | 'code' | 'verified'>('idle');
   const [phoneVerifyLoading, setPhoneVerifyLoading] = useState(false);
   const [phoneVerifyError, setPhoneVerifyError] = useState('');
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarSlots, setCalendarSlots] = useState<Record<string, SlotStatus>>({
+    '0-1': 'reserved',
+    '1-2': 'available',
+    '2-3': 'busy',
+    '3-4': 'available',
+    '4-2': 'reserved',
+  });
   
   // Mock Earnings
   const earnedTotal = 12500;
@@ -276,6 +285,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
 
   const hasAnyNewModeration = myParentRequests.some((req) => hasNewModerationUpdate(req));
 
+  const toggleCalendarSlot = (dayIndex: number, slotIndex: number) => {
+    const key = `${dayIndex}-${slotIndex}`;
+    setCalendarSlots((prev) => {
+      const current = prev[key] || 'available';
+      const next: SlotStatus = current === 'busy' ? 'available' : current === 'reserved' ? 'busy' : 'reserved';
+      return { ...prev, [key]: next };
+    });
+  };
+
   const openSupportChat = () => {
     window.dispatchEvent(new CustomEvent('blizko:open-support-chat'));
   };
@@ -455,6 +473,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                    <>
                     <Button onClick={() => onEditProfile && onEditProfile(myNannyProfile)} className="bg-amber-100 text-amber-900 hover:bg-amber-200">
                       <Edit size={16} /> {myNannyProfile ? (lang === 'ru' ? 'Редактировать анкету' : 'Edit Profile') : (lang === 'ru' ? 'Заполнить анкету' : 'Fill Profile')}
+                    </Button>
+
+                    <Button onClick={() => setShowCalendar(true)} className="bg-sky-100 text-sky-800 hover:bg-sky-200">
+                      <Calendar size={16} /> {lang === 'ru' ? 'Календарь занятости' : 'Availability Calendar'}
                     </Button>
 
                     <Card className={`!p-5 text-white flex justify-between items-center shadow-lg transition-colors ${!isRegistrationPaid ? 'bg-stone-800 shadow-stone-200' : 'bg-[#6C2586] shadow-purple-200'}`}>
@@ -819,6 +841,32 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
           onSubmit={handleReviewSubmit}
           lang={lang}
         />
+      )}
+
+
+      {showCalendar && (
+        <div className="fixed inset-0 z-[60] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
+            <div className="p-4 border-b border-stone-100 flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold text-stone-800">Календарь занятости няни</div>
+                <div className="text-xs text-stone-500">Отмечайте приоритетные окна и занятые слоты</div>
+              </div>
+              <button onClick={() => setShowCalendar(false)} className="p-2 rounded-full hover:bg-stone-100">
+                <X size={16} />
+              </button>
+            </div>
+            <div className="p-4">
+              <AvailabilityCalendar
+                title="Сетка недели"
+                subtitle="Клик — сменить статус (резерв → занято → свободно)"
+                statusMap={calendarSlots}
+                onToggle={toggleCalendarSlot}
+                legend
+              />
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

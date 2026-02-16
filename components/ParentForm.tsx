@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Textarea, ChipGroup } from './UI';
+import { AvailabilityCalendar } from './AvailabilityCalendar';
 import { ParentRequest, Language } from '../types';
 import { ArrowLeft, Upload, MapPin } from 'lucide-react';
 import { ParentOfferModal } from './ParentOfferModal';
@@ -47,8 +48,12 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     schedule: initialData?.schedule || '',
     budgetHourly: parsedBudget.hourly,
     budgetMonthly: parsedBudget.monthly,
-    comment: initialData?.comment || ''
+    comment: initialData?.comment || '',
+    dateFrom: '',
+    dateTo: '',
   });
+
+  const [selectedSlots, setSelectedSlots] = useState<Record<string, boolean>>({});
   
   const [requirements, setRequirements] = useState<string[]>(initialData?.requirements || []);
   const [documents, setDocuments] = useState(initialData?.documents || []);
@@ -57,6 +62,22 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     reportingFrequency: initialData?.riskProfile?.reportingFrequency || '2_3_times',
     trustLevel: initialData?.riskProfile?.trustLevel || 3,
   });
+
+  const toggleSlot = (dayIndex: number, slotIndex: number) => {
+    const key = `${dayIndex}-${slotIndex}`;
+    setSelectedSlots((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const summarizeSlots = () => {
+    const keys = Object.keys(selectedSlots).filter((k) => selectedSlots[k]);
+    if (keys.length === 0) return '';
+    return keys.map((k) => {
+      const [d, s] = k.split('-').map(Number);
+      const day = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][d] || '';
+      const slot = ['08–10','10–12','12–14','14–16','16–18','18–20'][s] || '';
+      return `${day} ${slot}`;
+    }).join(', ');
+  };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,13 +91,14 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     try {
       const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
       const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
+      const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
 
       await onSubmit({
         city: formData.city,
         childAge: formData.childAge,
         schedule: formData.schedule,
         budget,
-        comment: `${formData.comment || ''}${advancedNotes}`.trim(),
+        comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}`.trim(),
         requirements,
         documents,
         riskProfile,
@@ -222,6 +244,31 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           onChange={(s) => setFormData({...formData, schedule: s[0] || ''})}
           single
         />
+
+        <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
+          <div className="text-sm font-semibold text-stone-700">Календарь бронирования</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input
+              label={lang === 'ru' ? 'Дата начала' : 'Start date'}
+              type="date"
+              value={formData.dateFrom}
+              onChange={(e) => setFormData({ ...formData, dateFrom: e.target.value })}
+            />
+            <Input
+              label={lang === 'ru' ? 'Дата окончания' : 'End date'}
+              type="date"
+              value={formData.dateTo}
+              onChange={(e) => setFormData({ ...formData, dateTo: e.target.value })}
+            />
+          </div>
+          <AvailabilityCalendar
+            title={lang === 'ru' ? 'Выберите удобные окна' : 'Select preferred slots'}
+            subtitle={lang === 'ru' ? 'Можно отметить несколько слотов в неделю' : 'Mark multiple slots across the week'}
+            statusMap={Object.fromEntries(Object.entries(selectedSlots).map(([k, v]) => [k, v ? 'selected' : 'available']))}
+            onToggle={toggleSlot}
+            legend
+          />
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input 

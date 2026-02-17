@@ -10,6 +10,7 @@
 - Growth/Marketing
 - CFO/Finance
 - Legal/Compliance
+- Recruiting/Onboarding (HH)
 
 ## Communication protocol (между агентами)
 - **Daily sync (async):**

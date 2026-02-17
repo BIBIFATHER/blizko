@@ -558,7 +558,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   Новые/обновлённые заявки родителей: {unseenParentsCount}
                 </div>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               <Card className="!p-4">
                 <div className="text-xs text-stone-500">Заявки родителей</div>
                 <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
@@ -573,6 +573,13 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <div className="text-xs text-stone-500">Анкеты нянь</div>
                 <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
                   <Users size={18} /> {nannies.length}
+                </div>
+              </Card>
+
+              <Card className="!p-4 bg-sky-50 border-sky-100">
+                <div className="text-xs text-stone-500">Документы загружены</div>
+                <div className="text-2xl font-bold text-sky-700 mt-1 flex items-center gap-2">
+                  <FileCheck2 size={18} /> {stats.withDocs}
                 </div>
               </Card>
 

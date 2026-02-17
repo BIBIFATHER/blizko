@@ -211,7 +211,13 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       (acc, n) => acc + (n.documents || []).filter((d) => d.status === "pending").length,
       0
     );
-    return { verified, withDocs, pendingDocs };
+    const aReady = nannies.filter((n) => {
+      const docs = n.documents || [];
+      const hasPassport = docs.some((d) => d.type === "passport" && d.fileDataUrl);
+      const hasResume = docs.some((d) => d.type === "resume" && d.fileDataUrl);
+      return hasPassport && hasResume;
+    }).length;
+    return { verified, withDocs, pendingDocs, aReady };
   }, [nannies]);
 
   const escapeCsv = (value: unknown) => {
@@ -558,7 +564,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   Новые/обновлённые заявки родителей: {unseenParentsCount}
                 </div>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
               <Card className="!p-4">
                 <div className="text-xs text-stone-500">Заявки родителей</div>
                 <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
@@ -573,6 +579,13 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <div className="text-xs text-stone-500">Анкеты нянь</div>
                 <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
                   <Users size={18} /> {nannies.length}
+                </div>
+              </Card>
+
+              <Card className="!p-4 bg-indigo-50 border-indigo-100">
+                <div className="text-xs text-stone-500">A-ready (паспорт+резюме)</div>
+                <div className="text-2xl font-bold text-indigo-700 mt-1 flex items-center gap-2">
+                  <CheckCircle size={18} /> {stats.aReady}
                 </div>
               </Card>
 

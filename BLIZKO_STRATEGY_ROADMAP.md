@@ -96,6 +96,28 @@
 
 ## V. Roadmap с приоритетами
 
+## Execution Timeline (Weeks 1–8)
+**Weeks 1–2: Запуск сделок (Days 1–14)**
+- Day 1–7: верификация MVP, рекомендации, OSINT-hard, триаж 30–50 нянь, первые сделки
+- Day 8–14: стабилизация воронки, фидбэк после визита, ядро 30–50 verified
+**Результат:** первые сделки + стабильная воронка
+
+**Weeks 3–4: Платежи и масштаб (Days 15–28)**
+- Day 15–21: ЮKassa (create payment + webhook + payments table)
+- Day 22–28: 100+ нянь в пуле, регулярные сделки, улучшение SLA
+**Результат:** платежи в работе + устойчивый поток
+
+**Weeks 5–6: App Store readiness (Days 29–42)**
+- Day 29–35: финальный UX‑полиш, удаление аккаунта/данных, privacy/terms
+- Day 36–42: Capacitor wrapper + TestFlight (internal → external)
+**Результат:** TestFlight готов
+
+**Weeks 7–8: Релиз (Days 43–56)**
+- Day 43–49: App Store Connect, скриншоты, metadata
+- Day 50–56: Review + релиз
+**Результат:** App Store релиз
+
+
 ## Phase 1 — MVP Foundation (сейчас)
 **Цель:** запустить стабильный цикл заявка → модерация → обратная связь.
 

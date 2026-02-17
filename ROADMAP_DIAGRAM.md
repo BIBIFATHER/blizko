@@ -86,3 +86,68 @@ flowchart TB
 
   KB --> CM --> ST --> PAY --> OPS --> MOB
 ```
+
+## 7) Services to Connect (Now vs Planned)
+```mermaid
+flowchart TB
+  subgraph Core[Core 🟩]
+    SB[Supabase (DB/Auth/Storage) 🟩]
+    VERCEL[Vercel API/Hosting 🟩]
+  end
+
+  subgraph Ops[Ops/Comms]
+    SMS[SMSAero (OTP) 🟩]
+    RESEND[Resend (email) 🟩]
+    TG[Telegram bot (ops) 🟩]
+    PUSH[Push notifications 🟦]
+  end
+
+  subgraph Analytics[Observability]
+    SENTRY[Sentry 🟩]
+    ANALYTICS[Product analytics 🟦]
+  end
+
+  subgraph Payments[Payments]
+    YK[ЮKassa (create payment + webhook + payments table) 🟦]
+  end
+
+  subgraph AI[AI/Verification]
+    AIAPI[AI provider (matching/document) 🟩]
+    OCR[OCR/MRZ + face‑match 🟦]
+    OSINT[OSINT checks 🟦]
+  end
+
+  Core --> Ops
+  Core --> Analytics
+  Core --> Payments
+  Core --> AI
+```
+
+## 8) Roles & Master Roles (Owners)
+```mermaid
+flowchart TB
+  subgraph Product[Product]
+    PL[Product Lead (master) 🟩]
+    UX[UX/Design 🟦]
+  end
+
+  subgraph Ops[Operations]
+    OPSL[Ops Lead (master) 🟩]
+    MOD[Moderators 🟦]
+    QA[Quality Control 🟦]
+  end
+
+  subgraph Tech[Tech]
+    ENG[Engineering Lead (master) 🟩]
+    DATA[Data/ML 🟦]
+  end
+
+  subgraph Legal[Legal/Compliance]
+    LEG[Legal owner (master) 🟦]
+    DPO[DPO / privacy 🟦]
+  end
+
+  PL --> OPSL
+  PL --> ENG
+  PL --> LEG
+```

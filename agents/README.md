@@ -6,6 +6,7 @@
 3) **Ops/Moderation** — воронка нянь, SLA, ручные матчи, операционный ритм.
 
 ## Expansion agents (add later)
+- Design/UX (universal)
 - Trust/Safety
 - Growth/Marketing
 - CFO/Finance

@@ -83,7 +83,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
 
       <div className="flex flex-col min-h-full animate-fade-in space-y-10 pb-10">
         {/* Hero */}
-        <div className="text-center space-y-4 pt-10 sm:pt-12">
+        <div className="text-center space-y-4 pt-10 sm:pt-12 bg-gradient-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
           <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">
             Blizko
           </div>
@@ -94,6 +94,17 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
             </span>
             {heroSubtitleParts[1]}
           </p>
+          <div className="flex flex-wrap justify-center gap-2 text-xs font-medium text-stone-600">
+            <span className="px-3 py-1 rounded-full bg-white/90 border border-stone-200/70 shadow-sm">
+              {lang === 'ru' ? 'Проверка документов' : 'Document check'}
+            </span>
+            <span className="px-3 py-1 rounded-full bg-white/90 border border-stone-200/70 shadow-sm">
+              {lang === 'ru' ? 'Подбор за 24ч' : '24h matching'}
+            </span>
+            <span className="px-3 py-1 rounded-full bg-white/90 border border-stone-200/70 shadow-sm">
+              {lang === 'ru' ? 'Чат с няней' : 'Chat with nanny'}
+            </span>
+          </div>
         </div>
 
         {/* Actions */}

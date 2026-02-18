@@ -67,6 +67,8 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
     return text.split('. ').filter(s => s.trim().length > 0).map(s => s.trim().endsWith('.') ? s : s + '.');
   };
 
+  const heroSubtitleParts = text.heroSubtitle.split('Humanity+');
+
   return (
     <>
       <style>{`
@@ -81,12 +83,16 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
 
       <div className="flex flex-col min-h-full animate-fade-in space-y-10 px-4 sm:px-6 max-w-md sm:max-w-lg mx-auto">
         {/* Hero */}
-        <div className="text-center space-y-3 pt-4">
+        <div className="text-center space-y-3 pt-10 sm:pt-12">
           <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">
             Blizko
           </div>
           <p className="text-stone-500 text-base sm:text-lg max-w-md mx-auto leading-7">
-            {text.heroSubtitle}
+            {heroSubtitleParts[0]}
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">
+              Humanity+
+            </span>
+            {heroSubtitleParts[1]}
           </p>
         </div>
 

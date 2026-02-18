@@ -79,13 +79,13 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
         }
       `}</style>
 
-      <div className="flex flex-col min-h-full animate-fade-in space-y-8">
+      <div className="flex flex-col min-h-full animate-fade-in space-y-10">
         {/* Hero */}
         <div className="text-center space-y-4 pt-4">
           <h1 className="text-4xl font-semibold text-stone-800 tracking-tight">
             {text.heroTitle}
           </h1>
-          <p className="text-stone-500 text-lg max-w-xs mx-auto leading-relaxed">
+          <p className="text-stone-500 text-lg max-w-sm mx-auto leading-relaxed">
             {text.heroSubtitle}
           </p>
         </div>
@@ -101,52 +101,60 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
         </div>
 
         {/* Trust Blocks */}
-        <div className="grid gap-4 mt-8">
-          <h2 className="text-center text-stone-400 text-sm uppercase tracking-wider font-medium mb-2">
+        <div className="space-y-4">
+          <h2 className="text-center text-stone-400 text-sm uppercase tracking-wider font-medium">
             {text.whyTrust}
           </h2>
           
-          {trustBlocks.map((block) => (
-            <Card 
-              key={block.id}
-              onClick={() => handleBlockClick(block)}
-              className="flex items-center gap-4 py-5 cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all active:scale-[0.99] group border-transparent hover:border-stone-100"
-              role="button"
-              tabIndex={0}
-            >
-              <div className={`${block.colorClass} p-3 rounded-full transition-transform group-hover:scale-110`}>
-                {block.icon}
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-stone-800 flex items-center gap-2">
-                  {block.title}
-                </h3>
-                <p className="text-sm text-stone-500 leading-tight mt-1 mb-1">{block.desc}</p>
-                <span className="text-xs font-medium text-stone-400 group-hover:text-amber-500 transition-colors">
-                  {lang === 'ru' ? 'Подробнее...' : 'More details...'}
-                </span>
-              </div>
-              <ChevronRight size={20} className="text-stone-300 group-hover:text-stone-500 transition-colors" />
-            </Card>
-          ))}
-        </div>
-
-        {/* Explainable Match */}
-        <div className="mt-6 bg-white/70 border border-stone-100 rounded-2xl p-5 shadow-sm">
-          <h3 className="text-stone-800 font-semibold text-lg mb-2">
-            {text.explainTitle}
-          </h3>
-          <p className="text-sm text-stone-500 leading-relaxed mb-4">
-            {text.explainText}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {[text.explainBadge1, text.explainBadge2, text.explainBadge3, text.explainBadge4].map((badge, i) => (
-              <span key={i} className="px-3 py-1 rounded-full text-xs bg-stone-100 text-stone-600">
-                {badge}
-              </span>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {trustBlocks.map((block) => (
+              <Card 
+                key={block.id}
+                onClick={() => handleBlockClick(block)}
+                className="flex items-center gap-4 py-5 cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all active:scale-[0.99] group border-transparent hover:border-stone-100"
+                role="button"
+                tabIndex={0}
+              >
+                <div className={`${block.colorClass} p-3 rounded-full transition-transform group-hover:scale-110`}>
+                  {block.icon}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-stone-800 flex items-center gap-2">
+                    {block.title}
+                  </h3>
+                  <p className="text-sm text-stone-500 leading-tight mt-1 mb-1">
+                    {block.desc}
+                  </p>
+                  <span className="text-xs font-medium text-stone-400 group-hover:text-amber-500 transition-colors">
+                    {lang === 'ru' ? 'Подробнее...' : 'More details...'}
+                  </span>
+                </div>
+                <ChevronRight size={20} className="text-stone-300 group-hover:text-stone-500 transition-colors" />
+              </Card>
             ))}
           </div>
         </div>
+
+        {/* Explainable Match */}
+        <Card className="border-stone-100">
+          <div className="p-6 space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-stone-800 font-semibold text-lg">
+                {text.explainTitle}
+              </h3>
+              <p className="text-sm text-stone-500 leading-relaxed">
+                {text.explainText}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[text.explainBadge1, text.explainBadge2, text.explainBadge3, text.explainBadge4].map((badge, i) => (
+                <span key={i} className="px-3 py-1 rounded-full text-xs bg-stone-100 text-stone-600">
+                  {badge}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Deep Dive Modal (Verification & Compatibility & Support) */}

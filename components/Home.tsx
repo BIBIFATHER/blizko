@@ -79,19 +79,19 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
         }
       `}</style>
 
-      <div className="flex flex-col min-h-full animate-fade-in space-y-10">
+      <div className="flex flex-col min-h-full animate-fade-in space-y-10 px-4 sm:px-6 max-w-md sm:max-w-lg mx-auto">
         {/* Hero */}
         <div className="text-center space-y-3 pt-4">
-          <h1 className="text-3xl sm:text-4xl font-semibold text-stone-800 tracking-tight leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-semibold text-stone-900 tracking-tight leading-[1.1]">
             {text.heroTitle}
           </h1>
-          <p className="text-stone-500 text-base sm:text-lg max-w-md mx-auto leading-relaxed">
+          <p className="text-stone-500 text-base sm:text-lg max-w-md mx-auto leading-7">
             {text.heroSubtitle}
           </p>
         </div>
 
         {/* Actions */}
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3 mt-2">
           <Button onClick={onFindNanny}>
             {text.findNanny}
           </Button>
@@ -102,7 +102,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
 
         {/* Trust Blocks */}
         <div className="space-y-5">
-          <h2 className="text-center text-stone-400 text-sm uppercase tracking-wider font-medium">
+          <h2 className="text-center text-stone-500 text-xs uppercase tracking-[0.2em] font-semibold">
             {text.whyTrust}
           </h2>
           
@@ -111,21 +111,21 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
               <Card 
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
-                className="flex items-center gap-4 py-5 cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all active:scale-[0.99] group border-transparent hover:border-stone-100"
+                className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all active:scale-[0.99] group border-transparent hover:border-stone-100"
                 role="button"
                 tabIndex={0}
               >
-                <div className={`${block.colorClass} p-3 rounded-full transition-transform group-hover:scale-110`}>
+                <div className={`${block.colorClass} p-2.5 sm:p-3 rounded-full transition-transform group-hover:scale-110`}>
                   {block.icon}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-stone-800">
+                  <h3 className="text-base sm:text-lg font-semibold text-stone-800 leading-snug">
                     {block.title}
                   </h3>
-                  <p className="text-sm text-stone-500 leading-tight mt-1">
+                  <p className="text-sm text-stone-500 leading-relaxed mt-1">
                     {block.desc}
                   </p>
-                  <span className="text-xs font-medium text-stone-400 group-hover:text-amber-500 transition-colors">
+                  <span className="mt-2 inline-block text-xs font-medium text-amber-500 group-hover:text-amber-600 transition-colors">
                     {lang === 'ru' ? 'Подробнее...' : 'More details...'}
                   </span>
                 </div>

@@ -214,22 +214,27 @@ export default function App() {
       <div className="absolute top-4 right-4 top-safe z-20 flex items-center gap-2 pr-safe">
         
         <button 
+          type="button"
           onClick={handleShare}
           className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
           title={t[lang].share}
+          aria-label={t[lang].share}
         >
           <Share2 size={16} />
         </button>
 
         <button 
+          type="button"
           onClick={toggleLanguage}
           className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
+          aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
         >
           {lang === 'ru' ? 'EN' : 'RU'}
         </button>
 
         {!user ? (
           <button 
+            type="button"
             onClick={() => setAuthOpen(true)}
             className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
           >
@@ -241,6 +246,7 @@ export default function App() {
               {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
             </span>
             <button 
+              type="button"
               onClick={() => setProfileOpen(true)}
               className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
               title={user.email || user.name}
@@ -309,6 +315,7 @@ export default function App() {
           </div>
           {user?.email && adminEmails.includes(user.email.toLowerCase()) && (
             <button 
+              type="button"
               onClick={() => setAdminOpen(true)} 
               className="mt-2 opacity-30 hover:opacity-100 transition-opacity"
             >

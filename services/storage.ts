@@ -5,14 +5,27 @@ import { supabase } from './supabase';
 const STORAGE_KEY_PARENTS = 'blizko_parents';
 const STORAGE_KEY_NANNIES = 'blizko_nannies';
 
+const safeJsonParse = <T>(value: string, fallback: T): T => {
+  try {
+    const parsed = JSON.parse(value) as T;
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 const getLocalParents = (): ParentRequest[] => {
   const data = getItem(STORAGE_KEY_PARENTS);
-  return data ? JSON.parse(data) : [];
+  if (!data) return [];
+  const parsed = safeJsonParse<ParentRequest[]>(data, []);
+  return Array.isArray(parsed) ? parsed : [];
 };
 
 const getLocalNannies = (): NannyProfile[] => {
   const data = getItem(STORAGE_KEY_NANNIES);
-  return data ? JSON.parse(data) : [];
+  if (!data) return [];
+  const parsed = safeJsonParse<NannyProfile[]>(data, []);
+  return Array.isArray(parsed) ? parsed : [];
 };
 
 const setLocalParents = (items: ParentRequest[]) => setItem(STORAGE_KEY_PARENTS, JSON.stringify(items));

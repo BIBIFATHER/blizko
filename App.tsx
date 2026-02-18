@@ -303,14 +303,9 @@ export default function App() {
           <div className="text-[10px] leading-snug text-stone-400">
             <div className="flex items-center justify-center gap-3">
               <a href="/privacy" className="underline hover:text-stone-500">Политика конфиденциальности</a>
+              <span className="text-stone-300">·</span>
               <a href="/offer.html" className="underline hover:text-stone-500">Оферта</a>
             </div>
-            <div className="mt-2">
-              ИП Аносов Антон Владимирович · ИНН 710513782849 · ОГРНИП 324344300006654
-            </div>
-            <div>400120, Россия, Волгоградская обл., г. Волгоград, ул. Елецкая, д. 2б, кв. 12</div>
-            <div>Тел.: +7 916 633‑27‑32 · Email: anosov.anton@gmail.com</div>
-            <div>Банк: ООО «Банк Точка» · Р/с 40802810020000791861 · К/с 30101810745374525104 · БИК 044525104</div>
           </div>
           {user?.email && adminEmails.includes(user.email.toLowerCase()) && (
             <button 

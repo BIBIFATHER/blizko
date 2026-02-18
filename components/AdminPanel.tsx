@@ -478,7 +478,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
       <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col animate-slide-up">
-        <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50 rounded-t-2xl">
+        <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-gradient-to-r from-stone-50 via-white to-stone-50 rounded-t-2xl">
           <div>
             <h2 className="font-bold text-lg text-stone-800">Админ-панель</h2>
             <p className="text-xs text-stone-500">Локальные данные / модерация / управление</p>

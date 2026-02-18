@@ -304,7 +304,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
         <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden animate-slide-up relative flex flex-col max-h-[90vh]">
           
           {/* Header with Tabs */}
-          <div className="pt-6 pb-2 px-6 bg-white border-b border-stone-100">
+          <div className="pt-6 pb-2 px-6 bg-white/95 border-b border-stone-100 sticky top-0 z-10 backdrop-blur">
              <div className="flex justify-between items-start mb-4">
                 <div>
                    <h3 className="text-xl font-bold text-stone-800">

@@ -257,6 +257,8 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     return () => clearTimeout(tmr);
   }, [formData.city]);
 
+  const sectionLabel = "flex items-center gap-3 text-xs uppercase tracking-wider text-stone-400 font-semibold";
+
   return (
     <div className="animate-slide-up relative">
       <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-6 flex items-center gap-2">
@@ -273,12 +275,16 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
       <form onSubmit={handleFormSubmit} className="space-y-6">
         <div className="text-xs text-stone-500">{lang === 'ru' ? 'Поля, отмеченные *, обязательны' : 'Fields marked with * are required'}</div>
 
-        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Проверка и доверие</div>
+        <div className={sectionLabel}>
+          <span className="h-px flex-1 bg-stone-200/70" />
+          Проверка и доверие
+          <span className="h-px flex-1 bg-stone-200/70" />
+        </div>
         
         {/* 0. Photo Upload Block */}
         <div className="flex justify-center mb-6">
            <label className="relative cursor-pointer group">
-             <div className={`w-32 h-32 rounded-full overflow-hidden border-4 flex items-center justify-center transition-all ${photo ? 'border-amber-300' : 'border-stone-200 bg-stone-100'}`}>
+             <div className={`w-32 h-32 rounded-full overflow-hidden border-4 flex items-center justify-center transition-all shadow-md ring-1 ring-white/60 ${photo ? 'border-amber-300' : 'border-stone-200 bg-stone-100'}`}>
                {photo ? (
                  <img src={photo} alt="Profile" className="w-full h-full object-cover" />
                ) : (

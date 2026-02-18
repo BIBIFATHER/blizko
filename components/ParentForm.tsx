@@ -41,6 +41,8 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
   };
 
   const parsedBudget = parseBudget(initialData?.budget);
+  const sectionLabel = "flex items-center gap-3 text-xs uppercase tracking-wider text-stone-400 font-semibold";
+  const selectClass = "w-full text-sm border border-stone-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-amber-200/50 focus:border-amber-300 transition-all";
 
   const [formData, setFormData] = useState({
     city: initialData?.city || '',
@@ -257,7 +259,11 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           single
         />
 
-        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Календарь</div>
+        <div className={sectionLabel}>
+          <span className="h-px flex-1 bg-stone-200/70" />
+          Календарь
+          <span className="h-px flex-1 bg-stone-200/70" />
+        </div>
         <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
           <div className="text-sm font-semibold text-stone-700">Календарь бронирования</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -283,7 +289,11 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           />
         </div>
 
-        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Бюджет</div>
+        <div className={sectionLabel}>
+          <span className="h-px flex-1 bg-stone-200/70" />
+          Бюджет
+          <span className="h-px flex-1 bg-stone-200/70" />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input 
             label={lang === 'ru' ? 'Цена за час' : 'Price per hour'}
@@ -301,28 +311,32 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           />
         </div>
 
-        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Дополнительно</div>
+        <div className={sectionLabel}>
+          <span className="h-px flex-1 bg-stone-200/70" />
+          Дополнительно
+          <span className="h-px flex-1 bg-stone-200/70" />
+        </div>
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
           <div className="text-xs font-semibold text-violet-700 mb-2">Дополнительные параметры</div>
           <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <select className="text-xs border rounded px-2 py-2" value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
+            <select className={`${selectClass} text-xs`} value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
               <option value="ok">Камеры: допустимо</option>
               <option value="not_ok">Камеры: нежелательно</option>
             </select>
-            <select className="text-xs border rounded px-2 py-2" value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
+            <select className={`${selectClass} text-xs`} value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
               <option value="no">Поездки: не нужны</option>
               <option value="yes">Поездки: возможны</option>
             </select>
-            <select className="text-xs border rounded px-2 py-2" value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
+            <select className={`${selectClass} text-xs`} value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
               <option value="light">Дом: только легкая помощь</option>
               <option value="none">Дом: не требуется</option>
               <option value="extended">Дом: расширенная помощь</option>
             </select>
-            <select className="text-xs border rounded px-2 py-2" value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
+            <select className={`${selectClass} text-xs`} value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
               <option value="has_pets">Дома есть животные</option>
               <option value="no_pets">Животных нет</option>
             </select>
-            <select className="text-xs border rounded px-2 py-2" value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
+            <select className={`${selectClass} text-xs`} value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
               <option value="sometimes">Ночные смены: иногда</option>
               <option value="no">Ночные смены: не нужны</option>
               <option value="yes">Ночные смены: да</option>
@@ -330,7 +344,11 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           </div>
         </div>
 
-        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Для точного подбора</div>
+        <div className={sectionLabel}>
+          <span className="h-px flex-1 bg-stone-200/70" />
+          Для точного подбора
+          <span className="h-px flex-1 bg-stone-200/70" />
+        </div>
         <div className="bg-white border border-stone-200 rounded-xl p-3">
           <div className="text-xs font-semibold text-stone-700 mb-2">Для точного анализа</div>
           <Textarea
@@ -353,7 +371,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
 
           <label className="block text-xs text-stone-600">Стиль семьи</label>
           <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
             value={riskProfile?.familyStyle || 'balanced'}
             onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: e.target.value as any }))}
           >
@@ -364,7 +382,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
 
           <label className="block text-xs text-stone-600">Как ребёнок реагирует на стресс?</label>
           <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
             value={riskProfile?.childStress || 'tantrum'}
             onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: e.target.value as any }))}
           >
@@ -383,7 +401,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
 
           <label className="block text-xs text-stone-600">Комфортный стиль няни</label>
           <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
             value={riskProfile?.nannyStylePreference || 'gentle'}
             onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: e.target.value as any }))}
           >
@@ -394,7 +412,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
 
           <label className="block text-xs text-stone-600">Коммуникация от няни</label>
           <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
             value={riskProfile?.communicationPreference || 'regular'}
             onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: e.target.value as any }))}
           >
@@ -412,7 +430,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
 
           <label className="block text-xs text-stone-600">Стиль общения (PCM)</label>
           <select
-            className="w-full text-sm border border-violet-200 rounded-lg px-2 py-2 bg-white"
+            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
             value={riskProfile?.pcmType || 'harmonizer'}
             onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
           >

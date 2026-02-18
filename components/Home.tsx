@@ -82,9 +82,9 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
       <div className="flex flex-col min-h-full animate-fade-in space-y-10 px-4 sm:px-6 max-w-md sm:max-w-lg mx-auto">
         {/* Hero */}
         <div className="text-center space-y-3 pt-4">
-          <h1 className="text-4xl sm:text-5xl font-semibold text-stone-900 tracking-tight leading-[1.1]">
-            {text.heroTitle}
-          </h1>
+          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">
+            Blizko
+          </div>
           <p className="text-stone-500 text-base sm:text-lg max-w-md mx-auto leading-7">
             {text.heroSubtitle}
           </p>

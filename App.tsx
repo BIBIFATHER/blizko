@@ -298,8 +298,8 @@ export default function App() {
       </main>
 
       {/* Footer Area */}
-      <footer className="py-6 text-center text-stone-400 text-xs fixed bottom-0 bottom-safe left-0 right-0 pointer-events-none">
-        <div className="max-w-md mx-auto relative pointer-events-auto">
+      <footer className="py-6 text-center text-stone-400 text-xs">
+        <div className="max-w-md mx-auto relative">
           <div className="text-[10px] leading-snug text-stone-400">
             <div className="flex items-center justify-center gap-3">
               <a href="/privacy" className="underline hover:text-stone-500">Политика конфиденциальности</a>

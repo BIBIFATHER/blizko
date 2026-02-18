@@ -83,13 +83,13 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
 
       <div className="flex flex-col min-h-full animate-fade-in space-y-10">
         {/* Hero */}
-        <div className="text-center space-y-3 pt-10 sm:pt-12">
-          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">
+        <div className="text-center space-y-4 pt-10 sm:pt-12">
+          <div className="text-3xl sm:text-4xl font-semibold text-stone-800 tracking-tight">
             Blizko
           </div>
           <p className="text-stone-500 text-base sm:text-lg max-w-md mx-auto leading-7">
             {heroSubtitleParts[0]}
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100/70 text-amber-700 font-semibold">
               Humanity+
             </span>
             {heroSubtitleParts[1]}
@@ -97,7 +97,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
         </div>
 
         {/* Actions */}
-        <div className="space-y-2 sm:space-y-3 mt-2">
+        <div className="space-y-3 mt-3">
           <Button onClick={onFindNanny}>
             {text.findNanny}
           </Button>
@@ -108,7 +108,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
 
         {/* Trust Blocks */}
         <div className="space-y-5">
-          <h2 className="text-center text-stone-500 text-xs uppercase tracking-[0.2em] font-semibold">
+          <h2 className="text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-semibold">
             {text.whyTrust}
           </h2>
           
@@ -117,7 +117,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
               <Card 
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
-                className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all active:scale-[0.99] group border-transparent hover:border-stone-100"
+                className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all active:scale-[0.99] group border-transparent hover:border-stone-100"
                 role="button"
                 tabIndex={0}
               >
@@ -131,7 +131,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
                   <p className="text-sm text-stone-500 leading-relaxed mt-1">
                     {block.desc}
                   </p>
-                  <span className="mt-2 inline-block text-xs font-medium text-amber-500 group-hover:text-amber-600 transition-colors">
+                  <span className="mt-2 inline-block text-xs font-medium text-amber-500/90 group-hover:text-amber-600 transition-colors">
                     {lang === 'ru' ? 'Подробнее...' : 'More details...'}
                   </span>
                 </div>

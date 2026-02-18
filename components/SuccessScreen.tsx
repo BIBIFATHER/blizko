@@ -47,11 +47,11 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
         <div className="space-y-2">
           <h3 className="text-xl font-bold text-stone-800">
             {step === 'analyzing' 
-              ? (lang === 'ru' ? 'AI Анализирует профиль...' : 'AI Analyzing Profile...') 
-              : (lang === 'ru' ? 'Подбор идеальных кандидатов...' : 'Matching Candidates...')}
+              ? text.successAnalyzingTitle
+              : text.successMatchingTitle}
           </h3>
           <p className="text-stone-400 text-sm">
-             Gemini 2.5 Flash Processing...
+            {text.successProcessingNote}
           </p>
         </div>
       </div>

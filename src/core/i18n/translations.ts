@@ -143,6 +143,9 @@ export const t = {
     probability: 'вероятность успеха',
     recsTitle: 'Рекомендации для лучших кандидатов:',
     returnHome: 'Вернуться на главную',
+    successAnalyzingTitle: 'Анализируем профиль...',
+    successMatchingTitle: 'Подбираем кандидатов...',
+    successProcessingNote: 'Проверяем анкету и совместимость',
 
     // GosUslugi
     gosTitle: 'Вход в систему',
@@ -457,6 +460,9 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     probability: 'success probability',
     recsTitle: 'Recommendations for best candidates:',
     returnHome: 'Return to Home',
+    successAnalyzingTitle: 'Analyzing the profile...',
+    successMatchingTitle: 'Matching candidates...',
+    successProcessingNote: 'Checking the request and compatibility',
 
     // GosUslugi
     gosTitle: 'System Login',

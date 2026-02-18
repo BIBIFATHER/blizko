@@ -1,183 +1,106 @@
-# Recruiting & Onboarding Pipeline
+# Recruiting & Onboarding Pipeline — Nannies (Blizko)
 
-## 1) Sourcing Steps (End‑to‑End)
-**Goal:** build a predictable flow from lead generation → hire → day‑1 readiness.
+## 1) Воронка (End‑to‑End)
+**Цель:** быстро и безопасно перевести отклик → регистрацию → triage A/B/C → verified core.
 
-1. **Define target profile**
-   - Role scope, must‑have skills, nice‑to‑haves, compensation range, timezone, start date.
-   - Create 2–3 ideal personas (e.g., “Senior Full‑stack, startup‑ready, async‑friendly”).
+1) **Сбор откликов (HH)**
+   - Ежедневная выгрузка/просмотр, первичное распределение по приоритету.
 
-2. **Source list build**
-   - Channels: LinkedIn, GitHub, Twitter/X, niche communities, referrals, past candidates, inbound.
-   - Create a spreadsheet/ATS list with: name, link, location, role fit, source channel, notes.
+2) **Согласие на обработку данных**
+   - Первый контакт: коротко, вежливо, одна просьба — согласие.
 
-3. **Prospect enrichment**
-   - Capture: recent projects, relevant stack, evidence of impact, open‑source, writing/speaking.
-   - Tag for personalization: product similarity, tech overlap, achievements.
+3) **Регистрация (пошагово в чате)**
+   - 5–10 минут, 1 вопрос за шаг.
 
-4. **Outbound sequence setup**
-   - Use 2‑3 message touchpoints over 7–10 days.
-   - Track: send date, reply status, next action, follow‑up due date.
+4) **Документы**
+   - Паспорт + резюме — обязательный минимум (A‑ready).
+   - Остальные доки — на доработку (B‑fix).
 
-5. **Inbound processing**
-   - Auto‑acknowledge with timelines.
-   - Apply triage (A/B/C) within 24 hours.
+5) **Triage A/B/C**
+   - A‑ready: паспорт + резюме + опыт/график ок.
+   - B‑fix: не хватает документов/уточнений.
+   - C‑hold: несоответствие базовым критериям.
 
-6. **Initial screen**
-   - Short async screen or 15–20 min call.
-   - Confirm: motivation, comp band, availability, relevant experience.
+6) **Проверка/верификация**
+   - Ручная проверка + notes.
 
-7. **Evaluation**
-   - Work sample / technical / role‑specific interview.
-   - Structured rubric; avoid unstructured “vibe” interviews.
-
-8. **Decision & offer**
-   - Debrief within 24h.
-   - Offer: title, comp, start date, probation, expected outcomes.
-
-9. **Pre‑boarding**
-   - Send onboarding checklist, calendar, equipment order, access requests.
-
-10. **Day‑1 onboarding**
-    - Welcome plan, buddy assignment, 30/60/90 goals, first tasks.
+7) **Подготовка к матчам**
+   - A‑ready в пул, B‑fix — напоминания, C‑hold — архив.
 
 ---
 
-## 2) A/B/C Triage Checklist
-**Goal:** triage all candidates fast, consistently, and fairly.
+## 2) Модель общения (HH → регистрация)
+**Тон:** вежливо, тепло, без давления. 2–4 строки. Один вопрос за шаг.
 
-### A — “Strong fit, prioritize”
-- **Role match**: 80%+ of must‑haves
-- **Evidence of impact**: clear outcomes, shipped work, measurable results
-- **Relevant stack**: direct overlap with current tech/product
-- **Seniority alignment**: scope and responsibility fit
-- **Communication**: clear, concise, thoughtful
-- **Availability/comp**: within range or close
+### Шаг 1 — согласие на обработку
+«Здравствуйте! Спасибо за отклик 🙌
+Blizko — сервис подбора нянь в Москве, сейчас ранний доступ.
+Если актуально, подтвердите, пожалуйста: “Да, согласна на обработку персональных данных и продолжение общения в чате”.»
 
-**Action:** respond within 24h, schedule screen within 3–5 days.
+### Шаг 2 — переход к регистрации
+«Спасибо! Следующий шаг — регистрация в Blizko (5–10 минут).
+Удобно пройти сейчас?»
 
-### B — “Possible fit, needs validation”
-- **Role match**: 60–80% of must‑haves
-- **Some evidence of impact** but limited depth
-- **Adjacent stack** with transferable skills
-- **Unclear seniority fit** or domain gaps
-- **Comp/availability** uncertain
+### Шаг 3 — регистрация (пошагово)
+1) Имя + город: «Как вас лучше записать и какой город?»
+2) Возраст + опыт: «Сколько лет вам и какой общий опыт работы няней?»
+3) График: «Какой график рассматриваете? (полный/частичный/вахта)»
+4) Возраст детей: «С какими возрастами детей готовы работать?»
+5) Документы: «Есть ли документы: паспорт, медкнижка/справки?»
+6) Видео/фото: «Есть ли короткое видео‑знакомство? Если нет — можно фото.»
+7) Контакты: «Оставьте, пожалуйста, телефон и email для профиля.»
 
-**Action:** respond within 48h, send targeted questions, schedule screen if answers strong.
+### Финал
+«Отлично, всё зафиксировала ✅ Дальше проверим профиль и вернёмся с предложениями.»
 
-### C — “Not a fit (now)”
-- **Role match**: <60% of must‑haves
-- **No clear impact** or irrelevant experience
-- **Wrong seniority band** (too junior/senior)
-- **Comp misalignment**
+### Если “не сейчас”
+«Ок, когда удобно вернуться? Могу написать в [время].»
 
-**Action:** polite decline within 72h; add to long‑term talent pool if promising later.
-
----
-
-## 3) Messaging Templates
-> Adjust tone and details based on role and culture.
-
-### A) Initial outreach (personalized)
-**Subject:** [Role] at [Company] — quick note
-
-Hi [Name],
-
-Loved your work on [specific project/post]. We’re building [1–2 sentence mission], and your experience with [relevant stack/impact] stood out.
-
-Would you be open to a quick 15–20 min chat this week? If helpful, I can share a short brief about the role and compensation range upfront.
-
-Best,
-[Your Name]
+### Красные флаги (C)
+- Нет документов и отказ от проверки личности
+- Агрессия/токсичность
+- Игнор >48ч
 
 ---
 
-### B) Follow‑up #1 (3–4 days later)
-Hi [Name], just wanted to bump this in case it got buried. Still think your experience in [specific area] could be a strong fit for [role].
+## 3) A/B/C Триаж (коротко)
+**A‑ready**
+- Паспорт + резюме
+- Опыт 2+ года
+- График/ставка адекватны
 
-If now’s not the right time, no worries—happy to reconnect later.
+**B‑fix**
+- Нет паспорта или резюме
+- Нужны уточнения по графику/ставке
 
----
-
-### C) Follow‑up #2 (final, 7–10 days later)
-Hi [Name] — last note from me. If you’re not looking, totally fine. If you are open, I can send a 1‑pager with details and comp range.
-
-Thanks either way!
-
----
-
-### D) Inbound acknowledgment
-Thanks for reaching out and your interest in [Company]!
-
-We’re reviewing applications this week and will follow up by [date]. If we’re a fit, we’ll schedule a short screen call.
+**C‑hold**
+- Нет релевантного опыта
+- Несовместимый график/ставка
+- Красные флаги
 
 ---
 
-### E) Screen invite
-Hi [Name], thanks again for your interest! I’d like to schedule a 15–20 minute screen to cover role scope, comp range, and your experience.
+## 4) Шаблоны сообщений
+**A — приглашение**
+«Спасибо за отклик! Нам всё подходит. Давайте перейдём к следующему шагу: короткое подтверждение документов и удобное время для знакомства.»
 
-Here are a few time options: [times].
+**B — доработка**
+«Спасибо! В целом интересный профиль. Чтобы двигаться дальше, нужны: (1) паспорт, (2) резюме, (3) уточнение графика/ставки. Как только добавите — вернёмся к рассмотрению.»
 
----
-
-### F) Decline (polite)
-Hi [Name],
-
-Thanks for taking the time to apply. We decided to move forward with candidates whose experience more closely matches the role at this time.
-
-We’ll keep your details on file and reach out if a future role is a better fit.
-
-Wishing you the best,
-[Your Name]
+**C — отказ**
+«Спасибо за отклик. Сейчас ваш профиль не подходит под текущие запросы. Мы сохраним контакт и можем вернуться позже.»
 
 ---
 
-## 4) Daily Metrics (Track Every Day)
-**Goal:** make recruiting predictable and improve conversion bottlenecks.
-
-### Sourcing Metrics
-- New leads sourced
-- Outreach sent
-- Response rate (overall + by channel)
-- Follow‑ups sent
-
-### Pipeline Health
-- New applicants (inbound)
-- Screens scheduled
-- Screens completed
-- Candidates in evaluation
-- Offers made
-- Offers accepted
-
-### Speed & Efficiency
-- Time to first response (inbound/outbound)
-- Time in stage (screen → eval → offer)
-- Drop‑off rate by stage
-
-### Quality Signals
-- A/B/C mix (% in each bucket)
-- Pass rate per stage
-- Source quality (conversion by channel)
-
-### Onboarding Readiness
-- Offers with start date confirmed
-- Equipment ordered / access pending
-- Day‑1 plan prepared
+## 5) Ежедневные метрики
+- Просмотрено/ответили/в работе
+- A/B/C count
+- % A‑ready
+- Время до первого ответа
+- Количество регистраций
 
 ---
 
-## Optional: Simple Daily Dashboard (Example)
-- **Leads sourced:** 20
-- **Outreach sent:** 18
-- **Replies:** 5 (28%)
-- **Screens scheduled:** 3
-- **Screens completed:** 2
-- **Offers:** 1
-- **Accepts:** 0
-
----
-
-## Notes / Customization
-- Add role‑specific rubrics (engineering, sales, ops, design).
-- Maintain a **“talent pool”** list for C‑tier future fit.
-- Update templates per brand voice and compensation transparency.
+## 6) Итог
+- **Цель дня:** 10–15 резюме → A/B/C.
+- **Цель недели:** ядро 30–50 A‑ready.

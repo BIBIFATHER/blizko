@@ -12,7 +12,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card: React.FC<CardProps> = ({ children, className = '', onClick, ...props }) => (
   <div 
     onClick={onClick}
-    className={`bg-white rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.05)] border border-stone-100 p-5 sm:p-6 transition-transform duration-200 ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
+    className={`bg-white/95 backdrop-blur-sm rounded-3xl shadow-[0_10px_30px_rgba(120,120,120,0.08)] border border-stone-100/80 p-5 sm:p-6 transition-transform duration-200 ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
     {...props}
   >
     {children}
@@ -32,12 +32,12 @@ export const Button: React.FC<ButtonProps> = ({
   isLoading, 
   ...props 
 }) => {
-  const baseStyles = "w-full py-3.5 sm:py-4 rounded-xl font-medium transition-all duration-200 active:scale-[0.96] flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation select-none";
+  const baseStyles = "w-full py-3.5 sm:py-4 rounded-2xl font-medium transition-all duration-200 active:scale-[0.97] flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation select-none";
   
   const variants = {
-    primary: "bg-amber-300/90 hover:bg-amber-300 text-stone-900 shadow-sm hover:shadow-md font-semibold",
-    secondary: "bg-white border border-sky-200/80 text-sky-800 hover:bg-sky-50",
-    outline: "border-2 border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50",
+    primary: "bg-amber-200/90 hover:bg-amber-200 text-stone-900 shadow-[0_10px_25px_rgba(251,191,36,0.25)] hover:shadow-[0_12px_28px_rgba(251,191,36,0.3)] font-semibold ring-1 ring-amber-200/60",
+    secondary: "bg-white/90 border border-sky-200/70 text-sky-800 hover:bg-sky-50/70 shadow-sm",
+    outline: "border-2 border-stone-200/80 text-stone-600 hover:border-stone-300 hover:bg-stone-50/70",
     ghost: "text-stone-500 hover:text-stone-800 text-sm py-2"
   };
 

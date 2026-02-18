@@ -81,15 +81,15 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
         }
       `}</style>
 
-      <div className="flex flex-col min-h-full animate-fade-in space-y-10">
+      <div className="flex flex-col min-h-full animate-fade-in space-y-10 px-4 sm:px-6 pb-10">
         {/* Hero */}
         <div className="text-center space-y-4 pt-10 sm:pt-12">
-          <div className="text-3xl sm:text-4xl font-semibold text-stone-800 tracking-tight">
+          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">
             Blizko
           </div>
-          <p className="text-stone-500 text-base sm:text-lg max-w-md mx-auto leading-7">
+          <p className="text-stone-500/90 text-base sm:text-lg max-w-md mx-auto leading-7">
             {heroSubtitleParts[0]}
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100/70 text-amber-700 font-semibold">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-700 font-semibold shadow-sm">
               Humanity+
             </span>
             {heroSubtitleParts[1]}
@@ -108,7 +108,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
 
         {/* Trust Blocks */}
         <div className="space-y-5">
-          <h2 className="text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-semibold">
+          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
             {text.whyTrust}
           </h2>
           
@@ -117,11 +117,11 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
               <Card 
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
-                className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all active:scale-[0.99] group border-transparent hover:border-stone-100"
+                className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-[0.99] group border-transparent hover:border-stone-100/70"
                 role="button"
                 tabIndex={0}
               >
-                <div className={`${block.colorClass} p-2.5 sm:p-3 rounded-full transition-transform group-hover:scale-110`}>
+                <div className={`${block.colorClass} p-2.5 sm:p-3 rounded-full transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
                   {block.icon}
                 </div>
                 <div className="flex-1">

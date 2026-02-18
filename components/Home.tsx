@@ -81,7 +81,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
         }
       `}</style>
 
-      <div className="flex flex-col min-h-full animate-fade-in space-y-10 px-4 sm:px-6 max-w-md sm:max-w-lg mx-auto">
+      <div className="flex flex-col min-h-full animate-fade-in space-y-10">
         {/* Hero */}
         <div className="text-center space-y-3 pt-10 sm:pt-12">
           <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">

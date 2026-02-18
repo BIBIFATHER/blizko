@@ -197,6 +197,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Основное</div>
         <div className="relative">
           <Input 
             label={text.cityLabel}
@@ -256,6 +257,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           single
         />
 
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Календарь</div>
         <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
           <div className="text-sm font-semibold text-stone-700">Календарь бронирования</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -281,6 +283,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           />
         </div>
 
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Бюджет</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input 
             label={lang === 'ru' ? 'Цена за час' : 'Price per hour'}
@@ -298,7 +301,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           />
         </div>
 
-
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Дополнительно</div>
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
           <div className="text-xs font-semibold text-violet-700 mb-2">Дополнительные параметры</div>
           <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -327,6 +330,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           </div>
         </div>
 
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Для точного подбора</div>
         <div className="bg-white border border-stone-200 rounded-xl p-3">
           <div className="text-xs font-semibold text-stone-700 mb-2">Для точного анализа</div>
           <Textarea

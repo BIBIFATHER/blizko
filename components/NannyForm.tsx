@@ -272,6 +272,8 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
         <div className="text-xs text-stone-500">{lang === 'ru' ? 'Поля, отмеченные *, обязательны' : 'Fields marked with * are required'}</div>
+
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Проверка и доверие</div>
         
         {/* 0. Photo Upload Block */}
         <div className="flex justify-center mb-6">
@@ -463,6 +465,8 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         </Card>
 
         {/* 4. Video Interview Block (temporarily disabled) */}
+
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Основные данные</div>
 
         <Input 
           label={`${text.nameLabel} *`}

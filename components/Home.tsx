@@ -145,11 +145,13 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
               {text.explainText}
             </p>
             <div className="flex flex-wrap gap-2">
-              {[text.explainBadge1, text.explainBadge2, text.explainBadge3, text.explainBadge4].map((badge, i) => (
-                <span key={i} className="px-3 py-1 rounded-full text-xs bg-stone-100 text-stone-600">
-                  {badge}
-                </span>
-              ))}
+              {[text.explainBadge1, text.explainBadge2, text.explainBadge3]
+                .filter(Boolean)
+                .map((badge, i) => (
+                  <span key={i} className="px-3 py-1 rounded-full text-xs bg-stone-100 text-stone-600">
+                    {badge}
+                  </span>
+                ))}
             </div>
           </div>
         </Card>

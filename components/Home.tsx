@@ -135,26 +135,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
           </div>
         </div>
 
-        {/* Explainable Match */}
-        <Card className="border-stone-100">
-          <div className="p-6 space-y-3">
-            <h3 className="text-stone-800 font-semibold text-lg">
-              {text.explainTitle}
-            </h3>
-            <p className="text-sm text-stone-500 leading-relaxed">
-              {text.explainText}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {[text.explainBadge1, text.explainBadge2, text.explainBadge3]
-                .filter(Boolean)
-                .map((badge, i) => (
-                  <span key={i} className="px-3 py-1 rounded-full text-xs bg-stone-100 text-stone-600">
-                    {badge}
-                  </span>
-                ))}
-            </div>
-          </div>
-        </Card>
+        {/* Explainable Match removed */}
       </div>
 
       {/* Deep Dive Modal (Verification & Compatibility & Support) */}

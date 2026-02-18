@@ -1,13 +1,13 @@
 export const t = {
   ru: {
     // ... existing keys ...
-    heroTitle: 'Blizko',
-    heroSubtitle: 'Спокойствие каждой семье. Подбор нянь с заботой и проверкой.',
+    heroTitle: 'Blizko — сервис подбора нянь, где главное — доверие и стабильность.',
+    heroSubtitle: 'Мы объясняем, почему именно этот человек подходит вашей семье — через Humanity+ и проверку профиля.',
     findNanny: 'Найти няню',
     becomeNanny: 'Стать няней',
     whyTrust: 'ПОЧЕМУ НАМ ДОВЕРЯЮТ',
     trust1Title: 'Тщательная проверка',
-    trust1Desc: 'Документы, рекомендации и черный список',
+    trust1Desc: 'Документы, рекомендации и проверки.',
     trust1Detail: `Каждая няня проходит 5 уровней проверки перед допуском к визиту:
 1. Документы и личность. Мы проверяем паспорт, медкнижку и справку об отсутствии судимости. Данные сверяются с официальными базами и подтверждаются вручную.
 2. Рекомендации и опыт. Каждая анкета содержит минимум два контакта с прошлых мест работы. Мы связываемся с семьями, чтобы убедиться в подлинности отзывов.
@@ -17,13 +17,20 @@ export const t = {
 Результат: Только надёжные кандидаты. Страхование каждого визита. 100% прозрачность истории.
 “Близко” заботится о том, чтобы к вашему ребёнку приходили только проверенные и ответственные люди.`,
     
-    trust2Title: 'Совместимость',
-    trust2Desc: 'AI помогает найти человека со схожими ценностями',
+    trust2Title: 'Humanity+ совместимость',
+    trust2Desc: 'Совпадение ценностей семьи и няни снижает риск срывов.',
     trust2Detail: 'Наша нейросеть анализирует 45 параметров: от психотипа и темперамента до педагогических взглядов. Мы ищем не просто работника, а человека, который идеально впишется в уклад вашей семьи и станет другом вашему ребенку.',
     
     trust3Title: 'Поддержка 24/7',
-    trust3Desc: 'Мы рядом на всех этапах сотрудничества',
+    trust3Desc: 'Мы рядом на всех этапах.',
     trust3Detail: 'Ваш личный менеджер заботы всегда на связи. Мы поможем составить юридически грамотный договор, решим любые спорные вопросы и бесплатно организуем срочную замену, если няня заболеет или уйдет в отпуск.',
+
+    explainTitle: 'Почему именно эта няня?',
+    explainText: 'Humanity+ показывает совпадение ценностей и стиля общения — это главный фактор стабильности.',
+    explainBadge1: 'Совпадает график',
+    explainBadge2: 'Опыт подходит возрасту',
+    explainBadge3: 'Подход к дисциплине',
+    explainBadge4: 'Условия семьи учтены',
     
     // Install App
     installTitle: 'Установите Blizko',
@@ -308,13 +315,13 @@ export const t = {
   },
   en: {
     // ... existing keys ...
-    heroTitle: 'Blizko',
-    heroSubtitle: 'Peace of mind for every family. Nanny matching with care and vetting.',
+    heroTitle: 'Blizko — trusted nanny matching built on stability.',
+    heroSubtitle: 'We explain why a nanny fits your family — through Humanity+ and profile vetting.',
     findNanny: 'Find a Nanny',
     becomeNanny: 'Become a Nanny',
     whyTrust: 'WHY TRUST US',
     trust1Title: 'Thorough Vetting',
-    trust1Desc: 'Documents, references, and background checks',
+    trust1Desc: 'Documents, references, and verification.',
     trust1Detail: `Every nanny passes 5 levels of verification before being admitted:
 1. Documents and Identity. We verify the passport, medical book, and police clearance certificate. Data is checked against official databases.
 2. References and Experience. Each profile contains at least two contacts from previous jobs. We contact families to verify the authenticity of reviews.
@@ -324,13 +331,20 @@ export const t = {
 Result: Only reliable candidates. Every visit insured. 100% transparency.
 "Blizko" ensures only vetted and responsible people come to your child.`,
     
-    trust2Title: 'Compatibility',
-    trust2Desc: 'AI helps find someone with shared values',
+    trust2Title: 'Humanity+ Compatibility',
+    trust2Desc: 'Shared values reduce mismatch risk and improve stability.',
     trust2Detail: 'Our neural network analyzes 45 parameters: from psychotype and temperament to pedagogical views. We search not just for a worker, but for a person who perfectly fits your family\'s lifestyle and will become a friend to your child.',
 
     trust3Title: '24/7 Support',
-    trust3Desc: 'We are here at every step of the way',
+    trust3Desc: 'We are here at every step.',
     trust3Detail: 'Your personal care manager is always in touch. We help draft legally sound contracts, resolve any disputes, and organize urgent free replacements if the nanny gets sick or goes on vacation.',
+
+    explainTitle: 'Why this nanny?',
+    explainText: 'Humanity+ highlights shared values and communication style — the main factor of stability.',
+    explainBadge1: 'Schedule matches',
+    explainBadge2: 'Experience fits age',
+    explainBadge3: 'Discipline approach',
+    explainBadge4: 'Family conditions covered',
 
     // Install App
     installTitle: 'Install Blizko',

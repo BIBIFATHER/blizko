@@ -703,8 +703,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                                {text.decline}
                              </Button>
                            </div>
-                           <div className="text-[11px] text-stone-500 bg-stone-50 border border-stone-100 rounded-lg p-2">
-                             После принятия: чат с семьёй и подтверждения T‑24ч / T‑3ч.
+                           <div className="text-[11px] text-stone-500 bg-stone-50 border border-stone-100 rounded-lg p-2 space-y-1">
+                             <div>После принятия: чат с семьёй и подтверждения T‑24ч / T‑3ч.</div>
+                             <div>Срок ответа: до 2 часов. Иначе заявка может уйти другой няне.</div>
                            </div>
                          </div>
                       </Card>

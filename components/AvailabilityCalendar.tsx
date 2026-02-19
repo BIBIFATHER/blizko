@@ -47,7 +47,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         {subtitle && <div className="text-xs text-stone-500">{subtitle}</div>}
       </div>
 
-      <div className="grid grid-cols-[40px_1fr] gap-2 text-[11px]">
+      <div className="grid grid-cols-[56px_1fr] gap-2 text-[11px]">
         <div></div>
         <div className="grid grid-cols-7 gap-1">
           {days.map((d) => (
@@ -59,7 +59,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
         {slots.map((slot, slotIdx) => (
           <React.Fragment key={slot}>
-            <div className="text-[10px] text-stone-400 flex items-center">{slot}</div>
+            <div className="text-[10px] text-stone-400 flex items-center justify-end pr-1">{slot}</div>
             <div className="grid grid-cols-7 gap-1">
               {days.map((_, dayIdx) => {
                 const status = grid[dayIdx][slotIdx];

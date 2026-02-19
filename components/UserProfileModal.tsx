@@ -580,6 +580,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                                 <div className="text-xs text-stone-400">
                                   Создана: {formatRuDate(req.createdAt)} • заявка {req.id.slice(0, 4).toUpperCase()}
                                 </div>
+                                {req.status === 'in_review' && (
+                                  <div className="mt-1 text-[11px] text-stone-500 max-w-[220px]">
+                                    {lang === 'ru' ? 'Обычно 24–48ч' : 'Typically 24–48h'}
+                                  </div>
+                                )}
+
                                 {req.status === 'rejected' && (
                                   <div className="mt-1 text-[11px] text-red-600 max-w-[220px]">
                                     Причина: {parentRejectReasonLabel(req.rejectionInfo?.reasonCode)}

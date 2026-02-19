@@ -469,6 +469,18 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                   )}
                 </div>
 
+                {isNanny && myNannyProfile && (
+                  <Card className="!p-4 bg-white border border-stone-100 text-left">
+                    <div className="text-xs font-semibold text-stone-500 uppercase mb-2">Ключевые данные</div>
+                    <div className="space-y-1 text-sm text-stone-700">
+                      <div>Город: {myNannyProfile.city || '—'}</div>
+                      <div>Опыт: {myNannyProfile.experience || '—'} {myNannyProfile.experience ? 'лет' : ''}</div>
+                      <div>График: {myNannyProfile.schedule || '—'}</div>
+                      <div>Ставка: {myNannyProfile.expectedRate || '—'}</div>
+                    </div>
+                  </Card>
+                )}
+
                 {/* Progress */}
                 <div className="bg-white p-4 rounded-2xl border border-stone-100 text-left">
                   <div className="flex items-center justify-between mb-2">

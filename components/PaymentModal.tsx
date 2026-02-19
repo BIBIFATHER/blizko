@@ -73,7 +73,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
         </div>
 
         <div className="p-6">
-          <div className="mb-6 bg-stone-50 p-4 rounded-xl border border-stone-100 flex justify-between items-center relative overflow-hidden group">
+          <div className="mb-4 bg-stone-50 p-4 rounded-xl border border-stone-100 flex justify-between items-center relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-stone-100 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div>
               <p className="text-stone-400 text-[10px] uppercase tracking-wider font-bold">{title || text.payTitle}</p>
@@ -82,6 +82,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
             <div className="w-10 h-10 bg-[#6C2586]/10 rounded-full flex items-center justify-center text-[#6C2586]">
                <ShieldCheck size={20} />
             </div>
+          </div>
+
+          <div className="mb-6 bg-white border border-stone-100 rounded-xl p-3 text-[11px] text-stone-600">
+            <div className="text-[11px] font-semibold text-stone-700 mb-1">Что входит</div>
+            <ul className="list-disc pl-4 space-y-1">
+              <li>Активация профиля и приоритет в выдаче</li>
+              <li>Доступ к заявкам и чату</li>
+              <li>Поддержка и безопасность</li>
+            </ul>
           </div>
 
           {/* Payment Method Tabs */}

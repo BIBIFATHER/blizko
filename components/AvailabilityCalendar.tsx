@@ -70,9 +70,9 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                     type="button"
                     onClick={() => !readonly && onToggle && onToggle(dayIdx, slotIdx)}
                     className={`h-8 rounded-lg border text-[10px] font-semibold transition-colors ${statusClass(status)} ${readonly ? 'cursor-default' : 'active:scale-95'}`}
-                    title={status}
+                    title={status === 'busy' ? 'занято' : status === 'reserved' ? 'резерв' : status === 'selected' ? 'выбрано' : 'свободно'}
                   >
-                    {status === 'busy' ? '✕' : status === 'reserved' ? 'R' : status === 'selected' ? '✓' : ''}
+                    {status === 'busy' ? '✕' : status === 'reserved' ? 'Р' : status === 'selected' ? '✓' : ''}
                   </button>
                 );
               })}

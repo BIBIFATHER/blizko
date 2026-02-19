@@ -667,6 +667,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                                {text.decline}
                              </Button>
                            </div>
+                           <div className="text-[11px] text-stone-500 bg-stone-50 border border-stone-100 rounded-lg p-2">
+                             После принятия: чат с семьёй и подтверждения T‑24ч / T‑3ч.
+                           </div>
                          </div>
                       </Card>
                     ))}
@@ -700,16 +703,22 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                                </div>
                              </div>
                              
-                             <div className="flex items-center gap-2 text-sm text-stone-600 bg-white/60 p-2 rounded-lg mb-4">
+                             <div className="flex items-center gap-2 text-sm text-stone-600 bg-white/60 p-2 rounded-lg mb-2">
                                 <Calendar size={16} className="text-stone-400" />
                                 {activeBooking.date}
                              </div>
+                             <div className="text-[11px] text-stone-500 mb-3">Статус: активен • Следующее подтверждение: T‑3ч</div>
 
                              <div className="grid grid-cols-1 gap-2">
                                <div className="bg-white/70 border border-amber-200 rounded-lg p-2 text-[11px] text-amber-700">
                                  <div className="font-semibold">Гарантия активна</div>
                                  <div>Резерв: Ольга П. (на подмене)</div>
                                  <div>Подтверждения: T‑24ч ✅ · T‑3ч ⏳</div>
+                               </div>
+                               <div className="grid grid-cols-3 gap-2">
+                                 <Button className="py-2 text-xs bg-stone-800 text-white hover:bg-stone-700">Подтвердить</Button>
+                                 <Button variant="outline" className="py-2 text-xs">Перенести</Button>
+                                 <Button variant="outline" className="py-2 text-xs">Замена</Button>
                                </div>
                                <Button 
                                  onClick={() => setChatBooking(activeBooking)} 

@@ -731,7 +731,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                                 <Calendar size={16} className="text-stone-400" />
                                 {activeBooking.date}
                              </div>
-                             <div className="text-[11px] text-stone-500 mb-3">Статус: активен • Следующее подтверждение: T‑3ч</div>
+                             <div className="text-[11px] text-stone-500 mb-3">Статус: активен • Следующее подтверждение: T‑3ч • Гарантия активна</div>
 
                              <div className="grid grid-cols-1 gap-2">
                                <div className="bg-white/70 border border-amber-200 rounded-lg p-2 text-[11px] text-amber-700">
@@ -744,6 +744,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                                  <Button variant="outline" className="py-2 text-xs">Перенести</Button>
                                  <Button variant="outline" className="py-2 text-xs">Замена</Button>
                                </div>
+                               <div className="text-[11px] text-stone-500">Если есть изменения — сообщите минимум за 3 часа.</div>
                                <Button 
                                  onClick={() => setChatBooking(activeBooking)} 
                                  className="py-3 text-sm bg-stone-800 text-white hover:bg-stone-700"

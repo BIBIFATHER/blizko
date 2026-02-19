@@ -828,6 +828,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                      <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
                      <p>{text.noReviews}</p>
                      <p className="text-[11px] text-stone-400 mt-2">Первые отзывы увеличивают доверие и конверсию.</p>
+                     <button className="mt-3 text-xs font-semibold text-sky-600 underline">
+                       Пригласить семью оставить отзыв
+                     </button>
                    </div>
                  ) : (
                    reviews.map(review => (

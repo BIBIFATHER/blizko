@@ -469,6 +469,20 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                   )}
                 </div>
 
+                {/* Progress */}
+                <div className="bg-white p-4 rounded-2xl border border-stone-100 text-left">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-semibold text-stone-600">Прогресс профиля</div>
+                    <div className="text-xs font-bold text-stone-700">{isNanny ? '65%' : '55%'}</div>
+                  </div>
+                  <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
+                    <div className={`h-full rounded-full ${isNanny ? 'bg-amber-400' : 'bg-sky-400'}`} style={{ width: isNanny ? '65%' : '55%' }} />
+                  </div>
+                  <div className="mt-2 text-[11px] text-stone-500">
+                    {isNanny ? 'Добавьте документы и подтвердите телефон, чтобы поднять доверие.' : 'Добавьте документы и подтвердите телефон для быстрого подбора.'}
+                  </div>
+                </div>
+
                 {isNanny && (
                    <>
                     <Button onClick={() => onEditProfile && onEditProfile(myNannyProfile)} className="bg-amber-100 text-amber-900 hover:bg-amber-200">
@@ -525,6 +539,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                       <Card className="!p-4 bg-white border border-stone-100">
                         <div className="text-sm text-stone-500">
                           У вас пока нет заявок
+                        </div>
+                        <div className="text-[11px] text-stone-400 mt-1">
+                          Создайте заявку, чтобы получить подбор и статус в кабинете.
                         </div>
                       </Card>
                     ) : (
@@ -789,6 +806,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, onClos
                    <div className="text-center py-12 text-stone-400">
                      <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
                      <p>{text.noReviews}</p>
+                     <p className="text-[11px] text-stone-400 mt-2">Первые отзывы увеличивают доверие и конверсию.</p>
                    </div>
                  ) : (
                    reviews.map(review => (

@@ -196,13 +196,14 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-stone-800">{initialData ? 'Редактировать заявку' : text.pFormTitle}</h2>
         <p className="text-stone-500">{initialData ? 'Обновите данные вашей заявки' : text.pFormSubtitle}</p>
+        <div className="mt-2 text-xs text-stone-400">{text.parentRequiredNote}</div>
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
-        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Основное</div>
+        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">{lang === 'ru' ? 'Обязательное' : 'Required'}</div>
         <div className="relative">
           <Input 
-            label={text.cityLabel}
+            label={`${text.cityLabel} *`}
             placeholder={lang === 'ru' ? "Москва, Хамовники" : "New York, Brooklyn"} 
             value={formData.city}
             onChange={e => {
@@ -244,7 +245,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
         </div>
 
         <ChipGroup 
-          label={text.childAgeLabel}
+          label={`${text.childAgeLabel} *`}
           options={text.ageOptions}
           selected={formData.childAge ? [formData.childAge] : []}
           onChange={(s) => setFormData({...formData, childAge: s[0] || ''})}
@@ -252,7 +253,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
         />
 
         <ChipGroup 
-          label={text.scheduleLabel}
+          label={`${text.scheduleLabel} *`}
           options={text.scheduleOptions}
           selected={formData.schedule ? [formData.schedule] : []}
           onChange={(s) => setFormData({...formData, schedule: s[0] || ''})}
@@ -296,14 +297,14 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input 
-            label={lang === 'ru' ? 'Цена за час' : 'Price per hour'}
+            label={`${lang === 'ru' ? 'Цена за час' : 'Price per hour'} *`}
             placeholder={lang === 'ru' ? '600 - 800 ₽/час' : '20 - 30 $/hour'}
             value={formData.budgetHourly}
             onChange={e => setFormData({...formData, budgetHourly: e.target.value})}
             required
           />
           <Input 
-            label={lang === 'ru' ? 'Цена за месяц' : 'Price per month'}
+            label={`${lang === 'ru' ? 'Цена за месяц' : 'Price per month'} *`}
             placeholder={lang === 'ru' ? '120 000 - 180 000 ₽/мес' : '2500 - 4000 $/month'}
             value={formData.budgetMonthly}
             onChange={e => setFormData({...formData, budgetMonthly: e.target.value})}
@@ -461,10 +462,15 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           </div>
         </div>
 
+        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-600">
+          <div>{text.parentEtaLine}</div>
+          <div className="text-stone-400 mt-1">{text.parentSafetyLine}</div>
+        </div>
+
         <Button
           type="button"
           isLoading={loading}
-          className="mt-8"
+          className="mt-4"
           disabled={initialData?.status === 'approved'}
           onClick={() => setShowOffer(true)}
         >

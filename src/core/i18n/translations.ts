@@ -52,6 +52,9 @@ export const t = {
     importantLabel: 'Самые популярные запросы',
     commentLabel: 'Комментарий или пожелания',
     submitParent: 'Получить подбор',
+    parentRequiredNote: '* Обязательные поля',
+    parentEtaLine: 'Подбор начнётся сразу, первые кандидаты — за 24–48 часов.',
+    parentSafetyLine: 'Мы проверяем рекомендации и документы каждой няни.',
     
     // Nanny Form
     nFormTitle: 'Анкета няни',
@@ -373,6 +376,9 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     importantLabel: 'Most popular requests',
     commentLabel: 'Comments or wishes',
     submitParent: 'Get Matches',
+    parentRequiredNote: '* Required fields',
+    parentEtaLine: 'We start matching immediately; first candidates in 24–48 hours.',
+    parentSafetyLine: 'We verify documents and references for every nanny.',
 
     // Nanny Form
     nFormTitle: 'Nanny Profile',

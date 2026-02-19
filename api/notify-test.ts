@@ -9,6 +9,7 @@ function envWithLocalFallback(key: string): string | undefined {
 async function sendResendEmail(to: string, subject: string, text: string) {
   const apiKey = envWithLocalFallback('RESEND_API_KEY');
   const from = envWithLocalFallback('RESEND_FROM_EMAIL') || 'Blizko <no-reply@blizko.app>';
+  const replyTo = envWithLocalFallback('RESEND_REPLY_TO') || 'hello@blizko.app';
   if (!apiKey) throw new Error('RESEND_API_KEY is missing');
 
   const controller = new AbortController();
@@ -20,7 +21,7 @@ async function sendResendEmail(to: string, subject: string, text: string) {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ from, to: [to], subject, text }),
+    body: JSON.stringify({ from, to: [to], subject, text, reply_to: replyTo }),
     signal: controller.signal,
   });
   clearTimeout(timeout);

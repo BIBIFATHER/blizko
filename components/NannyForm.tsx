@@ -319,13 +319,9 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
               </p>
               
               {!isVerified && (
-                <button
-                  type="button"
-                  onClick={() => setShowGosUslugi(true)}
-                  className="text-sm font-medium text-[#0D4CD3] bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-2"
-                >
-                  {text.loginGos}
-                </button>
+                <div className="text-xs text-stone-400 bg-stone-50 px-3 py-2 rounded-lg border border-stone-100">
+                  Верификация через Госуслуги временно недоступна.
+                </div>
               )}
               
               {isVerified && (
@@ -698,13 +694,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
         </Button>
       </form>
 
-      {showGosUslugi && (
-        <GosUslugiModal 
-          onClose={() => setShowGosUslugi(false)} 
-          onSuccess={handleVerificationSuccess} 
-          lang={lang}
-        />
-      )}
+      {/* Gosuslugi disabled пока интеграции нет */}
 
       {showAssessment && (
         <BehavioralTestModal 

@@ -52,10 +52,11 @@ flowchart TD
 ## 3) Quality Base (Nannies)
 ```mermaid
 flowchart TD
-  N[Profile + Docs upload 🟩] --> OCR[OCR/MRZ stabilization 🟦 Day 7]
-  OCR --> TS[Trust‑score v0/v2 🟦 Day 4 / Phase A]
-  TS --> OS[OSINT hard‑signals 🟦 Day 3]
-  OS --> CORE[Verified core 30–50 🟦 Day 8]
+  N[Profile + Docs upload 🟩] --> OCR[OCR/MRZ + face‑match 🟦 Day 7]
+  OCR --> REC[Recommendations (2 contacts) 🟦]
+  REC --> OS[OSINT hard‑signals 🟦 Day 3]
+  OS --> TS[Trust‑score v0/v2 🟦 Day 4 / Phase A]
+  TS --> CORE[Verified core 30–50 🟦 Day 8]
 ```
 
 ## 4) 8‑Week Execution Timeline
@@ -78,7 +79,7 @@ flowchart LR
 ```mermaid
 flowchart TB
   KB[Quality Base 🟦]
-  CM[Compatibility (Mirror+/PCM) 🟦]
+  CM[Compatibility (Humanity+/PCM) 🟦]
   ST[Stability/Guarantee of arrival 🟦]
   PAY[Payments & economics 🟦]
   OPS[Operational launch 🟦]

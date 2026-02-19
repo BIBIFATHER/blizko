@@ -70,8 +70,20 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     loadData();
   }, []);
 
+  const logAdminAction = (action: string, meta?: Record<string, any>) => {
+    try {
+      const raw = localStorage.getItem('blizko_admin_actions') || '[]';
+      const items = JSON.parse(raw);
+      items.unshift({ action, meta, at: Date.now() });
+      localStorage.setItem('blizko_admin_actions', JSON.stringify(items.slice(0, 200)));
+    } catch {
+      // ignore
+    }
+  };
+
   const handleClear = async () => {
     if (confirm("Удалить все данные?")) {
+      logAdminAction('clear_all');
       await clearAllData();
       setParents([]);
       setNannies([]);
@@ -80,6 +92,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const handleClearTest = async () => {
     if (confirm("Удалить только тестовые записи (id начинается с test-)?")) {
+      logAdminAction('clear_test');
       await clearTestData();
       await loadData();
     }
@@ -444,6 +457,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const bulkVerifyVisible = async () => {
     if (filteredNannies.length === 0) return;
     if (!confirm(`Подтвердить профиль у ${filteredNannies.length} анкет?`)) return;
+    logAdminAction('bulk_verify_profiles', { count: filteredNannies.length });
     await Promise.all(filteredNannies.map((n) => saveNannyProfile({ id: n.id, isVerified: true })));
     await loadData();
   };
@@ -451,6 +465,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const bulkSetDocsStatusVisible = async (status: DocumentVerification["status"]) => {
     if (filteredNannies.length === 0) return;
     if (!confirm(`Проставить статус '${status}' для документов у видимых анкет?`)) return;
+    logAdminAction('bulk_docs_status', { status, count: filteredNannies.length });
 
     await Promise.all(
       filteredNannies.map(async (n) => {

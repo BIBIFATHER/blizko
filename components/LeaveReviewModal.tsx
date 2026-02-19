@@ -15,6 +15,7 @@ export const LeaveReviewModal: React.FC<LeaveReviewModalProps> = ({ bookingId, o
   const text = t[lang];
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,7 +28,7 @@ export const LeaveReviewModal: React.FC<LeaveReviewModalProps> = ({ bookingId, o
         id: crypto.randomUUID(),
         authorName: lang === 'ru' ? 'Анонимный родитель' : 'Anonymous Parent',
         rating,
-        text: comment,
+        text: selectedTags.length > 0 ? `${selectedTags.join(' • ')}\n${comment}`.trim() : comment,
         date: Date.now(),
         bookingId
       };
@@ -68,6 +69,22 @@ export const LeaveReviewModal: React.FC<LeaveReviewModalProps> = ({ bookingId, o
               </div>
             </div>
 
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-stone-500 mb-2">{text.reviewChecklistLabel}</label>
+              <div className="flex flex-wrap gap-2">
+                {text.reviewChecklistOptions.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setSelectedTags((prev) => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])}
+                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${selectedTags.includes(tag) ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-white text-stone-500 border-stone-200 hover:border-amber-200'}`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <Textarea 
               label={text.reviewTextLabel}
               placeholder={text.reviewPlaceholder}
@@ -75,6 +92,13 @@ export const LeaveReviewModal: React.FC<LeaveReviewModalProps> = ({ bookingId, o
               onChange={e => setComment(e.target.value)}
               required
             />
+
+            <div className="mt-4 bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-600">
+              <div className="text-xs font-semibold text-stone-500 mb-2">{text.reviewPreviewLabel}</div>
+              <div className="whitespace-pre-line">
+                {(selectedTags.length > 0 ? `${selectedTags.join(' • ')}\n` : '') + (comment || '—')}
+              </div>
+            </div>
 
             <Button 
               type="submit" 

@@ -106,7 +106,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
 
           <div className="mt-5 grid grid-cols-1 gap-3 text-left">
             <div className="bg-white/80 border border-amber-100 rounded-xl p-3">
-              <div className="text-[11px] font-bold text-amber-600 uppercase tracking-widest mb-1">Mirror</div>
+              <div className="text-[11px] font-bold text-amber-600 uppercase tracking-widest mb-1">Humanity+</div>
               <div className="text-sm text-stone-600">Совпали по стилю: мягкая дисциплина, спокойная коммуникация</div>
               <div className="mt-2 text-[11px] text-stone-500">PCM‑совместимость: «Тёплый ↔ Тёплый» — легко выстраивается контакт</div>
             </div>

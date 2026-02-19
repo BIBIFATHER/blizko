@@ -145,7 +145,7 @@ export const t = {
     returnHome: 'Вернуться на главную',
     successAnalyzingTitle: 'Анализируем профиль...',
     successMatchingTitle: 'Подбираем кандидатов...',
-    successProcessingNote: 'Проверяем анкету и совместимость',
+    successProcessingNote: 'Проверяем анкету и Humanity+ совместимость',
 
     // GosUslugi
     gosTitle: 'Вход в систему',

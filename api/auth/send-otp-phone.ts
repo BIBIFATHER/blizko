@@ -56,7 +56,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!isValidE164(phone)) return json(res, 400, { ok: false, error: 'Некорректный номер телефона' });
 
   const supabase = getServiceSupabase();
-  if (!supabase) return json(res, 500, { ok: false, error: 'OTP storage is not configured' });
+  if (!supabase) return json(res, 503, { ok: false, error: 'OTP storage is not configured (SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY)' });
 
   const { data: existing, error: existingError } = await supabase
     .from('phone_otps')

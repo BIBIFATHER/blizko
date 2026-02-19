@@ -97,13 +97,41 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
         </div>
 
         {/* Actions */}
-        <div className="space-y-3 mt-3">
+        <div className="space-y-3 mt-3 text-center">
           <Button onClick={onFindNanny}>
             {text.findNanny}
           </Button>
-          <Button variant="secondary" onClick={onBecomeNanny}>
+          <p className="text-sm text-stone-500">
+            {text.homeSafetyLine}
+          </p>
+          <button
+            type="button"
+            onClick={onBecomeNanny}
+            className="text-sm font-medium text-stone-500 hover:text-stone-700 underline underline-offset-4"
+          >
             {text.becomeNanny}
-          </Button>
+          </button>
+        </div>
+
+        {/* Flow */}
+        <div className="space-y-3">
+          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
+            {text.homeFlowTitle}
+          </h2>
+          <div className="flex items-center justify-center gap-3 text-sm text-stone-600 flex-wrap">
+            {text.homeFlowSteps.map((step, index) => (
+              <React.Fragment key={step}>
+                <span className="px-3 py-1 rounded-full bg-stone-100 text-stone-700">
+                  {step}
+                </span>
+                {index < text.homeFlowSteps.length - 1 && (
+                  <span className="text-stone-300">→</span>
+                )}
+              </React.Fragment>
+            ))}
+            <span className="text-stone-400">•</span>
+            <span className="text-stone-500">{text.homeEta}</span>
+          </div>
         </div>
 
         {/* Trust Blocks */}

@@ -2,7 +2,11 @@ export const t = {
   ru: {
     // ... existing keys ...
     heroTitle: 'Подбор нянь, где главное — доверие и спокойствие семьи.',
-    heroSubtitle: 'Мы не просто показываем анкеты. Мы объясняем, почему няня подходит вашей семье — через Humanity+ и проверку профиля.',
+    heroSubtitle: 'Объяснимый подбор нянь: Humanity+ и проверка профиля.',
+    homeSafetyLine: 'Проверяем нянь: документы, рекомендации, интервью.',
+    homeFlowTitle: 'Как это работает',
+    homeFlowSteps: ['Запрос', 'Анализ', 'Подбор'],
+    homeEta: 'Обычно 24–48 часов',
     findNanny: 'Найти няню',
     becomeNanny: 'Стать няней',
     whyTrust: 'ПОЧЕМУ НАМ ДОВЕРЯЮТ',
@@ -319,7 +323,11 @@ export const t = {
   en: {
     // ... existing keys ...
     heroTitle: 'Blizko — trusted nanny matching built on stability.',
-    heroSubtitle: 'We explain why a nanny fits your family — through Humanity+ and profile vetting.',
+    heroSubtitle: 'Explainable nanny matching: Humanity+ and profile vetting.',
+    homeSafetyLine: 'We verify nannies: documents, references, interviews.',
+    homeFlowTitle: 'How it works',
+    homeFlowSteps: ['Request', 'Analysis', 'Match'],
+    homeEta: 'Typically 24–48 hours',
     findNanny: 'Find a Nanny',
     becomeNanny: 'Become a Nanny',
     whyTrust: 'WHY TRUST US',

@@ -239,6 +239,9 @@ export const t = {
     payAction: 'Оплатить',
     paySuccess: 'Оплата прошла успешно',
     payProcessing: 'Обработка в Точка Банк...',
+    payFeeNote: 'Итоговая сумма включает комиссию сервиса.',
+    payRefundNote: 'Отмена и возврат — по правилам оферты.',
+    payRetryNote: 'Если оплата не прошла, попробуйте ещё раз.',
 
     // Nanny Offer / Agreement
     offerTitle: 'Сотрудничество с платформой «Близко»',
@@ -568,6 +571,9 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     payAction: 'Pay',
     paySuccess: 'Payment Successful',
     payProcessing: 'Processing in Tochka Bank...',
+    payFeeNote: 'Final amount includes service fees.',
+    payRefundNote: 'Cancellations and refunds follow the offer terms.',
+    payRetryNote: 'If payment fails, try again.',
 
     // Nanny Offer / Agreement
     offerTitle: 'Cooperation with "Blizko"',

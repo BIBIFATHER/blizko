@@ -78,6 +78,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
             <div>
               <p className="text-stone-400 text-[10px] uppercase tracking-wider font-bold">{title || text.payTitle}</p>
               <p className="text-2xl font-bold text-stone-800 mt-0.5 tracking-tight">{amount}</p>
+              <p className="text-[11px] text-stone-500 mt-1">{text.payFeeNote}</p>
+              <p className="text-[11px] text-stone-400">{text.payRefundNote}</p>
             </div>
             <div className="w-10 h-10 bg-[#6C2586]/10 rounded-full flex items-center justify-center text-[#6C2586]">
                <ShieldCheck size={20} />
@@ -149,6 +151,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
               <Button type="submit" isLoading={loading} className="mt-4 bg-[#6C2586] text-white hover:bg-[#581c6e] shadow-lg shadow-purple-900/20 w-full py-3.5">
                 {text.payAction} <ArrowRight size={18} />
               </Button>
+              <div className="text-[11px] text-stone-400 mt-2">{text.payRetryNote}</div>
               
               <div className="flex justify-center mt-3">
                  <span className="text-[10px] text-stone-400 flex items-center gap-1">
@@ -180,6 +183,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
               <Button onClick={handlePay} isLoading={loading} className="bg-[#6C2586] hover:bg-[#581c6e] text-white shadow-lg shadow-purple-900/20 w-full">
                 {text.payAction}
               </Button>
+              <div className="text-[11px] text-stone-400 mt-2">{text.payRetryNote}</div>
             </div>
           )}
 

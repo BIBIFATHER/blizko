@@ -17,6 +17,10 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
+## Before asking "remind/sending again"
+
+Before asking the user to resend or remind something, first scroll/search the recent chat history in the current session to see if it was already provided. If still missing, say you checked the recent history and couldn’t find it.
+
 ## Memory
 
 You wake up fresh each session. These files are your continuity:

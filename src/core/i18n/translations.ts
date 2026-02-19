@@ -145,7 +145,9 @@ export const t = {
 
     // Success
     successTitle: 'Спасибо,\nмы рядом!',
-    successDesc: 'Ваша заявка принята. Менеджер заботы свяжется с вами в течение часа.',
+    successDesc: 'Заявка принята. Подбор стартует сразу — первые кандидаты за 24–48 часов.',
+    successNextCta: 'Перейти в личный кабинет',
+    successEditCta: 'Изменить заявку',
     aiMatch: 'AI Анализ совместимости',
     probability: 'вероятность успеха',
     recsTitle: 'Рекомендации для лучших кандидатов:',
@@ -469,7 +471,9 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
 
     // Success
     successTitle: 'Thank you,\nwe are close!',
-    successDesc: 'Your request has been received. A care manager will contact you within an hour.',
+    successDesc: 'We received your request. Matching starts now — first candidates in 24–48 hours.',
+    successNextCta: 'Go to dashboard',
+    successEditCta: 'Edit request',
     aiMatch: 'AI Compatibility Analysis',
     probability: 'success probability',
     recsTitle: 'Recommendations for best candidates:',

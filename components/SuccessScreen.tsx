@@ -146,9 +146,14 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
         </div>
       </Card>
 
-      <Button onClick={onHome} variant="outline" className="active:scale-95 transition-transform">
-        {text.returnHome}
-      </Button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Button onClick={onHome} className="active:scale-95 transition-transform">
+          {text.successNextCta}
+        </Button>
+        <Button onClick={onHome} variant="outline" className="active:scale-95 transition-transform">
+          {text.successEditCta}
+        </Button>
+      </div>
     </div>
   );
 };

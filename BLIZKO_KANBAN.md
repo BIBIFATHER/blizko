@@ -7,11 +7,12 @@
 ## Done
 - Supabase (DB/Auth/Storage) подключен
 - Vercel (API/Hosting) подключен
-- Resend (Email) подключен
+- Resend (Email) подключен + домен верифицирован
 - Sentry (Errors) подключен
 - AI Provider (matching/document) подключен
 - Telegram Ops канал используется
 - Ops‑документы подготовлены (регламент/шаблоны/чек‑листы)
+- Email pipeline проверен: notify‑test ok + DNS для send.blizko.app
 
 ## To‑Do
 - Product analytics (PostHog)

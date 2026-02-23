@@ -15,6 +15,14 @@
 - Email pipeline проверен: notify‑test ok + DNS для send.blizko.app
 
 ## To‑Do
+- Release checklist: Parent flow (create/edit/resubmit)
+- Release checklist: Nanny flow (create/edit profile)
+- Release checklist: Admin moderation (statuses + reject reason + history)
+- Release checklist: Document upload/preview (parent + nanny)
+- Security: secrets not in frontend, .env.local not committed, rotate keys if leaked
+- Supabase: RLS enabled + policies tested + user_id saved on write
+- UX: status labels human‑readable; new moderation badge; city autocomplete; geolocation fallback
+- Pre‑deploy: build passes; smoke tests; release commit with notes
 - Product analytics (PostHog)
 - KPI‑дашборд (Metabase / Looker Studio)
 - ЮKassa / CloudPayments (Payments)

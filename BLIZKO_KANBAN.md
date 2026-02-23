@@ -11,6 +11,7 @@
 - Sentry (Errors) подключен
 - AI Provider (matching/document) подключен
 - Telegram Ops канал используется
+- Ops‑документы подготовлены (регламент/шаблоны/чек‑листы)
 
 ## To‑Do
 - Product analytics (PostHog)

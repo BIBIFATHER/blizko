@@ -265,3 +265,6 @@ flowchart TB
 - **OSINT checks** — hard‑фильтры безопасности.
 - **Push notifications** — снижение срывов (T‑24ч/T‑3–4ч).
 - **Product analytics** — управление ростом и метриками.
+
+## 8) Progress (Kanban)
+Отслеживание прогресса ведём в файле: **BLIZKO_KANBAN.md** (To‑Do / Doing / Done).

@@ -43,7 +43,7 @@ server.tool(
   { fileKey: z.string(), depth: z.number().int().optional() },
   async ({ fileKey, depth }) => {
     const data = await figmaFetch(`/files/${fileKey}`, { depth });
-    return { content: [{ type: "json", json: data }] };
+    return { content: [{ type: "text", text: JSON.stringify(data) }] };
   }
 );
 
@@ -54,7 +54,7 @@ server.tool(
     const data = await figmaFetch(`/files/${fileKey}/nodes`, {
       ids: nodeIds,
     });
-    return { content: [{ type: "json", json: data }] };
+    return { content: [{ type: "text", text: JSON.stringify(data) }] };
   }
 );
 
@@ -74,7 +74,7 @@ server.tool(
       scale,
       use_absolute_bounds,
     });
-    return { content: [{ type: "json", json: data }] };
+    return { content: [{ type: "text", text: JSON.stringify(data) }] };
   }
 );
 
@@ -97,7 +97,7 @@ server.tool(
         hits.push({ id: node.id, name: node.name, type: node.type });
       }
     });
-    return { content: [{ type: "json", json: { hits } }] };
+    return { content: [{ type: "text", text: JSON.stringify({ hits }) }] };
   }
 );
 
@@ -109,7 +109,7 @@ server.tool(
   },
   async ({ summary, changes = [] }) => {
     // This tool only returns a patch plan (does not apply changes in Figma)
-    return { content: [{ type: "json", json: { summary, changes } }] };
+    return { content: [{ type: "text", text: JSON.stringify({ summary, changes }) }] };
   }
 );
 

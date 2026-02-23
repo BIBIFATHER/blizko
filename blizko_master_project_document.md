@@ -183,5 +183,85 @@ flowchart TB
 
 ## 6) Section Explanations (Why + How)
 
-Blizko, [17.02.2026 15:12]
-1) Пользователи (Parents / Nannies / Admin)
+1) **Пользователи (Parents / Nannies / Admin)**
+- **Зачем:** три роли, три потока ценности.
+- **Как:** три UX‑пути → родитель (заявка/матч), няня (анкета/доки), админ (модерация/статусы).
+
+2) **Client (Vite/React)**
+- **Зачем:** быстрый MVP + контроль UX.
+- **Как:**
+  - ParentForm → сбор запроса
+  - NannyForm → анкета + документы
+  - AuthModal/UserProfile → вход/профиль
+  - Match Result → объяснимые рекомендации
+  - DocumentUploadModal → доки
+  - AdminPanel → статусы/модерация
+
+3) **API (Vercel)**
+- **Зачем:** серверный контур для AI, OTP, данных и платежей.
+- **Как:**
+  - send/verify‑otp‑phone → SMSAero
+  - /api/ai → matching/document AI
+  - /api/data/parents|nannies → чтение/запись
+  - /api/notify → операционные уведомления
+  - /api/payments → ЮKassa (create + webhook)
+
+4) **Supabase (DB/Auth/Storage)**
+- **Зачем:** хранение заявок, анкет и статусов.
+- **Как:**
+  - таблицы parents, nannies, payments
+  - RLS для безопасности доступа
+
+5) **AI & Verification**
+- **Зачем:** отличаться качеством и объяснимостью.
+- **Как:**
+  - NLP‑анализ (стиль, эмпатия, структура)
+  - Скоринг → features
+  - Explainability (почему этот матч)
+  - OCR/MRZ + face‑match
+  - OSINT/правовой след
+
+6) **Ops & Comms**
+- **Зачем:** управляемый запуск и стабильность сделок.
+- **Как:**
+  - SMSAero (OTP)
+  - Resend (email)
+  - Push (напоминания T‑24ч/T‑3–4ч)
+  - Telegram ops (ручной контроль)
+
+7) **Observability**
+- **Зачем:** ловить ошибки и видеть воронку.
+- **Как:**
+  - Sentry для ошибок
+  - Product analytics для метрик
+
+8) **Payments**
+- **Зачем:** закрепить экономику.
+- **Как:**
+  - ЮKassa (create payment + webhook)
+  - payments table в DB
+
+9) **Master Roles (Owners)**
+- **Зачем:** у каждого блока есть владелец.
+- **Как:**
+  - Product Lead → UX/roadmap/фокус
+  - Ops Lead → модерация/SLA/сделки
+  - Engineering Lead → API/DB/AI
+  - Legal + DPO → privacy/terms/RLS
+
+## 7) Services (Connected & Planned) + Why
+
+**Уже подключено**
+- **Supabase (DB/Auth/Storage)** — быстрый запуск без devops, Postgres + RLS + auth.
+- **Vercel (API/Hosting)** — быстрый деплой фронта и serverless‑API.
+- **SMSAero (OTP)** — надёжная/дешёвая SMS‑верификация.
+- **Resend (Email)** — удобные транзакционные письма.
+- **Sentry (Ошибки)** — мгновенный контроль качества.
+- **AI Provider (matching/document)** — ядро дифференциации.
+
+**Подключаем**
+- **ЮKassa (Payments)** — лучший локальный платёжный контур + webhooks.
+- **OCR/MRZ + Face‑match** — усиление доверия, контроль качества базы.
+- **OSINT checks** — hard‑фильтры безопасности.
+- **Push notifications** — снижение срывов (T‑24ч/T‑3–4ч).
+- **Product analytics** — управление ростом и метриками.

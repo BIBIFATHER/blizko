@@ -73,6 +73,30 @@ before update on public.matches
 for each row execute function public.touch_updated_at();
 
 -- ==========================
+-- AUTO-LOG MATCH EVENTS
+-- Writes to match_events on status change
+-- ==========================
+create or replace function public.log_match_status_change() returns trigger as $$
+begin
+  if new.status is distinct from old.status then
+    insert into public.match_events(match_id, from_status, to_status, ts, actor)
+    values (
+      new.id,
+      old.status,
+      new.status,
+      now(),
+      coalesce(auth.uid()::text, 'system')
+    );
+  end if;
+  return new;
+end; $$ language plpgsql;
+
+drop trigger if exists trg_matches_log_status on public.matches;
+create trigger trg_matches_log_status
+after update on public.matches
+for each row execute function public.log_match_status_change();
+
+-- ==========================
 -- RLS POLICIES (Supabase)
 -- Assumptions:
 -- 1) matches.parent_id stores auth.uid() of the parent user
@@ -126,50 +150,84 @@ create policy "admin_read_all_deals"
   using ((auth.jwt()->>'role') = 'admin');
 
 -- ==========================
--- KPI QUERIES
+-- KPI QUERIES (COHORT-BASED)
 -- matched → deal_done (7d / 30d) + median time
 -- ==========================
 
--- 7 days conversion (events)
+-- Cohort KPI: matched in last 7 days (unique match_id)
 -- returns: matched_cnt, deal_done_cnt, deal_done_pct
--- (pct = deal_done / matched)
--- NOTE: if needed, add parent filter: AND m.parent_id = auth.uid()
 --
--- select
---   count(*) filter (where e.to_status = 'matched') as matched_cnt,
---   count(*) filter (where e.to_status = 'deal_done') as deal_done_cnt,
---   case when count(*) filter (where e.to_status = 'matched') = 0 then 0
---        else round(100.0 * count(*) filter (where e.to_status = 'deal_done')
---                        / count(*) filter (where e.to_status = 'matched'), 2)
---   end as deal_done_pct
--- from public.match_events e
--- where e.to_status in ('matched','deal_done')
---   and e.ts >= now() - interval '7 days';
-
--- 30 days conversion (events)
--- select
---   count(*) filter (where e.to_status = 'matched') as matched_cnt,
---   count(*) filter (where e.to_status = 'deal_done') as deal_done_cnt,
---   case when count(*) filter (where e.to_status = 'matched') = 0 then 0
---        else round(100.0 * count(*) filter (where e.to_status = 'deal_done')
---                        / count(*) filter (where e.to_status = 'matched'), 2)
---   end as deal_done_pct
--- from public.match_events e
--- where e.to_status in ('matched','deal_done')
---   and e.ts >= now() - interval '30 days';
-
--- Median time from matched → deal_done (overall)
--- select percentile_cont(0.5) within group (order by dd.ts - mm.ts) as median_time
--- from (
---   select match_id, min(ts) as ts
+-- with matched_cohort as (
+--   select match_id, min(ts) as matched_ts
 --   from public.match_events
 --   where to_status = 'matched'
+--     and ts >= now() - interval '7 days'
 --   group by match_id
--- ) mm
--- join (
---   select match_id, min(ts) as ts
+-- ), deal_done as (
+--   select match_id, min(ts) as deal_done_ts
 --   from public.match_events
 --   where to_status = 'deal_done'
 --   group by match_id
--- ) dd using (match_id)
--- where dd.ts >= mm.ts;
+-- )
+-- select
+--   count(*) as matched_cnt,
+--   count(*) filter (
+--     where d.deal_done_ts is not null
+--       and d.deal_done_ts >= m.matched_ts
+--   ) as deal_done_cnt,
+--   case when count(*) = 0 then 0
+--        else round(
+--          100.0 * count(*) filter (
+--            where d.deal_done_ts is not null
+--              and d.deal_done_ts >= m.matched_ts
+--          ) / count(*), 2)
+--   end as deal_done_pct
+-- from matched_cohort m
+-- left join deal_done d using (match_id);
+
+-- Cohort KPI: matched in last 30 days (unique match_id)
+-- with matched_cohort as (
+--   select match_id, min(ts) as matched_ts
+--   from public.match_events
+--   where to_status = 'matched'
+--     and ts >= now() - interval '30 days'
+--   group by match_id
+-- ), deal_done as (
+--   select match_id, min(ts) as deal_done_ts
+--   from public.match_events
+--   where to_status = 'deal_done'
+--   group by match_id
+-- )
+-- select
+--   count(*) as matched_cnt,
+--   count(*) filter (
+--     where d.deal_done_ts is not null
+--       and d.deal_done_ts >= m.matched_ts
+--   ) as deal_done_cnt,
+--   case when count(*) = 0 then 0
+--        else round(
+--          100.0 * count(*) filter (
+--            where d.deal_done_ts is not null
+--              and d.deal_done_ts >= m.matched_ts
+--          ) / count(*), 2)
+--   end as deal_done_pct
+-- from matched_cohort m
+-- left join deal_done d using (match_id);
+
+-- Median time from matched → deal_done (cohort matched last 30 days)
+-- with mm as (
+--   select match_id, min(ts) as matched_ts
+--   from public.match_events
+--   where to_status = 'matched'
+--   group by match_id
+-- ), dd as (
+--   select match_id, min(ts) as deal_done_ts
+--   from public.match_events
+--   where to_status = 'deal_done'
+--   group by match_id
+-- )
+-- select percentile_cont(0.5) within group (order by dd.deal_done_ts - mm.matched_ts) as median_time
+-- from mm
+-- join dd using (match_id)
+-- where mm.matched_ts >= now() - interval '30 days'
+--   and dd.deal_done_ts >= mm.matched_ts;

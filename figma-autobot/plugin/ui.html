@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Blizko Autobot</title>
+    <style>
+      body { font: 12px/1.4 -apple-system, system-ui, sans-serif; padding: 12px; }
+      .row { margin: 6px 0; }
+      code { background: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
+      .ok { color: #0a7; }
+      .bad { color: #a00; }
+    </style>
+  </head>
+  <body>
+    <div class="row"><b>Blizko Autobot</b></div>
+    <div class="row">WS: <code id="wsUrl">ws://127.0.0.1:8787</code></div>
+    <div class="row">Status: <span id="st" class="bad">disconnected</span></div>
+    <div class="row"><button id="reconnect">Reconnect</button></div>
+
+    <script>
+      const wsUrl = "ws://127.0.0.1:8787";
+      document.getElementById("wsUrl").textContent = wsUrl;
+      const st = document.getElementById("st");
+      let ws;
+
+      function setStatus(ok, text){
+        st.className = ok ? "ok" : "bad";
+        st.textContent = text;
+      }
+
+      function connect(){
+        try { if (ws) ws.close(); } catch {}
+        ws = new WebSocket(wsUrl);
+        ws.onopen = () => setStatus(true, "connected");
+        ws.onclose = () => setStatus(false, "disconnected");
+        ws.onerror = () => setStatus(false, "error");
+        ws.onmessage = (ev) => {
+          parent.postMessage({ pluginMessage: { type: "autobot_cmd", payload: ev.data } }, "*");
+        };
+      }
+
+      window.onmessage = (ev) => {
+        const msg = ev.data?.pluginMessage;
+        if (!msg) return;
+        if (msg.type === "autobot_resp" && ws && ws.readyState === 1) {
+          ws.send(JSON.stringify(msg.payload));
+        }
+      };
+
+      document.getElementById("reconnect").onclick = connect;
+      connect();
+    </script>
+  </body>
+</html>

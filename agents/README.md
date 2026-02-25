@@ -1,27 +1,28 @@
-# Blizko — Role Agents (Core)
+# agents/ (Legacy UI mirror) — Stage 0
 
-## Core agents (start here)
-1) **Product Lead** — стратегия, приоритеты, метрики, фокус на 1 продуктовую/1 операционную/1 метрику в день.
-2) **Tech/Architecture** — backend, DB, security, integrations, качество кода, риски.
-3) **Ops/Moderation** — воронка нянь, SLA, ручные матчи, операционный ритм.
+## What this is
+This folder is a legacy UI mirror of agent profiles.
 
-## Expansion agents (add later)
-- Joe (Design/UX, universal)
-- Trust/Safety
-- Growth/Marketing
-- CFO/Finance
-- Legal/Compliance
-- Recruiting/Onboarding (HH)
+## Source of truth
+Canonical agent profiles live in:
+- AGENT_PROFILES/agents/*.md
 
-## Communication protocol (между агентами)
-- **Daily sync (async):**
-  - Product Lead → публикует «Сегодня: 1 продукт + 1 операционка + 1 метрика». 
-  - Tech → отвечает «риски/блокеры/оценка». 
-  - Ops → отвечает «что сделано/что мешает/следующий шаг».
-- **Decision rule:** Product Lead принимает финальное решение и фиксирует в `DECISIONS.md`.
-- **Shared log:** каждый агент пишет краткий апдейт в `agents/STATUS_LOG.md`.
+Legacy files are generated here as:
+- agents/*.prompt.md
 
-## When to add new agents
-- Появляется стабильный поток задач по направлению.
-- Нужны отдельные KPI/документы/регламент.
+## Rules (locked)
+- Do NOT edit agents/*.prompt.md manually.
+- Update agents only in AGENT_PROFILES/agents/, then run sync.
 
+## Sync
+Run:
+- bash scripts/sync_agents.sh
+
+## UI refresh
+If the UI caches the agent list:
+- restart the bot/UI process that reads agents/*.prompt.md
+- verify with: ls -la agents/*.prompt.md
+
+## Reference
+- core/AGENT_SYNC_POLICY.md
+- core/AGENTS_MANIFEST.json

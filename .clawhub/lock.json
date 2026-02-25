@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "skills": {
+    "cursor-agent": {
+      "version": "2.1.0",
+      "installedAt": 1770831478500
+    },
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1770834710048
+    },
+    "session-logs": {
+      "version": "1.0.0",
+      "installedAt": 1770834718633
+    },
+    "opencode-controller": {
+      "version": "1.0.0",
+      "installedAt": 1770834813060
+    },
+    "codex-sub-agents-1": {
+      "version": "1.0.1",
+      "installedAt": 1770834816041
+    },
+    "healthcheck": {
+      "version": "1.0.2",
+      "installedAt": 1770834867417
+    },
+    "openai-whisper-api": {
+      "version": "1.0.0",
+      "installedAt": 1770834906848
+    },
+    "video-frames": {
+      "version": "1.0.0",
+      "installedAt": 1770834914523
+    },
+    "web-search": {
+      "version": "1.0.0",
+      "installedAt": 1770835512354
+    },
+    "todoist": {
+      "version": "0.2.1",
+      "installedAt": 1770835521946
+    }
+  }
+}

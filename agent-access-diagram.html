@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<title>Схема работы агентов и уровни доступа</title>
+<style>
+  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #fff; }
+  svg { width: 1400px; height: 900px; }
+  .box { fill: #ffffff; stroke: #111; stroke-width: 3; }
+  .title { font-size: 36px; font-weight: 600; }
+  .label { font-size: 22px; }
+  .small { font-size: 18px; }
+</style>
+</head>
+<body>
+<svg viewBox="0 0 1400 900">
+  <text x="700" y="50" text-anchor="middle" class="title">Схема работы агентов и уровни доступа</text>
+
+  <!-- Boxes -->
+  <rect x="80" y="140" rx="16" ry="16" width="340" height="120" class="box" />
+  <rect x="500" y="140" rx="16" ry="16" width="400" height="160" class="box" />
+  <rect x="980" y="140" rx="16" ry="16" width="340" height="160" class="box" />
+
+  <rect x="500" y="380" rx="16" ry="16" width="400" height="180" class="box" />
+  <rect x="980" y="380" rx="16" ry="16" width="340" height="180" class="box" />
+  <rect x="80" y="380" rx="16" ry="16" width="340" height="180" class="box" />
+
+  <!-- Labels -->
+  <text x="250" y="190" text-anchor="middle" class="label">Антон</text>
+  <text x="250" y="220" text-anchor="middle" class="label">(человек)</text>
+
+  <text x="700" y="190" text-anchor="middle" class="label">Main Agent (я)</text>
+  <text x="700" y="220" text-anchor="middle" class="label">— принимает задачи</text>
+  <text x="700" y="250" text-anchor="middle" class="label">— координирует</text>
+
+  <text x="1150" y="190" text-anchor="middle" class="label">Tools</text>
+  <text x="1150" y="220" text-anchor="middle" class="label">browser, web_search,</text>
+  <text x="1150" y="250" text-anchor="middle" class="label">exec, gog и т.д.</text>
+
+  <text x="700" y="420" text-anchor="middle" class="label">Sub‑agents (изолированные)</text>
+  <text x="700" y="450" text-anchor="middle" class="label">— получают только задачу</text>
+  <text x="700" y="480" text-anchor="middle" class="label">— результат → Main</text>
+
+  <text x="1150" y="420" text-anchor="middle" class="label">Внешние действия</text>
+  <text x="1150" y="450" text-anchor="middle" class="label">(сообщения/почта/посты)</text>
+  <text x="1150" y="480" text-anchor="middle" class="label">— только с подтверждением</text>
+
+  <text x="250" y="420" text-anchor="middle" class="label">Workspace</text>
+  <text x="250" y="450" text-anchor="middle" class="label">(файлы/заметки)</text>
+  <text x="250" y="480" text-anchor="middle" class="label">— чтение/запись</text>
+
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#111" />
+    </marker>
+  </defs>
+
+  <line x1="420" y1="200" x2="500" y2="200" stroke="#111" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="900" y1="200" x2="980" y2="200" stroke="#111" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="700" y1="300" x2="700" y2="380" stroke="#111" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="500" y1="460" x2="420" y2="460" stroke="#111" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="900" y1="460" x2="980" y2="460" stroke="#111" stroke-width="3" marker-end="url(#arrow)" />
+
+  <!-- Access levels -->
+  <text x="80" y="640" class="small">Уровни доступа:</text>
+  <text x="80" y="670" class="small">• Внутренний: файлы/локальные команды</text>
+  <text x="80" y="700" class="small">• Инструментальный: доступ к tools</text>
+  <text x="80" y="730" class="small">• Внешний: сообщения/почта — только с подтверждением</text>
+</svg>
+</body>
+</html>

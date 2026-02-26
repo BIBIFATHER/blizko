@@ -14,4 +14,5 @@ RFC APPLIED: 2026-02-26_single_app_two_roles (Architecture Decision + Nanny Mode
 P0: Tech spec created — Nanny Role MVP (role routing, guards, feature flags, minimal nanny dashboard)
 MODE: PMF WAR MODE (30 days) — focus onboarding→verification→match→deal_done; metrics per war mode.
 P0: Implement event tracking baseline export (simple SQL/dashboard export within 24h)
+P0: Create tracking spec in tech/tracking/* (nanny funnel events + SQL/dashboard export)
 RFC applied: 2026-02-26_enforce_approved_content (CORE_CHANGE_PROTOCOL updated with Approved content requirement).

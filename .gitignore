@@ -30,3 +30,4 @@ backups/*.tar.gz
 # Env (local)
 .env.local
 .env.*.local
+.openclaw/

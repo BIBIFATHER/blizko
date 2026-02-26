@@ -11,6 +11,23 @@
 
 ---
 
+## Architecture Decision — Single App, Two Roles
+Decision:
+- Один backend
+- Один frontend
+- Role-based routing
+- Feature flags
+- Guarded routes
+- No second nanny app until PMF validated
+
+Justification:
+- Снижение tech debt
+- Централизованный tracking
+- Упрощение growth
+- Быстрее итерации
+
+---
+
 ## 2) Execution Timeline (Weeks 1–8)
 
 ### Weeks 1–2: Запуск сделок (Days 1–14)
@@ -82,3 +99,51 @@
 6) **Мобильная упаковка**
 - PWA / моб‑UX
 - Быстрые сценарии бронирования
+
+### Phase PMF — Nanny Role Mode
+Deliverables:
+**Product:**
+- Nanny funnel mapping
+- Nanny dashboard logic
+- Status states (applied → verified → matched)
+
+**Tech:**
+- Role-based routing
+- Route guards
+- Feature flags system
+- Event tracking:
+  - nanny_registered
+  - nanny_verified
+  - nanny_profile_completed
+  - nanny_matched
+  - deal_done
+
+**Design:**
+- Nanny onboarding screens
+- Nanny dashboard
+- Status states
+- Error states
+
+**Trust:**
+- Verification state logic
+- Abuse risk modelling
+- Escalation triggers
+
+**Ops:**
+- Manual review process
+- SLA for nanny verification
+
+**Growth:**
+- Funnel metrics per stage
+- Drop-off tracking
+
+**KPI control (Nanny Mode):**
+Primary:
+- nanny onboarding completion %
+- verified nanny %
+- matched %
+- deal_done %
+
+Secondary:
+- time to verification
+- drop-off per screen

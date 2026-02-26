@@ -11,4 +11,5 @@ Notes: Done/in place — Supabase (DB/Auth/Storage), Vercel (API/Hosting), Resen
 
 INCIDENT: core drift detected (AI_ROADMAP.md, METRICS_GLOSSARY.md edited without APPROVED RFC). Status: APPROVED and applied via RFC 2026-02-26_core_drift_fix.
 RFC APPLIED: 2026-02-26_single_app_two_roles (Architecture Decision + Nanny Mode roadmap + KPI control)
+P0: Tech spec created — Nanny Role MVP (role routing, guards, feature flags, minimal nanny dashboard)
 RFC applied: 2026-02-26_enforce_approved_content (CORE_CHANGE_PROTOCOL updated with Approved content requirement).

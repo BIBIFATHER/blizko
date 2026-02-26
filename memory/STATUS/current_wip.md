@@ -8,3 +8,5 @@ App Doing: SMSAero (OTP) — ждём договор
 Ops Doing: Airtable/Google Sheets — воронка откликов + SLA; Notion Kanban — перенос Done/Doing/To‑Do карточек (in progress)
 Bottleneck: SMSAero (OTP) — ожидание договора
 Notes: Done/in place — Supabase (DB/Auth/Storage), Vercel (API/Hosting), Resend (Email + домен), Sentry, AI provider, Telegram Ops канал, базовые UI-модули и API /api/notify, /api/notify-test, /api/auth/send-otp-phone, /api/auth/verify-otp-phone
+
+INCIDENT: core drift detected (AI_ROADMAP.md, METRICS_GLOSSARY.md edited without APPROVED RFC). Status: APPROVED and applied via RFC 2026-02-26_core_drift_fix.

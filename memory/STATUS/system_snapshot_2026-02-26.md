@@ -7,4 +7,4 @@ Deal_done: нет зафиксированных сделок в файлах
 App Doing: SMSAero (OTP) — ждём договор
 Ops Doing: Airtable/Google Sheets — воронка откликов + SLA; Notion Kanban — перенос Done/Doing/To‑Do карточек (in progress)
 Bottleneck: SMSAero (OTP) — ожидание договора
-Notes: Done/in place — Supabase (DB/Auth/Storage), Vercel (API/Hosting), Resend (Email + домен), Sentry, AI provider, Telegram Ops канал, базовые UI-модули и API /api/notify, /api/notify-test, /api/auth/send-otp-phone, /api/auth/verify-otp-phone; Bootstrap: созданы зоны (agents/product/tech/ops/recruiting/design/trust/growth), core/RFC и матрица доступов + протоколы
+Notes: Done/in place — Supabase (DB/Auth/Storage), Vercel (API/Hosting), Resend (Email + домен), Sentry, AI provider, Telegram Ops канал, базовые UI-модули и API /api/notify, /api/notify-test, /api/auth/send-otp-phone, /api/auth/verify-otp-phone; Bootstrap: созданы зоны (agents/product/tech/ops/recruiting/design/trust/growth), core/RFC и матрица доступов + протоколы; Core drift RFC 2026-02-26_core_drift_fix APPROVED + applied

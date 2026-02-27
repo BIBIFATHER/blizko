@@ -33,3 +33,9 @@ backups/*.tar.gz
 .openclaw/
 .clawhub/
 figma-mcp/node_modules/
+
+# Local secrets / backups
+.env.local
+backups/secrets/
+*.tgz
+*.zip

@@ -19,7 +19,8 @@
     "lucide-react": "^0.561.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-qr-code": "2.0.15"
+    "react-qr-code": "2.0.15",
+    "react-router-dom": "^6.30.3"
   },
   "devDependencies": {
     "@types/node": "^22.19.3",

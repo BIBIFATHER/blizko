@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './components/Home';
 import { ParentForm } from './components/ParentForm';
 import { NannyForm } from './components/NannyForm';
@@ -9,6 +10,8 @@ import { AuthModal } from './components/AuthModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { InstallPwaModal } from './src/web/pwa/InstallPwaPrompt';
 import { ShareModal } from './components/ShareModal';
+import { Forbidden } from './components/Forbidden';
+import { LoginPage } from './components/LoginPage';
 import { ViewState, ParentRequest, NannyProfile, SubmissionResult, Language, User } from './types';
 import { saveParentRequest, saveNannyProfile, getNannyProfiles, updateParentRequest } from './services/storage';
 import { sendToWebhook } from './services/api';
@@ -208,100 +211,146 @@ export default function App() {
     }
   };
 
+  const isAdmin = !!(user?.email && adminEmails.includes(String(user.email).toLowerCase()));
+
+  const RequireRole: React.FC<{ role: 'parent' | 'nanny' | 'admin'; children: React.ReactNode }> = ({ role, children }) => {
+    if (!user) return <Navigate to="/login" replace />;
+    if (role === 'admin' && !isAdmin) return <Forbidden />;
+    if (role === 'parent' && user.role !== 'parent') return <Forbidden />;
+    if (role === 'nanny' && user.role !== 'nanny') return <Forbidden />;
+    return <>{children}</>;
+  };
+
   return (
-    <div className="min-h-screen bg-milk text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
-      {/* Top Header: Language & Auth - Adjusted for Safe Area */}
-      <div className="absolute top-4 right-4 top-safe z-20 flex items-center gap-2 pr-safe">
-        
-        <button 
-          type="button"
-          onClick={handleShare}
-          className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
-          title={t[lang].share}
-          aria-label={t[lang].share}
-        >
-          <Share2 size={16} />
-        </button>
-
-        <button 
-          type="button"
-          onClick={toggleLanguage}
-          className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
-          aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
-        >
-          {lang === 'ru' ? 'EN' : 'RU'}
-        </button>
-
-        {!user ? (
+    <BrowserRouter>
+      <div className="min-h-screen bg-milk text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
+        {/* Top Header: Language & Auth - Adjusted for Safe Area */}
+        <div className="absolute top-4 right-4 top-safe z-20 flex items-center gap-2 pr-safe">
+          
           <button 
             type="button"
-            onClick={() => setAuthOpen(true)}
-            className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
+            onClick={handleShare}
+            className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
+            title={t[lang].share}
+            aria-label={t[lang].share}
           >
-            {t[lang].login}
+            <Share2 size={16} />
           </button>
-        ) : (
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-[11px] text-stone-500 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full px-2.5 py-1" title={user.email || user.name}>
-              {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
-            </span>
+
+          <button 
+            type="button"
+            onClick={toggleLanguage}
+            className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
+            aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
+          >
+            {lang === 'ru' ? 'EN' : 'RU'}
+          </button>
+
+          {!user ? (
             <button 
               type="button"
-              onClick={() => setProfileOpen(true)}
-              className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
-              title={user.email || user.name}
+              onClick={() => setAuthOpen(true)}
+              className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
             >
-              <UserIcon size={16} />
-              <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
+              {t[lang].login}
             </button>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline text-[11px] text-stone-500 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full px-2.5 py-1" title={user.email || user.name}>
+                {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
+              </span>
+              <button 
+                type="button"
+                onClick={() => setProfileOpen(true)}
+                className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
+                title={user.email || user.name}
+              >
+                <UserIcon size={16} />
+                <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
+              </button>
+            </div>
+          )}
+        </div>
 
-      <main className="flex-1 w-full max-w-md mx-auto p-6 pb-24 relative pt-safe pl-safe pr-safe">
-        {view === 'home' && (
-          <Home 
-            onFindNanny={() => {
-              setParentEditData(undefined);
-              setView('parent-form');
-            }}
-            onBecomeNanny={() => {
-              setNannyEditData(undefined);
-              setView('nanny-form');
-            }}
-            lang={lang}
-          />
-        )}
+        <main className="flex-1 w-full max-w-md mx-auto p-6 pb-24 relative pt-safe pl-safe pr-safe">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  {view === 'home' && (
+                    <Home 
+                      onFindNanny={() => {
+                        setParentEditData(undefined);
+                        setView('parent-form');
+                      }}
+                      onBecomeNanny={() => {
+                        setNannyEditData(undefined);
+                        setView('nanny-form');
+                      }}
+                      lang={lang}
+                    />
+                  )}
 
-        {view === 'parent-form' && (
-          <ParentForm 
-            onSubmit={handleParentSubmit} 
-            onBack={() => {
-              setParentEditData(undefined);
-              setView('home');
-            }} 
-            lang={lang}
-            initialData={parentEditData}
-          />
-        )}
+                  {view === 'parent-form' && (
+                    <ParentForm 
+                      onSubmit={handleParentSubmit} 
+                      onBack={() => {
+                        setParentEditData(undefined);
+                        setView('home');
+                      }} 
+                      lang={lang}
+                      initialData={parentEditData}
+                    />
+                  )}
 
-        {view === 'nanny-form' && (
-          <NannyForm 
-            onSubmit={handleNannySubmit} 
-            onBack={() => setView('home')} 
-            lang={lang}
-            initialData={nannyEditData}
-          />
-        )}
+                  {view === 'nanny-form' && (
+                    <NannyForm 
+                      onSubmit={handleNannySubmit} 
+                      onBack={() => setView('home')} 
+                      lang={lang}
+                      initialData={nannyEditData}
+                    />
+                  )}
 
-        {view === 'success' && result && (
-          <SuccessScreen 
-            result={result} 
-            onHome={() => setView('home')} 
-            lang={lang}
-          />
-        )}
-      </main>
+                  {view === 'success' && result && (
+                    <SuccessScreen 
+                      result={result} 
+                      onHome={() => setView('home')} 
+                      lang={lang}
+                    />
+                  )}
+                </>
+              }
+            />
+            <Route
+              path="/nanny-dashboard"
+              element={
+                <RequireRole role="nanny">
+                  <div className="text-sm text-stone-500">Nanny dashboard</div>
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/family-dashboard"
+              element={
+                <RequireRole role="parent">
+                  <div className="text-sm text-stone-500">Family dashboard</div>
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RequireRole role="admin">
+                  <AdminPanel onClose={() => window.history.replaceState({}, '', '/')} />
+                </RequireRole>
+              }
+            />
+            <Route path="/login" element={<LoginPage onOpenAuth={() => setAuthOpen(true)} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
 
       {/* Footer Area */}
       <footer className="py-6 text-center text-stone-400 text-xs">
@@ -367,5 +416,6 @@ export default function App() {
       {/* Global Support Chat */}
       <SupportChat lang={lang} user={user} hideLauncher={view === 'home'} />
     </div>
+    </BrowserRouter>
   );
 }

@@ -1,0 +1,19 @@
+# Never commit secrets / credentials / runtime state
+**/.env
+**/.env.*
+**/*token*
+**/*secret*
+**/*key*
+**/credentials/
+**/secrets/
+**/openclaw.json
+**/openclaw.json.*
+**/exec-approvals.json
+
+# Heavy / non-portable
+**/node_modules/
+**/.DS_Store
+
+# If any skills or mcp folders appear inside openclaw/
+skills/
+figma-mcp/

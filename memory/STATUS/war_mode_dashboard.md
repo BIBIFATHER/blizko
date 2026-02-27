@@ -1,17 +1,17 @@
-# WAR MODE DASHBOARD
+# WAR MODE DASHBOARD — Nanny Funnel (TEMP baseline)
 
-## Day 0 Baseline (2026-02-26)
-- Total nanny registrations: UNKNOWN
-- Onboarding completion %: UNKNOWN
-- Verified %: UNKNOWN
-- Matched %: UNKNOWN
-- deal_done %: UNKNOWN
-- Average time-to-verification: UNKNOWN
-- Biggest drop-off stage: UNKNOWN
+Last updated: 2026-02-26
+SQL: tech/tracking/temp_baseline.sql
 
-## P0 Blockers
-- Implement event tracking baseline export (simple SQL/dashboard export within 24h)
-- Create tracking spec file in tech/tracking/* (event list + SQL/dashboard export)
+Baseline (TEMP from nannies payload):
+- apply_submit today / 7d: 0 / 0
+- triage_any today / 7d: 0 / 0 (no status field in nannies)
+- approved today / 7d: 0 / 0 (no status field in nannies)
+- profile_complete today / 7d: 0 / 0
+- verified today / 7d: 0 / 0
+- matched today / 7d: 0 / 0 (match_events table отсутствует)
+- deal_done today / 7d: 0 / 0 (match_events table отсутствует)
+- avg time-to-verification: 0 (insufficient data)
 
-## First friction hypothesis
-- UNKNOWN (no baseline data yet)
+Biggest drop-off: apply → profile_complete (нет заявок)
+Friction hypothesis: отсутствует входящий поток нянь (0 apply за 7д)

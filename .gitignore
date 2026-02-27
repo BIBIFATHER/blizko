@@ -31,3 +31,5 @@ backups/*.tar.gz
 .env.local
 .env.*.local
 .openclaw/
+.clawhub/
+figma-mcp/node_modules/

@@ -15,3 +15,4 @@ Bottleneck: HH triage backlog (150 откликов не разобраны) + �
 
 P0: Implement event tracking baseline export (simple SQL/dashboard export within 24h)
 P0: Create tracking spec in tech/tracking/* (nanny funnel events + SQL/dashboard export)
+P0 Tracking: tracking_events schema SQL ready; waiting to apply in Supabase.

@@ -13,9 +13,13 @@ echo "== install =="
 npm ci
 
 echo "== build =="
-npm run -s build || true
+npm run -s build
 
-echo "== tests =="
-npm run -s test || true
+echo "== tests (non-blocking) =="
+if npm run -s test; then
+  echo "OK: tests passed"
+else
+  echo "WARN: tests failed (non-blocking for smoke)"
+fi
 
-echo "OK: smoke finished"
+echo "OK: smoke finished (install+build required)"

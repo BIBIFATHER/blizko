@@ -18,39 +18,32 @@ This contract is intentionally simple:
 
 **Content-Type:** `application/json`
 
-### Request (Text mode)
+### Request (Text)
 
 ```json
 {
-  "mode": "text",
   "prompt": "string",
-  "systemPrompt": "string (optional)",
-  "temperature": 0.7,
-  "model": "string (optional)"
+  "messages": [{"role":"user","content":"string"}],
+  "responseMimeType": "string (optional)",
+  "responseSchema": "object (optional)"
 }
 ```
 
-### Request (Image mode)
+### Request (Image)
 
-```json
-{
-  "mode": "image",
-  "prompt": "string",
-  "image": "dataURL or base64 string",
-  "systemPrompt": "string (optional)",
-  "temperature": 0.7,
-  "model": "string (optional)"
-}
+Use `prompt` or `messages` and embed the image as a data URL marker:
+
 ```
+<text>
+[image_data_url]data:image/png;base64,AAAA...
+```
+
+The server parses `[image_data_url]` from the **user** content and splits text + image.
 
 ### Image field format
 
-`image` can be either:
-- Data URL: `data:image/png;base64,iVBORw0KGgo...`
-- Base64 only: `iVBORw0KGgo...`
-
-The server should accept both (recommended).
-If server only supports one format, document it here and normalize on the client.
+Only **data URL** is supported:
+`data:image/png;base64,...` or `data:image/jpeg;base64,...`
 
 ### Response
 
@@ -68,7 +61,7 @@ If server only supports one format, document it here and normalize on the client
 
 ## Behavior rules (server)
 - Must never expose provider API keys to the client.
-- Must validate `mode` (`text` or `image`) and required fields.
+- Parse `[image_data_url]` from user content when present.
 - Should set reasonable timeouts.
 - Should normalize provider responses to `{ text }`.
 - Should log errors (without leaking secrets).
@@ -89,7 +82,7 @@ They must throw on non-2xx or missing text.
 ```bash
 curl -s http://localhost:5173/api/ai \
   -H "Content-Type: application/json" \
-  -d '{"mode":"text","prompt":"Say hi","temperature":0.7}'
+  -d '{"prompt":"Say hi"}'
 ```
 
 ### curl (image)
@@ -97,5 +90,5 @@ curl -s http://localhost:5173/api/ai \
 ```bash
 curl -s http://localhost:5173/api/ai \
   -H "Content-Type: application/json" \
-  -d '{"mode":"image","prompt":"What is on the document?","image":"data:image/jpeg;base64,/9j/4AAQ...","temperature":0.2}'
+  -d '{"prompt":"What is on the document? [image_data_url]data:image/jpeg;base64,/9j/4AAQ..."}'
 ```

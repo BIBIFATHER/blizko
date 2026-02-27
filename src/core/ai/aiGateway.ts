@@ -19,7 +19,12 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
   const res = await fetch('/api/ai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, messages, ...options }),
+    body: JSON.stringify({
+      prompt,
+      messages,
+      responseMimeType: options?.responseMimeType,
+      responseSchema: options?.responseSchema,
+    }),
   });
 
   if (!res.ok) {

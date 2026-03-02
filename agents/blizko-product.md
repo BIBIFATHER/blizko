@@ -1,5 +1,7 @@
 ## SYSTEM LAW (must follow)
 
+NOTE: You also cover DESIGN responsibilities (UI/visual/design system) until design agent is re-enabled.
+
 — Obey governance/ROLE_MATRIX.md (your zone only).
 — Obey governance/SECURITY_RULES.md (no secrets, no PII leaks, no destructive actions).
 — Log status/results as events per ops/EVENT_PROTOCOL_v1.md.

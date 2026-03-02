@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.25",
+    "lastTouchedAt": "2026-02-26T16:32:32.406Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-13T13:50:10.650Z",
+    "lastRunVersion": "2026.2.9",
+    "lastRunCommand": "configure",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "openai-codex:default": {
+        "provider": "openai-codex",
+        "mode": "oauth"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai-codex/gpt-5.2-codex"
+      },
+      "models": {
+        "openai-codex/gpt-5.2-codex": {}
+      },
+      "workspace": "/Users/anton/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "subagents": {
+          "allowAgents": [
+            "blizko-orchestrator",
+            "blizko-tech",
+            "blizko-product",
+            "blizko-ops",
+            "blizko-trust",
+            "blizko-recruiting",
+            "blizko-growth-director"
+          ]
+        }
+      },
+      {
+        "id": "blizko-orchestrator",
+        "name": "blizko-orchestrator",
+        "workspace": "/Users/anton/Desktop/blizko 3",
+        "agentDir": "/Users/anton/.openclaw/agents/blizko-orchestrator/agent"
+      },
+      {
+        "id": "blizko-tech",
+        "name": "blizko-tech",
+        "workspace": "/Users/anton/Desktop/blizko 3",
+        "agentDir": "/Users/anton/.openclaw/agents/blizko-tech/agent",
+        "skills": [
+          "codex-cli",
+          "github"
+        ],
+        "identity": {
+          "name": "Blizko Tech/Architecture",
+          "emoji": "🛠️"
+        }
+      },
+      {
+        "id": "blizko-product",
+        "name": "blizko-product",
+        "workspace": "/Users/anton/Desktop/blizko 3",
+        "agentDir": "/Users/anton/.openclaw/agents/blizko-product/agent",
+        "skills": [
+          "web-search",
+          "session-logs"
+        ],
+        "identity": {
+          "name": "Blizko Product Lead",
+          "emoji": "🧭"
+        }
+      },
+      {
+        "id": "blizko-ops",
+        "name": "blizko-ops",
+        "workspace": "/Users/anton/Desktop/blizko 3",
+        "agentDir": "/Users/anton/.openclaw/agents/blizko-ops/agent",
+        "skills": [
+          "session-logs"
+        ],
+        "identity": {
+          "name": "Blizko Ops/Moderation",
+          "emoji": "🧩"
+        }
+      },
+      {
+        "id": "blizko-trust",
+        "name": "blizko-trust",
+        "workspace": "/Users/anton/Desktop/blizko 3",
+        "agentDir": "/Users/anton/.openclaw/agents/blizko-trust/agent",
+        "skills": [
+          "session-logs"
+        ],
+        "identity": {
+          "name": "Blizko Trust",
+          "emoji": "🛡️"
+        }
+      },
+      {
+        "id": "blizko-recruiting",
+        "name": "blizko-recruiting",
+        "workspace": "/Users/anton/Desktop/blizko 3",
+        "agentDir": "/Users/anton/.openclaw/agents/blizko-recruiting/agent",
+        "skills": [
+          "web-search"
+        ],
+        "identity": {
+          "name": "Blizko Recruiting/Onboarding",
+          "emoji": "🧲"
+        }
+      },
+      {
+        "id": "blizko-growth-director",
+        "name": "blizko-growth-director",
+        "workspace": "/Users/anton/Desktop/blizko 3",
+        "agentDir": "/Users/anton/.openclaw/agents/blizko-growth-director/agent",
+        "skills": [
+          "web-search"
+        ],
+        "identity": {
+          "name": "Blizko Growth Director",
+          "emoji": "📈"
+        }
+      }
+    ]
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true,
+        "apiKey": "BSAR01j2h8NeByxiFzu79e9IJTH-OKL"
+      },
+      "fetch": {
+        "enabled": true
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": {
+          "enabled": true
+        },
+        "command-logger": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "<redacted>",
+      "groupPolicy": "allowlist",
+      "streaming": "partial",
+      "actions": {
+        "reactions": true,
+        "sendMessage": true,
+        "sticker": true
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "<redacted>"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "trustedProxies": [
+      "127.0.0.1",
+      "::1"
+    ]
+  },
+  "skills": {
+    "entries": {
+      "todoist": {
+        "enabled": false
+      },
+      "codex-cli": {
+        "enabled": true
+      },
+      "github": {
+        "enabled": true
+      },
+      "session-logs": {
+        "enabled": true
+      },
+      "web-search": {
+        "enabled": true
+      },
+      "tmux": {
+        "enabled": true
+      },
+      "model-usage": {
+        "enabled": true
+      },
+      "mcporter": {
+        "enabled": true
+      },
+      "oracle": {
+        "enabled": false
+      },
+      "summarize": {
+        "enabled": true
+      },
+      "nano-pdf": {
+        "enabled": true
+      },
+      "sag": {
+        "enabled": false
+      },
+      "gog": {
+        "enabled": true
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  }
+}

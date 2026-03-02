@@ -1,17 +1,7 @@
 # EVENT_PROTOCOL v1
 Если нет события — ничего не произошло.
-
 ## Формат события (append-only)
-{
-  "event_id": "uuid",
-  "ts": "ISO8601",
-  "type": "event_type",
-  "agent_id": "agent_name",
-  "task_id": "TASK-XXX|null",
-  "payload": {},
-  "note": "optional"
-}
-
+{ "event_id": "uuid", "ts": "ISO8601", "type": "event_type", "agent_id": "agent_name", "task_id": "TASK-XXX|null", "payload": {}, "note": "optional" }
 ## Типы событий
 Task:
 — task_created, task_assigned, task_started, task_progress
@@ -23,7 +13,6 @@ Security:
 — security_violation_detected
 Agent:
 — agent_heartbeat, agent_state_changed
-
 ## Mapping статусов
 task_created → Backlog
 task_assigned → Ready

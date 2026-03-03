@@ -40,6 +40,14 @@
     "todoist": {
       "version": "0.2.1",
       "installedAt": 1770835521946
+    },
+    "notion": {
+      "version": "1.0.0",
+      "installedAt": 1772472783977
+    },
+    "figma": {
+      "version": "2.1.0",
+      "installedAt": 1772472791579
     }
   }
 }

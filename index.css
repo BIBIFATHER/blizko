@@ -1,2 +1,33 @@
-/* Global stylesheet placeholder.
-   Kept intentionally light to satisfy index.html link and avoid build warnings. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Safe-area environment variables */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --sar: env(safe-area-inset-right);
+}
+
+.pt-safe { padding-top: var(--sat); }
+.pb-safe { padding-bottom: var(--sab); }
+.pl-safe { padding-left: var(--sal); }
+.pr-safe { padding-right: var(--sar); }
+
+.top-safe { top: var(--sat); }
+.bottom-safe { bottom: var(--sab); }
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  background-color: #F9F6F1;
+  overscroll-behavior-y: none;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D6D3D1; border-radius: 10px; }
+
+input, textarea, button, select, a {
+  -webkit-tap-highlight-color: transparent;
+}

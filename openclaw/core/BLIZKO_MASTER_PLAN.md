@@ -1,149 +1,244 @@
-# BLIZKO — MASTER PLAN (Source of Truth)
+# 🏠 Blizko — Master Plan
 
-> Источник: /Users/anton/Desktop/blizko 3/PROJECT_MASTER_DOC.md
-> Canon: core/BLIZKO_MASTER_PLAN.md отвечает за приоритеты, фазу и стратегический фокус.
-
----
-
-## 1) North Star
-**Самый безопасный и предсказуемый сервис подбора нянь.**
-Мы продаём доверие, стабильность и объяснимость — не просто список нянь.
+> **Source of Truth** · Единый стратегический документ проекта
+>
+> Legend:  🟩 реализовано  ·  🟨 в процессе  ·  🟦 запланировано
 
 ---
 
-## Architecture Decision — Single App, Two Roles
-Decision:
-- Один backend
-- Один frontend
-- Role-based routing
-- Feature flags
-- Guarded routes
-- No second nanny app until PMF validated
+## 1. North Star
 
-Justification:
-- Снижение tech debt
-- Централизованный tracking
-- Упрощение growth
-- Быстрее итерации
+> **Самый безопасный и предсказуемый сервис подбора нянь.**
+>
+> Мы продаём доверие, стабильность и объяснимость — не просто список нянь.
 
 ---
 
-## 2) Execution Timeline (Weeks 1–8)
+## 2. Architecture Decision
 
-### Weeks 1–2: Запуск сделок (Days 1–14)
-- Day 1–7: верификация MVP, рекомендации, OSINT‑hard, триаж 30–50 нянь, первые сделки
-- Day 8–14: стабилизация воронки, фидбэк после визита, ядро 30–50 verified
-**Результат:** первые сделки + стабильная воронка
+| Принцип | Решение |
+|---------|---------|
+| Приложение | Один backend + один frontend |
+| Роли | Role-based routing + feature flags |
+| Доступ | Guarded routes |
+| Масштабирование | Нет второго nanny-приложения до PMF |
 
-### Weeks 3–4: Платежи и масштаб (Days 15–28)
-- Day 15–21: ЮKassa (create payment + webhook + payments table)
-- Day 22–28: 100+ нянь в пуле, регулярные сделки, улучшение SLA
-**Результат:** платежи в работе + устойчивый поток
-
-### Weeks 5–6: App Store readiness (Days 29–42)
-- Day 29–35: финальный UX‑полиш, удаление аккаунта/данных, privacy/terms
-- Day 36–42: Capacitor wrapper + TestFlight (internal → external)
-**Результат:** TestFlight готов
-
-### Weeks 7–8: Релиз (Days 43–56)
-- Day 43–49: App Store Connect, скриншоты, metadata
-- Day 50–56: Review + релиз
-**Результат:** App Store релиз
+**Обоснование:** меньше tech debt, централизованный tracking, проще growth, быстрее итерации.
 
 ---
 
-## 3) AI Roadmap (Phases A–C)
+## 3. Execution Timeline
 
-### Фаза A (1–2 месяца)
-- NLP‑анализ анкет/ответов (стиль, эмпатия, структура)
-- Умный скоринг (перевод в features)
-- Авто‑объяснимость матча
+```
+ Нед 1–2          Нед 3–4          Нед 5–6          Нед 7–8
+┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
+│  Первые  │──▶│ Платежи  │──▶│ UX-полиш │──▶│  App     │
+│  сделки  │   │ ЮKassa   │   │ TestFlight│   │  Store   │
+└──────────┘   └──────────┘   └──────────┘   └──────────┘
+```
 
-### Фаза B (2–3 месяца)
-- Видео‑интервью + CV‑сигналы (с согласия)
-- Risk‑engine 2.0 (конфликтные сочетания)
-- Поведенческие микрокейсы
+### Weeks 1–2 · Запуск сделок
+- **Day 1–7:** верификация MVP, рекомендации, OSINT-hard, триаж 30–50 нянь, первые сделки
+- **Day 8–14:** стабилизация воронки, фидбэк после визита, ядро 30–50 verified
+- **Результат:** первые сделки + стабильная воронка
 
-### Фаза C (3–4 месяца)
-- Ранжирование на фидбэке (ML‑ranking)
-- Персональные сценарии под семью
-- Авто‑оптимизация стабильности (предиктивный резерв)
+### Weeks 3–4 · Платежи и масштаб
+- **Day 15–21:** ЮKassa (create payment + webhook + payments table)
+- **Day 22–28:** 100+ нянь в пуле, регулярные сделки, улучшение SLA
+- **Результат:** платежи в работе + устойчивый поток
+
+### Weeks 5–6 · App Store readiness
+- **Day 29–35:** финальный UX-полиш, удаление аккаунта/данных, privacy/terms
+- **Day 36–42:** Capacitor wrapper + TestFlight (internal → external)
+- **Результат:** TestFlight готов
+
+### Weeks 7–8 · Релиз
+- **Day 43–49:** App Store Connect, скриншоты, metadata
+- **Day 50–56:** Review + релиз
+- **Результат:** App Store релиз 🚀
 
 ---
 
-## 4) Product Blocks (Roadmap)
-1) **Качество базы**
-- Верификация документов (OCR/MRZ + face‑match)
+## 4. AI Roadmap
+
+| Фаза | Срок | Фокус |
+|------|------|-------|
+| **A** | 1–2 мес | NLP-анализ анкет (стиль, эмпатия, структура) · умный скоринг · авто-объяснимость матча |
+| **B** | 2–3 мес | Видео-интервью + CV-сигналы · Risk-engine 2.0 · поведенческие микрокейсы |
+| **C** | 3–4 мес | ML-ranking на фидбэке · персональные сценарии · предиктивный резерв |
+
+---
+
+## 5. Product Blocks
+
+### 1️⃣ Качество базы
+- Верификация документов (OCR/MRZ + face-match)
 - Рекомендации (2 контакта)
-- OSINT/правовой след + Trust‑score 2
+- OSINT / правовой след + Trust-score 2
 
-2) **Совместимость (Mirror+/PCM)**
+### 2️⃣ Совместимость (Mirror+ / PCM)
 - Анкеты + поведенческие вопросы
 - Объяснимый мэтчинг
 - Фидбэк после визита
 
-3) **Стабильность/гарантия прихода**
-- Soft‑hold + приоритетные окна + двойной резерв
-- Подтверждения T‑24ч / T‑3–4ч
-- Календарь (родитель/няня/админ)
+### 3️⃣ Стабильность / Гарантия прихода
+- Soft-hold + приоритетные окна + двойной резерв
+- Подтверждения T-24ч / T-3–4ч
+- Календарь (родитель / няня / админ)
 
-4) **Платежи и экономика**
+### 4️⃣ Платежи и экономика
 - Комиссия с нянь
 - Контроль выплат / стабильность
 
-5) **Операционный запуск**
+### 5️⃣ Операционный запуск
 - Онбординг нянь
 - Модерация
-- Первый пул семей/нянь
+- Первый пул семей / нянь
 
-6) **Мобильная упаковка**
-- PWA / моб‑UX
+### 6️⃣ Мобильная упаковка
+- PWA / моб-UX
 - Быстрые сценарии бронирования
 
-### Phase PMF — Nanny Role Mode
-Deliverables:
-**Product:**
-- Nanny funnel mapping
-- Nanny dashboard logic
-- Status states (applied → verified → matched)
+---
 
-**Tech:**
-- Role-based routing
-- Route guards
-- Feature flags system
-- Event tracking:
-  - nanny_registered
-  - nanny_verified
-  - nanny_profile_completed
-  - nanny_matched
-  - deal_done
+## 6. System Architecture
 
-**Design:**
-- Nanny onboarding screens
-- Nanny dashboard
-- Status states
-- Error states
+```mermaid
+flowchart TB
+  subgraph Users["👥 Пользователи"]
+    PARENT["Родитель"]
+    NANNY["Няня"]
+    ADMIN["Админ"]
+  end
 
-**Trust:**
-- Verification state logic
-- Abuse risk modelling
-- Escalation triggers
+  subgraph Client["🖥 Client — Vite / React"]
+    PF["ParentForm"]
+    NF["NannyForm"]
+    AUTH["Auth / Profile"]
+    MATCH["Match Result"]
+    UPLOAD["DocumentUpload"]
+    ADMIN_UI["AdminPanel"]
+  end
 
-**Ops:**
-- Manual review process
-- SLA for nanny verification
+  subgraph API["⚡ Vercel API"]
+    OTP1["/api/auth/send-otp-phone"]
+    OTP2["/api/auth/verify-otp-phone"]
+    AI_EP["/api/ai"]
+    DATA_P["/api/data/parents"]
+    DATA_N["/api/data/nannies"]
+    NOTIF["/api/notify"]
+    PAY["/api/payments 🟦"]
+  end
 
-**Growth:**
-- Funnel metrics per stage
-- Drop-off tracking
+  subgraph DB["🗄 Supabase"]
+    PDB[("parents")]
+    NDB[("nannies")]
+    PAYDB[("payments 🟦")]
+    RLS[["RLS policies 🟦"]]
+  end
 
-**KPI control (Nanny Mode):**
-Primary:
-- nanny onboarding completion %
-- verified nanny %
-- matched %
-- deal_done %
+  subgraph AIBlock["🤖 AI & Verification"]
+    NLP["NLP-analysis 🟦"]
+    SCORE["Smart scoring 🟦"]
+    EXPLAIN["Explainability 🟦"]
+    OCR["OCR/MRZ 🟦"]
+    OSINT_C["OSINT 🟦"]
+  end
 
-Secondary:
-- time to verification
-- drop-off per screen
+  subgraph OPS["📡 Ops & Comms"]
+    SMS["SMSAero"]
+    RESEND["Resend"]
+    PUSH["Push 🟦"]
+    TG["Telegram Ops"]
+  end
+
+  subgraph OBS["📊 Observability"]
+    SENTRY["Sentry"]
+    ANALYTICS["Analytics 🟦"]
+  end
+
+  subgraph PAYMENTS["💳 Payments"]
+    YK["ЮKassa 🟦"]
+  end
+
+  PARENT --> PF --> MATCH
+  NANNY --> NF --> UPLOAD
+  ADMIN --> ADMIN_UI
+  AUTH --> OTP1 --> SMS
+  OTP2 --> DB
+  PF --> AI_EP --> AIBlock --> MATCH
+  NF --> DATA_N --> DB
+  PF --> DATA_P --> DB
+  ADMIN_UI --> DATA_P
+  ADMIN_UI --> DATA_N
+  AI_EP --> DB
+  NOTIF --> OPS
+  PAY --> PAYMENTS --> PAYDB
+  DB --> RLS
+```
+
+---
+
+## 7. Why & How — по блокам
+
+| # | Блок | Зачем | Как |
+|---|------|-------|-----|
+| 1 | **Users** | Три роли → три потока ценности | Родитель (заявка/матч), няня (анкета/доки), админ (модерация) |
+| 2 | **Client** | Быстрый MVP + контроль UX | ParentForm, NannyForm, Auth, Match, Docs, AdminPanel |
+| 3 | **API** | Серверный контур | OTP → SMSAero, AI, data CRUD, notify, payments |
+| 4 | **Supabase** | Хранение + безопасность | Таблицы parents / nannies / payments + RLS |
+| 5 | **AI** | Отличаться качеством | NLP, скоринг, explainability, OCR, OSINT |
+| 6 | **Ops** | Стабильность сделок | SMS, email, push (T-24ч / T-3ч), Telegram |
+| 7 | **Observability** | Ловить ошибки + воронку | Sentry + product analytics |
+| 8 | **Payments** | Закрепить экономику | ЮKassa (create + webhook) |
+| 9 | **Roles** | У каждого блока — владелец | Product Lead, Ops Lead, Engineering, Legal, DPO |
+
+---
+
+## 8. Phase PMF — Nanny Role Mode
+
+### Deliverables
+
+| Зона | Задачи |
+|------|--------|
+| **Product** | Nanny funnel mapping · nanny dashboard · status states (applied → verified → matched) |
+| **Tech** | Role-based routing · route guards · feature flags · event tracking |
+| **Design** | Onboarding screens · nanny dashboard · status & error states |
+| **Trust** | Verification state logic · abuse risk modelling · escalation triggers |
+| **Ops** | Manual review process · SLA for nanny verification |
+| **Growth** | Funnel metrics per stage · drop-off tracking |
+
+### Event Tracking
+```
+nanny_registered → nanny_verified → nanny_profile_completed → nanny_matched → deal_done
+```
+
+### KPI
+
+| Тип | Метрики |
+|-----|---------|
+| **Primary** | Onboarding completion % · verified nanny % · matched % · deal_done % |
+| **Secondary** | Time to verification · drop-off per screen |
+
+---
+
+## 9. Services
+
+### 🟩 Подключено
+| Сервис | Назначение |
+|--------|-----------|
+| **Supabase** | DB / Auth / Storage — Postgres + RLS + auth |
+| **Vercel** | API / Hosting — serverless деплой |
+| **SMSAero** | OTP — SMS-верификация |
+| **Resend** | Email — транзакционные письма |
+| **Sentry** | Errors — мониторинг ошибок |
+| **AI Provider** | Matching / Document — ядро дифференциации |
+
+### 🟦 Подключаем
+| Сервис | Назначение |
+|--------|-----------|
+| **ЮKassa** | Платежи — create + webhook |
+| **OCR/MRZ + Face-match** | Усиление доверия, контроль базы |
+| **OSINT checks** | Hard-фильтры безопасности |
+| **Push notifications** | Снижение срывов (T-24ч / T-3ч) |
+| **Product analytics** | Управление ростом и метриками |

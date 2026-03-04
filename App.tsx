@@ -172,12 +172,10 @@ export default function App() {
       });
       if (!updated) {
         alert('Эту заявку нельзя редактировать после одобрения');
-        navigate('/');
-        return;
+        return { action: 'redirect_home' };
       }
       await sendToWebhook(updated);
-      navigate('/');
-      return;
+      return { action: 'redirect_home' };
     }
 
     const saved = await saveParentRequest({
@@ -188,7 +186,7 @@ export default function App() {
     await notifyAdminNewRequest(saved);
     const allNannies = await getNannyProfiles();
     const aiMatchResult = await findBestMatch(data, allNannies, lang);
-    navigate('/success', { state: { result: aiMatchResult } });
+    return { savedId: saved.id, matchResult: aiMatchResult };
   };
 
   const handleNannySubmit = async (data: Partial<NannyProfile>) => {

@@ -14,9 +14,10 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
   const navigate = useNavigate();
   const text = t[lang];
   const result: SubmissionResult | undefined = location.state?.result;
+  const isPaid = new URLSearchParams(location.search).get('paid') === 'true';
 
   const onHome = () => navigate('/');
-  const [step, setStep] = useState<'analyzing' | 'matching' | 'done'>('analyzing');
+  const [step, setStep] = useState<'analyzing' | 'matching' | 'done'>(isPaid ? 'done' : 'analyzing');
   const [visible, setVisible] = useState(false);
 
   // Simulate AI Thinking Process
@@ -31,8 +32,33 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  if (!result) {
+  if (!result && !isPaid) {
     return <Navigate to="/" replace />;
+  }
+
+  if (isPaid) {
+    return (
+      <div className={`text-center space-y-8 animate-slide-up pt-12`}>
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2 shadow-lg shadow-green-100/50 animate-pop-in">
+            <CheckCircle size={40} />
+          </div>
+          <h2 className="text-3xl font-semibold text-stone-800">
+            {lang === 'ru' ? 'Оплата успешно завершена!' : 'Payment Successful!'}
+          </h2>
+          <p className="text-stone-500 max-w-xs mx-auto">
+            {lang === 'ru'
+              ? 'Мы начинаем подбор няни по вашей заявке. Ожидайте уведомлений!'
+              : 'We have started matching a nanny for your request. Expect notifications!'}
+          </p>
+        </div>
+        <div className="pt-6">
+          <Button onClick={onHome} className="w-full sm:w-auto px-8 mx-auto active:scale-95 transition-transform">
+            {lang === 'ru' ? 'На главную' : 'Back to Home'}
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (step !== 'done') {

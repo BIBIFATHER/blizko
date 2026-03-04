@@ -10,7 +10,7 @@ import { Step3_FamilyProfile } from './Step3_FamilyProfile';
 import { ParentOfferModal } from '../../ParentOfferModal';
 
 interface ParentFormWrapperProps {
-    onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }) => Promise<void>;
+    onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }) => Promise<any>;
     lang: Language;
     initialData?: ParentRequest;
 }
@@ -54,34 +54,25 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
     };
 
     const submitData = async () => {
-        setShowOffer(false);
-        setLoading(true);
+        const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
+        const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
+        const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
+        const analysisNotes = formData.analysisNotes?.trim()
+            ? `\n\n[Для анализа]\n${formData.analysisNotes.trim()}`
+            : '';
 
-        try {
-            const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
-            const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
-            const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
-            const analysisNotes = formData.analysisNotes?.trim()
-                ? `\n\n[Для анализа]\n${formData.analysisNotes.trim()}`
-                : '';
-
-            await onSubmit({
-                id: initialDataId,
-                status: initialDataStatus,
-                city: formData.city,
-                childAge: formData.childAge,
-                schedule: formData.schedule,
-                budget,
-                comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}${analysisNotes}`.trim(),
-                requirements,
-                documents,
-                riskProfile,
-            });
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
+        return await onSubmit({
+            id: initialDataId,
+            status: initialDataStatus,
+            city: formData.city,
+            childAge: formData.childAge,
+            schedule: formData.schedule,
+            budget,
+            comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}${analysisNotes}`.trim(),
+            requirements,
+            documents,
+            riskProfile,
+        });
     };
 
     return (

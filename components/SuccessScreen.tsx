@@ -33,7 +33,28 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
   }, []);
 
   if (!result && !isPaid) {
-    return <Navigate to="/" replace />;
+    return (
+      <div className={`text-center space-y-8 animate-slide-up pt-12`}>
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="w-20 h-20 bg-stone-100 rounded-full flex items-center justify-center text-stone-400 mb-2 shadow-inner">
+            <Info size={40} />
+          </div>
+          <h2 className="text-2xl font-semibold text-stone-800">
+            {lang === 'ru' ? 'Информация не найдена' : 'Information not found'}
+          </h2>
+          <p className="text-stone-500 max-w-xs mx-auto">
+            {lang === 'ru'
+              ? 'Кажется, вы перешли на эту страницу напрямую или ваша сессия устарела. Вернитесь на главную страницу.'
+              : 'It seems you accessed this page directly or your session has expired. Return to the home page.'}
+          </p>
+        </div>
+        <div className="pt-6">
+          <Button onClick={onHome} className="w-full sm:w-auto px-8 mx-auto active:scale-95 transition-transform">
+            {lang === 'ru' ? 'На главную' : 'Back to Home'}
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (isPaid) {

@@ -18,3 +18,6 @@ View your app in AI Studio: https://ai.studio/apps/drive/1VjavTyPGrzKSbVosRedRCQ
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Управление проектом
+OpenClaw (офис управления, RFC, системные документы) вынесен в отдельный репозиторий и не хранится в этом коде.

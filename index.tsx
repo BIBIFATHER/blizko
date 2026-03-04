@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import * as Sentry from '@sentry/react';
+import './index.css';
 import App from './App';
 import { setStorageAdapter } from "./src/core/platform/storage";
 import { webStorageAdapter } from "./src/web/platform/storage.web";

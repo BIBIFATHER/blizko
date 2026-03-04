@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Card } from './UI';
 import { ShieldCheck, Heart, Users, X, ChevronRight } from 'lucide-react';
 import { Language } from '../types';
@@ -6,12 +7,14 @@ import { t } from '../src/core/i18n/translations';
 import { CompatibilityModal, ModalMode } from './CompatibilityModal';
 
 interface HomeProps {
-  onFindNanny: () => void;
-  onBecomeNanny: () => void;
   lang: Language;
 }
 
-export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) => {
+export const Home: React.FC<HomeProps> = ({ lang }) => {
+  const navigate = useNavigate();
+
+  const onFindNanny = () => navigate('/find-nanny');
+  const onBecomeNanny = () => navigate('/become-nanny');
   const text = t[lang];
   // Replaced individual state with a single modal state
   const [activeTrust, setActiveTrust] = useState<null | { title: string; desc: string; detail: string; icon: React.ReactNode; colorClass: string; bgClass: string }>(null);
@@ -139,10 +142,10 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
           <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
             {text.whyTrust}
           </h2>
-          
+
           <div className="grid gap-4">
             {trustBlocks.map((block) => (
-              <Card 
+              <Card
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
                 className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-[0.99] group border-transparent hover:border-stone-100/70"
@@ -174,7 +177,7 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
 
       {/* Deep Dive Modal (Verification & Compatibility & Support) */}
       {deepDiveMode && (
-        <CompatibilityModal 
+        <CompatibilityModal
           onClose={() => setDeepDiveMode(null)}
           onAction={() => {
             setDeepDiveMode(null);
@@ -189,9 +192,9 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
       {activeTrust && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-stone-900/30 backdrop-blur-md animate-fade-in">
           <div className="bg-white w-full max-w-sm rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.12)] relative animate-cloud-pop flex flex-col max-h-[85vh] overflow-hidden border border-white/50">
-            
+
             {/* Close Button */}
-            <button 
+            <button
               onClick={() => setActiveTrust(null)}
               className="absolute top-4 right-4 z-10 bg-stone-50 hover:bg-stone-100 p-2 rounded-full text-stone-400 transition-colors"
             >
@@ -208,12 +211,12 @@ export const Home: React.FC<HomeProps> = ({ onFindNanny, onBecomeNanny, lang }) 
                   {activeTrust.title}
                 </h3>
               </div>
-              
+
               <div className="space-y-5">
                 {getPoints(activeTrust.detail).map((point, index) => (
                   <div key={index} className="flex gap-4 items-start animate-fade-in" style={{ animationDelay: `${index * 50 + 100}ms` }}>
-                     <div className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-sm" />
-                     <p className="text-stone-600 text-[15px] leading-relaxed whitespace-pre-line">
+                    <div className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-sm" />
+                    <p className="text-stone-600 text-[15px] leading-relaxed whitespace-pre-line">
                       {point}
                     </p>
                   </div>

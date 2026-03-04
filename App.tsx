@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Home } from './components/Home';
 import { ParentForm } from './components/ParentForm';
 import { NannyForm } from './components/NannyForm';
@@ -22,19 +22,17 @@ import { supabase } from './services/supabase';
 import { notifyAdminNewRequest } from './services/notifications';
 
 export default function App() {
-  const [view, setView] = useState<ViewState>('home');
+  const navigate = useNavigate();
+  const location = useLocation();
   const adminEmails = String(import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map((s: string) => s.trim().toLowerCase()).filter(Boolean);
   const [lang, setLang] = useState<Language>('ru');
   const [isAdminOpen, setAdminOpen] = useState(false);
-  const [result, setResult] = useState<SubmissionResult | null>(null);
 
   // Auth State
   const [user, setUser] = useState<User | null>(null);
   const [isAuthOpen, setAuthOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [isShareModalOpen, setShareModalOpen] = useState(false);
-  const [nannyEditData, setNannyEditData] = useState<NannyProfile | undefined>(undefined);
-  const [parentEditData, setParentEditData] = useState<ParentRequest | undefined>(undefined);
 
   // PWA Install State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -127,21 +125,18 @@ export default function App() {
     }
     setUser(null);
     setProfileOpen(false);
-    setNannyEditData(undefined);
   };
 
   const handleEditProfile = (profile?: NannyProfile) => {
-    setNannyEditData(profile);
     setProfileOpen(false);
-    setView('nanny-form');
+    navigate('/become-nanny', { state: { editData: profile } });
   };
 
   const handleEditParentRequest = (request?: ParentRequest) => {
-    setParentEditData(request);
     setProfileOpen(false);
-    setView('parent-form');
+    navigate('/find-nanny', { state: { editData: request } });
   };
-  
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -159,12 +154,12 @@ export default function App() {
   };
 
   const generateNannyRegistrationResult = (language: Language): SubmissionResult => {
-     return {
-       matchScore: 0,
-       recommendations: language === 'ru' 
-         ? ['Заполните "О себе" подробнее', 'Добавьте видеовизитку', 'Пройдите верификацию']
-         : ['Fill "About" in detail', 'Add video intro', 'Get verified']
-     };
+    return {
+      matchScore: 0,
+      recommendations: language === 'ru'
+        ? ['Заполните "О себе" подробнее', 'Добавьте видеовизитку', 'Пройдите верификацию']
+        : ['Fill "About" in detail', 'Add video intro', 'Get verified']
+    };
   };
 
   const handleParentSubmit = async (
@@ -177,13 +172,11 @@ export default function App() {
       });
       if (!updated) {
         alert('Эту заявку нельзя редактировать после одобрения');
-        setParentEditData(undefined);
-        setView('home');
+        navigate('/');
         return;
       }
       await sendToWebhook(updated);
-      setParentEditData(undefined);
-      setView('home');
+      navigate('/');
       return;
     }
 
@@ -195,19 +188,17 @@ export default function App() {
     await notifyAdminNewRequest(saved);
     const allNannies = await getNannyProfiles();
     const aiMatchResult = await findBestMatch(data, allNannies, lang);
-    setResult(aiMatchResult);
-    setView('success');
+    navigate('/success', { state: { result: aiMatchResult } });
   };
 
   const handleNannySubmit = async (data: Partial<NannyProfile>) => {
+    const isEdit = !!data.id;
     const saved = await saveNannyProfile(data);
     await sendToWebhook(saved);
-    if (nannyEditData) {
-      setView('home');
-      setNannyEditData(undefined);
+    if (isEdit) {
+      navigate('/');
     } else {
-      setResult(generateNannyRegistrationResult(lang));
-      setView('success');
+      navigate('/success', { state: { result: generateNannyRegistrationResult(lang) } });
     }
   };
 
@@ -222,135 +213,89 @@ export default function App() {
   };
 
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-milk text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
-        {/* Top Header: Language & Auth - Adjusted for Safe Area */}
-        <div className="absolute top-4 right-4 top-safe z-20 flex items-center gap-2 pr-safe">
-          
-          <button 
-            type="button"
-            onClick={handleShare}
-            className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
-            title={t[lang].share}
-            aria-label={t[lang].share}
-          >
-            <Share2 size={16} />
-          </button>
+    <div className="min-h-screen bg-milk text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
+      {/* Top Header: Language & Auth - Adjusted for Safe Area */}
+      <div className="absolute top-4 right-4 top-safe z-20 flex items-center gap-2 pr-safe">
 
-          <button 
-            type="button"
-            onClick={toggleLanguage}
-            className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
-            aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
-          >
-            {lang === 'ru' ? 'EN' : 'RU'}
-          </button>
+        <button
+          type="button"
+          onClick={handleShare}
+          className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
+          title={t[lang].share}
+          aria-label={t[lang].share}
+        >
+          <Share2 size={16} />
+        </button>
 
-          {!user ? (
-            <button 
+        <button
+          type="button"
+          onClick={toggleLanguage}
+          className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
+          aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
+        >
+          {lang === 'ru' ? 'EN' : 'RU'}
+        </button>
+
+        {!user ? (
+          <button
+            type="button"
+            onClick={() => setAuthOpen(true)}
+            className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
+          >
+            {t[lang].login}
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline text-[11px] text-stone-500 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full px-2.5 py-1" title={user.email || user.name}>
+              {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
+            </span>
+            <button
               type="button"
-              onClick={() => setAuthOpen(true)}
-              className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
+              onClick={() => setProfileOpen(true)}
+              className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
+              title={user.email || user.name}
             >
-              {t[lang].login}
+              <UserIcon size={16} />
+              <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
             </button>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="hidden sm:inline text-[11px] text-stone-500 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full px-2.5 py-1" title={user.email || user.name}>
-                {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
-              </span>
-              <button 
-                type="button"
-                onClick={() => setProfileOpen(true)}
-                className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
-                title={user.email || user.name}
-              >
-                <UserIcon size={16} />
-                <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
-              </button>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
-        <main className="flex-1 w-full max-w-md mx-auto p-6 pb-24 relative pt-safe pl-safe pr-safe">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  {view === 'home' && (
-                    <Home 
-                      onFindNanny={() => {
-                        setParentEditData(undefined);
-                        setView('parent-form');
-                      }}
-                      onBecomeNanny={() => {
-                        setNannyEditData(undefined);
-                        setView('nanny-form');
-                      }}
-                      lang={lang}
-                    />
-                  )}
-
-                  {view === 'parent-form' && (
-                    <ParentForm 
-                      onSubmit={handleParentSubmit} 
-                      onBack={() => {
-                        setParentEditData(undefined);
-                        setView('home');
-                      }} 
-                      lang={lang}
-                      initialData={parentEditData}
-                    />
-                  )}
-
-                  {view === 'nanny-form' && (
-                    <NannyForm 
-                      onSubmit={handleNannySubmit} 
-                      onBack={() => setView('home')} 
-                      lang={lang}
-                      initialData={nannyEditData}
-                    />
-                  )}
-
-                  {view === 'success' && result && (
-                    <SuccessScreen 
-                      result={result} 
-                      onHome={() => setView('home')} 
-                      lang={lang}
-                    />
-                  )}
-                </>
-              }
-            />
-            <Route
-              path="/nanny-dashboard"
-              element={
-                <RequireRole role="nanny">
-                  <div className="text-sm text-stone-500">Nanny dashboard</div>
-                </RequireRole>
-              }
-            />
-            <Route
-              path="/family-dashboard"
-              element={
-                <RequireRole role="parent">
-                  <div className="text-sm text-stone-500">Family dashboard</div>
-                </RequireRole>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <RequireRole role="admin">
-                  <AdminPanel onClose={() => window.history.replaceState({}, '', '/')} />
-                </RequireRole>
-              }
-            />
-            <Route path="/login" element={<LoginPage onOpenAuth={() => setAuthOpen(true)} />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
+      <main className="flex-1 w-full max-w-md mx-auto p-6 pb-24 relative pt-safe pl-safe pr-safe">
+        <Routes>
+          <Route path="/" element={<Home lang={lang} />} />
+          <Route path="/find-nanny" element={<ParentForm onSubmit={handleParentSubmit} lang={lang} />} />
+          <Route path="/become-nanny" element={<NannyForm onSubmit={handleNannySubmit} lang={lang} />} />
+          <Route path="/success" element={<SuccessScreen lang={lang} />} />
+          <Route
+            path="/nanny-dashboard"
+            element={
+              <RequireRole role="nanny">
+                <div className="text-sm text-stone-500">Nanny dashboard</div>
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/family-dashboard"
+            element={
+              <RequireRole role="parent">
+                <div className="text-sm text-stone-500">Family dashboard</div>
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <RequireRole role="admin">
+                <AdminPanel onClose={() => navigate('/')} />
+              </RequireRole>
+            }
+          />
+          <Route path="/login" element={<LoginPage onOpenAuth={() => setAuthOpen(true)} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
 
       {/* Footer Area */}
       <footer className="py-6 text-center text-stone-400 text-xs">
@@ -363,9 +308,9 @@ export default function App() {
             </div>
           </div>
           {user?.email && adminEmails.includes(user.email.toLowerCase()) && (
-            <button 
+            <button
               type="button"
-              onClick={() => setAdminOpen(true)} 
+              onClick={() => setAdminOpen(true)}
               className="mt-2 opacity-30 hover:opacity-100 transition-opacity"
             >
               Admin
@@ -375,7 +320,7 @@ export default function App() {
       </footer>
 
       {/* PWA Install Modal - Controlled by App state */}
-      <InstallPwaModal 
+      <InstallPwaModal
         isOpen={showInstallModal}
         onClose={() => setShowInstallModal(false)}
         onInstall={handleInstallClick}
@@ -386,17 +331,17 @@ export default function App() {
 
       {/* Overlays / Modals */}
       {isAdminOpen && user?.email && adminEmails.includes(user.email.toLowerCase()) && <AdminPanel onClose={() => setAdminOpen(false)} />}
-      
+
       {isAuthOpen && (
-        <AuthModal 
-          onClose={() => setAuthOpen(false)} 
+        <AuthModal
+          onClose={() => setAuthOpen(false)}
           onLogin={handleLogin}
           lang={lang}
         />
       )}
 
       {isProfileOpen && user && (
-        <UserProfileModal 
+        <UserProfileModal
           user={user}
           onClose={() => setProfileOpen(false)}
           onLogout={handleLogout}
@@ -407,15 +352,14 @@ export default function App() {
       )}
 
       {isShareModalOpen && (
-        <ShareModal 
+        <ShareModal
           onClose={() => setShareModalOpen(false)}
           lang={lang}
         />
       )}
 
       {/* Global Support Chat */}
-      <SupportChat lang={lang} user={user} hideLauncher={view === 'home'} />
+      <SupportChat lang={lang} user={user} hideLauncher={location.pathname === '/'} />
     </div>
-    </BrowserRouter>
   );
 }

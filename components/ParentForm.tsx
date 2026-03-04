@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Input, Textarea, ChipGroup } from './UI';
 import { AvailabilityCalendar } from './AvailabilityCalendar';
 import { ParentRequest, Language } from '../types';
@@ -9,12 +10,14 @@ import { t } from '../src/core/i18n/translations';
 
 interface ParentFormProps {
   onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }) => Promise<void>;
-  onBack: () => void;
   lang: Language;
-  initialData?: ParentRequest;
 }
 
-export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, initialData }) => {
+export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const initialData: ParentRequest | undefined = location.state?.editData;
+  const onBack = () => navigate(-1);
   const text = t[lang];
   const [loading, setLoading] = useState(false);
   const [showOffer, setShowOffer] = useState(false);
@@ -57,7 +60,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
   });
 
   const [selectedSlots, setSelectedSlots] = useState<Record<string, boolean>>({});
-  
+
   const [requirements, setRequirements] = useState<string[]>(initialData?.requirements || []);
   const [documents, setDocuments] = useState(initialData?.documents || []);
   const [riskProfile, setRiskProfile] = useState<ParentRequest['riskProfile']>({
@@ -83,8 +86,8 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
     if (keys.length === 0) return '';
     return keys.map((k) => {
       const [d, s] = k.split('-').map(Number);
-      const day = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][d] || '';
-      const slot = ['08–10','10–12','12–14','14–16','16–18','18–20'][s] || '';
+      const day = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'][d] || '';
+      const slot = ['08–10', '10–12', '12–14', '14–16', '16–18', '18–20'][s] || '';
       return `${day} ${slot}`;
     }).join(', ');
   };
@@ -97,7 +100,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
   const handleOfferAccept = async () => {
     setShowOffer(false);
     setLoading(true);
-    
+
     try {
       const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
       const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
@@ -202,12 +205,12 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
       <form onSubmit={handleFormSubmit} className="space-y-6">
         <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">{lang === 'ru' ? 'Обязательное' : 'Required'}</div>
         <div className="relative">
-          <Input 
+          <Input
             label={`${text.cityLabel} *`}
-            placeholder={lang === 'ru' ? "Москва, Хамовники" : "New York, Brooklyn"} 
+            placeholder={lang === 'ru' ? "Москва, Хамовники" : "New York, Brooklyn"}
             value={formData.city}
             onChange={e => {
-              setFormData({...formData, city: e.target.value});
+              setFormData({ ...formData, city: e.target.value });
               setShowCitySuggestions(true);
             }}
             required
@@ -244,19 +247,19 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           </button>
         </div>
 
-        <ChipGroup 
+        <ChipGroup
           label={`${text.childAgeLabel} *`}
           options={text.ageOptions}
           selected={formData.childAge ? [formData.childAge] : []}
-          onChange={(s) => setFormData({...formData, childAge: s[0] || ''})}
+          onChange={(s) => setFormData({ ...formData, childAge: s[0] || '' })}
           single
         />
 
-        <ChipGroup 
+        <ChipGroup
           label={`${text.scheduleLabel} *`}
           options={text.scheduleOptions}
           selected={formData.schedule ? [formData.schedule] : []}
-          onChange={(s) => setFormData({...formData, schedule: s[0] || ''})}
+          onChange={(s) => setFormData({ ...formData, schedule: s[0] || '' })}
           single
         />
 
@@ -296,18 +299,18 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           <span className="h-px flex-1 bg-stone-200/70" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input 
+          <Input
             label={`${lang === 'ru' ? 'Цена за час' : 'Price per hour'} *`}
             placeholder={lang === 'ru' ? '600 - 800 ₽/час' : '20 - 30 $/hour'}
             value={formData.budgetHourly}
-            onChange={e => setFormData({...formData, budgetHourly: e.target.value})}
+            onChange={e => setFormData({ ...formData, budgetHourly: e.target.value })}
             required
           />
-          <Input 
+          <Input
             label={`${lang === 'ru' ? 'Цена за месяц' : 'Price per month'} *`}
             placeholder={lang === 'ru' ? '120 000 - 180 000 ₽/мес' : '2500 - 4000 $/month'}
             value={formData.budgetMonthly}
-            onChange={e => setFormData({...formData, budgetMonthly: e.target.value})}
+            onChange={e => setFormData({ ...formData, budgetMonthly: e.target.value })}
             required
           />
         </div>
@@ -356,15 +359,15 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
             label={lang === 'ru' ? 'Что важно знать о ребёнке и семье?' : 'What should we know about your family?'}
             placeholder={lang === 'ru' ? 'Режим, привычки, триггеры, что недопустимо — всё, что поможет подобрать идеального человека.' : 'Routine, triggers, non-negotiables — anything that helps match the right person.'}
             value={formData.analysisNotes}
-            onChange={e => setFormData({...formData, analysisNotes: e.target.value})}
+            onChange={e => setFormData({ ...formData, analysisNotes: e.target.value })}
           />
         </div>
 
-        <Textarea 
+        <Textarea
           label={text.commentLabel}
           placeholder={lang === 'ru' ? "Например: у нас есть кот..." : "Example: we have a cat..."}
           value={formData.comment}
-          onChange={e => setFormData({...formData, comment: e.target.value})}
+          onChange={e => setFormData({ ...formData, comment: e.target.value })}
         />
 
         <div className="bg-violet-50 border border-violet-200 rounded-xl p-3 space-y-3">
@@ -477,8 +480,8 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, onBack, lang, 
           {initialData?.status === 'approved'
             ? 'Редактирование заблокировано (заявка одобрена)'
             : loading
-            ? (lang === 'ru' ? 'AI подбирает няню...' : 'AI is searching...')
-            : text.submitParent}
+              ? (lang === 'ru' ? 'AI подбирает няню...' : 'AI is searching...')
+              : text.submitParent}
         </Button>
       </form>
 

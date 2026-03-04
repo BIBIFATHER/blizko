@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Input, Textarea, ChipGroup, Card } from './UI';
 import { NannyProfile, Language, SoftSkillsProfile, DocumentVerification, NormalizedResume } from '../types';
 import { ArrowLeft, ShieldCheck, Check, BrainCircuit, FileText, Upload, Camera, MapPin } from 'lucide-react';
@@ -10,15 +11,17 @@ import { t } from '../src/core/i18n/translations';
 
 interface NannyFormProps {
   onSubmit: (data: Partial<NannyProfile>) => void;
-  onBack: () => void;
   lang: Language;
-  initialData?: NannyProfile;
 }
 
-export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, initialData }) => {
+export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, lang }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const initialData: NannyProfile | undefined = location.state?.editData;
+  const onBack = () => navigate(-1);
   const text = t[lang];
   const [loading, setLoading] = useState(false);
-  
+
   // Modals
   const [showGosUslugi, setShowGosUslugi] = useState(false);
   const [showAssessment, setShowAssessment] = useState(false);
@@ -34,13 +37,13 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     pets: 'ok',
     night: 'sometimes',
   });
-  
+
   // Data States
   const [isVerified, setIsVerified] = useState(false);
   const [softSkills, setSoftSkills] = useState<SoftSkillsProfile | undefined>(undefined);
   const [documents, setDocuments] = useState<DocumentVerification[]>([]);
   const [resumeNormalized, setResumeNormalized] = useState<NormalizedResume | undefined>(undefined);
-  
+
   // Media States
   const [photo, setPhoto] = useState<string | undefined>(undefined);
 
@@ -53,7 +56,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
     about: '',
     contact: ''
   });
-  
+
   const [childAges, setChildAges] = useState<string[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
   const [riskProfile, setRiskProfile] = useState<NannyProfile['riskProfile']>({
@@ -280,26 +283,26 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           Проверка и доверие
           <span className="h-px flex-1 bg-stone-200/70" />
         </div>
-        
+
         {/* 0. Photo Upload Block */}
         <div className="flex justify-center mb-6">
-           <label className="relative cursor-pointer group">
-             <div className={`w-32 h-32 rounded-full overflow-hidden border-4 flex items-center justify-center transition-all shadow-md ring-1 ring-white/60 ${photo ? 'border-amber-300' : 'border-stone-200 bg-stone-100'}`}>
-               {photo ? (
-                 <img src={photo} alt="Profile" className="w-full h-full object-cover" />
-               ) : (
-                 <Camera size={40} className="text-stone-400" />
-               )}
-               {/* Overlay on hover */}
-               <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                 <Camera size={24} className="text-white" />
-               </div>
-             </div>
-             <input type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
-             <div className="text-center mt-2 text-sm text-stone-500 font-medium">
-               {photo ? text.changePhoto : text.uploadPhoto}
-             </div>
-           </label>
+          <label className="relative cursor-pointer group">
+            <div className={`w-32 h-32 rounded-full overflow-hidden border-4 flex items-center justify-center transition-all shadow-md ring-1 ring-white/60 ${photo ? 'border-amber-300' : 'border-stone-200 bg-stone-100'}`}>
+              {photo ? (
+                <img src={photo} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <Camera size={40} className="text-stone-400" />
+              )}
+              {/* Overlay on hover */}
+              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                <Camera size={24} className="text-white" />
+              </div>
+            </div>
+            <input type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
+            <div className="text-center mt-2 text-sm text-stone-500 font-medium">
+              {photo ? text.changePhoto : text.uploadPhoto}
+            </div>
+          </label>
         </div>
 
         {/* 1. Verification Block */}
@@ -313,17 +316,17 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
                 {isVerified ? text.verifiedTitle : text.verificationTitle}
               </h3>
               <p className="text-sm text-stone-500 mb-3">
-                {isVerified 
+                {isVerified
                   ? text.verifiedDesc
                   : text.verificationDesc}
               </p>
-              
+
               {!isVerified && (
                 <div className="text-xs text-stone-400 bg-stone-50 px-3 py-2 rounded-lg border border-stone-100">
                   Верификация через Госуслуги временно недоступна.
                 </div>
               )}
-              
+
               {isVerified && (
                 <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
                   <Check size={16} /> {text.verifiedBadge}
@@ -332,7 +335,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
             </div>
           </div>
         </Card>
-        
+
         {/* 2. Documents Upload Block */}
         <Card className={`transition-all duration-300 ${documents.length > 0 ? 'bg-sky-50 border-sky-200' : 'bg-white'}`}>
           <div className="flex items-start gap-4">
@@ -343,7 +346,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
               <h3 className="font-semibold text-stone-800 mb-1">
                 {text.docsTitle} *
               </h3>
-              
+
               {documents.length === 0 && (
                 <>
                   <p className="text-sm text-stone-500 mb-3">{text.docsDesc}</p>
@@ -364,45 +367,45 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
                   </div>
                   {documents.map((doc, i) => (
                     <div key={i} className="bg-white/60 p-2 rounded-lg flex justify-between items-center border border-sky-100">
-                       <div className="flex items-center gap-2">
-                         <span className="text-xs font-bold text-stone-700 uppercase">
-                           {doc.type === 'passport'
-                             ? 'Паспорт'
-                             : doc.type === 'medical_book'
-                             ? 'Медкнижка'
-                             : doc.type === 'recommendation_letter'
-                             ? 'Рекомендация'
-                             : doc.type === 'education_document'
-                             ? 'Образование'
-                             : doc.type === 'resume'
-                             ? 'Резюме'
-                             : 'Документ'}
-                         </span>
-                         {doc.documentNumber && <span className="text-xs font-mono text-stone-500">{doc.documentNumber}</span>}
-                       </div>
-                       <div className="flex items-center gap-2">
-                         {doc.fileDataUrl && (
-                           <button
-                             type="button"
-                             onClick={() => {
-                               const a = document.createElement('a');
-                               a.href = doc.fileDataUrl!;
-                               a.target = '_blank';
-                               a.rel = 'noopener noreferrer';
-                               a.download = doc.fileName || 'document';
-                               document.body.appendChild(a);
-                               a.click();
-                               a.remove();
-                             }}
-                             className="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-700 hover:bg-stone-200"
-                           >
-                             Открыть
-                           </button>
-                         )}
-                         <span className="text-[10px] bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded font-bold">
-                           {doc.status === 'verified' ? 'Проверено' : doc.status === 'rejected' ? 'Отклонено' : 'Загружено'}
-                         </span>
-                       </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-stone-700 uppercase">
+                          {doc.type === 'passport'
+                            ? 'Паспорт'
+                            : doc.type === 'medical_book'
+                              ? 'Медкнижка'
+                              : doc.type === 'recommendation_letter'
+                                ? 'Рекомендация'
+                                : doc.type === 'education_document'
+                                  ? 'Образование'
+                                  : doc.type === 'resume'
+                                    ? 'Резюме'
+                                    : 'Документ'}
+                        </span>
+                        {doc.documentNumber && <span className="text-xs font-mono text-stone-500">{doc.documentNumber}</span>}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {doc.fileDataUrl && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const a = document.createElement('a');
+                              a.href = doc.fileDataUrl!;
+                              a.target = '_blank';
+                              a.rel = 'noopener noreferrer';
+                              a.download = doc.fileName || 'document';
+                              document.body.appendChild(a);
+                              a.click();
+                              a.remove();
+                            }}
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-700 hover:bg-stone-200"
+                          >
+                            Открыть
+                          </button>
+                        )}
+                        <span className="text-[10px] bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded font-bold">
+                          {doc.status === 'verified' ? 'Проверено' : doc.status === 'rejected' ? 'Отклонено' : 'Загружено'}
+                        </span>
+                      </div>
                     </div>
                   ))}
 
@@ -415,7 +418,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
                     </div>
                   )}
 
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setShowDocUpload(true)}
                     className="text-xs text-sky-600 underline mt-2"
@@ -438,7 +441,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
               <h3 className="font-semibold text-stone-800 mb-1">
                 {softSkills ? text.testResultTitle : text.softSkillsTitle}
               </h3>
-              
+
               {!softSkills && (
                 <>
                   <p className="text-sm text-stone-500 mb-3">{text.softSkillsDesc}</p>
@@ -470,21 +473,21 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
 
         <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">Основные данные</div>
 
-        <Input 
+        <Input
           label={`${text.nameLabel} *`}
           placeholder={lang === 'ru' ? "Мария Иванова" : "Maria Ivanova"}
           value={formData.name}
-          onChange={e => setFormData({...formData, name: e.target.value})}
+          onChange={e => setFormData({ ...formData, name: e.target.value })}
           required
         />
 
         <div className="relative">
-          <Input 
+          <Input
             label={`${text.cityLabel} *`}
             placeholder={lang === 'ru' ? "Москва, ЮАО" : "London, Soho"}
             value={formData.city}
             onChange={e => {
-              setFormData({...formData, city: e.target.value});
+              setFormData({ ...formData, city: e.target.value });
               setShowCitySuggestions(true);
             }}
             required
@@ -521,12 +524,12 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           </button>
         </div>
 
-        <Input 
+        <Input
           label={`${text.expLabel} *`}
           type="number"
-          placeholder="5" 
+          placeholder="5"
           value={formData.experience}
-          onChange={e => setFormData({...formData, experience: e.target.value})}
+          onChange={e => setFormData({ ...formData, experience: e.target.value })}
           required
         />
 
@@ -534,7 +537,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           label={lang === 'ru' ? 'График работы *' : 'Work schedule *'}
           placeholder={lang === 'ru' ? '5/2, 09:00–18:00' : 'Mon-Fri, 09:00-18:00'}
           value={formData.schedule}
-          onChange={e => setFormData({...formData, schedule: e.target.value})}
+          onChange={e => setFormData({ ...formData, schedule: e.target.value })}
           required
         />
 
@@ -542,18 +545,18 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           label={lang === 'ru' ? 'Желаемая ставка *' : 'Expected rate *'}
           placeholder={lang === 'ru' ? '700 ₽/час или 120 000 ₽/мес' : '€15/hour or $2500/month'}
           value={formData.expectedRate}
-          onChange={e => setFormData({...formData, expectedRate: e.target.value})}
+          onChange={e => setFormData({ ...formData, expectedRate: e.target.value })}
           required
         />
 
-        <ChipGroup 
+        <ChipGroup
           label={text.agesLabel}
           options={text.ageOptions}
           selected={childAges}
           onChange={setChildAges}
         />
 
-        <ChipGroup 
+        <ChipGroup
           label={text.skillsLabel}
           options={text.skillOptions}
           selected={skills}
@@ -588,19 +591,19 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
           </div>
         </div>
 
-        <Textarea 
+        <Textarea
           label={`${text.aboutLabel} *`}
           placeholder={lang === 'ru' ? "Люблю детей, добрая..." : "I love children, kind..."}
           value={formData.about}
-          onChange={e => setFormData({...formData, about: e.target.value})}
+          onChange={e => setFormData({ ...formData, about: e.target.value })}
           required
         />
 
-        <Input 
+        <Input
           label={`${text.contactLabel} *`}
-          placeholder="+7 900 000 00 00" 
+          placeholder="+7 900 000 00 00"
           value={formData.contact}
-          onChange={e => setFormData({...formData, contact: e.target.value})}
+          onChange={e => setFormData({ ...formData, contact: e.target.value })}
           required
         />
 
@@ -697,7 +700,7 @@ export const NannyForm: React.FC<NannyFormProps> = ({ onSubmit, onBack, lang, in
       {/* Gosuslugi disabled пока интеграции нет */}
 
       {showAssessment && (
-        <BehavioralTestModal 
+        <BehavioralTestModal
           onClose={() => setShowAssessment(false)}
           onComplete={handleAssessmentComplete}
           lang={lang}

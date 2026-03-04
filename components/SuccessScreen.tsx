@@ -1,25 +1,28 @@
-
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { Button, Card } from './UI';
 import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2 } from 'lucide-react';
 import { SubmissionResult, Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 
 interface SuccessScreenProps {
-  result: SubmissionResult;
-  onHome: () => void;
   lang: Language;
 }
 
-export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, lang }) => {
+export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const text = t[lang];
+  const result: SubmissionResult | undefined = location.state?.result;
+
+  const onHome = () => navigate('/');
   const [step, setStep] = useState<'analyzing' | 'matching' | 'done'>('analyzing');
   const [visible, setVisible] = useState(false);
 
   // Simulate AI Thinking Process
   useEffect(() => {
     setVisible(true);
-    
+
     // Step 1: Analyze profile (0-1.5s)
     const t1 = setTimeout(() => setStep('matching'), 1500);
     // Step 2: Show result (3s)
@@ -28,25 +31,29 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
+  if (!result) {
+    return <Navigate to="/" replace />;
+  }
+
   if (step !== 'done') {
     return (
       <div className={`flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 animate-fade-in`}>
         <div className="relative">
           <div className="w-24 h-24 bg-sky-100 rounded-full flex items-center justify-center animate-pulse-slow">
-             {step === 'analyzing' ? (
-               <BrainCircuit size={48} className="text-sky-600 animate-pulse" />
-             ) : (
-               <Search size={48} className="text-amber-600 animate-bounce" />
-             )}
+            {step === 'analyzing' ? (
+              <BrainCircuit size={48} className="text-sky-600 animate-pulse" />
+            ) : (
+              <Search size={48} className="text-amber-600 animate-bounce" />
+            )}
           </div>
           <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-full shadow-lg">
-             <Loader2 size={20} className="animate-spin text-stone-400" />
+            <Loader2 size={20} className="animate-spin text-stone-400" />
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <h3 className="text-xl font-bold text-stone-800">
-            {step === 'analyzing' 
+            {step === 'analyzing'
               ? text.successAnalyzingTitle
               : text.successMatchingTitle}
           </h3>
@@ -60,7 +67,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
 
   return (
     <div className={`text-center space-y-8 animate-slide-up`}>
-      
+
       <div className="pt-8 flex flex-col items-center justify-center space-y-4">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2 shadow-lg shadow-green-100/50 animate-pop-in">
           <CheckCircle size={40} />
@@ -76,20 +83,20 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ result, onHome, la
         <div className="absolute top-0 right-0 p-4 opacity-10 text-sky-500">
           <Sparkles size={100} />
         </div>
-        
+
         <div className="relative z-10 text-left">
           <div className="flex items-center gap-2 mb-2 text-sky-700 font-medium text-sm uppercase tracking-wide">
             <Sparkles size={16} /> {text.aiMatch}
           </div>
-          
+
           <div className="flex items-baseline gap-2 mb-4">
             <span className="text-5xl font-bold text-stone-800 tracking-tighter">{result.matchScore}%</span>
             <span className="text-stone-400 font-medium">{text.probability}</span>
           </div>
-          
+
           <div className="w-full bg-stone-100 rounded-full h-2.5 mb-5 overflow-hidden">
-            <div 
-              className="bg-sky-400 h-full rounded-full transition-all duration-1000 ease-out" 
+            <div
+              className="bg-sky-400 h-full rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${visible ? result.matchScore : 0}%` }}
             />
           </div>

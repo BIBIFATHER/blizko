@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Card } from './UI';
 import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2 } from 'lucide-react';
 import { SubmissionResult, Language } from '../types';
@@ -22,6 +22,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
   // Simulate AI Thinking Process
   useEffect(() => {
+    if (isPaid) return; // Skip animation when returning from payment
     setVisible(true);
 
     // Step 1: Analyze profile (0-1.5s)

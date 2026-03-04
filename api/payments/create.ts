@@ -55,7 +55,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const authHeader = `Basic ${base64Encode(`${SHOP_ID}:${SECRET_KEY}`)}`;
         const idempotencyKey = paymentRecordId || crypto.randomUUID();
 
-        const returnUrl = `${req.headers.origin || 'https://blizko.app'}/success?paid=true&payment_id=${paymentRecordId}`;
+        const appUrl = process.env.APP_URL || 'https://blizko.app';
+        const returnUrl = `${appUrl}/success?paid=true&payment_id=${paymentRecordId}`;
 
         const payload: any = {
             amount: {

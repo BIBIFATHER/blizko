@@ -172,10 +172,12 @@ export default function App() {
       });
       if (!updated) {
         alert('Эту заявку нельзя редактировать после одобрения');
-        return { action: 'redirect_home' };
+        navigate('/');
+        return;
       }
       await sendToWebhook(updated);
-      return { action: 'redirect_home' };
+      navigate('/');
+      return;
     }
 
     const saved = await saveParentRequest({
@@ -186,7 +188,10 @@ export default function App() {
     await notifyAdminNewRequest(saved);
     const allNannies = await getNannyProfiles();
     const aiMatchResult = await findBestMatch(data, allNannies, lang);
-    return { savedId: saved.id, matchResult: aiMatchResult };
+    // Navigate to success screen (this is the default flow without payment)
+    navigate('/success', { state: { result: aiMatchResult } });
+    // Also return savedId so the payment modal can use it
+    return { savedId: saved.id };
   };
 
   const handleNannySubmit = async (data: Partial<NannyProfile>) => {

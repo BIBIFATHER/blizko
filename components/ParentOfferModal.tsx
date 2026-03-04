@@ -4,6 +4,9 @@ import { X, FileText, Shield } from 'lucide-react';
 import { Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 
+/** Fee charged for nanny matching service, in RUB */
+const MATCHING_FEE_RUB = 990;
+
 interface ParentOfferModalProps {
   onClose: () => void;
   onAccept: () => void;
@@ -31,7 +34,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 990, // Example fee
+          amount: MATCHING_FEE_RUB,
           parentRequestId,
           description: 'Оплата подбора няни Blizko'
         })

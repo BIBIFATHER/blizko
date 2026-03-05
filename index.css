@@ -7,6 +7,20 @@
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
   --sar: env(safe-area-inset-right);
+
+  /* Cloud design system */
+  --cloud-bg: #F9F6F1;
+  --cloud-surface: rgba(255, 255, 255, 0.85);
+  --cloud-honey: linear-gradient(135deg, #E8D5A3, #F2E6C5);
+  --cloud-text: #44403C;
+  --cloud-text-muted: #A8A29E;
+  --cloud-brand: #5D4E37;
+  --cloud-border: rgba(245, 245, 244, 0.8);
+  --cloud-shadow: 0 8px 32px rgba(120, 113, 108, 0.06);
+  --cloud-shadow-hover: 0 12px 40px rgba(120, 113, 108, 0.1);
+  --cloud-radius-card: 24px;
+  --cloud-radius-btn: 9999px;
+  --cloud-radius-input: 16px;
 }
 
 .pt-safe {

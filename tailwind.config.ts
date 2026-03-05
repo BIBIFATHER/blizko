@@ -18,6 +18,7 @@ const config: Config = {
             },
             fontFamily: {
                 sans: [
+                    'Quicksand',
                     'system-ui',
                     '-apple-system',
                     'BlinkMacSystemFont',

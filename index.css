@@ -95,42 +95,42 @@ a {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
   overflow: hidden;
 }
 
 .cloud-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
+  filter: blur(60px);
+  opacity: 0.7;
   animation: floatBlob 20s ease-in-out infinite;
 }
 
 .cloud-blob-peach {
-  width: 340px;
-  height: 340px;
-  background: radial-gradient(circle, #FDDCB5 0%, #FDE8D0 60%, transparent 100%);
-  top: -60px;
-  right: -80px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #FFD090 0%, #FDE8D0 70%, transparent 100%);
+  top: -100px;
+  right: -100px;
   animation-delay: 0s;
 }
 
 .cloud-blob-mint {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, #C4ECD8 0%, #D8F3E6 60%, transparent 100%);
-  top: 40%;
-  left: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #ADF0D1 0%, #D8F3E6 70%, transparent 100%);
+  top: 35%;
+  left: -150px;
   animation-delay: -7s;
 }
 
 .cloud-blob-lavender {
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, #D5D0F0 0%, #E4E0F6 60%, transparent 100%);
-  bottom: 10%;
-  right: -60px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #C5B9F0 0%, #E4E0F6 70%, transparent 100%);
+  bottom: 5%;
+  right: -100px;
   animation-delay: -13s;
 }
 

@@ -216,7 +216,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-milk text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
+    <div className="min-h-screen text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
       {/* Cloud background blobs */}
       <div className="cloud-bg">
         <div className="cloud-blob cloud-blob-peach" />

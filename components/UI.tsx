@@ -10,9 +10,9 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Card: React.FC<CardProps> = ({ children, className = '', onClick, ...props }) => (
-  <div 
+  <div
     onClick={onClick}
-    className={`bg-white/95 backdrop-blur-sm rounded-3xl shadow-[0_10px_30px_rgba(120,120,120,0.08)] border border-stone-100/80 p-5 sm:p-6 transition-transform duration-200 ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
+    className={`bg-white/95 backdrop-blur-sm rounded-3xl card-cloud border border-stone-100/80 p-5 sm:p-6 transition-transform duration-200 ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
     {...props}
   >
     {children}
@@ -25,24 +25,24 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
-export const Button: React.FC<ButtonProps> = ({ 
-  children, 
-  variant = 'primary', 
-  className = '', 
-  isLoading, 
-  ...props 
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant = 'primary',
+  className = '',
+  isLoading,
+  ...props
 }) => {
   const baseStyles = "w-full py-3.5 sm:py-4 rounded-2xl font-medium transition-all duration-200 active:scale-[0.97] flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation select-none";
-  
+
   const variants = {
-    primary: "bg-amber-200/90 hover:bg-amber-200 text-stone-900 shadow-[0_10px_25px_rgba(251,191,36,0.25)] hover:shadow-[0_12px_28px_rgba(251,191,36,0.3)] font-semibold ring-1 ring-amber-200/60",
+    primary: "btn-honey ring-1 ring-amber-100/40",
     secondary: "bg-white/90 border border-sky-200/70 text-sky-800 hover:bg-sky-50/70 shadow-sm",
     outline: "border-2 border-stone-200/80 text-stone-600 hover:border-stone-300 hover:bg-stone-50/70",
     ghost: "text-stone-500 hover:text-stone-800 text-sm py-2"
   };
 
   return (
-    <button 
+    <button
       className={`${baseStyles} ${variants[variant]} ${isLoading ? 'opacity-70 cursor-not-allowed' : ''} ${className}`}
       disabled={isLoading || props.disabled}
       {...props}
@@ -62,7 +62,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export const Input: React.FC<InputProps> = ({ label, className = '', ...props }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-stone-500 mb-1.5 ml-1">{label}</label>
-    <input 
+    <input
       className={`w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-200/50 focus:border-amber-300 transition-all placeholder:text-stone-300 ${className}`}
       {...props}
     />
@@ -77,7 +77,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 export const Textarea: React.FC<TextareaProps> = ({ label, className = '', ...props }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-stone-500 mb-1.5 ml-1">{label}</label>
-    <textarea 
+    <textarea
       className={`w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-200/50 focus:border-amber-300 transition-all placeholder:text-stone-300 min-h-[100px] resize-none ${className}`}
       {...props}
     />
@@ -134,11 +134,10 @@ export const ChipGroup: React.FC<ChipGroupProps> = ({ label, options, selected, 
               key={opt}
               type="button"
               onClick={() => toggle(opt)}
-              className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all active:scale-95 flex items-center gap-2 select-none ${
-                isActive 
-                  ? 'bg-stone-800 text-white shadow-md ring-2 ring-stone-800 ring-offset-1' 
-                  : 'bg-white border border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50'
-              }`}
+              className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all active:scale-95 flex items-center gap-2 select-none ${isActive
+                ? 'bg-stone-800 text-white shadow-md ring-2 ring-stone-800 ring-offset-1'
+                : 'bg-white border border-stone-200 text-stone-600 hover:border-stone-300 hover:bg-stone-50'
+                }`}
             >
               {!single && isActive && <Check size={14} strokeWidth={3} />}
               {opt}

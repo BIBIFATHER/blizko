@@ -12,7 +12,6 @@ interface HomeProps {
 
 export const Home: React.FC<HomeProps> = ({ lang }) => {
   const navigate = useNavigate();
-
   const onFindNanny = () => navigate('/find-nanny');
   const onBecomeNanny = () => navigate('/become-nanny');
   const text = t[lang];
@@ -86,55 +85,28 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
 
       <div className="flex flex-col min-h-full animate-fade-in space-y-10 pb-10">
         {/* Hero */}
-        <div className="text-center space-y-4 pt-10 sm:pt-12">
-          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">
+        <div className="text-center space-y-4 pt-10 sm:pt-12 bg-gradient-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight logo-serif">
             Blizko
           </div>
-          <p className="text-stone-500/90 text-base sm:text-lg max-w-md mx-auto leading-7">
-            {heroSubtitleParts[0]}
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-700 font-semibold shadow-sm">
-              Humanity+
-            </span>
-            {heroSubtitleParts[1]}
-          </p>
+          <div className="space-y-2">
+            <p className="text-base sm:text-lg font-semibold text-stone-800">
+              Технология <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-700 font-semibold shadow-sm">Humanity+</span>
+            </p>
+            <p className="text-stone-500/90 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
+              Уникальная AI модель анализирует няню — от стиля игры до подхода к дисциплине. Совпадение с первого дня.
+            </p>
+          </div>
         </div>
 
         {/* Actions */}
-        <div className="space-y-3 mt-3 text-center">
+        <div className="space-y-3 mt-3">
           <Button onClick={onFindNanny}>
             {text.findNanny}
           </Button>
-          <p className="text-sm text-stone-500">
-            {text.homeSafetyLine}
-          </p>
-          <button
-            type="button"
-            onClick={onBecomeNanny}
-            className="text-sm font-medium text-stone-500 hover:text-stone-700 underline underline-offset-4"
-          >
+          <Button variant="secondary" onClick={onBecomeNanny}>
             {text.becomeNanny}
-          </button>
-        </div>
-
-        {/* Flow */}
-        <div className="space-y-3">
-          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
-            {text.homeFlowTitle}
-          </h2>
-          <div className="flex items-center justify-center gap-3 text-sm text-stone-600 flex-wrap">
-            {text.homeFlowSteps.map((step, index) => (
-              <React.Fragment key={step}>
-                <span className="px-3 py-1 rounded-full bg-stone-100 text-stone-700">
-                  {step}
-                </span>
-                {index < text.homeFlowSteps.length - 1 && (
-                  <span className="text-stone-300">→</span>
-                )}
-              </React.Fragment>
-            ))}
-            <span className="text-stone-400">•</span>
-            <span className="text-stone-500">{text.homeEta}</span>
-          </div>
+          </Button>
         </div>
 
         {/* Trust Blocks */}
@@ -144,13 +116,14 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
           </h2>
 
           <div className="grid gap-4">
-            {trustBlocks.map((block) => (
+            {trustBlocks.map((block, index) => (
               <Card
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
-                className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-[0.99] group border-transparent hover:border-stone-100/70"
+                className="animate-fade-up flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-[0.99] group border-transparent hover:border-stone-100/70"
                 role="button"
                 tabIndex={0}
+                style={{ animationDelay: `${index * 100 + 200}ms` }}
               >
                 <div className={`${block.colorClass} p-2.5 sm:p-3 rounded-full transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
                   {block.icon}

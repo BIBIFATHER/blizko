@@ -217,6 +217,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-milk text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
+      {/* Cloud background blobs */}
+      <div className="cloud-bg">
+        <div className="cloud-blob cloud-blob-peach" />
+        <div className="cloud-blob cloud-blob-mint" />
+        <div className="cloud-blob cloud-blob-lavender" />
+      </div>
+
       {/* Top Header: Language & Auth - Adjusted for Safe Area */}
       <div className="absolute top-4 right-4 top-safe z-20 flex items-center gap-2 pr-safe">
 

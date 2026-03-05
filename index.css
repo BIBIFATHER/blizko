@@ -9,13 +9,29 @@
   --sar: env(safe-area-inset-right);
 }
 
-.pt-safe { padding-top: var(--sat); }
-.pb-safe { padding-bottom: var(--sab); }
-.pl-safe { padding-left: var(--sal); }
-.pr-safe { padding-right: var(--sar); }
+.pt-safe {
+  padding-top: var(--sat);
+}
 
-.top-safe { top: var(--sat); }
-.bottom-safe { bottom: var(--sab); }
+.pb-safe {
+  padding-bottom: var(--sab);
+}
+
+.pl-safe {
+  padding-left: var(--sal);
+}
+
+.pr-safe {
+  padding-right: var(--sar);
+}
+
+.top-safe {
+  top: var(--sat);
+}
+
+.bottom-safe {
+  bottom: var(--sab);
+}
 
 body {
   -webkit-tap-highlight-color: transparent;
@@ -23,10 +39,125 @@ body {
   overscroll-behavior-y: none;
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D6D3D1; border-radius: 10px; }
+::-webkit-scrollbar {
+  width: 4px;
+}
 
-input, textarea, button, select, a {
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D6D3D1;
+  border-radius: 10px;
+}
+
+input,
+textarea,
+button,
+select,
+a {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Cloud background blobs */
+@keyframes floatBlob {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+
+  66% {
+    transform: translate(-20px, 15px) scale(0.95);
+  }
+}
+
+.cloud-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.cloud-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: floatBlob 20s ease-in-out infinite;
+}
+
+.cloud-blob-peach {
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, #FDDCB5 0%, #FDE8D0 60%, transparent 100%);
+  top: -60px;
+  right: -80px;
+  animation-delay: 0s;
+}
+
+.cloud-blob-mint {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #C4ECD8 0%, #D8F3E6 60%, transparent 100%);
+  top: 40%;
+  left: -100px;
+  animation-delay: -7s;
+}
+
+.cloud-blob-lavender {
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, #D5D0F0 0%, #E4E0F6 60%, transparent 100%);
+  bottom: 10%;
+  right: -60px;
+  animation-delay: -13s;
+}
+
+/* Cloud Concept utilities */
+.logo-serif {
+  font-family: 'Quicksand', sans-serif;
+  color: #5D4E37;
+}
+
+.btn-honey {
+  background: linear-gradient(135deg, #E8D5A3, #F2E6C5);
+  color: #5D4E37;
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(232, 213, 163, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-honey:hover {
+  box-shadow: 0 10px 28px rgba(232, 213, 163, 0.45);
+  filter: brightness(1.03);
+}
+
+/* Cloud-style soft card shadow */
+.card-cloud {
+  box-shadow: 0 8px 32px rgba(120, 113, 108, 0.06);
+}
+
+/* Staggered fade-up animation for cards */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

@@ -17,7 +17,6 @@ const config: Config = {
                 amber: { 350: '#FCD34D' },
             },
             fontFamily: {
-                serif: ['Playfair Display', 'serif'],
                 sans: [
                     'system-ui',
                     '-apple-system',

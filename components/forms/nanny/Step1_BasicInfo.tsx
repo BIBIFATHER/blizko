@@ -38,11 +38,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
 
     return (
         <div className="animate-fade-in space-y-6">
-            <div className={sectionLabel}>
-                <span className="h-px flex-1 bg-stone-200/70" />
-                Основная информация
-                <span className="h-px flex-1 bg-stone-200/70" />
-            </div>
+            <div className="section-label">Основная информация</div>
 
             {/* Photo Upload Block */}
             <div className="flex justify-center mb-6">
@@ -86,7 +82,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 />
 
                 {showCitySuggestions && citySuggestions.length > 0 && (
-                    <div className="mt-1 border border-stone-200 rounded-lg bg-white shadow-sm max-h-40 overflow-auto absolute z-10 w-full">
+                    <div className="mt-1 border border-white/60 rounded-2xl bg-white/80 backdrop-blur-md shadow-lg max-h-40 overflow-auto absolute z-10 w-full">
                         {citySuggestions.map((s, i) => (
                             <button
                                 key={`${s}-${i}`}
@@ -95,7 +91,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                                     setFormData((prev) => ({ ...prev, city: s }));
                                     setShowCitySuggestions(false);
                                 }}
-                                className="w-full text-left px-3 py-2 text-sm hover:bg-stone-50"
+                                className="w-full text-left px-4 py-2.5 text-sm hover:bg-amber-50/50 transition-colors text-stone-700"
                             >
                                 {s}
                             </button>
@@ -107,9 +103,9 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                     type="button"
                     onClick={() => detectLocation(lang)}
                     disabled={detectingLocation}
-                    className={`mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 ${detectingLocation ? 'bg-stone-100 text-stone-400' : 'bg-sky-100 text-sky-700 hover:bg-sky-200'}`}
+                    className="btn-location mt-2"
                 >
-                    <MapPin size={14} />
+                    <MapPin size={13} />
                     {detectingLocation
                         ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
                         : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
@@ -129,6 +125,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 className="mt-8"
                 onClick={nextStep}
                 disabled={!isFormValid}
+                pulse={isFormValid}
             >
                 {lang === 'ru' ? 'Далее' : 'Next'}
             </Button>

@@ -25,11 +25,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
 
     return (
         <div className="animate-fade-in space-y-6">
-            <div className={sectionLabel}>
-                <span className="h-px flex-1 bg-stone-200/70" />
-                Кого мы ищем
-                <span className="h-px flex-1 bg-stone-200/70" />
-            </div>
+            <div className="section-label">Кого мы ищем</div>
 
             <div className="relative">
                 <Input
@@ -65,9 +61,9 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                     type="button"
                     onClick={() => detectLocation(lang)}
                     disabled={detectingLocation}
-                    className={`mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 ${detectingLocation ? 'bg-stone-100 text-stone-400' : 'bg-sky-100 text-sky-700 hover:bg-sky-200'}`}
+                    className="btn-location mt-2"
                 >
-                    <MapPin size={14} />
+                    <MapPin size={13} />
                     {detectingLocation
                         ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
                         : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
@@ -90,11 +86,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                 single
             />
 
-            <div className={sectionLabel}>
-                <span className="h-px flex-1 bg-stone-200/70" />
-                Бюджет
-                <span className="h-px flex-1 bg-stone-200/70" />
-            </div>
+            <div className="section-label">Бюджет</div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Input
                     label={`${lang === 'ru' ? 'Цена за час' : 'Price per hour'} *`}
@@ -117,6 +109,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                 className="mt-8"
                 onClick={nextStep}
                 disabled={!isFormValid}
+                pulse={isFormValid}
             >
                 {lang === 'ru' ? 'Далее' : 'Next'}
             </Button>

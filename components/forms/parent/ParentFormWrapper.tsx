@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ParentRequest, Language } from '../../../types';
 import { t } from '../../../src/core/i18n/translations';
@@ -20,6 +20,8 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
     const text = t[lang];
     const [loading, setLoading] = useState(false);
     const [showOffer, setShowOffer] = useState(false);
+    const directionRef = useRef<'forward' | 'back'>('forward');
+    const [stepKey, setStepKey] = useState(0);
 
     const {
         currentStep,
@@ -36,6 +38,14 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
     } = useParentForm();
 
     const onBack = () => navigate(-1);
+
+    // Track step transitions for direction-aware animation
+    const prevStepRef = useRef(currentStep);
+    if (prevStepRef.current !== currentStep) {
+        directionRef.current = currentStep > prevStepRef.current ? 'forward' : 'back';
+        prevStepRef.current = currentStep;
+        setStepKey(k => k + 1);
+    }
 
     const summarizeSlots = () => {
         const keys = Object.keys(selectedSlots).filter((k) => selectedSlots[k]);
@@ -86,41 +96,56 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
 
     return (
         <div className="animate-slide-up relative">
-            <div className="flex items-center justify-between mb-6">
-                <button onClick={onBack} className="text-stone-400 hover:text-stone-800 flex items-center gap-2">
-                    <ArrowLeft size={20} /> {text.back}
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+                <button onClick={onBack} className="text-stone-400 hover:text-stone-700 flex items-center gap-1.5 transition-colors">
+                    <ArrowLeft size={18} /> <span className="text-sm">{text.back}</span>
                 </button>
-                <div className="text-xs font-semibold text-stone-400 bg-stone-100 px-3 py-1 rounded-full">
-                    {lang === 'ru' ? `Шаг ${currentStep} из ${totalSteps}` : `Step ${currentStep} of ${totalSteps}`}
+                <div className="step-badge">
+                    {lang === 'ru' ? `${currentStep} из ${totalSteps}` : `${currentStep} of ${totalSteps}`}
                 </div>
             </div>
 
-            <div className="mb-6">
+            {/* Title */}
+            <div className="mb-5">
                 <h2 className="text-2xl font-semibold text-stone-800">
                     {isEditing ? (lang === 'ru' ? 'Редактировать заявку' : 'Edit Request') : text.pFormTitle}
                 </h2>
-                <p className="text-stone-500">
+                <p className="text-stone-400 text-sm mt-1">
                     {isEditing ? (lang === 'ru' ? 'Обновите данные заявки' : 'Update your request data') : text.pFormSubtitle}
                 </p>
             </div>
 
-            <div className="w-full bg-stone-100 h-1.5 rounded-full mb-6 overflow-hidden">
+            {/* Progress bar — warm amber */}
+            <div className="w-full bg-stone-100/80 h-1 rounded-full mb-6 overflow-hidden">
                 <div
-                    className="bg-sky-400 h-full transition-all duration-300"
-                    style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{
+                        width: `${(currentStep / totalSteps) * 100}%`,
+                        background: 'linear-gradient(90deg, #E8D5A3, #D2B48C)'
+                    }}
                 />
             </div>
 
             {initialDataStatus === 'approved' && isEditing && (
-                <div className="bg-green-50 text-green-700 p-3 rounded-xl text-sm font-medium mb-4 flex items-center justify-center border border-green-200">
+                <div className="bg-amber-50/60 text-amber-800 p-3 rounded-2xl text-sm font-medium mb-4 flex items-center justify-center border border-amber-200/40">
                     {lang === 'ru' ? 'Заявка одобрена. Редактирование заблокировано.' : 'Request is approved. Editing is locked.'}
                 </div>
             )}
 
-            <form onSubmit={(e) => e.preventDefault()} className={initialDataStatus === 'approved' ? 'opacity-50 pointer-events-none' : ''}>
-                {currentStep === 1 && <Step1_Requirements lang={lang} />}
-                {currentStep === 2 && <Step2_Calendar lang={lang} />}
-                {currentStep === 3 && <Step3_FamilyProfile lang={lang} onFinalSubmit={handleFinalSubmit} loading={loading} />}
+            <form
+                onSubmit={(e) => e.preventDefault()}
+                className={initialDataStatus === 'approved' ? 'opacity-50 pointer-events-none' : ''}
+            >
+                {/* Direction-aware step animation */}
+                <div
+                    key={stepKey}
+                    className={directionRef.current === 'back' ? 'step-enter-back' : 'step-enter'}
+                >
+                    {currentStep === 1 && <Step1_Requirements lang={lang} />}
+                    {currentStep === 2 && <Step2_Calendar lang={lang} />}
+                    {currentStep === 3 && <Step3_FamilyProfile lang={lang} onFinalSubmit={handleFinalSubmit} loading={loading} />}
+                </div>
             </form>
 
             {showOffer && (

@@ -175,3 +175,150 @@ a {
 .animate-fade-up {
   animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* ===== Phase 2: Form Step Transitions ===== */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-enter {
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.step-enter-back {
+  animation: slideInLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ===== Glass input style ===== */
+.input-glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.input-glass:focus {
+  outline: none;
+  border-color: rgba(232, 213, 163, 0.6);
+  box-shadow: 0 0 0 4px rgba(232, 213, 163, 0.25), 0 2px 8px rgba(120, 113, 108, 0.06);
+}
+
+/* ===== Warm chip (selected state) ===== */
+.chip-warm {
+  background: linear-gradient(135deg, #E8D5A3, #F2E6C5);
+  color: #5D4E37;
+  border-color: rgba(232, 213, 163, 0.6);
+  box-shadow: 0 4px 12px rgba(232, 213, 163, 0.4);
+}
+
+/* ===== Pulsing CTA button when ready ===== */
+@keyframes pulse-honey {
+
+  0%,
+  100% {
+    box-shadow: 0 8px 24px rgba(232, 213, 163, 0.35);
+  }
+
+  50% {
+    box-shadow: 0 8px 36px rgba(232, 213, 163, 0.6);
+  }
+}
+
+.btn-honey-pulse {
+  animation: pulse-honey 2s ease-in-out infinite;
+}
+
+/* ===== Sticky footer gradient fade ===== */
+.sticky-footer-fade {
+  background: linear-gradient(to top, rgba(249, 246, 241, 1) 60%, rgba(249, 246, 241, 0));
+}
+
+/* ===== Step counter badge ===== */
+.step-badge {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 9999px;
+  padding: 3px 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #78716C;
+}
+
+/* ===== Section label (warm, not CAPS) ===== */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.75rem;
+  color: #A8A29E;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.section-label::before,
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(214, 211, 209, 0.5);
+}
+
+/* ===== Location button warm ===== */
+.btn-location {
+  background: rgba(232, 213, 163, 0.2);
+  border: 1px solid rgba(232, 213, 163, 0.5);
+  color: #5D4E37;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-location:hover {
+  background: rgba(232, 213, 163, 0.35);
+  box-shadow: 0 4px 12px rgba(232, 213, 163, 0.3);
+}
+
+.btn-location:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

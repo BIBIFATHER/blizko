@@ -7,6 +7,7 @@ import { ArrowLeft, Upload, MapPin } from 'lucide-react';
 import { ParentOfferModal } from './ParentOfferModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { t } from '../src/core/i18n/translations';
+import { detectUserLocation } from '../services/geolocation';
 
 interface ParentFormProps {
   onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }) => Promise<void>;
@@ -129,40 +130,20 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   };
 
   const detectLocation = async () => {
-    if (!navigator.geolocation) {
-      alert(lang === 'ru' ? 'Геолокация не поддерживается браузером' : 'Geolocation is not supported');
-      return;
+    setDetectingLocation(true);
+    const result = await detectUserLocation(lang);
+
+    if (result.success) {
+      const value = [result.city, result.district].filter(Boolean).join(', ');
+      setFormData((prev) => ({ ...prev, city: value || prev.city }));
+      if (!value) {
+        alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
+      }
+    } else if (result.error) {
+      alert(result.error);
     }
 
-    setDetectingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=${lang}`;
-          const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
-          const data = await r.json().catch(() => null);
-
-          const city = data?.address?.city || data?.address?.town || data?.address?.village || '';
-          const district = data?.address?.suburb || data?.address?.city_district || data?.address?.neighbourhood || '';
-          const value = [city, district].filter(Boolean).join(', ');
-
-          setFormData((prev) => ({ ...prev, city: value || prev.city }));
-          if (!value) {
-            alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
-          }
-        } catch {
-          alert(lang === 'ru' ? 'Ошибка при определении местоположения' : 'Location detection failed');
-        } finally {
-          setDetectingLocation(false);
-        }
-      },
-      () => {
-        setDetectingLocation(false);
-        alert(lang === 'ru' ? 'Нет доступа к геолокации' : 'Location permission denied');
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+    setDetectingLocation(false);
   };
 
   useEffect(() => {

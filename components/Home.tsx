@@ -22,6 +22,17 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
 
   const trustBlocks = [
     {
+      id: 'trust2', // Compatibility Block moved first due to new Humanity+ focus
+      title: lang === 'ru' ? 'Humanity+ совместимость' : 'Humanity+ Match',
+      desc: lang === 'ru'
+        ? 'Мы анализируем 120+ параметров личности няни: от стиля игры и дисциплины до реакций на ребенка. Вы совпадаете по ценностям с первого дня.'
+        : 'We analyze 120+ nanny personality parameters: from play style and discipline to child reactions. Value match from day 1.',
+      detail: text.trust2Detail,
+      icon: <Users size={24} />,
+      colorClass: 'bg-indigo-100 text-indigo-700',
+      bgClass: 'bg-indigo-50'
+    },
+    {
       id: 'trust1', // Verification Block
       title: text.trust1Title,
       desc: text.trust1Desc,
@@ -29,15 +40,6 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
       icon: <ShieldCheck size={24} />,
       colorClass: 'bg-green-100 text-green-700',
       bgClass: 'bg-green-50'
-    },
-    {
-      id: 'trust2', // Compatibility Block
-      title: text.trust2Title,
-      desc: text.trust2Desc,
-      detail: text.trust2Detail,
-      icon: <Users size={24} />,
-      colorClass: 'bg-sky-100 text-sky-700',
-      bgClass: 'bg-sky-50'
     },
     {
       id: 'trust3', // Support Block
@@ -84,95 +86,111 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
         }
       `}</style>
 
-      <div className="flex flex-col min-h-full animate-fade-in space-y-10 pb-10">
-        {/* Hero */}
-        <div className="text-center space-y-4 pt-10 sm:pt-12">
-          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight">
+      <div className="cloud-bg flex flex-col h-[100dvh] overflow-hidden bg-[#F9F6F1] animate-fade-in relative w-full pt-safe">
+        {/* Decorative mint blob */}
+        <div className="cloud-blob-mint" />
+
+        {/* 1. Fixed Header (Native App Style) */}
+        <div className="flex-none text-center space-y-2 pt-8 sm:pt-12 pb-2 relative z-20 px-4">
+          <div className="text-4xl sm:text-5xl logo-serif tracking-tight mb-2">
             Blizko
           </div>
-          <p className="text-stone-500/90 text-base sm:text-lg max-w-md mx-auto leading-7">
-            {heroSubtitleParts[0]}
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-700 font-semibold shadow-sm">
-              Humanity+
-            </span>
-            {heroSubtitleParts[1]}
+          <p className="text-stone-500 text-[14px] sm:text-base max-w-[280px] sm:max-w-sm mx-auto leading-snug">
+            {lang === 'ru'
+              ? 'Объяснимый подбор нянь и гарантия безопасности для вашей семьи.'
+              : 'Explainable nanny matching and safety guarantee for your family.'}
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="space-y-3 mt-3 text-center">
-          <Button onClick={onFindNanny}>
-            {text.findNanny}
-          </Button>
-          <p className="text-sm text-stone-500">
-            {text.homeSafetyLine}
-          </p>
+        {/* 2. Scrollable Body Content */}
+        <div className="flex-1 overflow-y-auto w-full relative z-10 no-scrollbar pt-6 pb-[140px] px-2 sm:px-4 space-y-10">
+
+          {/* Flow Section */}
+          <div className="space-y-3">
+            <h2 className="text-center text-stone-400/80 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold">
+              {text.homeFlowTitle}
+            </h2>
+            <div className="flex items-center justify-center gap-2 text-[13px] text-stone-500 flex-wrap px-4">
+              {text.homeFlowSteps.map((step, index) => (
+                <React.Fragment key={step}>
+                  <span className="px-3 py-1 rounded-full bg-white/70 text-stone-600 shadow-sm border border-stone-100/40 whitespace-nowrap">
+                    {step}
+                  </span>
+                  {index < text.homeFlowSteps.length - 1 && (
+                    <span className="text-stone-300">→</span>
+                  )}
+                </React.Fragment>
+              ))}
+              <span className="text-stone-300">•</span>
+              <span className="text-stone-400 whitespace-nowrap">{text.homeEta}</span>
+            </div>
+          </div>
+
+          {/* Trust Blocks Section */}
+          <div className="space-y-4">
+            <h2 className="text-center text-stone-400/80 text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold">
+              {text.whyTrust}
+            </h2>
+
+            {/* Horizontal Scroll Area */}
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-1 no-scrollbar px-2 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 pl-4 pr-10">
+              {trustBlocks.map((block) => (
+                <Card
+                  key={block.id}
+                  onClick={() => handleBlockClick(block)}
+                  className="card-float flex-none w-[75vw] sm:w-auto snap-center flex flex-col items-start gap-3 p-5 cursor-pointer group border-transparent hover:border-stone-100/70 h-[190px] sm:h-auto"
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm mb-0.5`}>
+                    {block.icon}
+                  </div>
+                  <div className="flex-1 flex flex-col w-full">
+                    <h3 className="text-[16px] font-bold text-stone-800 leading-snug">
+                      {block.title}
+                    </h3>
+                    <p className="text-[13px] text-stone-500/90 leading-relaxed mt-1.5 line-clamp-3">
+                      {block.desc}
+                    </p>
+                    <div className="mt-auto pt-2 flex items-center justify-between w-full">
+                      <span className="text-[10px] font-bold text-stone-400 group-hover:text-amber-500 transition-colors uppercase tracking-widest">
+                        {lang === 'ru' ? 'Подробнее' : 'Details'}
+                      </span>
+                      <ChevronRight size={14} className="text-stone-300 group-hover:text-amber-500 transition-colors" />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Fixed Bottom Dock (iOS Style) */}
+        <div className="flex-none fixed bottom-0 left-0 w-full px-5 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-white/95 backdrop-blur-xl border-t border-white/60 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-40 text-center space-y-3 rounded-t-3xl">
           <button
             type="button"
-            onClick={onBecomeNanny}
-            className="text-sm font-medium text-stone-500 hover:text-stone-700 underline underline-offset-4"
+            onClick={onFindNanny}
+            className="btn-gold rounded-full w-full py-4 text-[17px] tracking-wide active:scale-[0.98] transition-transform"
           >
-            {text.becomeNanny}
+            {text.findNanny}
           </button>
-        </div>
 
-        {/* Flow */}
-        <div className="space-y-3">
-          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
-            {text.homeFlowTitle}
-          </h2>
-          <div className="flex items-center justify-center gap-3 text-sm text-stone-600 flex-wrap">
-            {text.homeFlowSteps.map((step, index) => (
-              <React.Fragment key={step}>
-                <span className="px-3 py-1 rounded-full bg-stone-100 text-stone-700">
-                  {step}
-                </span>
-                {index < text.homeFlowSteps.length - 1 && (
-                  <span className="text-stone-300">→</span>
-                )}
-              </React.Fragment>
-            ))}
-            <span className="text-stone-400">•</span>
-            <span className="text-stone-500">{text.homeEta}</span>
+          {/* Social Proof / Stats */}
+          <div className="flex items-center justify-between px-2 text-[13px] text-stone-500 font-medium">
+            <div className="flex items-center gap-1.5 text-amber-500">
+              <span className="text-[14px]">★★★★★</span>
+              <span className="text-stone-600 text-xs mt-0.5">4.9 {lang === 'ru' ? 'из 500+' : 'from 500+'}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={onBecomeNanny}
+              className="text-xs text-stone-400 hover:text-stone-600 underline underline-offset-4"
+            >
+              {text.becomeNanny}
+            </button>
           </div>
         </div>
-
-        {/* Trust Blocks */}
-        <div className="space-y-5">
-          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
-            {text.whyTrust}
-          </h2>
-
-          <div className="grid gap-4">
-            {trustBlocks.map((block) => (
-              <Card
-                key={block.id}
-                onClick={() => handleBlockClick(block)}
-                className="flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-[0.99] group border-transparent hover:border-stone-100/70"
-                role="button"
-                tabIndex={0}
-              >
-                <div className={`${block.colorClass} p-2.5 sm:p-3 rounded-full transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
-                  {block.icon}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-base sm:text-lg font-semibold text-stone-800 leading-snug">
-                    {block.title}
-                  </h3>
-                  <p className="text-sm text-stone-500 leading-relaxed mt-1">
-                    {block.desc}
-                  </p>
-                  <span className="mt-2 inline-block text-xs font-medium text-amber-500/90 group-hover:text-amber-600 transition-colors">
-                    {lang === 'ru' ? 'Подробнее...' : 'More details...'}
-                  </span>
-                </div>
-                <ChevronRight size={20} className="text-stone-300 group-hover:text-stone-500 transition-colors" />
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Explainable Match removed */}
       </div>
 
       {/* Deep Dive Modal (Verification & Compatibility & Support) */}

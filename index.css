@@ -9,24 +9,152 @@
   --sar: env(safe-area-inset-right);
 }
 
-.pt-safe { padding-top: var(--sat); }
-.pb-safe { padding-bottom: var(--sab); }
-.pl-safe { padding-left: var(--sal); }
-.pr-safe { padding-right: var(--sar); }
+.pt-safe {
+  padding-top: var(--sat);
+}
 
-.top-safe { top: var(--sat); }
-.bottom-safe { bottom: var(--sab); }
+.pb-safe {
+  padding-bottom: var(--sab);
+}
+
+.pl-safe {
+  padding-left: var(--sal);
+}
+
+.pr-safe {
+  padding-right: var(--sar);
+}
+
+.top-safe {
+  top: var(--sat);
+}
+
+.bottom-safe {
+  bottom: var(--sab);
+}
 
 body {
   -webkit-tap-highlight-color: transparent;
   background-color: #F9F6F1;
   overscroll-behavior-y: none;
+  position: relative;
+  overflow-x: hidden;
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D6D3D1; border-radius: 10px; }
+/* ── Cloud Concept: Decorative gradient blobs ── */
+.cloud-bg::before,
+.cloud-bg::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
 
-input, textarea, button, select, a {
+.cloud-bg::before {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #FFE4C9 0%, transparent 70%);
+  top: -120px;
+  left: -100px;
+  animation: float-blob 16s ease-in-out infinite;
+}
+
+.cloud-bg::after {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #DDF1FF 0%, transparent 70%);
+  bottom: 10%;
+  right: -150px;
+  animation: float-blob 20s ease-in-out infinite reverse;
+}
+
+/* Third blob via a separate element */
+.cloud-blob-mint {
+  position: fixed;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #E8FDEE 0%, transparent 70%);
+  filter: blur(90px);
+  opacity: 0.5;
+  top: 40%;
+  right: -100px;
+  pointer-events: none;
+  z-index: 0;
+  animation: float-blob 18s ease-in-out infinite;
+}
+
+@keyframes float-blob {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(15px, -20px) scale(1.05);
+  }
+
+  66% {
+    transform: translate(-10px, 15px) scale(0.95);
+  }
+}
+
+/* Floating card with enhanced shadow */
+.card-float {
+  box-shadow: 0 8px 32px rgba(120, 113, 108, 0.04),
+    0 2px 8px rgba(120, 113, 108, 0.02);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card-float:hover {
+  box-shadow: 0 16px 48px rgba(120, 113, 108, 0.08),
+    0 4px 12px rgba(120, 113, 108, 0.04);
+  transform: translateY(-2px);
+}
+
+/* Typography elements */
+.logo-serif {
+  font-family: 'Playfair Display', serif;
+  color: #5D4E37;
+}
+
+/* Golden CTA */
+.btn-gold {
+  background: linear-gradient(135deg, #D4A54A 0%, #E8C068 100%);
+  color: white !important;
+  box-shadow: 0 8px 24px rgba(212, 165, 74, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: none;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+  box-shadow: 0 12px 28px rgba(212, 165, 74, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D6D3D1;
+  border-radius: 10px;
+}
+
+input,
+textarea,
+button,
+select,
+a {
   -webkit-tap-highlight-color: transparent;
 }

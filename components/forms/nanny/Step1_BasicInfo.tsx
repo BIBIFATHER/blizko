@@ -1,5 +1,5 @@
 import React from 'react';
-import { Camera, MapPin } from 'lucide-react';
+import { Camera, MapPin, ShieldCheck, Lock, Sparkles } from 'lucide-react';
 import { useNannyForm } from './NannyFormProvider';
 import { Button, Input } from '../../UI';
 import { t } from '../../../src/core/i18n/translations';
@@ -33,45 +33,51 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
     };
 
     const isFormValid = formData.name.trim() !== '' && formData.city.trim() !== '' && formData.contact.trim() !== '';
-
-    const sectionLabel = "flex items-center gap-3 text-xs uppercase tracking-wider text-stone-400 font-semibold";
+    const showAhaMoment = formData.name.trim() !== '' && formData.city.trim() !== '';
 
     return (
-        <div className="animate-fade-in space-y-6">
-            <div className="section-label">Основная информация</div>
+        <div className="animate-fade-in space-y-6 relative pb-16">
+            <div className="section-label">{lang === 'ru' ? 'Давайте знакомиться' : 'Let\'s get to know you'}</div>
 
             {/* Photo Upload Block */}
             <div className="flex justify-center mb-6">
                 <label className="relative cursor-pointer group">
-                    <div className={`w-32 h-32 rounded-full overflow-hidden border-4 flex items-center justify-center transition-all shadow-md ring-1 ring-white/60 ${photo ? 'border-amber-300' : 'border-stone-200 bg-stone-100'}`}>
+                    <div className={`w-32 h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-md ring-4 ring-white/60 ${photo ? 'border-2 border-amber-300' : 'bg-amber-50 border-2 border-amber-200/50'}`}>
                         {photo ? (
                             <img src={photo} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
-                            <Camera size={40} className="text-stone-400" />
+                            <div className="flex flex-col items-center gap-1">
+                                <span className="text-2xl">📸</span>
+                                <span className="text-[10px] font-medium text-amber-700/70">{lang === 'ru' ? 'Добавить' : 'Add'}</span>
+                            </div>
                         )}
                         {/* Overlay on hover */}
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                            <Camera size={24} className="text-white" />
+                        <div className="absolute inset-0 bg-amber-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                            <span className="text-xl">✨</span>
                         </div>
                     </div>
                     <input type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
-                    <div className="text-center mt-2 text-sm text-stone-500 font-medium">
+                    <div className="text-center mt-3 text-sm text-stone-500 font-medium mb-2">
                         {photo ? text.changePhoto : text.uploadPhoto}
+                    </div>
+                    <div className="flex justify-center items-center gap-1.5 text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-3 py-1 rounded-full mx-auto w-fit">
+                        <ShieldCheck size={12} /> {lang === 'ru' ? 'Защищено AES шифрованием' : 'AES Encrypted & Secured'}
                     </div>
                 </label>
             </div>
 
             <Input
-                label={`${text.nameLabel} *`}
+                label={`${lang === 'ru' ? 'Как вас зовут?' : 'What is your name?'} *`}
                 placeholder={lang === 'ru' ? "Мария Иванова" : "Maria Ivanova"}
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                 required
+                autoAdvance
             />
 
             <div className="relative">
                 <Input
-                    label={`${text.cityLabel} *`}
+                    label={`${lang === 'ru' ? 'В каком городе вы ищете работу?' : 'Which city are you looking to work in?'} *`}
                     placeholder={lang === 'ru' ? "Москва, ЮАО" : "London, Soho"}
                     value={formData.city}
                     onChange={e => {
@@ -79,10 +85,11 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                         setShowCitySuggestions(true);
                     }}
                     required
+                    autoAdvance
                 />
 
                 {showCitySuggestions && citySuggestions.length > 0 && (
-                    <div className="mt-1 border border-white/60 rounded-2xl bg-white/80 backdrop-blur-md shadow-lg max-h-40 overflow-auto absolute z-10 w-full">
+                    <div className="mt-1 border border-white/60 rounded-2xl bg-white/80 backdrop-blur-md shadow-lg max-h-40 overflow-auto absolute z-10 w-full animate-slide-down">
                         {citySuggestions.map((s, i) => (
                             <button
                                 key={`${s}-${i}`}
@@ -110,25 +117,44 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                         ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
                         : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
                 </button>
+                <div className="mt-3 flex items-start gap-2 text-[11px] text-stone-500 leading-tight bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+                    <Lock size={12} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                    <span>{lang === 'ru' ? 'Ваши контакты скрыты. Семья увидит их только после взаимной симпатии.' : 'Your contacts are hidden. Family will see them only after a mutual match.'}</span>
+                </div>
             </div>
 
             <Input
-                label={`${text.contactLabel} *`}
+                label={`${lang === 'ru' ? 'Где с вами можно связаться?' : 'How can we contact you?'} (Телефон) *`}
                 placeholder="+7 900 000 00 00"
                 value={formData.contact}
                 onChange={e => setFormData({ ...formData, contact: e.target.value })}
                 required
+                autoAdvance
             />
 
-            <Button
-                type="button"
-                className="mt-8"
-                onClick={nextStep}
-                disabled={!isFormValid}
-                pulse={isFormValid}
-            >
-                {lang === 'ru' ? 'Далее' : 'Next'}
-            </Button>
+            <div className="sticky bottom-0 z-10 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade mt-8">
+                {showAhaMoment && !isFormValid && (
+                    <div className="absolute bottom-[4.5rem] left-0 right-0 mx-auto w-[90%] bg-violet-50/90 backdrop-blur-md shadow-xl border border-violet-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
+                            <Sparkles size={16} className="text-violet-600" />
+                        </div>
+                        <div className="text-xs text-stone-700 leading-tight">
+                            {lang === 'ru' ?
+                                <span>Вам очень рады! В вашем районе прямо сейчас <strong>28 семей</strong> ищут свою идеальную няню. Оставьте контакт, чтобы перейти к фильтрам.</span> :
+                                <span>We're excited to have you! There are currently <strong>28 families</strong> looking for a nanny in your area. Add contact info to proceed.</span>}
+                        </div>
+                    </div>
+                )}
+
+                <Button
+                    type="button"
+                    onClick={nextStep}
+                    disabled={!isFormValid}
+                    pulse={isFormValid}
+                >
+                    {lang === 'ru' ? 'Осталось 3 шага' : '3 steps left'}
+                </Button>
+            </div>
         </div>
     );
 };

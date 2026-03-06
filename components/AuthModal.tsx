@@ -46,8 +46,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     if (lower.includes('expired')) {
       return 'Срок действия ссылки или кода истёк. Запросите новый.';
     }
+    if (lower.includes('empty prompt') || lower.includes('missing')) {
+      return 'Упс, кажется, вы ввели не все цифры.';
+    }
 
-    return raw || 'Не удалось выполнить вход. Попробуйте ещё раз.';
+    return 'Не удалось выполнить вход. Давайте попробуем ещё раз.';
   };
 
   // Steps: 'method' -> 'otp' -> 'email_wait' -> 'success'
@@ -230,7 +233,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-slide-up relative">
+      <div className="bg-white/95 backdrop-blur-xl w-full max-w-sm rounded-3xl card-cloud border border-stone-100/80 overflow-hidden animate-slide-up relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 transition-colors z-10"
@@ -259,11 +262,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 <button
                   type="button"
                   onClick={() => setRole('parent')}
-                  className={`flex-1 py-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
-                    role === 'parent'
-                      ? 'border-sky-200 bg-sky-50 text-sky-800'
-                      : 'border-stone-100 text-stone-400 hover:border-stone-200'
-                  }`}
+                  className={`flex-1 py-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${role === 'parent'
+                    ? 'border-sky-200 bg-sky-50 text-sky-800'
+                    : 'border-stone-100 text-stone-400 hover:border-stone-200'
+                    }`}
                 >
                   <Baby size={20} />
                   <span className="text-xs font-semibold">{text.roleParent}</span>
@@ -271,11 +273,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 <button
                   type="button"
                   onClick={() => setRole('nanny')}
-                  className={`flex-1 py-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
-                    role === 'nanny'
-                      ? 'border-amber-200 bg-amber-50 text-amber-800'
-                      : 'border-stone-100 text-stone-400 hover:border-stone-200'
-                  }`}
+                  className={`flex-1 py-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${role === 'nanny'
+                    ? 'border-amber-200 bg-amber-50 text-amber-800'
+                    : 'border-stone-100 text-stone-400 hover:border-stone-200'
+                    }`}
                 >
                   <Briefcase size={20} />
                   <span className="text-xs font-semibold">{text.roleNanny}</span>
@@ -291,9 +292,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                       setContactValue('');
                       setError('');
                     }}
-                    className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${
-                      method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                    }`}
+                    className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                      }`}
                   >
                     <Phone size={14} /> Phone
                   </button>
@@ -305,9 +305,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                     setContactValue('');
                     setError('');
                   }}
-                  className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${
-                    method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                  }`}
+                  className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                    }`}
                 >
                   <Mail size={14} /> Email
                 </button>
@@ -334,7 +333,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 onChange={(e) => setName(e.target.value)}
               />
 
-              {error && <p className="text-xs text-red-500">{error}</p>}
+              {error && <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg text-center font-medium border border-amber-100">{error}</p>}
 
               <Button type="submit" isLoading={loading} className="mt-4">
                 {method === 'email'
@@ -360,15 +359,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 <input
                   type="text"
                   maxLength={6}
-                  className="w-full text-center text-3xl font-mono tracking-[0.5em] py-4 bg-stone-50 border-2 border-stone-200 rounded-xl focus:border-amber-300 focus:bg-white focus:outline-none transition-all"
+                  className={`w-full text-center text-3xl font-mono tracking-[0.5em] py-4 bg-stone-50 border-2 ${error ? 'border-amber-300 ring-2 ring-amber-100' : 'border-stone-200'} rounded-xl focus:border-amber-400 focus:bg-white focus:outline-none transition-all`}
                   placeholder="000000"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => {
+                    setOtp(e.target.value.replace(/\D/g, ''));
+                    if (error) setError(''); // Clear error on new input
+                  }}
                   autoFocus
                 />
               </div>
 
-              {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+              {error && <p className="text-xs text-amber-600 text-center font-medium bg-amber-50 mx-auto w-fit px-3 py-1.5 rounded-lg border border-amber-100">{error}</p>}
 
               <Button type="submit" isLoading={loading} disabled={otp.length < 4}>
                 {lang === 'ru' ? 'Подтвердить' : 'Verify'}
@@ -415,7 +417,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                   : 'Open your email and tap the confirmation link. You will be signed in automatically.'}
               </div>
 
-              {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+              {error && <p className="text-xs text-amber-600 text-center font-medium bg-amber-50 mx-auto w-fit px-3 py-1.5 rounded-lg border border-amber-100">{error}</p>}
 
               <div className="text-center">
                 {timer > 0 ? (

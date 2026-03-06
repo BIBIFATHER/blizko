@@ -104,9 +104,6 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
           <Button onClick={onFindNanny}>
             {text.findNanny}
           </Button>
-          <Button variant="secondary" onClick={onBecomeNanny}>
-            {text.becomeNanny}
-          </Button>
         </div>
 
         {/* Trust Blocks */}

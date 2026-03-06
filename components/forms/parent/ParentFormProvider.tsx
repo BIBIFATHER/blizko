@@ -1,3 +1,4 @@
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { ParentRequest, Language } from '../../../types';
 import { detectUserLocation } from '../../../services/geolocation';
 
@@ -84,8 +85,8 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
         city: initialData?.city || '',
         childAge: initialData?.childAge || '',
         schedule: initialData?.schedule || '',
-        budgetHourly: parsedBudget.hourly,
-        budgetMonthly: parsedBudget.monthly,
+        budgetHourly: parsedBudget.hourly || (lang === 'ru' ? '600 - 800 ₽/час' : '20 - 30 $/hour'),
+        budgetMonthly: parsedBudget.monthly || (lang === 'ru' ? '120000 - 180000 ₽/мес' : '2500 - 4000 $/month'),
         comment: initialData?.comment || '',
         dateFrom: '',
         dateTo: '',

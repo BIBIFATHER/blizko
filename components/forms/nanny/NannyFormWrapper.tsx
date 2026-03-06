@@ -26,6 +26,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
 
     const {
         currentStep,
+        prevStep,
         totalSteps,
         isEditing,
         initialDataId,
@@ -41,7 +42,13 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
         riskProfile
     } = useNannyForm();
 
-    const onBack = () => navigate(-1);
+    const onBack = () => {
+        if (currentStep > 1) {
+            prevStep();
+        } else {
+            navigate(-1);
+        }
+    };
 
     // Track step transitions for direction-aware animation
     const prevStepRef = useRef(currentStep);
@@ -49,6 +56,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
         directionRef.current = currentStep > prevStepRef.current ? 'forward' : 'back';
         prevStepRef.current = currentStep;
         setStepKey(k => k + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     const handleFinalSubmit = () => {
@@ -92,12 +100,9 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
         <div className="animate-slide-up relative">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
-                <button onClick={onBack} className="text-stone-400 hover:text-stone-700 flex items-center gap-1.5 transition-colors">
-                    <ArrowLeft size={18} /> <span className="text-sm">{text.back}</span>
+                <button onClick={onBack} className="text-stone-400 hover:text-stone-700 flex items-center gap-1.5 transition-colors p-2 -ml-2 rounded-xl hover:bg-stone-50 active:bg-stone-100">
+                    <ArrowLeft size={18} /> <span className="text-sm font-medium">{text.back}</span>
                 </button>
-                <div className="step-badge">
-                    {lang === 'ru' ? `${currentStep} из ${totalSteps}` : `${currentStep} of ${totalSteps}`}
-                </div>
             </div>
 
             {/* Title */}
@@ -105,11 +110,19 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
                 <h2 className="text-2xl font-semibold text-stone-800">
                     {isEditing ? (lang === 'ru' ? 'Редактирование профиля' : 'Edit Profile') : text.nFormTitle}
                 </h2>
-                <p className="text-stone-400 text-sm mt-1">{text.nFormSubtitle}</p>
+                <div className="flex items-center justify-between mt-3 text-sm font-medium">
+                    <span className="text-amber-700">
+                        {currentStep === 1 && (lang === 'ru' ? 'Давайте знакомиться!' : 'Let\'s get acquainted!')}
+                        {currentStep === 2 && (lang === 'ru' ? 'Отлично! Теперь про ваш опыт' : 'Great! Now your experience')}
+                        {currentStep === 3 && (lang === 'ru' ? 'Позитивные отзывы — залог успеха' : 'Positive reviews are key')}
+                        {currentStep === 4 && (lang === 'ru' ? 'Финальный штрих: ваши суперсилы' : 'Final touch: your superpowers')}
+                    </span>
+                    <span className="text-stone-400">{currentStep} / {totalSteps}</span>
+                </div>
             </div>
 
             {/* Progress bar — warm amber */}
-            <div className="w-full bg-stone-100/80 h-1 rounded-full mb-6 overflow-hidden">
+            <div className="w-full bg-stone-100/80 h-1.5 rounded-full mb-6 overflow-hidden">
                 <div
                     className="h-full rounded-full transition-all duration-500 ease-out"
                     style={{

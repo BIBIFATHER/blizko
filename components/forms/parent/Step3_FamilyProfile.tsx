@@ -33,47 +33,52 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
     return (
         <div className="animate-fade-in space-y-6">
-            <div className={sectionLabel}>
-                <span className="h-px flex-1 bg-stone-200/70" />
+            <div className="section-label">
                 Дополнительно
-                <span className="h-px flex-1 bg-stone-200/70" />
             </div>
 
-            <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
-                <div className="text-xs font-semibold text-violet-700 mb-2">Общие параметры</div>
-                <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <select className={`${selectClass} text-xs`} value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
-                        <option value="ok">Камеры: допустимо</option>
-                        <option value="not_ok">Камеры: нежелательно</option>
-                    </select>
-                    <select className={`${selectClass} text-xs`} value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
-                        <option value="no">Поездки: не нужны</option>
-                        <option value="yes">Поездки: возможны</option>
-                    </select>
-                    <select className={`${selectClass} text-xs`} value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
-                        <option value="light">Дом: только легкая помощь</option>
-                        <option value="none">Дом: не требуется</option>
-                        <option value="extended">Дом: расширенная помощь</option>
-                    </select>
-                    <select className={`${selectClass} text-xs`} value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
-                        <option value="has_pets">Дома есть животные</option>
-                        <option value="no_pets">Животных нет</option>
-                    </select>
-                    <select className={`${selectClass} text-xs`} value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
-                        <option value="sometimes">Ночные смены: иногда</option>
-                        <option value="no">Ночные смены: не нужны</option>
-                        <option value="yes">Ночные смены: да</option>
-                    </select>
-                </div>
-            </div>
+            <div className="section-label">Общие параметры</div>
+            <ChipGroup
+                label={lang === 'ru' ? 'Видеонаблюдение' : 'Cameras'}
+                options={lang === 'ru' ? ['📷 Допустимо', '🚫 Нежелательно'] : ['📷 Acceptable', '🚫 Not desired']}
+                selected={advanced.cameras ? [advanced.cameras] : []}
+                onChange={(s) => setAdvanced((p) => ({ ...p, cameras: s[0] || '' }))}
+                single
+            />
+            <ChipGroup
+                label={lang === 'ru' ? 'Поездки с няней' : 'Travel with nanny'}
+                options={lang === 'ru' ? ['✈️ Возможны', '🏠 Не нужны'] : ['✈️ Possible', '🏠 Not needed']}
+                selected={advanced.travel ? [advanced.travel] : []}
+                onChange={(s) => setAdvanced((p) => ({ ...p, travel: s[0] || '' }))}
+                single
+            />
+            <ChipGroup
+                label={lang === 'ru' ? 'Помощь по дому' : 'Household help'}
+                options={lang === 'ru' ? ['🧹 Легкая', '🍽️ Расширенная', '❌ Не требуется'] : ['🧹 Light', '🍽️ Extended', '❌ None']}
+                selected={advanced.household ? [advanced.household] : []}
+                onChange={(s) => setAdvanced((p) => ({ ...p, household: s[0] || '' }))}
+                single
+            />
+            <ChipGroup
+                label={lang === 'ru' ? 'Животные' : 'Pets'}
+                options={lang === 'ru' ? ['🐾 Есть животные', '🚫 Животных нет'] : ['🐾 Have pets', '🚫 No pets']}
+                selected={advanced.pets ? [advanced.pets] : []}
+                onChange={(s) => setAdvanced((p) => ({ ...p, pets: s[0] || '' }))}
+                single
+            />
+            <ChipGroup
+                label={lang === 'ru' ? 'Ночные смены' : 'Night shifts'}
+                options={lang === 'ru' ? ['🌙 Да', '✨ Иногда', '☀️ Не нужны'] : ['🌙 Yes', '✨ Sometimes', '☀️ Not needed']}
+                selected={advanced.night ? [advanced.night] : []}
+                onChange={(s) => setAdvanced((p) => ({ ...p, night: s[0] || '' }))}
+                single
+            />
 
-            <div className={sectionLabel}>
-                <span className="h-px flex-1 bg-stone-200/70" />
+            <div className="section-label">
                 Для точного подбора
-                <span className="h-px flex-1 bg-stone-200/70" />
             </div>
 
-            <div className="bg-white border border-stone-200 rounded-xl p-3">
+            <div className="bg-white/60 backdrop-blur-md border border-white/60 shadow-sm rounded-2xl p-4">
                 <div className="text-xs font-semibold text-stone-700 mb-2">Для точного анализа (AI)</div>
                 <Textarea
                     label={lang === 'ru' ? 'Что важно знать о ребёнке и семье?' : 'What should we know about your family?'}
@@ -90,35 +95,24 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                 onChange={e => setFormData({ ...formData, comment: e.target.value })}
             />
 
-            <div className="bg-violet-50 border border-violet-200 rounded-xl p-4 space-y-4">
-                <div className="text-sm font-semibold text-violet-800">Психологический профиль (улучшает мэтчинг)</div>
+            <div className="bg-amber-50/40 backdrop-blur-md border border-amber-200/50 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
+                <div className="text-sm font-semibold text-amber-900 mb-4">{lang === 'ru' ? 'Психологический профиль (улучшает мэтчинг)' : 'Psychological profile (improves matching)'}</div>
 
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Стиль семьи</label>
-                    <select
-                        className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-                        value={riskProfile?.familyStyle || 'balanced'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: e.target.value as any }))}
-                    >
-                        <option value="warm">Мягкий, эмпатичный</option>
-                        <option value="structured">Структурный, с правилами</option>
-                        <option value="balanced">Баланс</option>
-                    </select>
-                </div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Стиль семьи' : 'Family style'}
+                    options={lang === 'ru' ? ['💛 Мягкий, эмпатичный', '📐 Структурный, с правилами', '⚖️ Баланс'] : ['💛 Gentle, empathetic', '📐 Structured, rules-based', '⚖️ Balanced']}
+                    selected={riskProfile?.familyStyle ? [riskProfile.familyStyle] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: s[0] as any }))}
+                    single
+                />
 
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Как ребёнок реагирует на стресс?</label>
-                    <select
-                        className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-                        value={riskProfile?.childStress || 'tantrum'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: e.target.value as any }))}
-                    >
-                        <option value="cry">Плачет и ищет поддержку</option>
-                        <option value="withdraw">Замыкается</option>
-                        <option value="aggressive">Злится/агрессия</option>
-                        <option value="tantrum">Истерики</option>
-                    </select>
-                </div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Как ребёнок реагирует на стресс?' : 'How does the child react to stress?'}
+                    options={lang === 'ru' ? ['😢 Берет поддержку', '🐢 Замыкается', '😡 Злится', '🌋 Истерики'] : ['😢 Seeks support', '🐢 Withdraws', '😡 Gets angry', '🌋 Tantrums']}
+                    selected={riskProfile?.childStress ? [riskProfile.childStress] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: s[0] as any }))}
+                    single
+                />
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Триггеры ребёнка (выберите 1–3)' : 'Child triggers (1–3)'}
@@ -127,31 +121,21 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), triggers: list }))}
                 />
 
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Комфортный стиль няни</label>
-                    <select
-                        className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-                        value={riskProfile?.nannyStylePreference || 'gentle'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: e.target.value as any }))}
-                    >
-                        <option value="gentle">Мягкая и спокойная</option>
-                        <option value="strict">Структурная/строгая</option>
-                        <option value="playful">Игровая и творческая</option>
-                    </select>
-                </div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Комфортный стиль няни' : 'Preferred nanny style'}
+                    options={lang === 'ru' ? ['🌿 Мягкая и спокойная', '📏 Структурная', '🎨 Игровая'] : ['🌿 Gentle & calm', '📏 Structured', '🎨 Playful']}
+                    selected={riskProfile?.nannyStylePreference ? [riskProfile.nannyStylePreference] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: s[0] as any }))}
+                    single
+                />
 
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Коммуникация от няни</label>
-                    <select
-                        className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-                        value={riskProfile?.communicationPreference || 'regular'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: e.target.value as any }))}
-                    >
-                        <option value="minimal">Минимум сообщений</option>
-                        <option value="regular">Регулярно (2–3 апдейта)</option>
-                        <option value="frequent">Часто в течение дня</option>
-                    </select>
-                </div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Частота сообщений от няни' : 'Nanny communication frequency'}
+                    options={lang === 'ru' ? ['📵 Минимум сообщений', '📱 Регулярно (2-3 раза)', '💬 Часто'] : ['📵 Minimal messages', '📱 Regular (2-3 times)', '💬 Frequent']}
+                    selected={riskProfile?.communicationPreference ? [riskProfile.communicationPreference] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: s[0] as any }))}
+                    single
+                />
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Наши потребности' : 'Family needs'}
@@ -160,24 +144,19 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), needs: list }))}
                 />
 
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Стиль общения (PCM)</label>
-                    <select
-                        className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-                        value={riskProfile?.pcmType || 'harmonizer'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
-                    >
-                        <option value="thinker">Мыслитель — логика, структура</option>
-                        <option value="persister">Надёжный — ценности, ответственность</option>
-                        <option value="harmonizer">Тёплый — эмпатия, забота</option>
-                        <option value="rebel">Игривый — лёгкость, юмор</option>
-                        <option value="imaginer">Спокойный — тишина, пространство</option>
-                        <option value="promoter">Действенный — результат, скорость</option>
-                    </select>
-                </div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Стиль общения (PCM)' : 'Communication style (PCM)'}
+                    options={lang === 'ru'
+                        ? ['🧠 Логика', '🛡️ Ценности', '❤️ Эмпатия', '🎉 Легкость', '🧘‍♂️ Тишина', '⚡ Исполнитель']
+                        : ['🧠 Logic', '🛡️ Values', '❤️ Empathy', '🎉 Lightness', '🧘‍♂️ Quiet', '⚡ Action']
+                    }
+                    selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: s[0] as any }))}
+                    single
+                />
             </div>
 
-            <Card className={`transition-all duration-300 ${documents.length > 0 ? 'bg-sky-50 border-sky-200' : 'bg-white'}`}>
+            <Card className={`transition-all duration-300 ${documents.length > 0 ? 'bg-sky-50/50 border-sky-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
                     <div className={`p-3 rounded-full flex-shrink-0 ${documents.length > 0 ? 'bg-sky-200 text-sky-700' : 'bg-stone-100 text-stone-400'}`}>
                         <FileText size={24} />
@@ -222,17 +201,17 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                 </div>
             </Card>
 
-            <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-600 mt-6">
+            <div className="bg-white/60 backdrop-blur-sm border border-white/60 shadow-sm rounded-xl p-3 text-sm text-stone-600 mt-6">
                 <div>{text.parentEtaLine}</div>
                 <div className="text-stone-400 mt-1">{text.parentSafetyLine}</div>
             </div>
 
-            <div className="flex gap-4 mt-8">
+            <div className="sticky bottom-0 z-10 flex gap-4 mt-8 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade">
                 <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>
-                <Button type="button" className="flex-1 bg-stone-800 hover:bg-stone-900" onClick={onFinalSubmit} isLoading={loading}>
-                    {isEditing ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : text.submitParent}
+                <Button type="button" className="flex-1" onClick={onFinalSubmit} isLoading={loading} pulse={true}>
+                    {isEditing ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : (lang === 'ru' ? 'Отправить безопасно' : 'Submit safely')}
                 </Button>
             </div>
 

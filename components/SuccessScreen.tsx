@@ -62,8 +62,11 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
     return (
       <div className={`text-center space-y-8 animate-slide-up pt-12`}>
         <div className="flex flex-col items-center justify-center space-y-4">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2 shadow-lg shadow-green-100/50 animate-pop-in">
-            <CheckCircle size={40} />
+          <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4 relative mx-auto">
+            <div className="absolute inset-0 bg-amber-200/40 rounded-full blur-xl animate-pulse"></div>
+            <div className="relative w-20 h-20 bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200/50 rounded-full flex items-center justify-center text-amber-600 shadow-lg shadow-amber-200/30 animate-pop-in">
+              <CheckCircle size={40} />
+            </div>
           </div>
           <h2 className="text-3xl font-semibold text-stone-800">
             {lang === 'ru' ? 'Оплата успешно завершена!' : 'Payment Successful!'}
@@ -114,11 +117,19 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
   }
 
   return (
-    <div className={`text-center space-y-8 animate-slide-up`}>
+    <div className={`text-center space-y-8 animate-slide-up relative`}>
+      {/* Background blobs for success screen */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div className="cloud-blob cloud-blob-peach opacity-40 absolute top-[-10%] right-[-10%]"></div>
+        <div className="cloud-blob cloud-blob-mint opacity-40 absolute bottom-[-10%] left-[-10%]"></div>
+      </div>
 
       <div className="pt-8 flex flex-col items-center justify-center space-y-4">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2 shadow-lg shadow-green-100/50 animate-pop-in">
-          <CheckCircle size={40} />
+        <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4 relative mx-auto">
+          <div className="absolute inset-0 bg-amber-200/40 rounded-full blur-xl animate-pulse-slow"></div>
+          <div className="relative w-20 h-20 bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200/50 rounded-full flex items-center justify-center text-amber-600 shadow-lg shadow-amber-200/30 animate-pop-in">
+            <CheckCircle size={40} />
+          </div>
         </div>
         <h2 className="text-3xl font-semibold text-stone-800 whitespace-pre-wrap">{text.successTitle}</h2>
         <p className="text-stone-500 max-w-xs mx-auto">
@@ -133,7 +144,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
         </div>
 
         <div className="relative z-10 text-left">
-          <div className="flex items-center gap-2 mb-2 text-sky-700 font-medium text-sm uppercase tracking-wide">
+          <div className="flex items-center gap-2 mb-2 text-sky-700 font-semibold text-sm">
             <Sparkles size={16} /> {text.aiMatch}
           </div>
 
@@ -150,7 +161,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           </div>
 
           <div className="space-y-2.5">
-            <p className="text-xs font-bold text-stone-400 uppercase tracking-widest">{text.recsTitle}</p>
+            <p className="text-xs font-semibold text-stone-500">{text.recsTitle}</p>
             {result.recommendations.map((rec, idx) => (
               <div key={idx} className="flex items-start gap-3 text-sm text-stone-600 bg-white/80 p-3 rounded-xl border border-sky-50 shadow-sm animate-fade-in" style={{ animationDelay: `${idx * 150}ms` }}>
                 <Info size={16} className="mt-0.5 text-sky-400 flex-shrink-0" />
@@ -161,17 +172,17 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
           <div className="mt-5 grid grid-cols-1 gap-3 text-left">
             <div className="bg-white/80 border border-amber-100 rounded-xl p-3">
-              <div className="text-[11px] font-bold text-amber-600 uppercase tracking-widest mb-1">Humanity+</div>
+              <div className="text-[12px] font-semibold text-amber-700 mb-1">Humanity+</div>
               <div className="text-sm text-stone-600">Совпали по стилю: мягкая дисциплина, спокойная коммуникация</div>
               <div className="mt-2 text-[11px] text-stone-500">PCM‑совместимость: «Тёплый ↔ Тёплый» — легко выстраивается контакт</div>
             </div>
             <div className="bg-white/80 border border-sky-100 rounded-xl p-3">
-              <div className="text-[11px] font-bold text-sky-600 uppercase tracking-widest mb-1">Growth</div>
+              <div className="text-[12px] font-semibold text-sky-700 mb-1">Growth</div>
               <div className="text-sm text-stone-600">Добавляет: структура и устойчивость к стрессу</div>
               <div className="mt-2 text-[11px] text-stone-500">PCM‑канал общения: тёплый, поддерживающий, без давления</div>
             </div>
             <div className="bg-white/80 border border-green-100 rounded-xl p-3">
-              <div className="text-[11px] font-bold text-green-600 uppercase tracking-widest mb-1">Stability</div>
+              <div className="text-[12px] font-semibold text-green-700 mb-1">Stability</div>
               <div className="text-sm text-stone-600">Надёжность: высокая (подтверждения без отмен)</div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Button } from './UI';
-import { X, UploadCloud, CheckCircle, FileText } from 'lucide-react';
+import { X, UploadCloud, CheckCircle, FileText, ShieldCheck } from 'lucide-react';
 import { Language, DocumentVerification } from '../types';
 import { t } from '../src/core/i18n/translations';
 
@@ -84,6 +84,11 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
             </label>
+
+            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-100/50">
+              <ShieldCheck size={14} />
+              {lang === 'ru' ? 'Все документы защищены банковским шифрованием' : 'All documents are secured with bank-level encryption'}
+            </div>
           </div>
         )}
 

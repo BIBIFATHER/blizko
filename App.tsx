@@ -39,6 +39,13 @@ export default function App() {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'desktop'>('android');
   const [isStandalone, setIsStandalone] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     // 1. Check if standalone
@@ -224,52 +231,64 @@ export default function App() {
         <div className="cloud-blob cloud-blob-lavender" />
       </div>
 
-      {/* Top Header: Language & Auth - Adjusted for Safe Area */}
-      <div className="absolute top-4 right-4 top-safe z-20 flex items-center gap-2 pr-safe">
-
-        <button
-          type="button"
-          onClick={handleShare}
-          className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
-          title={t[lang].share}
-          aria-label={t[lang].share}
-        >
-          <Share2 size={16} />
-        </button>
-
-        <button
-          type="button"
-          onClick={toggleLanguage}
-          className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
-          aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
-        >
-          {lang === 'ru' ? 'EN' : 'RU'}
-        </button>
-
-        {!user ? (
-          <button
-            type="button"
-            onClick={() => setAuthOpen(true)}
-            className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
+      {/* Top Header: Sticky on scroll */}
+      <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 top-safe ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-4'}`}>
+        <div className="max-w-md mx-auto px-6 flex items-center justify-between">
+          <div
+            className={`font-semibold text-stone-900 logo-serif text-xl transition-opacity duration-300 cursor-pointer ${isScrolled && location.pathname === '/' ? 'opacity-100' : 'opacity-0'}`}
+            onClick={() => { if (location.pathname !== '/') navigate('/'); }}
           >
-            {t[lang].login}
-          </button>
-        ) : (
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-[11px] text-stone-500 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full px-2.5 py-1" title={user.email || user.name}>
-              {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
-            </span>
+            Blizko
+          </div>
+
+          {/* Core App Controls */}
+          <div className="flex items-center gap-2 pr-safe">
+
             <button
               type="button"
-              onClick={() => setProfileOpen(true)}
-              className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
-              title={user.email || user.name}
+              onClick={handleShare}
+              className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
+              title={t[lang].share}
+              aria-label={t[lang].share}
             >
-              <UserIcon size={16} />
-              <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
+              <Share2 size={16} />
             </button>
+
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
+              aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
+            >
+              {lang === 'ru' ? 'EN' : 'RU'}
+            </button>
+
+            {!user ? (
+              <button
+                type="button"
+                onClick={() => setAuthOpen(true)}
+                className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
+              >
+                {t[lang].login}
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline text-[11px] text-stone-500 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full px-2.5 py-1" title={user.email || user.name}>
+                  {lang === 'ru' ? 'Вы вошли как' : 'Signed in as'} {user.email || user.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen(true)}
+                  className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
+                  title={user.email || user.name}
+                >
+                  <UserIcon size={16} />
+                  <span className="text-xs font-medium max-w-[110px] truncate">{user.name || 'Профиль'}</span>
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       <main className="flex-1 w-full max-w-md mx-auto p-6 pb-24 relative pt-safe pl-safe pr-safe">
@@ -312,6 +331,10 @@ export default function App() {
         <div className="max-w-md mx-auto relative">
           <div className="text-[10px] leading-snug text-stone-400">
             <div className="flex items-center justify-center gap-3">
+              <button onClick={() => navigate('/become-nanny')} className="underline hover:text-stone-500">
+                {lang === 'ru' ? 'Стать няней' : 'Become a nanny'}
+              </button>
+              <span className="text-stone-300">·</span>
               <a href="/privacy" className="underline hover:text-stone-500">Политика конфиденциальности</a>
               <span className="text-stone-300">·</span>
               <a href="/offer.html" className="underline hover:text-stone-500">Оферта</a>

@@ -22,17 +22,13 @@ export const Step2_Calendar: React.FC<Props> = ({ lang }) => {
         setSelectedSlots((prev) => ({ ...prev, [key]: !prev[key] }));
     };
 
-    const sectionLabel = "flex items-center gap-3 text-xs uppercase tracking-wider text-stone-400 font-semibold";
-
     return (
         <div className="animate-fade-in space-y-6">
-            <div className={sectionLabel}>
-                <span className="h-px flex-1 bg-stone-200/70" />
+            <div className="section-label">
                 Календарь
-                <span className="h-px flex-1 bg-stone-200/70" />
             </div>
 
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
+            <div className="bg-white/60 backdrop-blur-md border border-white/60 shadow-sm rounded-3xl p-4 sm:p-5 space-y-4">
                 <div className="text-sm font-semibold text-stone-700">Календарь бронирования</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Input
@@ -57,12 +53,12 @@ export const Step2_Calendar: React.FC<Props> = ({ lang }) => {
                 />
             </div>
 
-            <div className="flex gap-4 mt-8">
+            <div className="sticky bottom-0 z-10 flex gap-4 mt-8 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade">
                 <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>
-                <Button type="button" className="flex-1" onClick={nextStep}>
-                    {lang === 'ru' ? 'Далее' : 'Next'}
+                <Button type="button" className="flex-1" onClick={nextStep} pulse={true}>
+                    {lang === 'ru' ? 'Остался 1 шаг' : '1 step left'}
                 </Button>
             </div>
         </div>

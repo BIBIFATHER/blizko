@@ -59,9 +59,9 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[85vh]">
+      <div className="bg-white/95 backdrop-blur-xl w-full max-w-md rounded-3xl card-cloud border border-stone-100/80 overflow-hidden animate-slide-up flex flex-col max-h-[85vh]">
         {/* Header */}
-        <div className="bg-stone-50 border-b border-stone-100 p-4">
+        <div className="bg-white/50 border-b border-stone-100/50 p-4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2 text-stone-800 font-semibold">
               <FileText size={20} className="text-sky-500" />
@@ -90,7 +90,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-white space-y-3">
+        <div className="flex-1 overflow-y-auto p-6 bg-transparent space-y-3">
           {displayedText.map((paragraph, index) => (
             <p
               key={index}
@@ -102,7 +102,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
         </div>
 
         {/* Footer with Checkboxes */}
-        <div className="p-4 bg-stone-50 border-t border-stone-100 space-y-3">
+        <div className="p-4 bg-white/50 border-t border-stone-100/50 space-y-3">
           <div className="bg-sky-50 border border-sky-100 rounded-xl p-3">
             <Checkbox
               label={text.parentOfferAccept}

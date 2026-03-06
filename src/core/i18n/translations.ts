@@ -3,7 +3,7 @@ export const t = {
     // ... existing keys ...
     heroTitle: 'Подбор нянь, где главное — доверие и спокойствие семьи.',
     heroSubtitle: 'Объяснимый подбор нянь: Humanity+ и проверка профиля.',
-    homeSafetyLine: 'Проверяем нянь: документы, рекомендации, интервью.',
+    homeSafetyLine: 'Бережно проверяем каждую няню: общаемся лично, изучаем отзывы и документы.',
     homeFlowTitle: 'Как это работает',
     homeFlowSteps: ['Запрос', 'Анализ', 'Подбор'],
     homeEta: 'Обычно 24–48 часов',
@@ -11,23 +11,23 @@ export const t = {
     becomeNanny: 'Стать няней',
     whyTrust: 'ПОЧЕМУ НАМ ДОВЕРЯЮТ',
     trust1Title: 'Проверка и безопасность',
-    trust1Desc: 'Документы, рекомендации и контроль качества профилей.',
-    trust1Detail: `Каждая няня проходит 5 уровней проверки перед допуском к визиту:
-1. Документы и личность. Мы проверяем паспорт, медкнижку и справку об отсутствии судимости. Данные сверяются с официальными базами и подтверждаются вручную.
-2. Рекомендации и опыт. Каждая анкета содержит минимум два контакта с прошлых мест работы. Мы связываемся с семьями, чтобы убедиться в подлинности отзывов.
-3. Видеоинтервью и AI-анализ. Няня проходит короткое видеоинтервью. AI анализирует речь, интонации и реакции, помогая выявить внимание, эмпатию и уровень ответственности.
-4. Психологический тест. Без клинической оценки — только практические ситуации, чтобы понять реакции в реальных условиях: капризы ребёнка, стресс, усталость.
-5. Система доверия и “чёрный список”. Нарушение правил или обман ведут к блокировке и внесению в закрытую базу.
-Результат: Только надёжные кандидаты. Страхование каждого визита. 100% прозрачность истории.
-“Близко” заботится о том, чтобы к вашему ребёнку приходили только проверенные и ответственные люди.`,
-    
+    trust1Desc: 'Мы заботимся о самом ценном, поэтому тщательно знакомимся с каждым кандидатом.',
+    trust1Detail: `Каждая няня проходит заботливый, но очень внимательный процесс знакомства:
+1. Базовая надежность. Мы просим показать паспорт и профильные документы (например, медкнижку). Всё сверяется с официальными базами для вашего спокойствия.
+2. Тепло прошлых семей. Обязательный этап — разговор с предыдущими работодателями. Мы узнаем, насколько комфортно и радостно было детям с этой няней.
+3. Живое общение и AI. На коротком видеоинтервью мы обращаем внимание на улыбку, теплоту голоса и эмпатию. Умные алгоритмы помогают нам убедиться в искренности кандидата.
+4. Психологический комфорт. Мы предлагаем разобрать простые жизненные ситуации (например, малыш не хочет спать), чтобы понять, как няня реагирует на усталость и эмоции ребенка.
+5. Закрытое комьюнити. Мы работаем только с теми, кто разделяет наши ценности бережного отношения к детям.
+Результат: К вам придет человек, которому действительно можно доверять.
+«Близко» берет на себя все заботы по проверке, чтобы вы могли просто выдохнуть.`,
+
     trust2Title: 'Humanity+ совместимость',
     trust2Desc: 'Мы сопоставляем стиль семьи и няни — так меньше срывов и больше доверия.',
-    trust2Detail: 'Наша нейросеть анализирует 45 параметров: от психотипа и темперамента до педагогических взглядов. Мы ищем не просто работника, а человека, который идеально впишется в уклад вашей семьи и станет другом вашему ребенку.',
-    
+    trust2Detail: 'Наша умная система берет на себя самую тонкую работу: она сопоставляет темперамент, привычки и взгляды на воспитание. Мы ищем не просто сотрудника, а человека, с которым вашей семье будет легко и тепло с первого дня.',
+
     trust3Title: 'Поддержка 24/7',
     trust3Desc: 'Помогаем на каждом шаге — от подбора до первых встреч.',
-    trust3Detail: 'Ваш личный менеджер заботы всегда на связи. Мы поможем составить юридически грамотный договор, решим любые спорные вопросы и бесплатно организуем срочную замену, если няня заболеет или уйдет в отпуск.',
+    trust3Detail: 'Ваш личный менеджер заботы всегда рядом. Мы деликатно поможем договориться об условиях, ответим на любые вопросы и бесплатно подберем замену, если ваша няня заболеет или соберется в отпуск. Вы никогда не останетесь одни.',
 
     explainTitle: 'Почему именно эта няня?',
     explainText: 'Humanity+ показывает совпадение ценностей и стиля общения — это главный фактор стабильности.',
@@ -35,7 +35,7 @@ export const t = {
     explainBadge2: 'Опыт подходит возрасту',
     explainBadge3: 'Условия семьи учтены',
     explainBadge4: '',
-    
+
     // Install App
     installTitle: 'Установите Blizko',
     installDesc: 'Добавьте приложение на главный экран для быстрого доступа.',
@@ -55,7 +55,7 @@ export const t = {
     parentRequiredNote: '* Обязательные поля',
     parentEtaLine: 'Подбор начнётся сразу, первые кандидаты — за 24–48 часов.',
     parentSafetyLine: 'Мы проверяем рекомендации и документы каждой няни.',
-    
+
     // Nanny Form
     nFormTitle: 'Анкета няни',
     nFormSubtitle: 'Расскажите о себе, чтобы найти семью',
@@ -72,13 +72,13 @@ export const t = {
     aboutLabel: 'О себе (пару предложений)',
     contactLabel: 'Телефон или Email',
     submitNanny: 'Отправить анкету',
-    
+
     // Photo
     photoTitle: 'Ваше фото',
     photoDesc: 'Загрузите доброе, светлое фото. Родители выбирают глазами.',
     uploadPhoto: 'Загрузить фото',
     changePhoto: 'Изменить фото',
-    
+
     // Reviews
     reviewsTitle: 'Отзывы',
     leaveReview: 'Оставить отзыв',
@@ -106,7 +106,7 @@ export const t = {
     scanHint: 'Анализируем водяные знаки и читаемость текста...',
     scanSuccess: 'Документ верифицирован',
     scanConfidence: 'Уверенность AI',
-    
+
     // Video Interview
     videoTitle: 'Видеовизитка',
     videoDesc: 'Запишите короткое приветствие (30 сек). Это повышает доверие на 80%.',
@@ -120,14 +120,14 @@ export const t = {
     uploading: 'Загрузка...',
     saveVideo: 'Сохранить',
     watchVideo: 'Смотреть видео',
-    
+
     // Soft Skills / Assessment
     softSkillsTitle: 'Тест: Поведенческий профиль',
     softSkillsDesc: 'Пройдите расширенный анализ (AI). Это выделит вашу анкету.',
     startTest: 'Начать тест',
     testResultTitle: 'Ваш поведенческий профиль',
     testCompletedBadge: 'Анализ завершен',
-    
+
     // Assessment Modal
     assessModalTitle: 'Поведенческий анализ',
     assessModalSubtitle: 'Оценка профессиональных качеств',
@@ -136,11 +136,11 @@ export const t = {
     assessNext: 'Далее',
     assessFinish: 'Завершить',
     assessAnalyzing: 'AI анализирует паттерны...',
-    
+
     // Scale Labels
     scaleDisagree: 'Не согласна',
     scaleAgree: 'Согласна',
-    
+
     // Section Headers
     sectionLikert: 'Часть 1: Личные убеждения',
     sectionScenario: 'Часть 2: Ситуации',
@@ -164,7 +164,7 @@ export const t = {
     gosSubtitle: 'Для подтверждения личности в сервисе «Blizko»',
     gosLogin: 'Войти',
     gosSecure: 'Ваши данные надежно защищены. Мы получаем только подтверждение ФИО и статус проверки документов.',
-    
+
     // Auth & Profile
     login: 'Войти',
     register: 'Регистрация',
@@ -178,13 +178,13 @@ export const t = {
     logout: 'Выйти',
     profileTitle: 'Мой профиль',
     myApplications: 'Мои заявки',
-    
+
     // SHARE
     share: 'Поделиться',
     linkCopied: 'Ссылка скопирована!',
     shareTitle: 'Открыть на телефоне',
     shareDesc: 'Отсканируйте код камерой, чтобы открыть и установить приложение.',
-    
+
     // Auth Roles
     roleParent: 'Я родитель',
     roleNanny: 'Я няня',
@@ -205,12 +205,12 @@ export const t = {
     kids: 'детей',
     tabRequests: 'Заявки',
     tabSchedule: 'График',
-    
+
     // Stats
     statRating: 'Рейтинг',
     statHours: 'Часов',
     statReviews: 'Отзывов',
-    
+
     // Bookings & Chat
     tabProfile: 'Профиль',
     tabBookings: 'Заказы',
@@ -306,7 +306,7 @@ export const t = {
       '4. Я соглашаюсь на передачу контактных данных выбранным мною исполнителям для связи.',
       '5. Согласие действует бессрочно до момента его отзыва.'
     ],
-    
+
     // Call
     callAction: 'Позвонить',
     videoAction: 'Видео',
@@ -352,7 +352,7 @@ export const t = {
 5. Trust System and Blacklist. Rule violations or lying lead to blocking and blacklisting.
 Result: Only reliable candidates. Every visit insured. 100% transparency.
 "Blizko" ensures only vetted and responsible people come to your child.`,
-    
+
     trust2Title: 'Humanity+ Compatibility',
     trust2Desc: 'Shared values reduce mismatch risk and improve stability.',
     trust2Detail: 'Our neural network analyzes 45 parameters: from psychotype and temperament to pedagogical views. We search not just for a worker, but for a person who perfectly fits your family\'s lifestyle and will become a friend to your child.',
@@ -472,7 +472,7 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     // Scale Labels
     scaleDisagree: 'Disagree',
     scaleAgree: 'Agree',
-    
+
     // Section Headers
     sectionLikert: 'Part 1: Personal Beliefs',
     sectionScenario: 'Part 2: Situations',
@@ -510,7 +510,7 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     logout: 'Log Out',
     profileTitle: 'My Profile',
     myApplications: 'My Applications',
-    
+
     // SHARE
     share: 'Share',
     linkCopied: 'Link copied!',
@@ -537,7 +537,7 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     kids: 'children',
     tabRequests: 'Requests',
     tabSchedule: 'Schedule',
-    
+
     // Stats
     statRating: 'Rating',
     statHours: 'Hours',

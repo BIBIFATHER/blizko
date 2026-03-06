@@ -184,7 +184,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
-        <div className="text-xs uppercase tracking-wider text-stone-400 font-semibold">{lang === 'ru' ? 'Обязательное' : 'Required'}</div>
+        <div className="section-label">{lang === 'ru' ? 'Обязательное' : 'Required'}</div>
         <div className="relative">
           <Input
             label={`${text.cityLabel} *`}

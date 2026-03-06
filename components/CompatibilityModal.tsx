@@ -13,7 +13,7 @@ interface CompatibilityModalProps {
 }
 
 // Helper icon
-const Activity = ({size, className}: {size:number, className?:string}) => (
+const Activity = ({ size, className }: { size: number, className?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
   </svg>
@@ -43,20 +43,20 @@ const SUPPORT_DATA = {
       bg: "bg-gradient-to-b from-yellow-50 to-emerald-50",
       type: "steps",
       steps: [
-        { 
-          icon: <FileText size={20} className="text-stone-600" />, 
-          title: "Юридическая защита", 
-          desc: "Готовим индивидуальный договор, защищающий интересы семьи и ребенка." 
+        {
+          icon: <FileText size={20} className="text-stone-600" />,
+          title: "Юридическая защита",
+          desc: "Готовим индивидуальный договор, защищающий интересы семьи и ребенка."
         },
-        { 
-          icon: <RefreshCw size={20} className="text-emerald-600" />, 
-          title: "Бесплатная замена", 
-          desc: "Если няня заболела или ушла в отпуск, мы найдем проверенную замену за 2 часа." 
+        {
+          icon: <RefreshCw size={20} className="text-emerald-600" />,
+          title: "Бесплатная замена",
+          desc: "Если няня заболела или ушла в отпуск, мы найдем проверенную замену за 2 часа."
         },
-        { 
-          icon: <Zap size={20} className="text-amber-600" />, 
-          title: "Медиация конфликтов", 
-          desc: "Помогаем экологично решать споры, сохраняя комфортную атмосферу в доме." 
+        {
+          icon: <Zap size={20} className="text-amber-600" />,
+          title: "Медиация конфликтов",
+          desc: "Помогаем экологично решать споры, сохраняя комфортную атмосферу в доме."
         }
       ]
     },
@@ -89,20 +89,20 @@ const SUPPORT_DATA = {
       bg: "bg-gradient-to-b from-yellow-50 to-emerald-50",
       type: "steps",
       steps: [
-        { 
-          icon: <FileText size={20} className="text-stone-600" />, 
-          title: "Legal Protection", 
-          desc: "We prepare an individual contract protecting the interests of the family and child." 
+        {
+          icon: <FileText size={20} className="text-stone-600" />,
+          title: "Legal Protection",
+          desc: "We prepare an individual contract protecting the interests of the family and child."
         },
-        { 
-          icon: <RefreshCw size={20} className="text-emerald-600" />, 
-          title: "Free Replacement", 
-          desc: "If the nanny gets sick or goes on vacation, we find a vetted replacement in 2 hours." 
+        {
+          icon: <RefreshCw size={20} className="text-emerald-600" />,
+          title: "Free Replacement",
+          desc: "If the nanny gets sick or goes on vacation, we find a vetted replacement in 2 hours."
         },
-        { 
-          icon: <Zap size={20} className="text-amber-600" />, 
-          title: "Conflict Mediation", 
-          desc: "We help resolve disputes ecologically, maintaining a comfortable atmosphere at home." 
+        {
+          icon: <Zap size={20} className="text-amber-600" />,
+          title: "Conflict Mediation",
+          desc: "We help resolve disputes ecologically, maintaining a comfortable atmosphere at home."
         }
       ]
     },
@@ -138,20 +138,20 @@ const VERIFICATION_DATA = {
       bg: "bg-gradient-to-b from-cyan-50 to-blue-50",
       type: "steps",
       steps: [
-        { 
-          icon: <Search size={20} className="text-blue-600" />, 
-          title: "Цифровой след", 
-          desc: "Поиск упоминаний в соцсетях, форумах и черных списках нянь по всей стране." 
+        {
+          icon: <Search size={20} className="text-blue-600" />,
+          title: "Цифровой след",
+          desc: "Поиск упоминаний в соцсетях, форумах и черных списках нянь по всей стране."
         },
-        { 
-          icon: <Lock size={20} className="text-indigo-600" />, 
-          title: "Судебная история", 
-          desc: "Автоматическая проверка по базам ФССП и судебным реестрам на предмет долгов и правонарушений." 
+        {
+          icon: <Lock size={20} className="text-indigo-600" />,
+          title: "Судебная история",
+          desc: "Автоматическая проверка по базам ФССП и судебным реестрам на предмет долгов и правонарушений."
         },
-        { 
-          icon: <Activity size={20} className="text-rose-600" />, 
-          title: "Риск-профиль", 
-          desc: "AI оценивает благонадежность на основе 20+ факторов риска." 
+        {
+          icon: <Activity size={20} className="text-rose-600" />,
+          title: "Риск-профиль",
+          desc: "AI оценивает благонадежность на основе 20+ факторов риска."
         },
       ]
     },
@@ -184,20 +184,20 @@ const VERIFICATION_DATA = {
       bg: "bg-gradient-to-b from-cyan-50 to-blue-50",
       type: "steps",
       steps: [
-        { 
-          icon: <Search size={20} className="text-blue-600" />, 
-          title: "Digital Footprint", 
-          desc: "Search for mentions in social media, forums, and nanny blacklists nationwide." 
+        {
+          icon: <Search size={20} className="text-blue-600" />,
+          title: "Digital Footprint",
+          desc: "Search for mentions in social media, forums, and nanny blacklists nationwide."
         },
-        { 
-          icon: <Lock size={20} className="text-indigo-600" />, 
-          title: "Legal History", 
-          desc: "Automatic check against bailiff databases and court registries for debts and offenses." 
+        {
+          icon: <Lock size={20} className="text-indigo-600" />,
+          title: "Legal History",
+          desc: "Automatic check against bailiff databases and court registries for debts and offenses."
         },
-        { 
-          icon: <Activity size={20} className="text-rose-600" />, 
-          title: "Risk Profile", 
-          desc: "AI evaluates trustworthiness based on 20+ risk factors." 
+        {
+          icon: <Activity size={20} className="text-rose-600" />,
+          title: "Risk Profile",
+          desc: "AI evaluates trustworthiness based on 20+ risk factors."
         },
       ]
     },
@@ -233,20 +233,20 @@ const COMPATIBILITY_DATA = {
       bg: "bg-gradient-to-b from-rose-50 to-indigo-50",
       type: "steps",
       steps: [
-        { 
-          icon: <Video size={20} className="text-purple-600" />, 
-          title: "Computer Vision", 
-          desc: "Анализ невербальных сигналов: открытость позы, зрительный контакт, улыбка." 
+        {
+          icon: <Video size={20} className="text-purple-600" />,
+          title: "Computer Vision",
+          desc: "Анализ невербальных сигналов: открытость позы, зрительный контакт, улыбка."
         },
-        { 
-          icon: <BrainCircuit size={20} className="text-amber-600" />, 
-          title: "NLP Анализ", 
-          desc: "Оценка речи: словарный запас, педагогические установки и стиль общения." 
+        {
+          icon: <BrainCircuit size={20} className="text-amber-600" />,
+          title: "NLP Анализ",
+          desc: "Оценка речи: словарный запас, педагогические установки и стиль общения."
         },
-        { 
-          icon: <Fingerprint size={20} className="text-emerald-600" />, 
-          title: "Предиктивный Мэтчинг", 
-          desc: "Система прогнозирует, насколько комфортно конкретной няне будет именно в вашей семье." 
+        {
+          icon: <Fingerprint size={20} className="text-emerald-600" />,
+          title: "Предиктивный Мэтчинг",
+          desc: "Система прогнозирует, насколько комфортно конкретной няне будет именно в вашей семье."
         },
       ]
     },
@@ -279,20 +279,20 @@ const COMPATIBILITY_DATA = {
       bg: "bg-gradient-to-b from-rose-50 to-indigo-50",
       type: "steps",
       steps: [
-        { 
-          icon: <Video size={20} className="text-purple-600" />, 
-          title: "Computer Vision", 
-          desc: "Analysis of non-verbal signals: open posture, eye contact, smiling." 
+        {
+          icon: <Video size={20} className="text-purple-600" />,
+          title: "Computer Vision",
+          desc: "Analysis of non-verbal signals: open posture, eye contact, smiling."
         },
-        { 
-          icon: <BrainCircuit size={20} className="text-amber-600" />, 
-          title: "NLP Analysis", 
-          desc: "Speech evaluation: vocabulary, pedagogical mindset, and communication style." 
+        {
+          icon: <BrainCircuit size={20} className="text-amber-600" />,
+          title: "NLP Analysis",
+          desc: "Speech evaluation: vocabulary, pedagogical mindset, and communication style."
         },
-        { 
-          icon: <Fingerprint size={20} className="text-emerald-600" />, 
-          title: "Predictive Matching", 
-          desc: "The system predicts how comfortable a specific nanny will be in your specific family." 
+        {
+          icon: <Fingerprint size={20} className="text-emerald-600" />,
+          title: "Predictive Matching",
+          desc: "The system predicts how comfortable a specific nanny will be in your specific family."
         },
       ]
     },
@@ -317,11 +317,11 @@ export const CompatibilityModal: React.FC<CompatibilityModalProps> = ({ onClose,
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl relative flex flex-col overflow-hidden h-[85vh] max-h-[800px]">
-        
+      <div className="bg-white/90 backdrop-blur-xl w-full max-w-sm rounded-3xl card-cloud border border-stone-100/80 relative flex flex-col overflow-hidden h-[85vh] max-h-[800px]">
+
         {/* Floating Close Button */}
         <div className="absolute top-4 right-4 z-20">
-          <button 
+          <button
             onClick={onClose}
             className="w-10 h-10 flex items-center justify-center rounded-full bg-white/70 backdrop-blur hover:bg-white transition-colors text-stone-600 shadow-sm"
           >
@@ -332,18 +332,18 @@ export const CompatibilityModal: React.FC<CompatibilityModalProps> = ({ onClose,
         {/* Scrollable Container */}
         <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth">
           {slides.map((section, idx) => (
-            <div 
-              key={section.id} 
+            <div
+              key={section.id}
               className={`p-8 flex flex-col justify-center min-h-[380px] relative ${section.bg} ${idx === 0 ? 'pt-20' : ''}`}
             >
               {/* Visual Icon */}
               {section.icon && (
                 <div className="mb-6 self-center animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
                   <div className="relative">
-                     <div className="absolute inset-0 bg-white/40 blur-2xl rounded-full scale-150"></div>
-                     <div className="relative z-10 drop-shadow-xl transform transition-transform duration-700 hover:scale-105">
-                       {section.icon}
-                     </div>
+                    <div className="absolute inset-0 bg-white/40 blur-2xl rounded-full scale-150"></div>
+                    <div className="relative z-10 drop-shadow-xl transform transition-transform duration-700 hover:scale-105">
+                      {section.icon}
+                    </div>
                   </div>
                 </div>
               )}
@@ -356,19 +356,19 @@ export const CompatibilityModal: React.FC<CompatibilityModalProps> = ({ onClose,
 
                 {section.type === 'steps' ? (
                   <div className="space-y-4 mt-2">
-                     {section.steps?.map((step, sIdx) => (
-                       <div key={sIdx} className="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-white/60 shadow-sm hover:shadow-md transition-shadow">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-white rounded-lg shadow-sm">
-                              {step.icon}
-                            </div>
-                            <span className="font-bold text-stone-800 text-sm tracking-tight">{step.title}</span>
+                    {section.steps?.map((step, sIdx) => (
+                      <div key={sIdx} className="bg-white/70 backdrop-blur-sm p-4 rounded-xl border border-white/60 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="p-2 bg-white rounded-lg shadow-sm">
+                            {step.icon}
                           </div>
-                          <p className="text-xs text-stone-600 leading-relaxed pl-1">
-                            {step.desc}
-                          </p>
-                       </div>
-                     ))}
+                          <span className="font-bold text-stone-800 text-sm tracking-tight">{step.title}</span>
+                        </div>
+                        <p className="text-xs text-stone-600 leading-relaxed pl-1">
+                          {step.desc}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <p className="text-stone-600 text-lg leading-relaxed whitespace-pre-wrap">
@@ -386,21 +386,21 @@ export const CompatibilityModal: React.FC<CompatibilityModalProps> = ({ onClose,
             </div>
           ))}
 
-          {/* Final CTA Action Area */}
-          <div className="p-8 bg-stone-50 pt-0 bg-gradient-to-b from-white to-white">
-             <Button 
-               onClick={onAction} 
-               className="w-full bg-stone-900 text-white hover:bg-stone-800 shadow-xl rounded-2xl py-4 text-lg"
-             >
-               {lang === 'ru' ? 'Найти свою няню' : 'Find my nanny'}
-             </Button>
-             
-             <button 
-               onClick={onClose}
-               className="w-full mt-4 text-sm text-stone-400 font-medium hover:text-stone-600 transition-colors"
-             >
-               {lang === 'ru' ? 'Закрыть' : 'Close'}
-             </button>
+          <div className="p-8 bg-transparent pt-0">
+            <Button
+              onClick={onAction}
+              pulse
+              className="w-full text-lg"
+            >
+              {lang === 'ru' ? 'Найти свою няню' : 'Find my nanny'}
+            </Button>
+
+            <button
+              onClick={onClose}
+              className="w-full mt-4 text-sm text-stone-400 font-medium hover:text-stone-600 transition-colors"
+            >
+              {lang === 'ru' ? 'Закрыть' : 'Close'}
+            </button>
           </div>
         </div>
       </div>

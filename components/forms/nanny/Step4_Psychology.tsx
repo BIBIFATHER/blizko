@@ -28,17 +28,13 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
         setShowAssessment(false);
     };
 
-    const sectionLabel = "flex items-center gap-3 text-xs uppercase tracking-wider text-stone-400 font-semibold";
-
     return (
         <div className="animate-fade-in space-y-6">
-            <div className={sectionLabel}>
-                <span className="h-px flex-1 bg-stone-200/70" />
+            <div className="section-label">
                 Психологический профиль
-                <span className="h-px flex-1 bg-stone-200/70" />
             </div>
 
-            <Card className={`transition-all duration-300 ${softSkills ? 'bg-amber-50 border-amber-200' : 'bg-white'}`}>
+            <Card className={`transition-all duration-300 ${softSkills ? 'bg-amber-50/50 border-amber-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
                     <div className={`p-3 rounded-full flex-shrink-0 ${softSkills ? 'bg-amber-200 text-amber-700' : 'bg-stone-100 text-stone-400'}`}>
                         <BrainCircuit size={24} />
@@ -75,103 +71,78 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                 </div>
             </Card>
 
-            <div className="bg-violet-50 border border-violet-200 rounded-xl p-4 space-y-4">
-                <div className="text-sm font-semibold text-violet-800">
-                    Стиль работы (улучшает мэтчинг с семьями)
-                </div>
-
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Если у ребенка истерика, ваш первый шаг:</label>
-                    <select
-                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400"
-                        value={riskProfile?.tantrumFirstStep || 'calm'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), tantrumFirstStep: e.target.value as any }))}
-                    >
-                        <option value="calm">Сначала успокоить эмоции</option>
-                        <option value="distract">Переключить внимание</option>
-                        <option value="boundaries">Сразу обозначить границы</option>
-                    </select>
-                </div>
-
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Ваш стиль дисциплины:</label>
-                    <select
-                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400"
-                        value={riskProfile?.disciplineStyle || 'gentle'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), disciplineStyle: e.target.value as any }))}
-                    >
-                        <option value="gentle">Мягкая, поддерживающая</option>
-                        <option value="structured">Структурная, с правилами</option>
-                        <option value="strict">Строгая</option>
-                    </select>
-                </div>
-
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Ваш стиль режима дня:</label>
-                    <select
-                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400"
-                        value={riskProfile?.routineStyle || 'balanced'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), routineStyle: e.target.value as any }))}
-                    >
-                        <option value="structured">Чёткая структура</option>
-                        <option value="balanced">Баланс</option>
-                        <option value="adaptive">Гибкая адаптация по ситуации</option>
-                    </select>
-                </div>
-
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Коммуникация с родителями</label>
-                    <select
-                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400"
-                        value={riskProfile?.communicationStyle || 'regular'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationStyle: e.target.value as any }))}
-                    >
-                        <option value="minimal">Минимум сообщений</option>
-                        <option value="regular">Регулярно (2–3 апдейта)</option>
-                        <option value="frequent">Часто в течение дня</option>
-                    </select>
+            <div className="bg-amber-50/40 backdrop-blur-md border border-amber-200/50 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
+                <div className="text-sm font-semibold text-amber-900 mb-4">
+                    {lang === 'ru' ? 'Мои суперсилы в общении (помогает найти "ту самую" семью)' : 'My communication superpowers (helps find the *right* family)'}
                 </div>
 
                 <ChipGroup
-                    label={lang === 'ru' ? 'Мои сильные стороны' : 'My strengths'}
-                    options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
+                    label={lang === 'ru' ? 'Если у ребенка истерика, ваш первый шаг:' : 'If a child has a tantrum, your first step:'}
+                    options={lang === 'ru' ? ['🫂 Успокоить эмоции', '🎈 Переключить внимание', '🚧 Обозначить границы'] : ['🫂 Calm emotions', '🎈 Distract', '🚧 Set boundaries']}
+                    selected={riskProfile?.tantrumFirstStep ? [riskProfile.tantrumFirstStep] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), tantrumFirstStep: s[0] as any }))}
+                    single
+                />
+
+                <ChipGroup
+                    label={lang === 'ru' ? 'Ваш стиль дисциплины:' : 'Your discipline style:'}
+                    options={lang === 'ru' ? ['💛 Мягкая, поддерживающая', '📐 Структурная, с правилами', '🔒 Строгая'] : ['💛 Gentle, supportive', '📐 Structured, rules-based', '🔒 Strict']}
+                    selected={riskProfile?.disciplineStyle ? [riskProfile.disciplineStyle] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), disciplineStyle: s[0] as any }))}
+                    single
+                />
+
+                <ChipGroup
+                    label={lang === 'ru' ? 'Ваш стиль режима дня:' : 'Your routine style:'}
+                    options={lang === 'ru' ? ['⏰ Чёткая структура', '⚖️ Баланс', '🌊 Гибкая адаптация'] : ['⏰ Clear structure', '⚖️ Balanced', '🌊 Flexible adaptation']}
+                    selected={riskProfile?.routineStyle ? [riskProfile.routineStyle] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), routineStyle: s[0] as any }))}
+                    single
+                />
+
+                <ChipGroup
+                    label={lang === 'ru' ? 'Коммуникация с родителями:' : 'Communication with parents:'}
+                    options={lang === 'ru' ? ['📵 Минимум сообщений', '📱 Регулярно (2-3 раза)', '💬 Часто'] : ['📵 Minimal messages', '📱 Regular (2-3 times)', '💬 Frequent']}
+                    selected={riskProfile?.communicationStyle ? [riskProfile.communicationStyle] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), communicationStyle: s[0] as any }))}
+                    single
+                />
+
+                <ChipGroup
+                    label={lang === 'ru' ? 'Мои сильные стороны:' : 'My strengths:'}
+                    options={lang === 'ru' ? ['🧘‍♀️ Спокойствие', '📋 Структура', '🎨 Игра', '📚 Обучение', '⚡ Активность'] : ['🧘‍♀️ Calm', '📋 Structure', '🎨 Play', '📚 Learning', '⚡ Activity']}
                     selected={riskProfile?.strengths || []}
                     onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), strengths: list }))}
                 />
 
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Стиль общения по модели PCM</label>
-                    <select
-                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400"
-                        value={riskProfile?.pcmType || 'harmonizer'}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
-                    >
-                        <option value="thinker">Мыслитель — логика, структура</option>
-                        <option value="persister">Надёжный — ценности, ответственность</option>
-                        <option value="harmonizer">Тёплый — эмпатия, забота</option>
-                        <option value="rebel">Игривый — лёгкость, юмор</option>
-                        <option value="imaginer">Спокойный — тишина, пространство</option>
-                        <option value="promoter">Действенный — результат, скорость</option>
-                    </select>
-                </div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Стиль общения (PCM):' : 'Communication style (PCM):'}
+                    options={lang === 'ru'
+                        ? ['🧠 Логика', '🛡️ Ценности', '❤️ Эмпатия', '🎉 Легкость', '🧘‍♂️ Тишина', '⚡ Исполнитель']
+                        : ['🧠 Logic', '🛡️ Values', '❤️ Empathy', '🎉 Lightness', '🧘‍♂️ Quiet', '⚡ Action']
+                    }
+                    selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
+                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: s[0] as any }))}
+                    single
+                />
 
                 <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">Что даётся сложнее (честно)</label>
+                    <label className="block text-xs text-stone-600">{lang === 'ru' ? 'В чем я хочу развиваться (честно о сложностях)' : 'Where I want to grow (honestly about challenges)'}</label>
                     <input
-                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400"
+                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200/50 transition-all shadow-inner"
                         value={riskProfile?.notBestAt || ''}
                         onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), notBestAt: e.target.value }))}
-                        placeholder={lang === 'ru' ? 'Например: строгая дисциплина' : 'For example: strict discipline'}
+                        placeholder={lang === 'ru' ? 'Например: мне пока сложно дается выстраивание жестких границ' : 'For example: setting strict boundaries is still hard for me'}
                     />
                 </div>
             </div>
 
-            <div className="flex gap-4 mt-8">
+            <div className="sticky bottom-0 z-10 flex gap-4 mt-8 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade">
                 <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>
-                <Button type="button" className="flex-1 bg-stone-800 hover:bg-stone-900" onClick={onFinalSubmit} isLoading={loading}>
-                    {isEditing ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : text.submitNanny}
+                <Button type="button" className="flex-1" onClick={onFinalSubmit} isLoading={loading} pulse={true}>
+                    {isEditing ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : (lang === 'ru' ? 'Отправить безопасно' : 'Submit safely')}
                 </Button>
             </div>
 

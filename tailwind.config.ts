@@ -18,6 +18,7 @@ const config: Config = {
             },
             fontFamily: {
                 sans: [
+                    'Inter',
                     'Quicksand',
                     'system-ui',
                     '-apple-system',

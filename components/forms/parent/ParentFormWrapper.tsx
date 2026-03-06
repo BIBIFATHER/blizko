@@ -25,6 +25,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
 
     const {
         currentStep,
+        prevStep,
         totalSteps,
         isEditing,
         initialDataId,
@@ -37,7 +38,13 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
         riskProfile
     } = useParentForm();
 
-    const onBack = () => navigate(-1);
+    const onBack = () => {
+        if (currentStep > 1) {
+            prevStep();
+        } else {
+            navigate(-1);
+        }
+    };
 
     // Track step transitions for direction-aware animation
     const prevStepRef = useRef(currentStep);
@@ -45,6 +52,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
         directionRef.current = currentStep > prevStepRef.current ? 'forward' : 'back';
         prevStepRef.current = currentStep;
         setStepKey(k => k + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     const summarizeSlots = () => {
@@ -98,12 +106,9 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
         <div className="animate-slide-up relative">
             {/* Header */}
             <div className="flex items-center justify-between mb-5">
-                <button onClick={onBack} className="text-stone-400 hover:text-stone-700 flex items-center gap-1.5 transition-colors">
-                    <ArrowLeft size={18} /> <span className="text-sm">{text.back}</span>
+                <button onClick={onBack} className="text-stone-400 hover:text-stone-700 flex items-center gap-1.5 transition-colors p-2 -ml-2 rounded-xl hover:bg-stone-50 active:bg-stone-100">
+                    <ArrowLeft size={20} /> <span className="text-sm font-medium">{text.back}</span>
                 </button>
-                <div className="step-badge">
-                    {lang === 'ru' ? `${currentStep} из ${totalSteps}` : `${currentStep} of ${totalSteps}`}
-                </div>
             </div>
 
             {/* Title */}
@@ -111,13 +116,18 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
                 <h2 className="text-2xl font-semibold text-stone-800">
                     {isEditing ? (lang === 'ru' ? 'Редактировать заявку' : 'Edit Request') : text.pFormTitle}
                 </h2>
-                <p className="text-stone-400 text-sm mt-1">
-                    {isEditing ? (lang === 'ru' ? 'Обновите данные заявки' : 'Update your request data') : text.pFormSubtitle}
-                </p>
+                <div className="flex items-center justify-between mt-3 text-sm font-medium">
+                    <span className="text-amber-700">
+                        {currentStep === 1 && (lang === 'ru' ? 'Начнем с главного' : 'Let\'s start with basics')}
+                        {currentStep === 2 && (lang === 'ru' ? 'Отличный старт! Теперь график' : 'Great start! Now schedule')}
+                        {currentStep === 3 && (lang === 'ru' ? 'Почти готово! Профиль семьи' : 'Almost there! Family profile')}
+                    </span>
+                    <span className="text-stone-400">{currentStep} / {totalSteps}</span>
+                </div>
             </div>
 
             {/* Progress bar — warm amber */}
-            <div className="w-full bg-stone-100/80 h-1 rounded-full mb-6 overflow-hidden">
+            <div className="w-full bg-stone-100/80 h-1.5 rounded-full mb-6 overflow-hidden">
                 <div
                     className="h-full rounded-full transition-all duration-500 ease-out"
                     style={{

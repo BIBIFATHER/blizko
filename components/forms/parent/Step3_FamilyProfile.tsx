@@ -40,35 +40,35 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
             <div className="section-label">Общие параметры</div>
             <ChipGroup
                 label={lang === 'ru' ? 'Видеонаблюдение' : 'Cameras'}
-                options={lang === 'ru' ? ['📷 Допустимо', '🚫 Нежелательно'] : ['📷 Acceptable', '🚫 Not desired']}
+                options={lang === 'ru' ? ['Допустимо', 'Нежелательно'] : ['Acceptable', 'Not desired']}
                 selected={advanced.cameras ? [advanced.cameras] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, cameras: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Поездки с няней' : 'Travel with nanny'}
-                options={lang === 'ru' ? ['✈️ Возможны', '🏠 Не нужны'] : ['✈️ Possible', '🏠 Not needed']}
+                options={lang === 'ru' ? ['Возможны', 'Не нужны'] : ['Possible', 'Not needed']}
                 selected={advanced.travel ? [advanced.travel] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, travel: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Помощь по дому' : 'Household help'}
-                options={lang === 'ru' ? ['🧹 Легкая', '🍽️ Расширенная', '❌ Не требуется'] : ['🧹 Light', '🍽️ Extended', '❌ None']}
+                options={lang === 'ru' ? ['Легкая', 'Расширенная', 'Не требуется'] : ['Light', 'Extended', 'None']}
                 selected={advanced.household ? [advanced.household] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, household: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Животные' : 'Pets'}
-                options={lang === 'ru' ? ['🐾 Есть животные', '🚫 Животных нет'] : ['🐾 Have pets', '🚫 No pets']}
+                options={lang === 'ru' ? ['Есть животные', 'Животных нет'] : ['Have pets', 'No pets']}
                 selected={advanced.pets ? [advanced.pets] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, pets: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Ночные смены' : 'Night shifts'}
-                options={lang === 'ru' ? ['🌙 Да', '✨ Иногда', '☀️ Не нужны'] : ['🌙 Yes', '✨ Sometimes', '☀️ Not needed']}
+                options={lang === 'ru' ? ['Да', 'Иногда', 'Не нужны'] : ['Yes', 'Sometimes', 'Not needed']}
                 selected={advanced.night ? [advanced.night] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, night: s[0] || '' }))}
                 single
@@ -100,7 +100,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Стиль семьи' : 'Family style'}
-                    options={lang === 'ru' ? ['💛 Мягкий, эмпатичный', '📐 Структурный, с правилами', '⚖️ Баланс'] : ['💛 Gentle, empathetic', '📐 Structured, rules-based', '⚖️ Balanced']}
+                    options={lang === 'ru' ? ['Мягкий, эмпатичный', 'Структурный, с правилами', 'Баланс'] : ['Gentle, empathetic', 'Structured, rules-based', 'Balanced']}
                     selected={riskProfile?.familyStyle ? [riskProfile.familyStyle] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: s[0] as any }))}
                     single
@@ -108,7 +108,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Как ребёнок реагирует на стресс?' : 'How does the child react to stress?'}
-                    options={lang === 'ru' ? ['😢 Берет поддержку', '🐢 Замыкается', '😡 Злится', '🌋 Истерики'] : ['😢 Seeks support', '🐢 Withdraws', '😡 Gets angry', '🌋 Tantrums']}
+                    options={lang === 'ru' ? ['Берет поддержку', 'Замыкается', 'Злится', 'Истерики'] : ['Seeks support', 'Withdraws', 'Gets angry', 'Tantrums']}
                     selected={riskProfile?.childStress ? [riskProfile.childStress] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: s[0] as any }))}
                     single
@@ -123,7 +123,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Комфортный стиль няни' : 'Preferred nanny style'}
-                    options={lang === 'ru' ? ['🌿 Мягкая и спокойная', '📏 Структурная', '🎨 Игровая'] : ['🌿 Gentle & calm', '📏 Structured', '🎨 Playful']}
+                    options={lang === 'ru' ? ['Мягкая и спокойная', 'Структурная', 'Игровая'] : ['Gentle & calm', 'Structured', 'Playful']}
                     selected={riskProfile?.nannyStylePreference ? [riskProfile.nannyStylePreference] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: s[0] as any }))}
                     single
@@ -131,7 +131,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Частота сообщений от няни' : 'Nanny communication frequency'}
-                    options={lang === 'ru' ? ['📵 Минимум сообщений', '📱 Регулярно (2-3 раза)', '💬 Часто'] : ['📵 Minimal messages', '📱 Regular (2-3 times)', '💬 Frequent']}
+                    options={lang === 'ru' ? ['Минимум сообщений', 'Регулярно (2-3 раза)', 'Часто'] : ['Minimal messages', 'Regular (2-3 times)', 'Frequent']}
                     selected={riskProfile?.communicationPreference ? [riskProfile.communicationPreference] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: s[0] as any }))}
                     single
@@ -147,8 +147,8 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                 <ChipGroup
                     label={lang === 'ru' ? 'Стиль общения (PCM)' : 'Communication style (PCM)'}
                     options={lang === 'ru'
-                        ? ['🧠 Логика', '🛡️ Ценности', '❤️ Эмпатия', '🎉 Легкость', '🧘‍♂️ Тишина', '⚡ Исполнитель']
-                        : ['🧠 Logic', '🛡️ Values', '❤️ Empathy', '🎉 Lightness', '🧘‍♂️ Quiet', '⚡ Action']
+                        ? ['Логика', 'Ценности', 'Эмпатия', 'Легкость', 'Тишина', 'Исполнитель']
+                        : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet', 'Action']
                     }
                     selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: s[0] as any }))}

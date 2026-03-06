@@ -23,7 +23,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
     const showAhaMoment = formData.city.trim() !== '' && formData.childAge.trim() !== '';
 
     return (
-        <div className="animate-fade-in space-y-6 relative pb-16">
+        <div className="animate-fade-in space-y-6 relative pb-24">
             <div className="section-label">{lang === 'ru' ? 'С чего начнем поиск?' : 'Where should we start?'}</div>
 
             <div className="relative">
@@ -124,7 +124,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
 
             <div className="sticky bottom-0 z-10 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade mt-8">
                 {showAhaMoment && !isFormValid && (
-                    <div className="absolute bottom-[4.5rem] left-0 right-0 mx-auto w-[90%] bg-white/90 backdrop-blur-md shadow-xl border border-amber-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3">
+                    <div className="relative mb-3 mx-auto w-[90%] bg-white/90 backdrop-blur-md shadow-xl border border-amber-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
                             <Sparkles size={16} className="text-amber-600" />
                         </div>

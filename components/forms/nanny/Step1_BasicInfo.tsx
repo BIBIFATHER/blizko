@@ -36,23 +36,23 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
     const showAhaMoment = formData.name.trim() !== '' && formData.city.trim() !== '';
 
     return (
-        <div className="animate-fade-in space-y-6 relative pb-16">
+        <div className="animate-fade-in space-y-6 relative pb-24">
             <div className="section-label">{lang === 'ru' ? 'Давайте знакомиться' : 'Let\'s get to know you'}</div>
 
             {/* Photo Upload Block */}
             <div className="flex justify-center mb-6">
                 <label className="relative cursor-pointer group">
-                    <div className={`w-32 h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-md ring-4 ring-white/60 ${photo ? 'border-2 border-amber-300' : 'bg-amber-50 border-2 border-amber-200/50'}`}>
+                    <div className={`w-32 h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-cloud-soft ring-4 ring-white/60 ${photo ? 'border-2 border-amber-300' : 'bg-amber-50 border-2 border-amber-200/50'}`}>
                         {photo ? (
                             <img src={photo} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             <div className="flex flex-col items-center gap-1">
-                                <span className="text-2xl">📸</span>
+                                <Camera size={28} className="text-amber-700/80" />
                                 <span className="text-[10px] font-medium text-amber-700/70">{lang === 'ru' ? 'Добавить' : 'Add'}</span>
                             </div>
                         )}
-                        {/* Overlay on hover */}
-                        <div className="absolute inset-0 bg-amber-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                        {/* Overlay on tap */}
+                        <div className="absolute inset-0 bg-amber-900/10 opacity-0 group-active:opacity-100 transition-opacity flex items-center justify-center rounded-full">
                             <span className="text-xl">✨</span>
                         </div>
                     </div>
@@ -134,7 +134,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
 
             <div className="sticky bottom-0 z-10 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade mt-8">
                 {showAhaMoment && !isFormValid && (
-                    <div className="absolute bottom-[4.5rem] left-0 right-0 mx-auto w-[90%] bg-violet-50/90 backdrop-blur-md shadow-xl border border-violet-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3">
+                    <div className="relative mb-3 mx-auto w-[90%] bg-violet-50/90 backdrop-blur-md shadow-xl border border-violet-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
                             <Sparkles size={16} className="text-violet-600" />
                         </div>

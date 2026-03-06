@@ -78,7 +78,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Если у ребенка истерика, ваш первый шаг:' : 'If a child has a tantrum, your first step:'}
-                    options={lang === 'ru' ? ['🫂 Успокоить эмоции', '🎈 Переключить внимание', '🚧 Обозначить границы'] : ['🫂 Calm emotions', '🎈 Distract', '🚧 Set boundaries']}
+                    options={lang === 'ru' ? ['Успокоить эмоции', 'Переключить внимание', 'Обозначить границы'] : ['Calm emotions', 'Distract', 'Set boundaries']}
                     selected={riskProfile?.tantrumFirstStep ? [riskProfile.tantrumFirstStep] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), tantrumFirstStep: s[0] as any }))}
                     single
@@ -86,7 +86,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Ваш стиль дисциплины:' : 'Your discipline style:'}
-                    options={lang === 'ru' ? ['💛 Мягкая, поддерживающая', '📐 Структурная, с правилами', '🔒 Строгая'] : ['💛 Gentle, supportive', '📐 Structured, rules-based', '🔒 Strict']}
+                    options={lang === 'ru' ? ['Мягкая, поддерживающая', 'Структурная, с правилами', 'Строгая'] : ['Gentle, supportive', 'Structured, rules-based', 'Strict']}
                     selected={riskProfile?.disciplineStyle ? [riskProfile.disciplineStyle] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), disciplineStyle: s[0] as any }))}
                     single
@@ -94,7 +94,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Ваш стиль режима дня:' : 'Your routine style:'}
-                    options={lang === 'ru' ? ['⏰ Чёткая структура', '⚖️ Баланс', '🌊 Гибкая адаптация'] : ['⏰ Clear structure', '⚖️ Balanced', '🌊 Flexible adaptation']}
+                    options={lang === 'ru' ? ['Чёткая структура', 'Баланс', 'Гибкая адаптация'] : ['Clear structure', 'Balanced', 'Flexible adaptation']}
                     selected={riskProfile?.routineStyle ? [riskProfile.routineStyle] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), routineStyle: s[0] as any }))}
                     single
@@ -102,7 +102,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Коммуникация с родителями:' : 'Communication with parents:'}
-                    options={lang === 'ru' ? ['📵 Минимум сообщений', '📱 Регулярно (2-3 раза)', '💬 Часто'] : ['📵 Minimal messages', '📱 Regular (2-3 times)', '💬 Frequent']}
+                    options={lang === 'ru' ? ['Минимум сообщений', 'Регулярно (2-3 раза)', 'Часто'] : ['Minimal messages', 'Regular (2-3 times)', 'Frequent']}
                     selected={riskProfile?.communicationStyle ? [riskProfile.communicationStyle] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), communicationStyle: s[0] as any }))}
                     single
@@ -110,7 +110,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Мои сильные стороны:' : 'My strengths:'}
-                    options={lang === 'ru' ? ['🧘‍♀️ Спокойствие', '📋 Структура', '🎨 Игра', '📚 Обучение', '⚡ Активность'] : ['🧘‍♀️ Calm', '📋 Structure', '🎨 Play', '📚 Learning', '⚡ Activity']}
+                    options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
                     selected={riskProfile?.strengths || []}
                     onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), strengths: list }))}
                 />
@@ -118,8 +118,8 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                 <ChipGroup
                     label={lang === 'ru' ? 'Стиль общения (PCM):' : 'Communication style (PCM):'}
                     options={lang === 'ru'
-                        ? ['🧠 Логика', '🛡️ Ценности', '❤️ Эмпатия', '🎉 Легкость', '🧘‍♂️ Тишина', '⚡ Исполнитель']
-                        : ['🧠 Logic', '🛡️ Values', '❤️ Empathy', '🎉 Lightness', '🧘‍♂️ Quiet', '⚡ Action']
+                        ? ['Логика', 'Ценности', 'Эмпатия', 'Легкость', 'Тишина', 'Исполнитель']
+                        : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet', 'Action']
                     }
                     selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
                     onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: s[0] as any }))}

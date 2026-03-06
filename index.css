@@ -18,6 +18,7 @@
   --cloud-border: rgba(245, 245, 244, 0.8);
   --cloud-shadow: 0 8px 32px rgba(120, 113, 108, 0.06);
   --cloud-shadow-hover: 0 12px 40px rgba(120, 113, 108, 0.1);
+  --cloud-shadow-soft: 0 6px 18px rgba(120, 113, 108, 0.12);
   --cloud-radius-card: 24px;
   --cloud-radius-btn: 9999px;
   --cloud-radius-input: 16px;
@@ -156,7 +157,11 @@ a {
 
 /* Cloud-style soft card shadow */
 .card-cloud {
-  box-shadow: 0 8px 32px rgba(120, 113, 108, 0.06);
+  box-shadow: var(--cloud-shadow);
+}
+
+.shadow-cloud-soft {
+  box-shadow: var(--cloud-shadow-soft);
 }
 
 /* Staggered fade-up animation for cards */

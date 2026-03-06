@@ -68,35 +68,35 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
             <div className="section-label">{lang === 'ru' ? 'С какой семьей вам будет комфортно?' : 'What kind of family are you comfortable with?'}</div>
             <ChipGroup
                 label={lang === 'ru' ? 'Видеонаблюдение' : 'Cameras'}
-                options={lang === 'ru' ? ['📷 Готова', '🚫 Нежелательно'] : ['📷 Ready', '🚫 Not desired']}
+                options={lang === 'ru' ? ['Готова', 'Нежелательно'] : ['Ready', 'Not desired']}
                 selected={advanced.cameras ? [advanced.cameras] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, cameras: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Поездки с семьей' : 'Travel with family'}
-                options={lang === 'ru' ? ['✈️ Готова', '🏠 Не готова'] : ['✈️ Ready', '🏠 Not ready']}
+                options={lang === 'ru' ? ['Готова', 'Не готова'] : ['Ready', 'Not ready']}
                 selected={advanced.travel ? [advanced.travel] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, travel: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Помощь по дому' : 'Household help'}
-                options={lang === 'ru' ? ['🧹 Легкая', '🍽️ Расширенная', '❌ Без помощи'] : ['🧹 Light', '🍽️ Extended', '❌ None']}
+                options={lang === 'ru' ? ['Легкая', 'Расширенная', 'Без помощи'] : ['Light', 'Extended', 'None']}
                 selected={advanced.household ? [advanced.household] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, household: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Животные в доме' : 'Pets'}
-                options={lang === 'ru' ? ['🐾 Ок', '🤧 Аллергия / Нет'] : ['🐾 Ok', '🤧 Allergy / No']}
+                options={lang === 'ru' ? ['Ок', 'Аллергия / Нет'] : ['Ok', 'Allergy / No']}
                 selected={advanced.pets ? [advanced.pets] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, pets: s[0] || '' }))}
                 single
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Ночные смены' : 'Night shifts'}
-                options={lang === 'ru' ? ['🌙 Да', '✨ Иногда', '☀️ Только в день'] : ['🌙 Yes', '✨ Sometimes', '☀️ Only days']}
+                options={lang === 'ru' ? ['Да', 'Иногда', 'Только в день'] : ['Yes', 'Sometimes', 'Only days']}
                 selected={advanced.night ? [advanced.night] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, night: s[0] || '' }))}
                 single

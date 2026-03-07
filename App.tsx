@@ -4,6 +4,7 @@ import { Home } from './components/Home';
 import { ParentForm } from './components/ParentForm';
 import { NannyForm } from './components/NannyForm';
 import { SuccessScreen } from './components/SuccessScreen';
+import { MatchResultsScreen } from './components/MatchResultsScreen';
 import { AdminPanel } from './components/AdminPanel';
 import { SupportChat } from './components/SupportChat';
 import { AuthModal } from './components/AuthModal';
@@ -195,9 +196,12 @@ export default function App() {
     await notifyAdminNewRequest(saved);
     const allNannies = await getNannyProfiles();
     const aiMatchResult = await findBestMatch(data, allNannies, lang);
-    // Navigate to success screen (this is the default flow without payment)
-    navigate('/success', { state: { result: aiMatchResult } });
-    // Also return savedId so the payment modal can use it
+    // Navigate to match results if we have candidates, otherwise success
+    if (aiMatchResult.matchResult && aiMatchResult.matchResult.candidates.length > 0) {
+      navigate('/match-results', { state: { matchResult: aiMatchResult.matchResult } });
+    } else {
+      navigate('/success', { state: { result: aiMatchResult } });
+    }
     return { savedId: saved.id };
   };
 
@@ -297,6 +301,7 @@ export default function App() {
           <Route path="/find-nanny" element={<ParentForm onSubmit={handleParentSubmit} lang={lang} />} />
           <Route path="/become-nanny" element={<NannyForm onSubmit={handleNannySubmit} lang={lang} />} />
           <Route path="/success" element={<SuccessScreen lang={lang} />} />
+          <Route path="/match-results" element={<MatchResultsScreen lang={lang} />} />
           <Route
             path="/nanny-dashboard"
             element={

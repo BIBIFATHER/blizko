@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card } from '../UI';
+import { Button, Card, ProgressBar, Badge } from '../UI';
 import { AvailabilityCalendar, SlotStatus } from '../AvailabilityCalendar';
 import {
     User as UserIcon, LogOut, Calendar, CheckCircle, Wallet, Star,
@@ -235,9 +235,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                     <div className="mt-4 border-t border-stone-100 pt-4 text-left">
                         <div className="text-xs font-semibold text-stone-600 mb-2">Подтверждение телефона</div>
                         {phoneStep === 'verified' ? (
-                            <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-2.5 py-1.5 rounded-md text-xs font-medium">
-                                <BadgeCheck size={12} fill="currentColor" className="text-green-500" /> Телефон подтвержден
-                            </div>
+                            <Badge variant="trust">Телефон подтвержден</Badge>
                         ) : (
                             <div className="space-y-2">
                                 <input type="tel" value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} placeholder="+7 999 000-00-00" className="w-full text-sm bg-stone-50 border border-stone-200 rounded-lg px-3 py-2" />
@@ -291,15 +289,13 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                     </Card>
                 )}
 
-                {/* Progress */}
+                {/* Progress — Goal-Gradient */}
                 <div className="bg-white p-4 rounded-2xl border border-stone-100 text-left">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="text-xs font-semibold text-stone-600">Прогресс профиля</div>
-                        <div className="text-xs font-bold text-stone-700">{isNanny ? '65%' : '55%'}</div>
-                    </div>
-                    <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
-                        <div className={`h-full rounded-full ${isNanny ? 'bg-amber-400' : 'bg-sky-400'}`} style={{ width: isNanny ? '65%' : '55%' }} />
-                    </div>
+                    <ProgressBar
+                        value={isNanny ? 65 : 55}
+                        showPercent
+                        label={lang === 'ru' ? 'Прогресс профиля' : 'Profile progress'}
+                    />
                     <div className="mt-2 text-[11px] text-stone-500">
                         {isNanny ? 'Добавьте документы и подтвердите телефон, чтобы поднять доверие.' : 'Добавьте документы и подтвердите телефон для быстрого подбора.'}
                     </div>
@@ -366,7 +362,9 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                                                 <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm"><Clock size={20} /></div>
                                                 <div>
                                                     <div className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                                                        <span className={`text-[11px] px-2 py-0.5 rounded-full ${parentStatusClass(req.status)}`}>{parentStatusLabel(req.status)}</span>
+                                                        <Badge variant={req.status === 'approved' ? 'trust' : req.status === 'rejected' ? 'status' : 'info'}>
+                                                            {parentStatusLabel(req.status)}
+                                                        </Badge>
                                                         {hasNewModerationUpdate(req) && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">Новое</span>}
                                                     </div>
                                                     <div className="text-xs text-stone-400">Создана: {formatRuDate(req.createdAt)} • заявка {req.id.slice(0, 4).toUpperCase()}</div>

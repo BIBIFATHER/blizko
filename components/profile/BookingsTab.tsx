@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card } from '../UI';
+import { Button, Card, Badge } from '../UI';
 import {
     Calendar, MessageSquare, CheckCircle, Star,
     MapPin, Briefcase,
@@ -80,7 +80,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                                         <h4 className="font-bold text-stone-800">{req.parentName}</h4>
                                         <div className="flex items-center gap-1 text-xs text-stone-500 mt-1"><MapPin size={10} /> {req.location}</div>
                                     </div>
-                                    <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-lg">{req.rate}</span>
+                                    <Badge variant="trust">{req.rate}</Badge>
                                 </div>
                                 <div className="space-y-2 mb-4 mt-3">
                                     <div className="text-sm text-stone-600 bg-stone-50 p-2 rounded-lg flex gap-2 items-center"><span className="text-stone-400"><Briefcase size={14} /></span> {req.details}</div>
@@ -119,7 +119,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                                                 </div>
                                                 <div>
                                                     <div className="font-bold text-stone-800">{activeBooking.nannyName}</div>
-                                                    <div className="text-xs text-amber-600 font-medium bg-amber-100 px-1.5 py-0.5 rounded w-fit mt-0.5">{text.statusActive}</div>
+                                                    <Badge variant="status">{text.statusActive}</Badge>
                                                 </div>
                                             </div>
                                             <div className="text-right">

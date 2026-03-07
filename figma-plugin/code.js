@@ -1,203 +1,241 @@
-// Blizko Cloud Design System — Figma Plugin
-// Запустите в Figma: Plugins → Development → Import plugin from manifest
+// Blizko Cloud Design System — Figma Plugin (v2 — fixed)
+// Plugins → Development → Blizko Design System Generator → Run
 
 // ============ COLORS ============
 const colors = {
-    'cloud/bg': { r: 249 / 255, g: 246 / 255, b: 241 / 255 },
-    'cloud/honey-solid': { r: 232 / 255, g: 213 / 255, b: 163 / 255 },
-    'cloud/honey-light': { r: 242 / 255, g: 230 / 255, b: 197 / 255 },
-    'cloud/text': { r: 68 / 255, g: 64 / 255, b: 60 / 255 },
-    'cloud/text-muted': { r: 168 / 255, g: 162 / 255, b: 158 / 255 },
-    'cloud/brand': { r: 93 / 255, g: 78 / 255, b: 55 / 255 },
-    'cloud/surface': { r: 255 / 255, g: 255 / 255, b: 255 / 255 },
-    'trust/green': { r: 22 / 255, g: 163 / 255, b: 74 / 255 },
-    'trust/blue': { r: 8 / 255, g: 145 / 255, b: 178 / 255 },
-    'status/warning': { r: 202 / 255, g: 138 / 255, b: 4 / 255 },
-    'status/error': { r: 220 / 255, g: 38 / 255, b: 38 / 255 },
-    'status/info': { r: 99 / 255, g: 102 / 255, b: 241 / 255 },
-    'badge/green-bg': { r: 240 / 255, g: 253 / 255, b: 244 / 255 },
-    'badge/amber-bg': { r: 255 / 255, g: 251 / 255, b: 235 / 255 },
-    'badge/red-bg': { r: 254 / 255, g: 242 / 255, b: 242 / 255 },
-    'badge/blue-bg': { r: 236 / 255, g: 254 / 255, b: 255 / 255 },
-    'badge/indigo-bg': { r: 238 / 255, g: 238 / 255, b: 252 / 255 },
+    'bg': { r: 249 / 255, g: 246 / 255, b: 241 / 255 },
+    'honey': { r: 232 / 255, g: 213 / 255, b: 163 / 255 },
+    'honey-light': { r: 242 / 255, g: 230 / 255, b: 197 / 255 },
+    'text': { r: 68 / 255, g: 64 / 255, b: 60 / 255 },
+    'text-muted': { r: 168 / 255, g: 162 / 255, b: 158 / 255 },
+    'brand': { r: 93 / 255, g: 78 / 255, b: 55 / 255 },
+    'white': { r: 1, g: 1, b: 1 },
+    'green': { r: 22 / 255, g: 163 / 255, b: 74 / 255 },
+    'blue': { r: 8 / 255, g: 145 / 255, b: 178 / 255 },
+    'warning': { r: 202 / 255, g: 138 / 255, b: 4 / 255 },
+    'error': { r: 220 / 255, g: 38 / 255, b: 38 / 255 },
+    'info': { r: 99 / 255, g: 102 / 255, b: 241 / 255 },
 };
 
-// ============ TYPOGRAPHY ============
-const fonts = [
-    { name: 'H1 / Playfair', family: 'Playfair Display', style: 'Bold', size: 40, lineHeight: 48 },
-    { name: 'H2 / Quicksand', family: 'Quicksand', style: 'Bold', size: 32, lineHeight: 40 },
-    { name: 'H3 / Nunito', family: 'Nunito', style: 'Bold', size: 24, lineHeight: 32 },
-    { name: 'Body / Inter', family: 'Inter', style: 'Regular', size: 16, lineHeight: 24 },
-    { name: 'Body Semi / Inter', family: 'Inter', style: 'Semi Bold', size: 16, lineHeight: 24 },
-    { name: 'Small / Inter', family: 'Inter', style: 'Regular', size: 14, lineHeight: 20 },
-    { name: 'Caption / Inter', family: 'Inter', style: 'Regular', size: 12, lineHeight: 16 },
-    { name: 'Button / Inter', family: 'Inter', style: 'Semi Bold', size: 16, lineHeight: 24 },
-];
+const badgeBgs = {
+    'green-bg': { r: 240 / 255, g: 253 / 255, b: 244 / 255 },
+    'amber-bg': { r: 255 / 255, g: 251 / 255, b: 235 / 255 },
+    'red-bg': { r: 254 / 255, g: 242 / 255, b: 242 / 255 },
+    'blue-bg': { r: 236 / 255, g: 254 / 255, b: 255 / 255 },
+    'indigo-bg': { r: 238 / 255, g: 238 / 255, b: 252 / 255 },
+};
 
-// ============ SPACING ============
-const spacings = [
-    { name: 'xs', value: 4 },
-    { name: 'sm', value: 8 },
-    { name: 'md', value: 16 },
-    { name: 'lg', value: 24 },
-    { name: 'xl', value: 32 },
-    { name: '2xl', value: 48 },
-];
-
-// ============ RADII ============
-const radii = [
-    { name: 'card', value: 24 },
-    { name: 'btn', value: 9999 },
-    { name: 'input', value: 16 },
-    { name: 'badge', value: 9999 },
-];
-
-// ============ HELPERS ============
-function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1, 3), 16) / 255;
-    const g = parseInt(hex.slice(3, 5), 16) / 255;
-    const b = parseInt(hex.slice(5, 7), 16) / 255;
-    return { r, g, b };
-}
-
-// ============ MAIN ============
 async function main() {
     const page = figma.currentPage;
 
-    // Load fonts
-    const fontFamilies = [...new Set(fonts.map(f => f.family))];
-    for (const f of fonts) {
-        try {
-            await figma.loadFontAsync({ family: f.family, style: f.style });
-        } catch {
-            console.log(`⚠️ Font ${f.family} ${f.style} not available, using Inter Regular`);
-            await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
-        }
-    }
+    // Load only Inter (guaranteed available in Figma)
+    await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
+    await figma.loadFontAsync({ family: 'Inter', style: 'Semi Bold' });
+    await figma.loadFontAsync({ family: 'Inter', style: 'Bold' });
 
-    // ===== Create Color Swatches =====
-    const colorFrame = figma.createFrame();
-    colorFrame.name = '🎨 Colors';
-    colorFrame.layoutMode = 'HORIZONTAL';
-    colorFrame.layoutWrap = 'WRAP';
-    colorFrame.itemSpacing = 16;
-    colorFrame.counterAxisSpacing = 16;
-    colorFrame.paddingLeft = 32;
-    colorFrame.paddingRight = 32;
-    colorFrame.paddingTop = 32;
-    colorFrame.paddingBottom = 32;
-    colorFrame.primaryAxisSizingMode = 'FIXED';
-    colorFrame.resize(800, colorFrame.height);
-    colorFrame.counterAxisSizingMode = 'AUTO';
-    colorFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    let yOffset = 0;
+
+    // ===== 1. COLOR SWATCHES =====
+    const colorSection = figma.createFrame();
+    colorSection.name = '🎨 Colors';
+    colorSection.layoutMode = 'VERTICAL';
+    colorSection.itemSpacing = 16;
+    colorSection.paddingLeft = 32;
+    colorSection.paddingRight = 32;
+    colorSection.paddingTop = 32;
+    colorSection.paddingBottom = 32;
+    colorSection.primaryAxisSizingMode = 'AUTO';
+    colorSection.counterAxisSizingMode = 'AUTO';
+    colorSection.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+
+    // Title
+    const colorTitle = figma.createText();
+    colorTitle.fontName = { family: 'Inter', style: 'Bold' };
+    colorTitle.characters = 'Cloud Design System — Colors';
+    colorTitle.fontSize = 24;
+    colorTitle.fills = [{ type: 'SOLID', color: colors['text'] }];
+    colorSection.appendChild(colorTitle);
+
+    // Color row
+    const colorRow = figma.createFrame();
+    colorRow.name = 'color-row';
+    colorRow.layoutMode = 'HORIZONTAL';
+    colorRow.itemSpacing = 12;
+    colorRow.primaryAxisSizingMode = 'AUTO';
+    colorRow.counterAxisSizingMode = 'AUTO';
 
     for (const [name, color] of Object.entries(colors)) {
         const swatch = figma.createFrame();
         swatch.name = name;
-        swatch.resize(100, 120);
         swatch.layoutMode = 'VERTICAL';
-        swatch.itemSpacing = 8;
-        swatch.paddingBottom = 8;
-        swatch.cornerRadius = 12;
-        swatch.fills = [{ type: 'SOLID', color: { r: 0.97, g: 0.97, b: 0.97 } }];
-        swatch.clipsContent = true;
+        swatch.itemSpacing = 6;
+        swatch.primaryAxisSizingMode = 'AUTO';
+        swatch.counterAxisSizingMode = 'AUTO';
+        swatch.counterAxisAlignItems = 'CENTER';
 
         const rect = figma.createRectangle();
-        rect.resize(100, 70);
-        rect.fills = [{ type: 'SOLID', color }];
+        rect.resize(72, 52);
+        rect.fills = [{ type: 'SOLID', color: color }];
+        rect.cornerRadius = 8;
         swatch.appendChild(rect);
 
         const label = figma.createText();
-        try {
-            label.fontName = { family: 'Inter', style: 'Regular' };
-        } catch {
-            // fallback
-        }
-        label.characters = name.split('/').pop() || name;
+        label.fontName = { family: 'Inter', style: 'Regular' };
+        label.characters = name;
         label.fontSize = 10;
-        label.fills = [{ type: 'SOLID', color: { r: 0.27, g: 0.25, b: 0.24 } }];
-        label.layoutAlign = 'STRETCH';
-        label.textAlignHorizontal = 'CENTER';
+        label.fills = [{ type: 'SOLID', color: colors['text-muted'] }];
         swatch.appendChild(label);
 
-        colorFrame.appendChild(swatch);
+        colorRow.appendChild(swatch);
     }
+    colorSection.appendChild(colorRow);
 
-    page.appendChild(colorFrame);
-    colorFrame.x = 0;
-    colorFrame.y = 0;
+    // Badge BG row
+    const badgeTitle = figma.createText();
+    badgeTitle.fontName = { family: 'Inter', style: 'Semi Bold' };
+    badgeTitle.characters = 'Badge Backgrounds';
+    badgeTitle.fontSize = 14;
+    badgeTitle.fills = [{ type: 'SOLID', color: colors['text'] }];
+    colorSection.appendChild(badgeTitle);
 
-    // ===== Create Typography Samples =====
-    const typoFrame = figma.createFrame();
-    typoFrame.name = '📝 Typography';
-    typoFrame.layoutMode = 'VERTICAL';
-    typoFrame.itemSpacing = 24;
-    typoFrame.paddingLeft = 32;
-    typoFrame.paddingRight = 32;
-    typoFrame.paddingTop = 32;
-    typoFrame.paddingBottom = 32;
-    typoFrame.resize(600, 100);
-    typoFrame.primaryAxisSizingMode = 'AUTO';
-    typoFrame.counterAxisSizingMode = 'FIXED';
-    typoFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    const badgeRow = figma.createFrame();
+    badgeRow.name = 'badge-bg-row';
+    badgeRow.layoutMode = 'HORIZONTAL';
+    badgeRow.itemSpacing = 12;
+    badgeRow.primaryAxisSizingMode = 'AUTO';
+    badgeRow.counterAxisSizingMode = 'AUTO';
 
-    for (const f of fonts) {
+    for (const [name, color] of Object.entries(badgeBgs)) {
+        const swatch = figma.createFrame();
+        swatch.name = name;
+        swatch.layoutMode = 'VERTICAL';
+        swatch.itemSpacing = 6;
+        swatch.primaryAxisSizingMode = 'AUTO';
+        swatch.counterAxisSizingMode = 'AUTO';
+        swatch.counterAxisAlignItems = 'CENTER';
+
+        const rect = figma.createRectangle();
+        rect.resize(72, 52);
+        rect.fills = [{ type: 'SOLID', color: color }];
+        rect.cornerRadius = 8;
+        rect.strokes = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
+        rect.strokeWeight = 1;
+        swatch.appendChild(rect);
+
+        const label = figma.createText();
+        label.fontName = { family: 'Inter', style: 'Regular' };
+        label.characters = name;
+        label.fontSize = 10;
+        label.fills = [{ type: 'SOLID', color: colors['text-muted'] }];
+        swatch.appendChild(label);
+
+        badgeRow.appendChild(swatch);
+    }
+    colorSection.appendChild(badgeRow);
+
+    page.appendChild(colorSection);
+    colorSection.x = 0;
+    colorSection.y = yOffset;
+    yOffset += colorSection.height + 60;
+
+    // ===== 2. TYPOGRAPHY =====
+    const typoSection = figma.createFrame();
+    typoSection.name = '📝 Typography';
+    typoSection.layoutMode = 'VERTICAL';
+    typoSection.itemSpacing = 20;
+    typoSection.paddingLeft = 32;
+    typoSection.paddingRight = 32;
+    typoSection.paddingTop = 32;
+    typoSection.paddingBottom = 32;
+    typoSection.primaryAxisSizingMode = 'AUTO';
+    typoSection.counterAxisSizingMode = 'AUTO';
+    typoSection.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+
+    const typoTitle = figma.createText();
+    typoTitle.fontName = { family: 'Inter', style: 'Bold' };
+    typoTitle.characters = 'Typography Scale';
+    typoTitle.fontSize = 24;
+    typoTitle.fills = [{ type: 'SOLID', color: colors['text'] }];
+    typoSection.appendChild(typoTitle);
+
+    const typoDefs = [
+        { name: 'H1', style: 'Bold', size: 40, lh: 48, sample: 'Blizko — подбор нянь' },
+        { name: 'H2', style: 'Bold', size: 32, lh: 40, sample: 'Как мы проверяем нянь' },
+        { name: 'H3', style: 'Bold', size: 24, lh: 32, sample: 'Гарантия прихода' },
+        { name: 'Body', style: 'Regular', size: 16, lh: 24, sample: 'Мы подбираем проверенных нянь с помощью AI.' },
+        { name: 'Body Semi', style: 'Semi Bold', size: 16, lh: 24, sample: 'Совместимость 97%' },
+        { name: 'Small', style: 'Regular', size: 14, lh: 20, sample: 'Подтверждение за 24 часа до выхода' },
+        { name: 'Caption', style: 'Regular', size: 12, lh: 16, sample: 'Обновлено 5 мин назад' },
+    ];
+
+    for (const t of typoDefs) {
         const row = figma.createFrame();
-        row.name = f.name;
+        row.name = t.name;
         row.layoutMode = 'VERTICAL';
         row.itemSpacing = 4;
-        row.counterAxisSizingMode = 'AUTO';
         row.primaryAxisSizingMode = 'AUTO';
+        row.counterAxisSizingMode = 'AUTO';
 
         const sample = figma.createText();
-        try {
-            sample.fontName = { family: f.family, style: f.style };
-        } catch {
-            sample.fontName = { family: 'Inter', style: 'Regular' };
-        }
-        sample.characters = `${f.name} — Blizko помогает семьям`;
-        sample.fontSize = f.size;
-        sample.lineHeight = { value: f.lineHeight, unit: 'PIXELS' };
-        sample.fills = [{ type: 'SOLID', color: colors['cloud/text'] }];
+        sample.fontName = { family: 'Inter', style: t.style };
+        sample.characters = t.sample;
+        sample.fontSize = t.size;
+        sample.lineHeight = { value: t.lh, unit: 'PIXELS' };
+        sample.fills = [{ type: 'SOLID', color: colors['text'] }];
         row.appendChild(sample);
 
         const meta = figma.createText();
         meta.fontName = { family: 'Inter', style: 'Regular' };
-        meta.characters = `${f.family} ${f.style} • ${f.size}px / ${f.lineHeight}px`;
+        meta.characters = `${t.name} · Inter ${t.style} · ${t.size}px / ${t.lh}px`;
         meta.fontSize = 11;
-        meta.fills = [{ type: 'SOLID', color: colors['cloud/text-muted'] }];
+        meta.fills = [{ type: 'SOLID', color: colors['text-muted'] }];
         row.appendChild(meta);
 
-        typoFrame.appendChild(row);
+        typoSection.appendChild(row);
     }
 
-    page.appendChild(typoFrame);
-    typoFrame.x = 0;
-    typoFrame.y = colorFrame.height + 60;
+    page.appendChild(typoSection);
+    typoSection.x = 0;
+    typoSection.y = yOffset;
+    yOffset += typoSection.height + 60;
 
-    // ===== Create Button Components =====
-    const btnFrame = figma.createFrame();
-    btnFrame.name = '🔘 Buttons';
-    btnFrame.layoutMode = 'HORIZONTAL';
-    btnFrame.itemSpacing = 24;
-    btnFrame.paddingLeft = 32;
-    btnFrame.paddingRight = 32;
-    btnFrame.paddingTop = 32;
-    btnFrame.paddingBottom = 32;
-    btnFrame.counterAxisSizingMode = 'AUTO';
-    btnFrame.primaryAxisSizingMode = 'AUTO';
-    btnFrame.fills = [{ type: 'SOLID', color: colors['cloud/bg'] }];
+    // ===== 3. BUTTONS =====
+    const btnSection = figma.createFrame();
+    btnSection.name = '🔘 Buttons';
+    btnSection.layoutMode = 'VERTICAL';
+    btnSection.itemSpacing = 16;
+    btnSection.paddingLeft = 32;
+    btnSection.paddingRight = 32;
+    btnSection.paddingTop = 32;
+    btnSection.paddingBottom = 32;
+    btnSection.primaryAxisSizingMode = 'AUTO';
+    btnSection.counterAxisSizingMode = 'AUTO';
+    btnSection.fills = [{ type: 'SOLID', color: colors['bg'] }];
 
-    const buttonDefs = [
-        { name: 'Button / Primary', bg: colors['cloud/honey-solid'], text: colors['cloud/brand'], textStr: 'Найти няню ✨' },
-        { name: 'Button / Secondary', bg: { r: 0.96, g: 0.96, b: 0.96 }, text: colors['cloud/text'], textStr: 'Подробнее' },
-        { name: 'Button / Danger', bg: colors['badge/red-bg'], text: colors['status/error'], textStr: 'Удалить' },
-        { name: 'Button / Success', bg: colors['badge/green-bg'], text: colors['trust/green'], textStr: 'Подтвердить' },
+    const btnTitle = figma.createText();
+    btnTitle.fontName = { family: 'Inter', style: 'Bold' };
+    btnTitle.characters = 'Buttons';
+    btnTitle.fontSize = 24;
+    btnTitle.fills = [{ type: 'SOLID', color: colors['text'] }];
+    btnSection.appendChild(btnTitle);
+
+    const btnRow = figma.createFrame();
+    btnRow.name = 'buttons-row';
+    btnRow.layoutMode = 'HORIZONTAL';
+    btnRow.itemSpacing = 16;
+    btnRow.primaryAxisSizingMode = 'AUTO';
+    btnRow.counterAxisSizingMode = 'AUTO';
+
+    const btnDefs = [
+        { name: 'Primary', bg: colors['honey'], text: colors['brand'], label: 'Найти няню ✨' },
+        { name: 'Secondary', bg: { r: 0.96, g: 0.96, b: 0.96 }, text: colors['text'], label: 'Подробнее' },
+        { name: 'Danger', bg: badgeBgs['red-bg'], text: colors['error'], label: 'Удалить' },
+        { name: 'Success', bg: badgeBgs['green-bg'], text: colors['green'], label: 'Подтвердить ✓' },
     ];
 
-    for (const def of buttonDefs) {
+    for (const def of btnDefs) {
         const btn = figma.createFrame();
-        btn.name = def.name;
+        btn.name = 'Btn/' + def.name;
         btn.layoutMode = 'HORIZONTAL';
         btn.primaryAxisAlignItems = 'CENTER';
         btn.counterAxisAlignItems = 'CENTER';
@@ -205,93 +243,104 @@ async function main() {
         btn.paddingRight = 32;
         btn.paddingTop = 14;
         btn.paddingBottom = 14;
-        btn.cornerRadius = 9999;
+        btn.cornerRadius = 999;
         btn.fills = [{ type: 'SOLID', color: def.bg }];
 
         const label = figma.createText();
-        try {
-            label.fontName = { family: 'Inter', style: 'Semi Bold' };
-        } catch {
-            label.fontName = { family: 'Inter', style: 'Regular' };
-        }
-        label.characters = def.textStr;
+        label.fontName = { family: 'Inter', style: 'Semi Bold' };
+        label.characters = def.label;
         label.fontSize = 16;
         label.fills = [{ type: 'SOLID', color: def.text }];
         btn.appendChild(label);
 
-        btnFrame.appendChild(btn);
+        btnRow.appendChild(btn);
     }
+    btnSection.appendChild(btnRow);
 
-    page.appendChild(btnFrame);
-    btnFrame.x = 0;
-    btnFrame.y = typoFrame.y + typoFrame.height + 60;
+    page.appendChild(btnSection);
+    btnSection.x = 0;
+    btnSection.y = yOffset;
+    yOffset += btnSection.height + 60;
 
-    // ===== Create Badge Components =====
-    const badgeFrame = figma.createFrame();
-    badgeFrame.name = '🏷️ Badges';
-    badgeFrame.layoutMode = 'HORIZONTAL';
-    badgeFrame.itemSpacing = 12;
-    badgeFrame.paddingLeft = 32;
-    badgeFrame.paddingRight = 32;
-    badgeFrame.paddingTop = 32;
-    badgeFrame.paddingBottom = 32;
-    badgeFrame.counterAxisSizingMode = 'AUTO';
-    badgeFrame.primaryAxisSizingMode = 'AUTO';
-    badgeFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    // ===== 4. BADGES =====
+    const badgeSection = figma.createFrame();
+    badgeSection.name = '🏷️ Badges';
+    badgeSection.layoutMode = 'VERTICAL';
+    badgeSection.itemSpacing = 16;
+    badgeSection.paddingLeft = 32;
+    badgeSection.paddingRight = 32;
+    badgeSection.paddingTop = 32;
+    badgeSection.paddingBottom = 32;
+    badgeSection.primaryAxisSizingMode = 'AUTO';
+    badgeSection.counterAxisSizingMode = 'AUTO';
+    badgeSection.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+
+    const badgeSectionTitle = figma.createText();
+    badgeSectionTitle.fontName = { family: 'Inter', style: 'Bold' };
+    badgeSectionTitle.characters = 'Badges';
+    badgeSectionTitle.fontSize = 24;
+    badgeSectionTitle.fills = [{ type: 'SOLID', color: colors['text'] }];
+    badgeSection.appendChild(badgeSectionTitle);
+
+    const badgeSectionRow = figma.createFrame();
+    badgeSectionRow.name = 'badges-row';
+    badgeSectionRow.layoutMode = 'HORIZONTAL';
+    badgeSectionRow.itemSpacing = 12;
+    badgeSectionRow.primaryAxisSizingMode = 'AUTO';
+    badgeSectionRow.counterAxisSizingMode = 'AUTO';
 
     const badgeDefs = [
-        { name: 'Badge / Success', bg: colors['badge/green-bg'], text: colors['trust/green'], label: '✓ Verified' },
-        { name: 'Badge / Warning', bg: colors['badge/amber-bg'], text: colors['status/warning'], label: '⏳ Pending' },
-        { name: 'Badge / Danger', bg: colors['badge/red-bg'], text: colors['status/error'], label: '✕ Rejected' },
-        { name: 'Badge / Info', bg: colors['badge/indigo-bg'], text: colors['status/info'], label: 'ℹ Info' },
-        { name: 'Badge / Trust', bg: colors['badge/blue-bg'], text: colors['trust/blue'], label: '🛡 Trusted' },
+        { bg: badgeBgs['green-bg'], text: colors['green'], label: '✓ Verified' },
+        { bg: badgeBgs['amber-bg'], text: colors['warning'], label: '⏳ Pending' },
+        { bg: badgeBgs['red-bg'], text: colors['error'], label: '✕ Rejected' },
+        { bg: badgeBgs['indigo-bg'], text: colors['info'], label: 'ℹ Info' },
+        { bg: badgeBgs['blue-bg'], text: colors['blue'], label: '🛡 Trusted' },
     ];
 
     for (const def of badgeDefs) {
         const badge = figma.createFrame();
-        badge.name = def.name;
+        badge.name = 'Badge';
         badge.layoutMode = 'HORIZONTAL';
         badge.primaryAxisAlignItems = 'CENTER';
         badge.counterAxisAlignItems = 'CENTER';
         badge.paddingLeft = 12;
         badge.paddingRight = 12;
-        badge.paddingTop = 4;
-        badge.paddingBottom = 4;
-        badge.cornerRadius = 9999;
+        badge.paddingTop = 6;
+        badge.paddingBottom = 6;
+        badge.cornerRadius = 999;
         badge.fills = [{ type: 'SOLID', color: def.bg }];
 
         const label = figma.createText();
-        try {
-            label.fontName = { family: 'Inter', style: 'Semi Bold' };
-        } catch {
-            label.fontName = { family: 'Inter', style: 'Regular' };
-        }
+        label.fontName = { family: 'Inter', style: 'Semi Bold' };
         label.characters = def.label;
         label.fontSize = 12;
         label.fills = [{ type: 'SOLID', color: def.text }];
         badge.appendChild(label);
 
-        badgeFrame.appendChild(badge);
+        badgeSectionRow.appendChild(badge);
     }
+    badgeSection.appendChild(badgeSectionRow);
 
-    page.appendChild(badgeFrame);
-    badgeFrame.x = 0;
-    badgeFrame.y = btnFrame.y + btnFrame.height + 60;
+    page.appendChild(badgeSection);
+    badgeSection.x = 0;
+    badgeSection.y = yOffset;
+    yOffset += badgeSection.height + 60;
 
-    // ===== Create Card Component =====
-    const cardFrame = figma.createFrame();
-    cardFrame.name = '🃏 Card';
-    cardFrame.layoutMode = 'VERTICAL';
-    cardFrame.itemSpacing = 12;
-    cardFrame.paddingLeft = 20;
-    cardFrame.paddingRight = 20;
-    cardFrame.paddingTop = 20;
-    cardFrame.paddingBottom = 20;
-    cardFrame.resize(340, 180);
-    cardFrame.primaryAxisSizingMode = 'AUTO';
-    cardFrame.cornerRadius = 24;
-    cardFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 }, opacity: 0.85 }];
-    cardFrame.effects = [{
+    // ===== 5. CARD =====
+    const card = figma.createFrame();
+    card.name = '🃏 Card Example';
+    card.layoutMode = 'VERTICAL';
+    card.itemSpacing = 12;
+    card.paddingLeft = 24;
+    card.paddingRight = 24;
+    card.paddingTop = 24;
+    card.paddingBottom = 24;
+    card.cornerRadius = 24;
+    card.primaryAxisSizingMode = 'AUTO';
+    card.resize(360, 10);
+    card.counterAxisSizingMode = 'FIXED';
+    card.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    card.effects = [{
         type: 'DROP_SHADOW',
         color: { r: 0.47, g: 0.44, b: 0.42, a: 0.06 },
         offset: { x: 0, y: 8 },
@@ -302,70 +351,119 @@ async function main() {
     }];
 
     const cardTitle = figma.createText();
-    try { cardTitle.fontName = { family: 'Nunito', style: 'Bold' }; } catch { cardTitle.fontName = { family: 'Inter', style: 'Regular' }; }
+    cardTitle.fontName = { family: 'Inter', style: 'Bold' };
     cardTitle.characters = 'Анна — проверенная няня';
     cardTitle.fontSize = 18;
-    cardTitle.fills = [{ type: 'SOLID', color: colors['cloud/text'] }];
-    cardFrame.appendChild(cardTitle);
+    cardTitle.fills = [{ type: 'SOLID', color: colors['text'] }];
+    card.appendChild(cardTitle);
 
     const cardBody = figma.createText();
     cardBody.fontName = { family: 'Inter', style: 'Regular' };
-    cardBody.characters = 'Опыт 5 лет • Педагогическое образование • Совместимость 97%';
+    cardBody.characters = 'Опыт 5 лет · Педагогическое образование · Совместимость 97%';
     cardBody.fontSize = 14;
-    cardBody.fills = [{ type: 'SOLID', color: colors['cloud/text-muted'] }];
-    cardBody.resize(300, cardBody.height);
-    cardBody.textAutoResize = 'HEIGHT';
-    cardFrame.appendChild(cardBody);
+    cardBody.lineHeight = { value: 20, unit: 'PIXELS' };
+    cardBody.fills = [{ type: 'SOLID', color: colors['text-muted'] }];
+    card.appendChild(cardBody);
 
-    page.appendChild(cardFrame);
-    cardFrame.x = 0;
-    cardFrame.y = badgeFrame.y + badgeFrame.height + 60;
+    // Card CTA
+    const cardBtn = figma.createFrame();
+    cardBtn.name = 'Card CTA';
+    cardBtn.layoutMode = 'HORIZONTAL';
+    cardBtn.primaryAxisAlignItems = 'CENTER';
+    cardBtn.counterAxisAlignItems = 'CENTER';
+    cardBtn.paddingLeft = 24;
+    cardBtn.paddingRight = 24;
+    cardBtn.paddingTop = 12;
+    cardBtn.paddingBottom = 12;
+    cardBtn.cornerRadius = 999;
+    cardBtn.fills = [{ type: 'SOLID', color: colors['honey'] }];
+    cardBtn.primaryAxisSizingMode = 'AUTO';
+    cardBtn.counterAxisSizingMode = 'AUTO';
 
-    // ===== Create Spacing Reference =====
-    const spaceFrame = figma.createFrame();
-    spaceFrame.name = '📏 Spacing';
-    spaceFrame.layoutMode = 'HORIZONTAL';
-    spaceFrame.itemSpacing = 16;
-    spaceFrame.paddingLeft = 32;
-    spaceFrame.paddingRight = 32;
-    spaceFrame.paddingTop = 32;
-    spaceFrame.paddingBottom = 32;
-    spaceFrame.counterAxisSizingMode = 'AUTO';
-    spaceFrame.primaryAxisSizingMode = 'AUTO';
-    spaceFrame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+    const cardBtnLabel = figma.createText();
+    cardBtnLabel.fontName = { family: 'Inter', style: 'Semi Bold' };
+    cardBtnLabel.characters = 'Написать';
+    cardBtnLabel.fontSize = 14;
+    cardBtnLabel.fills = [{ type: 'SOLID', color: colors['brand'] }];
+    cardBtn.appendChild(cardBtnLabel);
+    card.appendChild(cardBtn);
+
+    page.appendChild(card);
+    card.x = 0;
+    card.y = yOffset;
+    yOffset += card.height + 60;
+
+    // ===== 6. SPACING =====
+    const spaceSection = figma.createFrame();
+    spaceSection.name = '📏 Spacing';
+    spaceSection.layoutMode = 'VERTICAL';
+    spaceSection.itemSpacing = 16;
+    spaceSection.paddingLeft = 32;
+    spaceSection.paddingRight = 32;
+    spaceSection.paddingTop = 32;
+    spaceSection.paddingBottom = 32;
+    spaceSection.primaryAxisSizingMode = 'AUTO';
+    spaceSection.counterAxisSizingMode = 'AUTO';
+    spaceSection.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
+
+    const spaceTitle = figma.createText();
+    spaceTitle.fontName = { family: 'Inter', style: 'Bold' };
+    spaceTitle.characters = 'Spacing Scale';
+    spaceTitle.fontSize = 24;
+    spaceTitle.fills = [{ type: 'SOLID', color: colors['text'] }];
+    spaceSection.appendChild(spaceTitle);
+
+    const spaceRow = figma.createFrame();
+    spaceRow.name = 'spacing-row';
+    spaceRow.layoutMode = 'HORIZONTAL';
+    spaceRow.itemSpacing = 20;
+    spaceRow.counterAxisAlignItems = 'MAX';
+    spaceRow.primaryAxisSizingMode = 'AUTO';
+    spaceRow.counterAxisSizingMode = 'AUTO';
+
+    const spacings = [
+        { name: 'xs', value: 4 },
+        { name: 'sm', value: 8 },
+        { name: 'md', value: 16 },
+        { name: 'lg', value: 24 },
+        { name: 'xl', value: 32 },
+        { name: '2xl', value: 48 },
+    ];
 
     for (const sp of spacings) {
         const block = figma.createFrame();
-        block.name = `space-${sp.name}`;
+        block.name = sp.name;
         block.layoutMode = 'VERTICAL';
-        block.itemSpacing = 4;
-        block.counterAxisSizingMode = 'AUTO';
+        block.itemSpacing = 6;
         block.primaryAxisSizingMode = 'AUTO';
+        block.counterAxisSizingMode = 'AUTO';
         block.counterAxisAlignItems = 'CENTER';
 
         const rect = figma.createRectangle();
-        rect.resize(sp.value, sp.value);
-        rect.fills = [{ type: 'SOLID', color: colors['cloud/honey-solid'] }];
+        rect.resize(Math.max(sp.value, 8), Math.max(sp.value, 8));
+        rect.fills = [{ type: 'SOLID', color: colors['honey'] }];
         rect.cornerRadius = 4;
         block.appendChild(rect);
 
         const label = figma.createText();
         label.fontName = { family: 'Inter', style: 'Regular' };
-        label.characters = `${sp.name}\n${sp.value}px`;
+        label.characters = sp.name + ' · ' + sp.value + 'px';
         label.fontSize = 10;
-        label.textAlignHorizontal = 'CENTER';
-        label.fills = [{ type: 'SOLID', color: colors['cloud/text-muted'] }];
+        label.fills = [{ type: 'SOLID', color: colors['text-muted'] }];
         block.appendChild(label);
 
-        spaceFrame.appendChild(block);
+        spaceRow.appendChild(block);
     }
+    spaceSection.appendChild(spaceRow);
 
-    page.appendChild(spaceFrame);
-    spaceFrame.x = 0;
-    spaceFrame.y = cardFrame.y + cardFrame.height + 60;
+    page.appendChild(spaceSection);
+    spaceSection.x = 0;
+    spaceSection.y = yOffset;
 
-    // Done!
-    figma.closePlugin('✅ Blizko Design System создана!\n🎨 Цвета • 📝 Типографика • 🔘 Кнопки • 🏷️ Бейджи • 🃏 Карточка • 📏 Spacing');
+    // Zoom to fit
+    figma.viewport.scrollAndZoomIntoView(page.children);
+
+    figma.closePlugin('✅ Blizko Design System создана! 🎨 Цвета · 📝 Типографика · 🔘 Кнопки · 🏷️ Бейджи · 🃏 Карточка · 📏 Spacing');
 }
 
 main();

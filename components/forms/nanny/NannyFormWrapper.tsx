@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { NannyProfile, Language } from '../../../types';
 import { t } from '../../../src/core/i18n/translations';
 import { ArrowLeft } from 'lucide-react';
+import { ProgressBar } from '../../UI';
 import { NannyFormProvider, useNannyForm } from './NannyFormProvider';
 import { Step1_BasicInfo } from './Step1_BasicInfo';
 import { Step2_Experience } from './Step2_Experience';
@@ -121,16 +122,11 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
                 </div>
             </div>
 
-            {/* Progress bar — warm amber */}
-            <div className="w-full bg-stone-100/80 h-1.5 rounded-full mb-6 overflow-hidden">
-                <div
-                    className="h-full rounded-full transition-all duration-500 ease-out"
-                    style={{
-                        width: `${(currentStep / totalSteps) * 100}%`,
-                        background: 'linear-gradient(90deg, #E8D5A3, #D2B48C)'
-                    }}
-                />
-            </div>
+            {/* Progress bar — Goal-Gradient */}
+            <ProgressBar
+                value={(currentStep / totalSteps) * 100}
+                className="mb-6"
+            />
 
             <form onSubmit={(e) => e.preventDefault()}>
                 {/* Direction-aware step animation */}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Input, Textarea, ChipGroup } from './UI';
+import { Button, Input, Textarea, ChipGroup, ProgressBar, Badge } from './UI';
 import { AvailabilityCalendar } from './AvailabilityCalendar';
 import { ParentRequest, Language } from '../types';
-import { ArrowLeft, Upload, MapPin } from 'lucide-react';
+import { ArrowLeft, Upload, MapPin, Sparkles } from 'lucide-react';
 import { ParentOfferModal } from './ParentOfferModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { t } from '../src/core/i18n/translations';
@@ -171,16 +171,30 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
     return () => clearTimeout(tmr);
   }, [formData.city]);
 
+  // Goal-Gradient: calculate form completion %
+  const calcProgress = () => {
+    let filled = 0;
+    const total = 6;
+    if (formData.city.trim()) filled++;
+    if (formData.childAge) filled++;
+    if (formData.schedule) filled++;
+    if (formData.budgetHourly.trim()) filled++;
+    if (formData.budgetMonthly.trim()) filled++;
+    if (requirements.length > 0 || formData.comment.trim() || formData.analysisNotes.trim()) filled++;
+    // Endowed Progress: start at 10% to feel already started
+    return Math.max(10, Math.round((filled / total) * 100));
+  };
+
   return (
     <div className="animate-slide-up">
-      <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-6 flex items-center gap-2">
-        <ArrowLeft size={20} /> {text.back}
+      <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-4 flex items-center gap-2 transition-colors">
+        <ArrowLeft size={18} /> {text.back}
       </button>
 
-      <div className="mb-6">
+      <div className="mb-5">
         <h2 className="text-2xl font-semibold text-stone-800">{initialData ? 'Редактировать заявку' : text.pFormTitle}</h2>
-        <p className="text-stone-500">{initialData ? 'Обновите данные вашей заявки' : text.pFormSubtitle}</p>
-        <div className="mt-2 text-xs text-stone-400">{text.parentRequiredNote}</div>
+        <p className="text-sm text-stone-500 mt-1">{initialData ? 'Обновите данные вашей заявки' : text.pFormSubtitle}</p>
+        <ProgressBar value={calcProgress()} showPercent label={lang === 'ru' ? 'Заполнено' : 'Completed'} className="mt-3" />
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
@@ -446,23 +460,28 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
           </div>
         </div>
 
-        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-600">
-          <div>{text.parentEtaLine}</div>
-          <div className="text-stone-400 mt-1">{text.parentSafetyLine}</div>
+        {/* Trust footer — Commitment/Consistency */}
+        <div className="bg-white/80 backdrop-blur-sm border border-stone-100 rounded-2xl p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <Badge variant="trust">{lang === 'ru' ? 'Данные зашифрованы' : 'Data encrypted'}</Badge>
+          </div>
+          <div className="text-sm text-stone-600">{text.parentEtaLine}</div>
+          <div className="text-xs text-stone-400">{text.parentSafetyLine}</div>
         </div>
 
         <Button
           type="button"
           isLoading={loading}
-          className="mt-4"
+          pulse={calcProgress() >= 80}
+          className="mt-3"
           disabled={initialData?.status === 'approved'}
           onClick={() => setShowOffer(true)}
         >
           {initialData?.status === 'approved'
-            ? 'Редактирование заблокировано (заявка одобрена)'
+            ? (lang === 'ru' ? 'Заявка одобрена' : 'Request approved')
             : loading
               ? (lang === 'ru' ? 'AI подбирает няню...' : 'AI is searching...')
-              : text.submitParent}
+              : (<><Sparkles size={16} /> {text.submitParent}</>)}
         </Button>
       </form>
 

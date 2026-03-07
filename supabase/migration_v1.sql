@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     parent_id UUID REFERENCES auth.users(id),
     nanny_id UUID REFERENCES auth.users(id),
-    request_id UUID REFERENCES parents(id),
+    request_id TEXT REFERENCES parents(id),
     date TIMESTAMPTZ,
     status TEXT NOT NULL DEFAULT 'pending' CHECK (
         status IN (
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS chat_threads (
     type TEXT NOT NULL DEFAULT 'support' CHECK (type IN ('support', 'match')),
     family_id UUID REFERENCES auth.users(id),
     nanny_id UUID REFERENCES auth.users(id),
-    match_id UUID REFERENCES parents(id),
+    match_id TEXT REFERENCES parents(id),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- 6. Chat Messages

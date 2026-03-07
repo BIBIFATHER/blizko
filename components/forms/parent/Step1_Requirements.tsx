@@ -117,21 +117,21 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                     formatValue={(val) => lang === 'ru' ? `${val / 1000}k ₽` : `$${val}`}
                     autoAdvance
                 />
-                <div className="text-center mt-3 text-xs text-emerald-600 font-medium bg-emerald-50 py-1.5 px-3 rounded-full mx-auto w-fit">
-                    ✨ {lang === 'ru' ? 'Мы не берем комиссию с зарплаты няни' : 'We take 0% commission from nanny\'s salary'}
+                <div className="text-center mt-3 text-xs text-emerald-600 font-medium bg-emerald-50 py-1.5 px-3 rounded-full mx-auto w-fit flex items-center gap-1.5">
+                    <Sparkles size={12} /> {lang === 'ru' ? 'Мы не берем комиссию с зарплаты няни' : 'We take 0% commission from nanny\'s salary'}
                 </div>
             </div>
 
-            <div className="sticky bottom-0 z-10 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade mt-8">
+            <div className="sticky bottom-0 z-10 pt-4 pb-6 -mx-2 px-2 sticky-footer-fade mt-4">
                 {showAhaMoment && !isFormValid && (
-                    <div className="relative mb-3 mx-auto w-[90%] bg-white/90 backdrop-blur-md shadow-xl border border-amber-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3">
+                    <div className="w-full bg-amber-50/70 backdrop-blur-md shadow-cloud-soft border border-amber-100/50 rounded-2xl p-3 animate-slide-up flex items-center gap-3 mb-4">
                         <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
                             <Sparkles size={16} className="text-amber-600" />
                         </div>
-                        <div className="text-xs text-stone-700 leading-tight">
+                        <div className="text-[11px] text-stone-700 leading-tight">
                             {lang === 'ru' ?
-                                <span>В вашем районе уже есть <strong>14 проверенных нянь</strong> с профилем Humanity+. Укажите график и бюджет, чтобы мы их показали.</span> :
-                                <span>We found <strong>14 verified nannies</strong> with Humanity+ profile in your area. Add schedule and budget to see them.</span>}
+                                <span>В вашем районе уже есть <strong>14 проверенных нянь</strong>. Укажите график и бюджет, чтобы мы их показали.</span> :
+                                <span>We found <strong>14 verified nannies</strong> in your area. Add schedule and budget to see them.</span>}
                         </div>
                     </div>
                 )}

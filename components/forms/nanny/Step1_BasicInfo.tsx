@@ -42,18 +42,18 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
             {/* Photo Upload Block */}
             <div className="flex justify-center mb-6">
                 <label className="relative cursor-pointer group">
-                    <div className={`w-32 h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-cloud-soft ring-4 ring-white/60 ${photo ? 'border-2 border-amber-300' : 'bg-amber-50 border-2 border-amber-200/50'}`}>
+                    <div className={`w-32 h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-cloud-soft bg-white/40 backdrop-blur-sm border-2 ${photo ? 'border-amber-300' : 'border-amber-100/50'}`}>
                         {photo ? (
-                            <img src={photo} alt="Profile" className="w-full h-full object-cover" />
+                            <img src={photo} alt="Profile" className="w-full h-full object-cover shadow-inner" />
                         ) : (
-                            <div className="flex flex-col items-center gap-1">
-                                <Camera size={28} className="text-amber-700/80" />
-                                <span className="text-[10px] font-medium text-amber-700/70">{lang === 'ru' ? 'Добавить' : 'Add'}</span>
+                            <div className="flex flex-col items-center gap-1.5">
+                                <Camera size={28} className="text-amber-400 group-hover:scale-110 transition-transform" />
+                                <span className="text-[11px] font-semibold text-amber-700/60 uppercase tracking-tighter">{lang === 'ru' ? 'Добавить' : 'Add'}</span>
                             </div>
                         )}
-                        {/* Overlay on tap */}
-                        <div className="absolute inset-0 bg-amber-900/10 opacity-0 group-active:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                            <span className="text-xl">✨</span>
+                        {/* Overlay on hover */}
+                        <div className="absolute inset-0 bg-amber-900/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                            <Sparkles size={20} className="text-amber-400/40" />
                         </div>
                     </div>
                     <input type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
@@ -132,16 +132,16 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 autoAdvance
             />
 
-            <div className="sticky bottom-0 z-10 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade mt-8">
+            <div className="sticky bottom-0 z-10 pt-4 pb-6 -mx-2 px-2 sticky-footer-fade mt-4">
                 {showAhaMoment && !isFormValid && (
-                    <div className="relative mb-3 mx-auto w-[90%] bg-violet-50/90 backdrop-blur-md shadow-xl border border-violet-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3">
+                    <div className="w-full bg-violet-50/70 backdrop-blur-md shadow-cloud-soft border border-violet-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3 mb-4">
                         <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0">
                             <Sparkles size={16} className="text-violet-600" />
                         </div>
-                        <div className="text-xs text-stone-700 leading-tight">
+                        <div className="text-[11px] text-stone-700 leading-tight">
                             {lang === 'ru' ?
-                                <span>Вам очень рады! В вашем районе прямо сейчас <strong>28 семей</strong> ищут свою идеальную няню. Оставьте контакт, чтобы перейти к фильтрам.</span> :
-                                <span>We're excited to have you! There are currently <strong>28 families</strong> looking for a nanny in your area. Add contact info to proceed.</span>}
+                                <span>Вам очень рады! В вашем районе прямо сейчас <strong>28 семей</strong> ищут няню. Переходите к следующему шагу!</span> :
+                                <span>We're excited to have you! There are <strong>28 families</strong> looking for a nanny in your area right now. Proceed to the next step!</span>}
                         </div>
                     </div>
                 )}

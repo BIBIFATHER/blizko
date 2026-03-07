@@ -13,6 +13,7 @@ import { InstallPwaModal } from './src/web/pwa/InstallPwaPrompt';
 import { ShareModal } from './components/ShareModal';
 import { Forbidden } from './components/Forbidden';
 import { LoginPage } from './components/LoginPage';
+import { HowWeVerifyPage, HumanityPlusPage } from './components/seo/SeoPages';
 import { ViewState, ParentRequest, NannyProfile, SubmissionResult, Language, User } from './types';
 import { saveParentRequest, saveNannyProfile, getNannyProfiles, updateParentRequest } from './services/storage';
 import { sendToWebhook } from './services/api';
@@ -302,6 +303,8 @@ export default function App() {
           <Route path="/become-nanny" element={<NannyForm onSubmit={handleNannySubmit} lang={lang} />} />
           <Route path="/success" element={<SuccessScreen lang={lang} />} />
           <Route path="/match-results" element={<MatchResultsScreen lang={lang} />} />
+          <Route path="/how-we-verify" element={<HowWeVerifyPage />} />
+          <Route path="/humanity-plus" element={<HumanityPlusPage />} />
           <Route
             path="/nanny-dashboard"
             element={

@@ -1,30 +1,34 @@
 /**
- * Blizko Telegram Notification Service
+ * Blizko Telegram Notification Service (Client-safe)
  * 
- * Sends notifications to users via Telegram Bot API.
+ * Sends notifications via server-side API endpoint.
+ * BOT_TOKEN is NEVER exposed to the client.
  * 
  * Setup:
- * 1. Create a bot via @BotFather in Telegram → get BOT_TOKEN
- * 2. Add VITE_TELEGRAM_BOT_TOKEN to .env
- * 3. Users link their Telegram via /start in the bot → stores chat_id
+ * 1. Create a bot via @BotFather → get BOT_TOKEN
+ * 2. Set TELEGRAM_BOT_TOKEN in server env (NOT VITE_ prefixed!)
+ * 3. Set NOTIFY_TOKEN in server env for auth
  */
 
-const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '';
+const NOTIFY_TOKEN = import.meta.env.VITE_NOTIFY_TOKEN || '';
 
-// Core send function
+// Core send function — calls server-side API
 async function sendTelegramMessage(chatId: string, text: string, options?: {
     parse_mode?: 'HTML' | 'Markdown';
     reply_markup?: Record<string, unknown>;
 }): Promise<boolean> {
-    if (!BOT_TOKEN || !chatId) {
-        console.warn('[Telegram] No bot token or chat_id, skipping notification');
+    if (!chatId) {
+        console.warn('[Telegram] No chat_id, skipping notification');
         return false;
     }
 
     try {
-        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        const res = await fetch('/api/telegram/send', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...(NOTIFY_TOKEN ? { 'x-notify-token': NOTIFY_TOKEN } : {}),
+            },
             body: JSON.stringify({
                 chat_id: chatId,
                 text,

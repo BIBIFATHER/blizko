@@ -39,3 +39,4 @@ figma-mcp/node_modules/
 backups/secrets/
 *.tgz
 *.zip
+.env

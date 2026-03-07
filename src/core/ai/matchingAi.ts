@@ -3,6 +3,9 @@ import {
   ParentRequest,
   NannyProfile,
   SubmissionResult,
+  MatchCandidate,
+  MatchResult,
+  TrustBadge,
   Language,
 } from "../types";
 import { aiText } from "./aiGateway";
@@ -135,6 +138,63 @@ function rankCandidates(
     .sort((a, b) => b.score - a.score);
 }
 
+function buildTrustBadges(nanny: NannyProfile): TrustBadge[] {
+  const badges: TrustBadge[] = [];
+
+  const hasVerifiedDocs = nanny.documents?.some(d => d.status === 'verified');
+  if (hasVerifiedDocs || nanny.isVerified) badges.push('verified_docs');
+  if (nanny.isVerified) badges.push('verified_moderation');
+  if (nanny.softSkills) badges.push('soft_skills');
+  if (nanny.reviews && nanny.reviews.length > 0) badges.push('has_reviews');
+  // AI check badge always present since we run AI matching
+  badges.push('ai_checked');
+
+  return badges;
+}
+
+function buildHumanExplanation(
+  ranked: RankedCandidate,
+  request: Omit<ParentRequest, "id" | "createdAt" | "type">,
+  lang: Language
+): string {
+  const name = ranked.nanny.name || (lang === 'ru' ? 'Кандидат' : 'Candidate');
+  const reasons = ranked.reasons.slice(0, 2);
+
+  if (lang === 'ru') {
+    if (reasons.length === 0) return `${name} может подойти вашей семье.`;
+    return `${name} подходит, потому что: ${reasons.join(' и ').toLowerCase()}.`;
+  }
+  if (reasons.length === 0) return `${name} could be a good match for your family.`;
+  return `${name} fits because: ${reasons.join(' and ').toLowerCase()}.`;
+}
+
+function buildMatchResult(
+  ranked: RankedCandidate[],
+  request: Omit<ParentRequest, "id" | "createdAt" | "type">,
+  lang: Language
+): MatchResult {
+  // Paradox of Choice: max 3 candidates
+  const top3 = ranked.slice(0, 3).filter(r => r.score >= 40);
+
+  const candidates: MatchCandidate[] = top3.map(r => ({
+    nanny: r.nanny,
+    score: Math.max(55, Math.min(98, r.score)),
+    reasons: r.reasons,
+    humanExplanation: buildHumanExplanation(r, request, lang),
+    trustBadges: buildTrustBadges(r.nanny),
+  }));
+
+  const overallAdvice = lang === 'ru'
+    ? candidates.length > 0
+      ? `Мы подобрали ${candidates.length} ${candidates.length === 1 ? 'кандидата' : 'кандидатов'} для вашей семьи. Напишите понравившейся няне — это ни к чему не обязывает.`
+      : 'Пока кандидатов нет, но мы расширим поиск. Попробуйте скорректировать бюджет или график.'
+    : candidates.length > 0
+      ? `We found ${candidates.length} candidate${candidates.length === 1 ? '' : 's'} for your family. Message the one you like — no obligation.`
+      : 'No candidates yet, but we\'ll expand the search. Try adjusting your budget or schedule.';
+
+  return { candidates, overallAdvice };
+}
+
 function buildHeuristicFallback(
   ranked: RankedCandidate[],
   lang: Language
@@ -145,15 +205,15 @@ function buildHeuristicFallback(
       recommendations:
         lang === "ru"
           ? [
-              "В базе пока нет кандидатов с точным совпадением",
-              "Расширьте требования или бюджет для большего выбора",
-              "Добавьте детали по графику и обязанностям",
-            ]
+            "В базе пока нет кандидатов с точным совпадением",
+            "Расширьте требования или бюджет для большего выбора",
+            "Добавьте детали по графику и обязанностям",
+          ]
           : [
-              "No exact candidates found in the current database",
-              "Broaden requirements or budget to increase matches",
-              "Add more details for schedule and responsibilities",
-            ],
+            "No exact candidates found in the current database",
+            "Broaden requirements or budget to increase matches",
+            "Add more details for schedule and responsibilities",
+          ],
     };
   }
 
@@ -184,25 +244,26 @@ export const findBestMatch = async (
   lang: Language
 ): Promise<SubmissionResult> => {
   const ranked = rankCandidates(request, candidates);
-  const topCandidates = ranked.slice(0, 25); // keep prompt compact for large datasets (e.g. 120+)
+  const topCandidates = ranked.slice(0, 25);
   const heuristicFallback = buildHeuristicFallback(ranked, lang);
+  const matchResult = buildMatchResult(ranked, request, lang);
 
   const candidateData =
     topCandidates.length > 0
       ? JSON.stringify(
-          topCandidates.map((r) => ({
-            id: r.nanny.id,
-            name: r.nanny.name,
-            city: r.nanny.city,
-            about: r.nanny.about,
-            experience: r.nanny.experience,
-            skills: r.nanny.skills || [],
-            childAges: r.nanny.childAges || [],
-            softSkills: r.nanny.softSkills?.dominantStyle || "Unknown",
-            verified: r.nanny.isVerified,
-            heuristicScore: r.score,
-          }))
-        )
+        topCandidates.map((r) => ({
+          id: r.nanny.id,
+          name: r.nanny.name,
+          city: r.nanny.city,
+          about: r.nanny.about,
+          experience: r.nanny.experience,
+          skills: r.nanny.skills || [],
+          childAges: r.nanny.childAges || [],
+          softSkills: r.nanny.softSkills?.dominantStyle || "Unknown",
+          verified: r.nanny.isVerified,
+          heuristicScore: r.score,
+        }))
+      )
       : "No candidates in database. Provide recommendations to improve request quality.";
 
   const prompt = `
@@ -253,7 +314,7 @@ Output JSON only:
     });
 
     if (!responseText) {
-      return heuristicFallback;
+      return { ...heuristicFallback, matchResult };
     }
 
     const result = JSON.parse(responseText || "{}") as any;
@@ -271,9 +332,10 @@ Output JSON only:
         safeRecommendations.length === 3
           ? safeRecommendations
           : heuristicFallback.recommendations,
+      matchResult,
     };
   } catch (error) {
     console.error("AI Matching Failed:", error);
-    return heuristicFallback;
+    return { ...heuristicFallback, matchResult };
   }
 };

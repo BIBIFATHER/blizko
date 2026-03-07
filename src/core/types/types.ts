@@ -127,6 +127,41 @@ export type ViewState = 'home' | 'parent-form' | 'nanny-form' | 'success' | 'adm
 export interface SubmissionResult {
   matchScore: number;
   recommendations: string[];
+  matchResult?: MatchResult; // NEW: structured top candidates
+}
+
+// --- NEW: Match Result types (Paradox of Choice: max 3 candidates) ---
+
+export interface MatchCandidate {
+  nanny: NannyProfile;
+  score: number;
+  reasons: string[];           // machine reasons
+  humanExplanation: string;     // why this nanny fits (Peak-End: emotional moment)
+  trustBadges: TrustBadge[];   // Authority Bias: visual trust
+}
+
+export type TrustBadge =
+  | 'verified_docs'       // ✓ Документы проверены
+  | 'verified_moderation'  // ✓ Ручная модерация
+  | 'ai_checked'          // ✓ AI-проверка
+  | 'soft_skills'         // ✓ Soft skills оценены
+  | 'has_reviews';        // ✓ Есть отзывы
+
+export interface MatchResult {
+  candidates: MatchCandidate[];  // 0-3 candidates (Paradox of Choice)
+  overallAdvice: string;         // context-specific advice for parent
+  requestId?: string;
+}
+
+// --- NEW: Booking Confirmation (T-24h Loss Aversion) ---
+
+export interface BookingConfirmation {
+  id: string;
+  bookingId: string;
+  type: 't_24h' | 't_1h';
+  status: 'pending' | 'confirmed' | 'declined' | 'expired';
+  dueAt: number;
+  respondedAt?: number;
 }
 
 export interface User {
@@ -148,11 +183,15 @@ export interface ChatMessage {
 
 export interface Booking {
   id: string;
+  parentId?: string;
+  nannyId?: string;
+  requestId?: string;
   nannyName: string;
   date: string;
-  status: 'active' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'active' | 'completed' | 'cancelled';
   amount: string;
   avatarColor?: string;
   isPaid?: boolean;
-  hasReview?: boolean; // Track if reviewed
+  hasReview?: boolean;
+  confirmation?: BookingConfirmation;
 }

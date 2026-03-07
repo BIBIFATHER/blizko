@@ -10,6 +10,7 @@ import { t } from '../../src/core/i18n/translations';
 import { getNannyProfiles, getParentRequests, resubmitParentRequest } from '../../services/storage';
 import { notifyAdminResubmitted } from '../../services/notifications';
 import { supabase } from '../../services/supabase';
+import { ReferralWidget } from '../referral/ReferralWidget';
 
 interface ProfileTabProps {
     user: User;
@@ -401,6 +402,9 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                         )}
                     </div>
                 )}
+
+                {/* Referral Widget */}
+                <ReferralWidget userId={user.id || 'guest'} userName={user.name || 'Пользователь'} />
 
                 <Button variant="outline" onClick={openSupportChat} className="w-full border-sky-100 text-sky-700 hover:bg-sky-50 hover:border-sky-200">
                     <LifeBuoy size={18} /> Связаться с поддержкой

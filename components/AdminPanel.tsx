@@ -10,8 +10,10 @@ import { Trash2, X, Search } from 'lucide-react';
 import { AdminOverviewTab } from './admin/AdminOverviewTab';
 import { AdminParentsTab } from './admin/AdminParentsTab';
 import { AdminNanniesTab } from './admin/AdminNanniesTab';
+import { AdminBookingsTab } from './admin/AdminBookingsTab';
+import { getAllBookings, updateBookingStatus, Booking } from '../services/booking';
 
-type AdminTab = 'overview' | 'parents' | 'nannies';
+type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings';
 
 export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [parents, setParents] = useState<ParentRequest[]>([]);
@@ -20,6 +22,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [query, setQuery] = useState('');
   const [onlyProblematic, setOnlyProblematic] = useState(false);
   const [unseenParentsCount, setUnseenParentsCount] = useState(0);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   const loadData = async () => {
     const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
@@ -39,6 +42,10 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const seenTs = Number(localStorage.getItem('blizko_admin_parents_seen_ts') || '0');
     const unseen = p.filter((item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs).length;
     setUnseenParentsCount(unseen);
+
+    // Load bookings
+    const bk = await getAllBookings();
+    setBookings(bk);
   };
 
   useEffect(() => {
@@ -126,6 +133,12 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             >
               Няни
             </button>
+            <button
+              onClick={() => setTab('bookings')}
+              className={`px-3 py-2 rounded-lg text-sm ${tab === 'bookings' ? 'bg-stone-800 text-white' : 'bg-stone-100 text-stone-600'}`}
+            >
+              Бронирования
+            </button>
           </div>
           <label className="flex items-center gap-2 text-xs text-stone-600 bg-stone-50 border border-stone-200 rounded-xl px-3 py-2">
             <input type="checkbox" checked={onlyProblematic} onChange={(e) => setOnlyProblematic(e.target.checked)} />
@@ -163,6 +176,16 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               onlyProblematic={onlyProblematic}
               onDataChanged={loadData}
               logAdminAction={logAdminAction}
+            />
+          )}
+          {tab === 'bookings' && (
+            <AdminBookingsTab
+              bookings={bookings}
+              onStatusChange={async (id, status) => {
+                await updateBookingStatus(id, status);
+                logAdminAction('booking_status_change', { id, status });
+                await loadData();
+              }}
             />
           )}
         </div>

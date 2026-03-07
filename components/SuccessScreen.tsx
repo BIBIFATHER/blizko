@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Card } from './UI';
-import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2 } from 'lucide-react';
+import { Button, Card, Badge, ProgressBar, StatusIndicator } from './UI';
+import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2, ArrowRight } from 'lucide-react';
 import { SubmissionResult, Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 
@@ -102,7 +102,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h3 className="text-xl font-bold text-stone-800">
             {step === 'analyzing'
               ? text.successAnalyzingTitle
@@ -111,6 +111,11 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           <p className="text-stone-400 text-sm">
             {text.successProcessingNote}
           </p>
+          <StatusIndicator status={step === 'analyzing' ? 'pending' : 'active'}
+            label={step === 'analyzing'
+              ? (lang === 'ru' ? 'Анализируем запрос...' : 'Analyzing request...')
+              : (lang === 'ru' ? 'Ищем кандидатов...' : 'Finding candidates...')}
+          />
         </div>
       </div>
     );
@@ -153,12 +158,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
             <span className="text-stone-400 font-medium">{text.probability}</span>
           </div>
 
-          <div className="w-full bg-stone-100 rounded-full h-2.5 mb-5 overflow-hidden">
-            <div
-              className="bg-sky-400 h-full rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${visible ? result.matchScore : 0}%` }}
-            />
-          </div>
+          <ProgressBar value={visible ? result.matchScore : 0} showPercent className="mb-5" />
 
           <div className="space-y-2.5">
             <p className="text-xs font-semibold text-stone-500">{text.recsTitle}</p>
@@ -212,8 +212,14 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
         </div>
       </Card>
 
+      {/* Trust Badge */}
+      <div className="flex justify-center">
+        <Badge variant="trust">{lang === 'ru' ? 'Данные защищены' : 'Data protected'}</Badge>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Button onClick={onHome} className="active:scale-95 transition-transform">
+          <ArrowRight size={16} />
           {text.successNextCta}
         </Button>
         <Button onClick={onHome} variant="outline" className="active:scale-95 transition-transform">

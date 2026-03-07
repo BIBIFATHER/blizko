@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, ShieldCheck, AlertCircle, Info, Loader2 } from 'lucide-react';
 
 const scrollToNext = (el: HTMLElement) => {
   const container = el.closest('form') || document.body;
@@ -36,7 +36,7 @@ export const Card: React.FC<CardProps> = ({ children, className = '', onClick, .
 
 // --- Button ---
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   isLoading?: boolean;
   pulse?: boolean;
 }
@@ -55,7 +55,8 @@ export const Button: React.FC<ButtonProps> = ({
     primary: `btn-honey ring-1 ring-amber-100/40 ${pulse && !props.disabled ? 'btn-honey-pulse' : ''}`,
     secondary: "bg-white/70 backdrop-blur-sm border border-stone-200/60 text-stone-700 hover:bg-white/90 shadow-sm",
     outline: "border border-stone-200/80 text-stone-600 hover:border-amber-200 hover:bg-amber-50/30",
-    ghost: "text-stone-500 hover:text-stone-800 text-sm py-2"
+    ghost: "text-stone-500 hover:text-stone-800 text-sm py-2",
+    danger: "bg-red-50 border border-red-200/60 text-red-700 hover:bg-red-100/80 shadow-sm"
   };
 
   return (
@@ -65,7 +66,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {isLoading ? (
-        <span className="w-5 h-5 border-2 border-stone-700 border-t-transparent rounded-full animate-spin" />
+        <Loader2 className="w-5 h-5 animate-spin" />
       ) : children}
     </button>
   );
@@ -312,3 +313,110 @@ export const RangeSlider: React.FC<RangeSliderProps> = ({ label, min, max, step,
     </div>
   );
 };
+
+// --- Badge (Trust / Status / Info) ---
+interface BadgeProps {
+  children: React.ReactNode;
+  variant?: 'trust' | 'warning' | 'info' | 'neutral';
+  icon?: React.ReactNode;
+  className?: string;
+}
+
+export const Badge: React.FC<BadgeProps> = ({ children, variant = 'trust', icon, className = '' }) => {
+  const variants = {
+    trust: 'trust-badge',
+    warning: 'trust-badge trust-badge-warning',
+    info: 'trust-badge trust-badge-blue',
+    neutral: 'trust-badge bg-stone-100 text-stone-600',
+  };
+
+  const defaultIcons = {
+    trust: <ShieldCheck size={12} />,
+    warning: <AlertCircle size={12} />,
+    info: <Info size={12} />,
+    neutral: null,
+  };
+
+  return (
+    <span className={`${variants[variant]} ${className}`}>
+      {icon !== undefined ? icon : defaultIcons[variant]}
+      {children}
+    </span>
+  );
+};
+
+// --- ProgressBar (Goal-Gradient) ---
+interface ProgressBarProps {
+  value: number; // 0-100
+  label?: string;
+  showPercent?: boolean;
+  className?: string;
+}
+
+export const ProgressBar: React.FC<ProgressBarProps> = ({ value, label, showPercent = false, className = '' }) => {
+  const clamped = Math.min(100, Math.max(0, value));
+  return (
+    <div className={className}>
+      {(label || showPercent) && (
+        <div className="flex justify-between items-center mb-1.5">
+          {label && <span className="text-xs font-medium text-stone-500">{label}</span>}
+          {showPercent && <span className="text-xs font-semibold text-amber-700">{Math.round(clamped)}%</span>}
+        </div>
+      )}
+      <div className="progress-bar">
+        <div className="progress-bar-fill" style={{ width: `${clamped}%` }} />
+      </div>
+    </div>
+  );
+};
+
+// --- StatusIndicator ---
+interface StatusIndicatorProps {
+  status: 'active' | 'pending' | 'inactive';
+  label?: string;
+  className?: string;
+}
+
+export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, label, className = '' }) => {
+  const dotClass = {
+    active: 'status-dot status-dot-active',
+    pending: 'status-dot status-dot-pending',
+    inactive: 'status-dot status-dot-inactive',
+  };
+
+  const labelColor = {
+    active: 'text-green-700',
+    pending: 'text-amber-700',
+    inactive: 'text-stone-400',
+  };
+
+  return (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <div className={dotClass[status]} />
+      {label && <span className={`text-xs font-medium ${labelColor[status]}`}>{label}</span>}
+    </div>
+  );
+};
+
+// --- EmptyState (Activation Energy) ---
+interface EmptyStateProps {
+  icon?: React.ReactNode;
+  title: string;
+  description?: string;
+  actionLabel?: string;
+  onAction?: () => void;
+  className?: string;
+}
+
+export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description, actionLabel, onAction, className = '' }) => (
+  <div className={`empty-state ${className}`}>
+    {icon && <div className="empty-state-icon">{icon}</div>}
+    <h3 className="text-lg font-semibold text-stone-700 mb-1">{title}</h3>
+    {description && <p className="text-sm text-stone-400 max-w-xs mb-4">{description}</p>}
+    {actionLabel && onAction && (
+      <Button variant="primary" onClick={onAction} className="w-auto px-6">
+        {actionLabel}
+      </Button>
+    )}
+  </div>
+);

@@ -8,20 +8,63 @@
   --sal: env(safe-area-inset-left);
   --sar: env(safe-area-inset-right);
 
-  /* Cloud design system */
+  /* ===== Cloud Design System ===== */
+
+  /* Core palette */
   --cloud-bg: #F9F6F1;
   --cloud-surface: rgba(255, 255, 255, 0.85);
   --cloud-honey: linear-gradient(135deg, #E8D5A3, #F2E6C5);
+  --cloud-honey-solid: #E8D5A3;
   --cloud-text: #44403C;
   --cloud-text-muted: #A8A29E;
   --cloud-brand: #5D4E37;
   --cloud-border: rgba(245, 245, 244, 0.8);
+
+  /* Trust & Status colors */
+  --cloud-trust-green: #16a34a;
+  --cloud-trust-green-bg: rgba(22, 163, 74, 0.1);
+  --cloud-trust-blue: #0891b2;
+  --cloud-trust-blue-bg: rgba(8, 145, 178, 0.1);
+  --cloud-warning: #ca8a04;
+  --cloud-warning-bg: rgba(202, 138, 4, 0.1);
+  --cloud-error: #dc2626;
+  --cloud-error-bg: rgba(220, 38, 38, 0.1);
+  --cloud-info: #6366f1;
+  --cloud-info-bg: rgba(99, 102, 241, 0.1);
+
+  /* Shadows */
   --cloud-shadow: 0 8px 32px rgba(120, 113, 108, 0.06);
+  --cloud-shadow-soft: 0 4px 20px rgba(120, 113, 108, 0.04), 0 2px 8px rgba(120, 113, 108, 0.02);
   --cloud-shadow-hover: 0 12px 40px rgba(120, 113, 108, 0.1);
-  --cloud-shadow-soft: 0 6px 18px rgba(120, 113, 108, 0.12);
+  --cloud-shadow-elevated: 0 20px 60px rgba(120, 113, 108, 0.12);
+
+  /* Radii */
   --cloud-radius-card: 24px;
   --cloud-radius-btn: 9999px;
   --cloud-radius-input: 16px;
+  --cloud-radius-badge: 9999px;
+
+  /* Fluid Typography (clamp: min, preferred, max) */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1rem + 1.25vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+  --text-4xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);
+
+  /* Fluid Spacing */
+  --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
+  --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --space-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  --space-xl: clamp(2rem, 1.5rem + 2.5vw, 4rem);
+
+  /* Easing functions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pt-safe {
@@ -364,4 +407,143 @@ a {
 .btn-location:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ===== Trust Badge ===== */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--cloud-radius-badge);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  background: var(--cloud-trust-green-bg);
+  color: var(--cloud-trust-green);
+  line-height: 1.3;
+}
+
+.trust-badge-blue {
+  background: var(--cloud-trust-blue-bg);
+  color: var(--cloud-trust-blue);
+}
+
+.trust-badge-warning {
+  background: var(--cloud-warning-bg);
+  color: var(--cloud-warning);
+}
+
+/* ===== Status Indicator ===== */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot-active {
+  background: var(--cloud-trust-green);
+  box-shadow: 0 0 0 3px var(--cloud-trust-green-bg);
+}
+
+.status-dot-pending {
+  background: var(--cloud-warning);
+  box-shadow: 0 0 0 3px var(--cloud-warning-bg);
+  animation: pulse-status 2s ease-in-out infinite;
+}
+
+.status-dot-inactive {
+  background: var(--cloud-text-muted);
+}
+
+@keyframes pulse-status {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ===== Progress Bar (Goal-Gradient) ===== */
+.progress-bar {
+  height: 6px;
+  border-radius: var(--cloud-radius-badge);
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--cloud-radius-badge);
+  background: var(--cloud-honey);
+  transition: width 0.5s var(--ease-out);
+}
+
+/* ===== Hover lift for cards ===== */
+.hover-lift {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cloud-shadow-hover);
+}
+
+/* ===== Glow on success ===== */
+@keyframes glow-success {
+  0% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.3);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+  }
+}
+
+.animate-glow-success {
+  animation: glow-success 0.6s ease-out;
+}
+
+/* ===== Empty state pattern ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-xl) var(--space-md);
+  min-height: 200px;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(232, 213, 163, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+  color: var(--cloud-brand);
+}
+
+/* ===== Accessibility: reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

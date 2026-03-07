@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Card } from '../UI';
+import { Card, Badge } from '../UI';
 import { NannyProfile, DocumentVerification } from '../../types';
 import { AvailabilityCalendar, SlotStatus } from '../AvailabilityCalendar';
 import { saveNannyProfile } from '../../services/storage';
@@ -208,8 +208,8 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                             key={key}
                             onClick={() => setIssueFilter(key)}
                             className={`text-xs px-2.5 py-1.5 rounded-lg border ${issueFilter === key
-                                    ? 'bg-stone-800 text-white border-stone-800'
-                                    : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
+                                ? 'bg-stone-800 text-white border-stone-800'
+                                : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
                                 }`}
                         >
                             {label}
@@ -239,7 +239,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                 </div>
 
                 {filteredNannies.length === 0 ? (
-                    <p className="text-stone-400 text-sm">Пусто</p>
+                    <div className="text-stone-400 text-sm">Пусто</div>
                 ) : (
                     <div className="space-y-3">
                         {filteredNannies.map((n) => {
@@ -255,7 +255,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                         <span>{new Date(n.createdAt).toLocaleString()}</span>
                                         <div className="flex items-center gap-2">
                                             {isProb && (
-                                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">проблема</span>
+                                                <Badge variant="status">проблема</Badge>
                                             )}
                                             {n.isVerified && <ShieldCheck size={14} className="text-green-600" />}
                                             <span className="font-mono">{n.id.slice(0, 6)}</span>
@@ -281,8 +281,8 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                         <button
                                             onClick={() => toggleVerified(n)}
                                             className={`text-xs font-bold px-3 py-2 rounded-lg transition-colors ${n.isVerified
-                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                                                 }`}
                                         >
                                             {n.isVerified ? 'Снять верификацию' : 'Подтвердить профиль'}
@@ -350,8 +350,8 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                                                 key={s}
                                                                 onClick={() => updateDocumentStatus(n, idx, s)}
                                                                 className={`text-[10px] px-2 py-1 rounded ${doc.status === s
-                                                                        ? 'bg-stone-800 text-white'
-                                                                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                                                                    ? 'bg-stone-800 text-white'
+                                                                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                                                                     }`}
                                                             >
                                                                 {s === 'verified' ? 'проверено' : 'отклонить'}

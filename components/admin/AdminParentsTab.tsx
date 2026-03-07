@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card } from '../UI';
+import { Card, Badge } from '../UI';
 import { ParentRequest, DocumentVerification } from '../../types';
 import { X } from 'lucide-react';
 import { updateParentRequest } from '../../services/storage';
@@ -133,8 +133,8 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                             key={key}
                             onClick={() => setParentStatusFilter(key)}
                             className={`text-xs px-2.5 py-1.5 rounded-lg border ${parentStatusFilter === key
-                                    ? 'bg-stone-800 text-white border-stone-800'
-                                    : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
+                                ? 'bg-stone-800 text-white border-stone-800'
+                                : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
                                 }`}
                         >
                             {label}
@@ -183,9 +183,9 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                 <div className="flex justify-between text-xs text-stone-400 mb-1">
                                     <span>{new Date(p.createdAt).toLocaleString()}</span>
                                     <div className="flex items-center gap-2">
-                                        <span className={`text-[10px] px-2 py-0.5 rounded ${parentStatusBadge(p.status)}`}>
+                                        <Badge variant={p.status === 'approved' ? 'trust' : p.status === 'rejected' ? 'status' : 'info'}>
                                             {parentStatusLabel(p.status)}
-                                        </span>
+                                        </Badge>
                                         <span className="font-mono">{p.id.slice(0, 6)}</span>
                                     </div>
                                 </div>
@@ -222,8 +222,8 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                         disabled={rejectReasonText.trim().length < 8}
                                         title={rejectReasonText.trim().length < 8 ? 'Добавь комментарий (минимум 8 символов)' : 'Отклонить с причиной'}
                                         className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${rejectReasonText.trim().length < 8
-                                                ? 'bg-red-50 text-red-300 cursor-not-allowed'
-                                                : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                            ? 'bg-red-50 text-red-300 cursor-not-allowed'
+                                            : 'bg-red-100 text-red-700 hover:bg-red-200'
                                             }`}
                                     >
                                         Отклонить
@@ -316,9 +316,9 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                 <span>{new Date(selectedParent.createdAt).toLocaleString()}</span>
                             </div>
                             <div className="pt-2 flex items-center gap-2">
-                                <span className={`text-[10px] px-2 py-1 rounded ${parentStatusBadge(selectedParent.status)}`}>
+                                <Badge variant={selectedParent.status === 'approved' ? 'trust' : selectedParent.status === 'rejected' ? 'status' : 'info'}>
                                     Статус: {parentStatusLabel(selectedParent.status)}
-                                </span>
+                                </Badge>
                                 <span className="text-[10px] px-2 py-1 rounded bg-stone-100 text-stone-600">
                                     Обновлено: {new Date(selectedParent.updatedAt || selectedParent.createdAt).toLocaleString()}
                                 </span>

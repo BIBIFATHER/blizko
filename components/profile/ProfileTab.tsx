@@ -358,29 +358,29 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                                 {myParentRequests.map((req) => {
                                     const lastAdminStatusEvent = [...(req.changeLog || [])].reverse().find((e) => e.type === 'status_changed' && e.by === 'admin');
                                     return (
-                                        <Card key={req.id} className="!p-4 bg-white border border-stone-100 flex items-center gap-3 justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm"><Clock size={20} /></div>
-                                                <div>
-                                                    <div className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                                        <Card key={req.id} className="!p-4 bg-white border border-stone-100 space-y-3">
+                                            <div className="flex items-start gap-3">
+                                                <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm flex-shrink-0"><Clock size={20} /></div>
+                                                <div className="min-w-0">
+                                                    <div className="text-sm font-semibold text-stone-700 flex items-center gap-2 flex-wrap">
                                                         <Badge variant={req.status === 'approved' ? 'trust' : req.status === 'rejected' ? 'status' : 'info'}>
                                                             {parentStatusLabel(req.status)}
                                                         </Badge>
                                                         {hasNewModerationUpdate(req) && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">Новое</span>}
                                                     </div>
-                                                    <div className="text-xs text-stone-400">Создана: {formatRuDate(req.createdAt)} • заявка {req.id.slice(0, 4).toUpperCase()}</div>
+                                                    <div className="text-xs text-stone-400 mt-1">Создана: {formatRuDate(req.createdAt)} • заявка {req.id.slice(0, 4).toUpperCase()}</div>
                                                     <div className="text-[11px] text-stone-500">Статус: {parentStatusLabel(req.status)}</div>
-                                                    {req.status === 'in_review' && <div className="mt-1 text-[11px] text-stone-500 max-w-[220px]">{lang === 'ru' ? 'Обычно 24–48ч' : 'Typically 24–48h'}</div>}
+                                                    {req.status === 'in_review' && <div className="mt-1 text-[11px] text-stone-500">{lang === 'ru' ? 'Обычно 24–48ч' : 'Typically 24–48h'}</div>}
                                                     {req.status === 'rejected' && (
-                                                        <div className="mt-1 text-[11px] text-red-600 max-w-[220px]">
+                                                        <div className="mt-1 text-[11px] text-red-600">
                                                             Причина: {parentRejectReasonLabel(req.rejectionInfo?.reasonCode)}
                                                             {req.rejectionInfo?.reasonText ? ` — ${req.rejectionInfo.reasonText}` : ''}
                                                         </div>
                                                     )}
-                                                    {lastAdminStatusEvent && <div className="mt-1 text-[11px] text-stone-500 max-w-[220px]">Обновлено модерацией: {new Date(lastAdminStatusEvent.at).toLocaleString()}</div>}
+                                                    {lastAdminStatusEvent && <div className="mt-1 text-[11px] text-stone-500">Обновлено модерацией: {new Date(lastAdminStatusEvent.at).toLocaleString()}</div>}
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col items-end gap-1">
+                                            <div className="flex flex-wrap gap-2">
                                                 <button
                                                     onClick={() => onEditParentRequest && onEditParentRequest(req)}
                                                     disabled={req.status === 'approved'}

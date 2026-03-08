@@ -136,14 +136,14 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                                                 <div>Резерв: Ольга П. (на подмене)</div>
                                                 <div>Подтверждения: T‑24ч ✅ · T‑3ч ⏳</div>
                                             </div>
-                                            <div className="grid grid-cols-3 gap-2">
-                                                <Button className="py-2 text-xs bg-stone-800 text-white hover:bg-stone-700">Подтвердить</Button>
-                                                <Button variant="outline" className="py-2 text-xs">Перенести</Button>
-                                                <Button variant="outline" className="py-2 text-xs">Замена</Button>
+                                            <div className="flex flex-col sm:flex-row gap-2">
+                                                <Button className="py-2.5 text-xs bg-stone-800 text-white hover:bg-stone-700 flex-1">✓ Подтвердить</Button>
+                                                <Button variant="outline" className="py-2.5 text-xs flex-1">↻ Перенести</Button>
+                                                <Button variant="outline" className="py-2.5 text-xs flex-1">⇄ Замена</Button>
                                             </div>
                                             <div className="text-[11px] text-stone-500">Если есть изменения — сообщите минимум за 3 часа.</div>
-                                            <Button onClick={() => setChatBooking(activeBooking)} className="py-3 text-sm bg-stone-800 text-white hover:bg-stone-700">
-                                                <MessageSquare size={16} /> <span className="hidden xs:inline">{text.chatWithNanny}</span>
+                                            <Button onClick={() => setChatBooking(activeBooking)} className="py-3 text-sm bg-stone-800 text-white hover:bg-stone-700 w-full">
+                                                <MessageSquare size={16} /> Чат с няней
                                             </Button>
                                         </div>
                                     </div>

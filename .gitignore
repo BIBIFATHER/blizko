@@ -41,3 +41,5 @@ backups/secrets/
 *.zip
 .env
 .env*.local
+awesome-llm-apps
+claude-code-templates

@@ -12,6 +12,7 @@ export interface ParentFormData {
     dateFrom: string;
     dateTo: string;
     analysisNotes: string;
+    isNannySharing: boolean;
 }
 
 export interface ParentAdvancedSettings {
@@ -91,6 +92,7 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
         dateFrom: '',
         dateTo: '',
         analysisNotes: '',
+        isNannySharing: initialData?.isNannySharing || false,
     });
 
     const [advanced, setAdvanced] = useState<ParentAdvancedSettings>({

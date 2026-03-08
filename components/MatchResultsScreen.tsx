@@ -82,6 +82,12 @@ const CandidateCard: React.FC<{
 
             {/* Trust Badges — Authority Bias */}
             <div className="mt-3 flex flex-wrap gap-1.5">
+                {nanny.isNannySharing && (
+                    <Badge variant="info" className="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200/50">
+                        <Sparkles size={10} className="mr-1 inline-block text-emerald-500" />
+                        {lang === 'ru' ? 'Nanny Sharing' : 'Nanny Sharing'}
+                    </Badge>
+                )}
                 {trustBadges.slice(0, 4).map(badge => (
                     <Badge key={badge} variant="trust" className="text-[11px]">
                         {TRUST_BADGE_LABELS[badge]?.[lang] || badge}

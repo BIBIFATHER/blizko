@@ -27,7 +27,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card: React.FC<CardProps> = ({ children, className = '', onClick, ...props }) => (
   <div
     onClick={onClick}
-    className={`bg-white/95 backdrop-blur-sm rounded-3xl card-cloud border border-stone-100/80 p-5 sm:p-6 transition-transform duration-200 ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
+    className={`bg-white/95 backdrop-blur-sm rounded-3xl card-cloud border border-stone-100/80 p-5 sm:p-6 transition-all duration-300 hover-lift ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
     {...props}
   >
     {children}
@@ -49,7 +49,7 @@ export const Button: React.FC<ButtonProps> = ({
   pulse,
   ...props
 }) => {
-  const baseStyles = "w-full py-3.5 sm:py-4 rounded-full font-semibold transition-all duration-200 active:scale-[0.97] flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation select-none";
+  const baseStyles = "w-full py-3.5 sm:py-4 rounded-full font-semibold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation select-none hover-lift";
 
   const variants = {
     primary: `btn-honey ring-1 ring-amber-100/40 ${pulse && !props.disabled ? 'btn-honey-pulse' : ''}`,
@@ -129,7 +129,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onChange }) 
   <label className="flex items-center gap-3 cursor-pointer py-2 px-1 rounded-xl transition-all -ml-1 select-none active:scale-[0.98]">
     <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${checked
       ? 'chip-warm border border-amber-200/60'
-      : 'border-2 border-stone-200 bg-white/60'
+      : 'border-2 border-stone-200 bg-white/60 hover:bg-white hover:border-stone-300'
       }`}>
       {checked && <Check className="w-3.5 h-3.5 animate-scale-in text-stone-700" strokeWidth={3} />}
     </div>
@@ -185,7 +185,7 @@ export const ChipGroup: React.FC<ChipGroupProps> = ({ label, options, selected, 
               key={opt}
               type="button"
               onClick={() => toggle(opt)}
-              className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-2 select-none border ${isActive
+              className={`px-3 py-1.5 md:px-4 md:py-2.5 rounded-full text-xs md:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-2 select-none border hover-lift ${isActive
                 ? 'chip-warm shadow-sm'
                 : 'bg-white/60 backdrop-blur-sm border-stone-200/60 text-stone-600 hover:border-amber-200/60 hover:bg-amber-50/30'
                 }`}
@@ -416,6 +416,34 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description
     {actionLabel && onAction && (
       <Button variant="primary" onClick={onAction} className="w-auto px-6">
         {actionLabel}
+      </Button>
+    )}
+  </div>
+);
+
+// --- ErrorState (Fallback UI) ---
+interface ErrorStateProps {
+  title?: string;
+  description?: string;
+  onRetry?: () => void;
+  className?: string;
+}
+
+export const ErrorState: React.FC<ErrorStateProps> = ({
+  title = 'Что-то пошло не так',
+  description = 'Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз.',
+  onRetry,
+  className = ''
+}) => (
+  <div className={`empty-state ${className}`}>
+    <div className="empty-state-icon bg-red-50 text-red-500">
+      <AlertCircle size={32} />
+    </div>
+    <h3 className="text-xl font-bold text-stone-800 mb-2">{title}</h3>
+    <p className="text-stone-500 max-w-sm mb-6">{description}</p>
+    {onRetry && (
+      <Button variant="outline" onClick={onRetry} className="w-auto px-6 hover-lift bg-white">
+        Попробовать снова
       </Button>
     )}
   </div>

@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "skills": {
+    "ai-product": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9052bf444cd62af242229b83d7681b80e4b6e8820e9d8084dca9a77b40c028fc"
+    },
+    "brand-guidelines": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "sourceType": "github",
+      "computedHash": "4aa754f4f7fc54ac3e7f6e2fb55c0e2fb14b7d70da077b41a86bd1889ff9094c"
+    },
+    "developer-growth-analysis": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "sourceType": "github",
+      "computedHash": "e3dcbe091bacd9f1afdac53319dea01aace1e50a9d8e64c21c859ab0a89765f5"
+    },
+    "executing-marketing-campaigns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b9a66b2add4e6dd23724df93f335ea3c83e3cd6c84151408f230494374631b67"
+    },
+    "executing-plans": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "caf0129e13202668e8b00358462358c95f7724bbe112b6d510cd4707b34b4489"
+    },
+    "figma": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c27f3511082159406fd0aeab40d37c124448cb91734b083decdd31f97dd8bbe1"
+    },
+    "figma-implement-design": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "de05aa944fc11cb34042ba2e7ae8205731bef9c1bf2d57fc54dd3bfc378528e1"
+    },
+    "lead-research-assistant": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "sourceType": "github",
+      "computedHash": "08cf5477dfdcbefa0758fad431c226efb9f09e108c8c6477b4a14db2d6810889"
+    },
+    "market-research-reports": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3b5e06849e0ab869bef9dce55a04d00a4e17bdbb34f1bd9868345b20dbb3616f"
+    },
+    "marketing-demand-acquisition": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "aee1d1c04ea03b7daa550983d670bda46cb42c078c9d03159d909ba31f0d1d3b"
+    },
+    "marketing-ideas": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1dee790889e403e8fe1de691a35432f4c7ebd10b1fc3ef60f9c87e065763d697"
+    },
+    "marketing-psychology": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "332f1a94ddb3305f6f85e421bb676ed02ab82c8150460afee7d4aa32bfac268b"
+    },
+    "perplexity": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a8c31732045ef978362c29b27c13ba6ee11b93d522a0019f08dd8568a08d7de6"
+    },
+    "perplexity-search": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e7d7b3d21c33fb1159fa788ffb0008702b0aa69fe980130bb31cde4137cc8cf9"
+    },
+    "skill-creator": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "sourceType": "github",
+      "computedHash": "6233fd26885f4e61c30c8282c885dc73a9feb2d2611ccb736d0cefc8899b678d"
+    },
+    "webapp-testing": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "sourceType": "github",
+      "computedHash": "cf8e5916d474886bd67b09691247f43f331523008b7d366064bc607ab42d6302"
+    }
+  }
+}

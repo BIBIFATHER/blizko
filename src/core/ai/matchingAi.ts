@@ -9,6 +9,7 @@ import {
   Language,
 } from "../types";
 import { aiText } from "./aiGateway";
+import { getQualityScore } from "../../../services/qualityScore";
 
 type RankedCandidate = {
   nanny: NannyProfile;
@@ -41,6 +42,8 @@ function rankCandidates(
   const parentPcm = request.riskProfile?.pcmType;
 
   return candidates
+    // Pre-filter: only approved nannies with Quality Score >= 50
+    .filter((nanny) => getQualityScore(nanny) >= 50)
     .map((nanny) => {
       let score = 40;
       const reasons: string[] = [];
@@ -131,6 +134,17 @@ function rankCandidates(
       }
 
       score += growthScore;
+
+      // Nanny Sharing compatibility bonus
+      if (request.isNannySharing && nanny.isNannySharing) {
+        score += 8;
+        reasons.push("Готова к совместному шерингу няни");
+      }
+
+      // Quality Score bonus (up to +10)
+      const qs = getQualityScore(nanny);
+      if (qs >= 85) { score += 10; reasons.push("Премиум-рейтинг качества"); }
+      else if (qs >= 70) { score += 6; }
 
       score = Math.max(0, Math.min(100, score));
       return { nanny, score, reasons };

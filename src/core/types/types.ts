@@ -54,6 +54,7 @@ export interface ParentRequest {
   updatedAt?: number;
   rejectionInfo?: RejectionInfo;
   changeLog?: ParentChangeEvent[];
+  isNannySharing?: boolean;
 }
 
 export interface SoftSkillsProfile {
@@ -119,6 +120,7 @@ export interface NannyProfile {
   reviews?: Review[]; // New field for reviews
   resumeNormalized?: NormalizedResume; // unified resume format from OCR/AI
   riskProfile?: NannyRiskProfile;
+  isNannySharing?: boolean;
   createdAt: number;
 }
 

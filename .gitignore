@@ -40,3 +40,4 @@ backups/secrets/
 *.tgz
 *.zip
 .env
+.env*.local

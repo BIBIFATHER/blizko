@@ -1,7 +1,7 @@
 import React from 'react';
 import { Camera, MapPin, ShieldCheck, Lock, Sparkles } from 'lucide-react';
 import { useNannyForm } from './NannyFormProvider';
-import { Button, Input } from '../../UI';
+import { Button, Input, Checkbox } from '../../UI';
 import { t } from '../../../src/core/i18n/translations';
 import { Language } from '../../../types';
 
@@ -131,6 +131,23 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 required
                 autoAdvance
             />
+
+            <div className="bg-emerald-50/50 border border-emerald-100/60 rounded-2xl p-4 mt-6 animate-fade-in mb-6">
+                <div className="flex items-start gap-3">
+                    <div className="mt-1">
+                        <Checkbox
+                            label={lang === 'ru' ? 'Готов(а) работать с двумя семьями поблизости' : 'Ready to work with two nearby families'}
+                            checked={formData.isNannySharing}
+                            onChange={(checked) => setFormData({ ...formData, isNannySharing: checked })}
+                        />
+                    </div>
+                </div>
+                <p className="text-xs text-stone-500 mt-2 pl-9">
+                    {lang === 'ru'
+                        ? 'Nanny Sharing: работа у двух семей в одном районе (до 3 км). Гарантирует полную занятость и стабильный доход.'
+                        : 'Work with two families in the same area. Guarantees full-time employment and stable income.'}
+                </p>
+            </div>
 
             <div className="sticky bottom-0 z-10 pt-4 pb-6 -mx-2 px-2 sticky-footer-fade mt-4">
                 {showAhaMoment && !isFormValid && (

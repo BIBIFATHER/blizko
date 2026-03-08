@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Lock, Sparkles } from 'lucide-react';
 import { useParentForm } from './ParentFormProvider';
-import { Button, Input, ChipGroup, RangeSlider } from '../../UI';
+import { Button, Input, ChipGroup, RangeSlider, Checkbox } from '../../UI';
 import { t } from '../../../src/core/i18n/translations';
 import { Language } from '../../../types';
 
@@ -120,6 +120,23 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                 <div className="text-center mt-3 text-xs text-emerald-600 font-medium bg-emerald-50 py-1.5 px-3 rounded-full mx-auto w-fit flex items-center gap-1.5">
                     <Sparkles size={12} /> {lang === 'ru' ? 'Мы не берем комиссию с зарплаты няни' : 'We take 0% commission from nanny\'s salary'}
                 </div>
+            </div>
+
+            <div className="bg-amber-50/50 border border-amber-100/60 rounded-2xl p-4 mt-6 animate-fade-in">
+                <div className="flex items-start gap-3">
+                    <div className="mt-1">
+                        <Checkbox
+                            label={lang === 'ru' ? 'Делить няню с соседями (Nanny Sharing)' : 'Share a nanny with neighbors'}
+                            checked={formData.isNannySharing}
+                            onChange={(checked) => setFormData({ ...formData, isNannySharing: checked })}
+                        />
+                    </div>
+                </div>
+                <p className="text-xs text-stone-500 mt-2 pl-9">
+                    {lang === 'ru'
+                        ? 'Шеринг — это как каршеринг, только для нянь. Вы делите часы няни с семьёй поблизости (до 3 км) и экономите до 50% стоимости.'
+                        : 'Share a nanny with a nearby family (up to 3km) and save up to 50% on costs.'}
+                </p>
             </div>
 
             <div className="sticky bottom-0 z-10 pt-4 pb-6 -mx-2 px-2 sticky-footer-fade mt-4">

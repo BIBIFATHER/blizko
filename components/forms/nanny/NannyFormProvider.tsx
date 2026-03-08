@@ -10,6 +10,7 @@ export interface NannyFormData {
     expectedRate: string;
     about: string;
     contact: string;
+    isNannySharing: boolean;
 }
 
 export interface AdvancedSettings {
@@ -87,7 +88,8 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
         schedule: initialData?.schedule || '',
         expectedRate: initialData?.expectedRate || '',
         about: initialData?.about || '',
-        contact: initialData?.contact || ''
+        contact: initialData?.contact || '',
+        isNannySharing: initialData?.isNannySharing || false
     });
 
     const [advanced, setAdvanced] = useState<AdvancedSettings>({

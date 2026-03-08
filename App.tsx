@@ -14,6 +14,7 @@ import { ShareModal } from './components/ShareModal';
 import { Forbidden } from './components/Forbidden';
 import { LoginPage } from './components/LoginPage';
 import { HowWeVerifyPage, HumanityPlusPage } from './components/seo/SeoPages';
+import { NannyLandingPage } from './components/NannyLandingPage';
 import { ViewState, ParentRequest, NannyProfile, SubmissionResult, Language, User } from './types';
 import { saveParentRequest, saveNannyProfile, getNannyProfiles, updateParentRequest } from './services/storage';
 import { sendToWebhook } from './services/api';
@@ -305,6 +306,7 @@ export default function App() {
           <Route path="/match-results" element={<MatchResultsScreen lang={lang} />} />
           <Route path="/how-we-verify" element={<HowWeVerifyPage />} />
           <Route path="/humanity-plus" element={<HumanityPlusPage />} />
+          <Route path="/for-nannies" element={<NannyLandingPage />} />
           <Route
             path="/nanny-dashboard"
             element={

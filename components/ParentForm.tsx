@@ -50,6 +50,8 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
 
   const [formData, setFormData] = useState({
     city: initialData?.city || '',
+    district: initialData?.district || '',
+    metro: initialData?.metro || '',
     childAge: initialData?.childAge || '',
     schedule: initialData?.schedule || '',
     budgetHourly: parsedBudget.hourly,
@@ -112,6 +114,8 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
 
       await onSubmit({
         city: formData.city,
+        district: formData.district || undefined,
+        metro: formData.metro || undefined,
         childAge: formData.childAge,
         schedule: formData.schedule,
         budget,
@@ -240,6 +244,21 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
               ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
               : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
           </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Input
+            label={lang === 'ru' ? 'Район' : 'District'}
+            placeholder={lang === 'ru' ? 'Хамовники, ЮАО, Бутово...' : 'Brooklyn, Soho...'}
+            value={formData.district}
+            onChange={e => setFormData({ ...formData, district: e.target.value })}
+          />
+          <Input
+            label={lang === 'ru' ? 'Ближайшее метро' : 'Nearest metro'}
+            placeholder={lang === 'ru' ? 'Парк Культуры' : 'Central Station'}
+            value={formData.metro}
+            onChange={e => setFormData({ ...formData, metro: e.target.value })}
+          />
         </div>
 
         <ChipGroup

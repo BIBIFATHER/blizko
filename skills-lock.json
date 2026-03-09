@@ -1,6 +1,16 @@
 {
   "version": 1,
   "skills": {
+    "SEO Optimizer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "40f156d4e5f94c560128a46a5118170ad3515d7f12edbe80cfc461d9af46c606"
+    },
+    "accessibility-compliance": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "36d3b046163c42251732b3127c042f6b8eb7d91fcbf7ef9ae79fde79e9c99369"
+    },
     "ai-product": {
       "source": "davila7/claude-code-templates",
       "sourceType": "github",
@@ -10,6 +20,21 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "5c2804e8f0d4944c7ce6939a2e4afdcf0cb69c966a505481ed8b96e20bb32eee"
+    },
+    "api-design-principles": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "3316239df2bdcb41e992857b8142e0239e6964564dd5d7224e470c2ab350a03c"
+    },
+    "app-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9810619c47a30b5b3a3605b36e0e68dc420ad8b61205e9f4764073c8bedd87a5"
+    },
+    "app-store-optimization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "749f85e87ff153a98ffbb9f84be5ed1d6d73af560d25567d5080d92a2fe784a5"
     },
     "article-writing": {
       "source": "affaan-m/everything-claude-code",
@@ -21,6 +46,11 @@
       "sourceType": "github",
       "computedHash": "24d5803368c402ed5a72541dbbd0cb9975c56e574cdf4b45332f54991186301a"
     },
+    "backtesting-frameworks": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "d6a1704ca435018bd441ef4472e843bf6a2e9dbf3e8b75a0aae9c95e66efe7bd"
+    },
     "brand-guidelines": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -30,6 +60,11 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "a2fe47d24b3fd8e52faef731fff099c557e698083cd644b2e5695cc4dd8c7715"
+    },
+    "code-review-excellence": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "0f585a4ad2f6d8353069ca9051c6f0e8865abb9d3a6a268d423784c3c3852962"
     },
     "code-reviewer": {
       "source": "Shubhamsaboo/awesome-llm-apps",
@@ -76,10 +111,20 @@
       "sourceType": "github",
       "computedHash": "c27f9b1edf5bfecabb5a5a345f476a46566ce29e29e4b9d4c80d336ef5ca784f"
     },
+    "deploy-to-vercel": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "d2b5bcc7c09fdb649129ffc7dd7b647ec1b155736974b974292675afd588cb39"
+    },
     "deployment-patterns": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
       "computedHash": "99f83de44e287fa486828d87e0f2083e1aee7ea47b8df5768ee9786c6cda57c4"
+    },
+    "design-system-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "5f8c9b187e77fcb31db78da2f7b55f905dcd2357454624cac93f00c766ace346"
     },
     "developer-growth-analysis": {
       "source": "ComposioHQ/awesome-claude-skills",
@@ -90,6 +135,21 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "b964e4c3ffe13f66f76dd7919073e60c7aec622cd8a8363bb36323188100cf8e"
+    },
+    "e2e-testing-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "37ea37e42a81c926ebd81924691a15fb657df7c8a52b863c34967e5ab99cdc22"
+    },
+    "error-handling-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "824c53fa080765f05862d3ec0ef829aaff9f8d544f9de0039b8fcafa6bc1a899"
+    },
+    "event-store-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "702c669f452ef05dd5e4b00f65473889d91d23faaa689a5139d223e2f0467a0a"
     },
     "executing-marketing-campaigns": {
       "source": "davila7/claude-code-templates",
@@ -166,6 +226,31 @@
       "sourceType": "github",
       "computedHash": "fc68038c900eb801f73ff96130c9f9dba533cc94212ed8435833242f196dedcf"
     },
+    "memory-safety-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "69876e154d9fc72702a0844ee944b1bba4f05d2d4c247ae1248d247d3190b162"
+    },
+    "mobile-android-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "0dfa08663016e0faa2db0611420bd5c17ba2d635a057e17a6b71c2a0c3f2ed79"
+    },
+    "mobile-ios-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "3902f919488d8ddc983e157bbcd5f16b739b84eeaab57002bf52b7f9601ed6ad"
+    },
+    "multi-cloud-architecture": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "622045104622c547e42414b73c017ebb6463202fcc2ecf097fe0fb0ba1c4c04d"
+    },
+    "multi-reviewer-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "9e2f76e06a3a0d4e76b4955469b9ca65951a1f0229c39ec961b1e8ff8a03a31e"
+    },
     "n8n-conventions": {
       "source": "n8n-io/n8n",
       "sourceType": "github",
@@ -186,6 +271,66 @@
       "sourceType": "github",
       "computedHash": "ce3084b8f555d1c560d849332483428301f30ec78f315e1d60ca1ddd8bc69a51"
     },
+    "prompt-engineering-patterns": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "53ca5b03a78c3d0c8117eaf330b73d83d06ed0d66789490ca8a263ce92849d22"
+    },
+    "react-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6c9fa18c51cb00c74e9eb6241d3d39e9b1624f09583505cdc2aff397d6082107"
+    },
+    "react-dev": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4ce3a30e2ad46fdb79f01e0e44701f961c055da7f25f9418af0283a7ad54b791"
+    },
+    "react-modernization": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "11facc88acf2a1920b9b77d88e7efa109a00577dbf37d1adefca549eb3244d6c"
+    },
+    "react-native-architecture": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "f9a0f18d522b307981b6f188b8501c9c9326adeb8aca5b46b679731dc69681ae"
+    },
+    "react-native-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "f75e8c7bd9ffd77a29b74eece63806ff87f8723c30744c5cb90f8baab388d18e"
+    },
+    "react-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "39efd5a63422c248827fbb98df5df13f696c9c7b877c7cafe85ac60396018280"
+    },
+    "react-state-management": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "7c63f9bf6ce2e2884b2da61e899a2701068b53ef6e87fc29e3c04a199e3092cb"
+    },
+    "react-ui-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "33f3f82d156336e93f4752ccd49931bc0d59468ebdac5e7744e2edb173cbb9ea"
+    },
+    "react-useeffect": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8c24990b50f431a570f3ad1f60632dee154431861547103047f6ce80092ca734"
+    },
+    "responsive-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "0977c17696ab66ea613ce5b83c856bc7cd01332d98ae237dac7539840fe96187"
+    },
+    "screen-reader-testing": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "9cb1ea131a4b36edd54f42a6995a8b93bac2b08a9cf56be9d2397d6f98b479d0"
+    },
     "security-review": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
@@ -195,6 +340,56 @@
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
       "computedHash": "92cdcaddc554e318402f066ccc073c2e3dbcfda8c2730ec62ec373f805c41a57"
+    },
+    "senior-backend": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1919d688687239bae5880bd935ce8f845e7b4f82293faba882bb8e2cbb9481b6"
+    },
+    "senior-computer-vision": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ed6a0397c362e1a36ceae95c34636a028c2f450daa0a632e24381a0955f73f29"
+    },
+    "senior-data-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ca9c158a158565ee5a5db19af9b75024286fe6fb3fa1fab762c825979bd30096"
+    },
+    "senior-data-scientist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "95d92329998ee2d8956dbf9a917d1d978578e1643a84a09b42f2f66e28780524"
+    },
+    "senior-devops": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1e0472ec40916aeed3cdab8a1290aef4739a7e50f883e6a984bb5e03d1e69dd7"
+    },
+    "senior-frontend": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9614baf7a44e6c233d5af3aa77c013cfec7fa71eee5e0bfea3951b955eb92ba7"
+    },
+    "senior-fullstack": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ba1e155eb5772e59e4f4ce1805538940d5725c1edf14fbd0eb0e0ec249767194"
+    },
+    "senior-ml-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ffbb008afe56a957fbe981b2bff7c1860013acc67910e8763ab261e4f0f5adb8"
+    },
+    "senior-prompt-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "10a3a50802429d4e542dc835634c8864d4eaf8d87a06f119f2e7ff3f772428ed"
+    },
+    "seo-audit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9eed8a71a0cb70118942f302cf1c160cea092864a88deda922d0ab0d784f7c4c"
     },
     "skill-creator": {
       "source": "anthropics/skills",
@@ -206,6 +401,11 @@
       "sourceType": "github",
       "computedHash": "146d0f407e3f04aac0378b74bb238833b24bbd5e6387b932e82cfbf228f219b4"
     },
+    "startup-financial-modeling": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "30cb6bb2c58dbecbea2d41d3a808e7c66d5d213ff300e3aa7d257e7d0ac61a5d"
+    },
     "strategic-compact": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
@@ -216,20 +416,75 @@
       "sourceType": "github",
       "computedHash": "b89ff6935fb1a7607bae1fba36dfe84963c633750048e3db0a085c4f5c3ca79c"
     },
+    "supabase-postgres-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c3997d2c905cdd6080d453a9223d9ff981eb52a0781a697da20f8c317a75108d"
+    },
+    "tailwind-design-system": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "7ff2f4650597e98ca4cd8f01231fb432ab4d187d6b12e641485aa871a04448cc"
+    },
+    "task-coordination-strategies": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "ed4d1652bdc81a055e2ab2e13bf288836c3a6174009d9a780e4dd4b4be42d1ae"
+    },
+    "team-communication-protocols": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "4d516f704f962e8731ba905b2505c313cae9442e9baf8528d0409481df051be5"
+    },
+    "team-composition-analysis": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "54aa90e61d7e0d80093d34d794c6e2708081714b7881ab2c5ac10dfef436c564"
+    },
     "technical-writer": {
       "source": "Shubhamsaboo/awesome-llm-apps",
       "sourceType": "github",
       "computedHash": "e1ccd2334efd9b2137844568db30b0a1c6679404b474c216476c59e22ad08c28"
+    },
+    "temporal-python-testing": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "749b486daa5a8c68d33dff3e3fbc523cec2728db729bdd9366f2c8bcabc8f992"
     },
     "theme-factory": {
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "93e78aa44f8fa00bb2c0608f400de1e1dcd6494611dd8ea27c867654240c7bcd"
     },
+    "track-management": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "7f086653348bd02f86992a189c8fe78bede343cea1724a7c2ea701e6a4d76b04"
+    },
     "ux-designer": {
       "source": "Shubhamsaboo/awesome-llm-apps",
       "sourceType": "github",
       "computedHash": "1178ae59d9dd5ca71122674d85bd78d746b3b95f76c58c65cb0fd48dd54bea45"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "f98931159fa9c7fed043bcd18a891a46dcf89ababa38df13a4c5b7b30dc0ce07"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "3462ec83f862abb2d532953df33a4dbf87f4616849da5d4b5cc7c13601aaf997"
+    },
+    "vercel-react-native-skills": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "2e9088a7333666d8c2833b8ff58bd51b955501c42b4c7244f72b4cbf22dafcc4"
+    },
+    "visual-design-foundations": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "9f0f44bd206036f17f69cf78f3f3b5f9c0e0118672574ffd35c4c34c3d574d16"
     },
     "visualization-expert": {
       "source": "Shubhamsaboo/awesome-llm-apps",
@@ -240,6 +495,11 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "143730c6db11d82d8c5db4d0cf8f435421983f1fc510b24f77ee9a0e8bae7704"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
     },
     "webapp-testing": {
       "source": "anthropics/skills",

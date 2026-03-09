@@ -5,6 +5,8 @@ import { detectUserLocation } from '../../../services/geolocation';
 export interface NannyFormData {
     name: string;
     city: string;
+    district: string;
+    metro: string;
     experience: string;
     schedule: string;
     expectedRate: string;
@@ -84,6 +86,8 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
     const [formData, setFormData] = useState<NannyFormData>({
         name: initialData?.name || '',
         city: initialData?.city || '',
+        district: initialData?.district || '',
+        metro: initialData?.metro || '',
         experience: initialData?.experience || '',
         schedule: initialData?.schedule || '',
         expectedRate: initialData?.expectedRate || '',

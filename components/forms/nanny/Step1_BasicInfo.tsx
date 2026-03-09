@@ -123,6 +123,21 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 </div>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input
+                    label={lang === 'ru' ? 'Район' : 'District'}
+                    placeholder={lang === 'ru' ? 'Хамовники, Бутово...' : 'Brooklyn...'}
+                    value={formData.district}
+                    onChange={e => setFormData({ ...formData, district: e.target.value })}
+                />
+                <Input
+                    label={lang === 'ru' ? 'Ближайшее метро' : 'Nearest metro'}
+                    placeholder={lang === 'ru' ? 'Парк Культуры' : 'Central'}
+                    value={formData.metro}
+                    onChange={e => setFormData({ ...formData, metro: e.target.value })}
+                />
+            </div>
+
             <Input
                 label={`${lang === 'ru' ? 'Где с вами можно связаться?' : 'How can we contact you?'} (Телефон) *`}
                 placeholder="+7 900 000 00 00"
@@ -172,6 +187,6 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                     {lang === 'ru' ? 'Осталось 3 шага' : '3 steps left'}
                 </Button>
             </div>
-        </div>
+        </div >
     );
 };

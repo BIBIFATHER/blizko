@@ -42,6 +42,8 @@ export interface ParentRequest {
   type: 'parent';
   status?: 'new' | 'in_review' | 'approved' | 'rejected';
   city: string;
+  district?: string;
+  metro?: string;
   childAge: string;
   schedule: string;
   budget: string;
@@ -105,6 +107,8 @@ export interface NannyProfile {
   name: string;
   photo?: string; // Base64 or URL
   city: string;
+  district?: string;
+  metro?: string;
   experience: string;
   schedule?: string;
   expectedRate?: string;
@@ -140,6 +144,7 @@ export interface MatchCandidate {
   reasons: string[];           // machine reasons
   humanExplanation: string;     // why this nanny fits (Peak-End: emotional moment)
   trustBadges: TrustBadge[];   // Authority Bias: visual trust
+  riskFlags?: { level: 'warning' | 'critical'; message: string; advice?: string }[];
 }
 
 export type TrustBadge =

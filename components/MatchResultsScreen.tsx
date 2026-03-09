@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, Button, Badge, EmptyState } from './UI';
-import { MessageCircle, ArrowLeft, Sparkles, Star, User } from 'lucide-react';
+import { MessageCircle, ArrowLeft, Sparkles, Star, User, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { MatchResult, MatchCandidate, TrustBadge, Language } from '../types';
 
 interface MatchResultsScreenProps {
@@ -22,7 +22,7 @@ const CandidateCard: React.FC<{
     lang: Language;
     onMessage: (nannyId: string) => void;
 }> = ({ candidate, index, lang, onMessage }) => {
-    const { nanny, score, humanExplanation, trustBadges } = candidate;
+    const { nanny, score, humanExplanation, trustBadges, riskFlags } = candidate;
 
     // Generate initials for avatar
     const initials = (nanny.name || '?')
@@ -94,6 +94,36 @@ const CandidateCard: React.FC<{
                     </Badge>
                 ))}
             </div>
+
+            {/* Risk Flags — trust-first: warn before booking */}
+            {riskFlags && riskFlags.length > 0 && (
+                <div className="mt-3 space-y-2">
+                    {riskFlags.map((flag, i) => (
+                        <div
+                            key={i}
+                            className={`p-2.5 rounded-xl border text-xs leading-relaxed ${flag.level === 'critical'
+                                    ? 'bg-red-50/80 border-red-200/60 text-red-800'
+                                    : 'bg-amber-50/80 border-amber-200/60 text-amber-800'
+                                }`}
+                        >
+                            <div className="flex items-start gap-2">
+                                {flag.level === 'critical'
+                                    ? <ShieldAlert size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
+                                    : <AlertTriangle size={14} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                                }
+                                <div>
+                                    <p className="font-medium">{flag.message}</p>
+                                    {flag.advice && (
+                                        <p className="mt-1 opacity-75">
+                                            💡 {flag.advice}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* CTA — Foot-in-the-Door: small step */}
             <Button

@@ -10,11 +10,14 @@ import {
 } from "../types";
 import { aiText } from "./aiGateway";
 import { getQualityScore } from "../../../services/qualityScore";
+import { geoScore, budgetScore } from "./geoAndBudget";
+import { detectRiskFlags, RiskFlag } from "./riskEngine";
 
 type RankedCandidate = {
   nanny: NannyProfile;
   score: number;
   reasons: string[];
+  riskFlags: RiskFlag[];
 };
 
 function norm(v?: string): string {
@@ -41,9 +44,19 @@ function rankCandidates(
   const needs = request.riskProfile?.needs || [];
   const parentPcm = request.riskProfile?.pcmType;
 
-  return candidates
+  // Deduplicate by nanny ID (prevents same nanny appearing twice from localStorage + Supabase sync)
+  const seen = new Set<string>();
+  const uniqueCandidates = candidates.filter((n) => {
+    if (seen.has(n.id)) return false;
+    seen.add(n.id);
+    return true;
+  });
+
+  return uniqueCandidates
     // Pre-filter: only approved nannies with Quality Score >= 50
     .filter((nanny) => getQualityScore(nanny) >= 50)
+    // Pre-filter: budget hard filter (nanny rate > 2x parent budget = exclude)
+    .filter((nanny) => !budgetScore(request.budget, nanny.expectedRate).exclude)
     .map((nanny) => {
       let score = 40;
       const reasons: string[] = [];
@@ -55,9 +68,21 @@ function rankCandidates(
       const childAges = (nanny.childAges || []).map(norm).join(" ");
       const profileText = [about, experience, skills, childAges].join(" ");
 
-      if (city && nannyCity && (nannyCity.includes(city) || city.includes(nannyCity))) {
-        score += 20;
-        reasons.push("Локация совпадает");
+      // --- GEO SCORING (replaces old city matching) ---
+      const geo = geoScore(
+        request.district, request.metro, request.city,
+        nanny.district, nanny.metro, nanny.city
+      );
+      if (geo.score > 0) {
+        score += geo.score;
+        if (geo.reason) reasons.push(geo.reason);
+      }
+
+      // --- BUDGET SCORING ---
+      const budget = budgetScore(request.budget, nanny.expectedRate);
+      if (budget.score > 0) {
+        score += budget.score;
+        if (budget.reason) reasons.push(budget.reason);
       }
 
       if (nanny.isVerified) {
@@ -146,8 +171,11 @@ function rankCandidates(
       if (qs >= 85) { score += 10; reasons.push("Премиум-рейтинг качества"); }
       else if (qs >= 70) { score += 6; }
 
+      // Risk flags
+      const riskFlags = detectRiskFlags(request, nanny);
+
       score = Math.max(0, Math.min(100, score));
-      return { nanny, score, reasons };
+      return { nanny, score, reasons, riskFlags };
     })
     .sort((a, b) => b.score - a.score);
 }
@@ -166,36 +194,101 @@ function buildTrustBadges(nanny: NannyProfile): TrustBadge[] {
   return badges;
 }
 
-function buildHumanExplanation(
+function buildHumanExplanationFallback(
   ranked: RankedCandidate,
   request: Omit<ParentRequest, "id" | "createdAt" | "type">,
   lang: Language
 ): string {
   const name = ranked.nanny.name || (lang === 'ru' ? 'Кандидат' : 'Candidate');
-  const reasons = ranked.reasons.slice(0, 2);
+  const nanny = ranked.nanny;
+
+  // Build a rich, specific explanation from available data
+  const parts: string[] = [];
+
+  if (nanny.experience) {
+    parts.push(lang === 'ru' ? `опыт ${nanny.experience}` : `${nanny.experience} of experience`);
+  }
+  if (nanny.district || nanny.metro) {
+    const loc = nanny.metro || nanny.district || '';
+    if (loc) parts.push(lang === 'ru' ? `работает рядом (${loc})` : `nearby (${loc})`);
+  }
+  if (nanny.softSkills?.dominantStyle) {
+    const styleMap: Record<string, string> = {
+      'Empathetic': lang === 'ru' ? 'мягкий и эмпатичный подход' : 'empathetic approach',
+      'Structured': lang === 'ru' ? 'структурированный подход к режиму' : 'structured routine approach',
+      'Balanced': lang === 'ru' ? 'сбалансированный стиль воспитания' : 'balanced parenting style',
+    };
+    parts.push(styleMap[nanny.softSkills.dominantStyle] || '');
+  }
+  if (nanny.skills?.length) {
+    const topSkills = nanny.skills.slice(0, 2).join(', ');
+    parts.push(lang === 'ru' ? `умеет: ${topSkills}` : `skills: ${topSkills}`);
+  }
+
+  const validParts = parts.filter(Boolean);
 
   if (lang === 'ru') {
-    if (reasons.length === 0) return `${name} может подойти вашей семье.`;
-    return `${name} подходит, потому что: ${reasons.join(' и ').toLowerCase()}.`;
+    if (validParts.length === 0) return `${name} может подойти вашей семье.`;
+    return `${name} — ${validParts.join(', ')}.`;
   }
-  if (reasons.length === 0) return `${name} could be a good match for your family.`;
-  return `${name} fits because: ${reasons.join(' and ').toLowerCase()}.`;
+  if (validParts.length === 0) return `${name} could be a good match for your family.`;
+  return `${name} — ${validParts.join(', ')}.`;
 }
 
-function buildMatchResult(
+async function buildHumanExplanationAI(
+  ranked: RankedCandidate,
+  request: Omit<ParentRequest, "id" | "createdAt" | "type">,
+  lang: Language
+): Promise<string> {
+  const name = ranked.nanny.name || 'Кандидат';
+  const fallback = buildHumanExplanationFallback(ranked, request, lang);
+
+  try {
+    const prompt = lang === 'ru'
+      ? `Напиши 1-2 тёплых предложения, почему няня "${name}" подходит этой семье.
+Няня: опыт ${ranked.nanny.experience || '?'}, навыки: ${(ranked.nanny.skills || []).join(', ')}, район: ${ranked.nanny.district || ranked.nanny.metro || 'Москва'}, стиль: ${ranked.nanny.softSkills?.dominantStyle || '?'}.
+Родитель: ребёнок ${request.childAge || '?'}, график ${request.schedule || '?'}, район ${request.district || request.metro || 'Москва'}.
+Отвечай ТОЛЬКО текстом объяснения, без кавычек, без вступлений.`
+      : `Write 1-2 warm sentences about why nanny "${name}" fits this family.
+Nanny: ${ranked.nanny.experience || '?'} exp, skills: ${(ranked.nanny.skills || []).join(', ')}, area: ${ranked.nanny.district || 'Moscow'}.
+Parent: child age ${request.childAge || '?'}, schedule ${request.schedule || '?'}.
+Respond ONLY with the explanation text.`;
+
+    const result = await aiText(prompt, { temperature: 0.7 });
+    if (result && result.trim().length > 10 && result.trim().length < 300) {
+      return result.trim();
+    }
+  } catch {
+    // AI failed, use fallback
+  }
+
+  return fallback;
+}
+
+async function buildMatchResult(
   ranked: RankedCandidate[],
   request: Omit<ParentRequest, "id" | "createdAt" | "type">,
   lang: Language
-): MatchResult {
+): Promise<MatchResult> {
   // Paradox of Choice: max 3 candidates
   const top3 = ranked.slice(0, 3).filter(r => r.score >= 40);
 
-  const candidates: MatchCandidate[] = top3.map(r => ({
+  // Generate AI explanations in parallel for speed
+  const explanations = await Promise.all(
+    top3.map(r => buildHumanExplanationAI(r, request, lang))
+  );
+
+  const candidates: MatchCandidate[] = top3.map((r, i) => ({
     nanny: r.nanny,
     score: Math.max(55, Math.min(98, r.score)),
     reasons: r.reasons,
-    humanExplanation: buildHumanExplanation(r, request, lang),
+    humanExplanation: explanations[i],
     trustBadges: buildTrustBadges(r.nanny),
+    riskFlags: r.riskFlags.length > 0 ? r.riskFlags.map(f => ({
+      level: f.level,
+      message: f.message,
+      advice: f.advice,
+    })) : undefined,
   }));
 
   const overallAdvice = lang === 'ru'
@@ -260,7 +353,7 @@ export const findBestMatch = async (
   const ranked = rankCandidates(request, candidates);
   const topCandidates = ranked.slice(0, 25);
   const heuristicFallback = buildHeuristicFallback(ranked, lang);
-  const matchResult = buildMatchResult(ranked, request, lang);
+  const matchResult = await buildMatchResult(ranked, request, lang);
 
   const candidateData =
     topCandidates.length > 0
@@ -281,26 +374,31 @@ export const findBestMatch = async (
       : "No candidates in database. Provide recommendations to improve request quality.";
 
   const prompt = `
-Role: You are an expert HR matching algorithm for a Nanny Matching Service.
+Role: You are an expert HR matching algorithm for a Nanny Matching Service called Blizko.
 
 Task:
 Analyze PARENT REQUEST and TOP CANDIDATES shortlist.
-Return realistic compatibility score and practical recommendations for parent.
+Return realistic compatibility score and 3 practical, SPECIFIC recommendations for the parent.
 
 PARENT REQUEST:
 City: ${request.city}
+District: ${request.district || 'не указан'}
+Metro: ${request.metro || 'не указана'}
 Child Age: ${request.childAge}
 Schedule: ${request.schedule}
 Budget: ${request.budget}
 Requirements: ${request.requirements.join(", ")}
 Comment: ${request.comment}
+Family Style: ${request.riskProfile?.familyStyle || 'не указан'}
+Communication: ${request.riskProfile?.communicationPreference || 'не указана'}
 
-TOP CANDIDATES (already pre-ranked heuristically):
+TOP CANDIDATES (already pre-ranked by heuristic scoring):
 ${candidateData}
 
 Rules:
-- Keep matchScore realistic (0-100).
-- Do not output generic advice; make it specific to this request.
+- matchScore must be realistic (0-100). If top candidate has heuristicScore 80+, matchScore should be 75-95.
+- Each recommendation MUST reference specific candidate names or specific aspects of the request.
+- Do NOT give generic advice like "check references" — be specific.
 - recommendations must be exactly 3 short strings in ${lang === "ru" ? "Russian" : "English"}.
 
 Output JSON only:

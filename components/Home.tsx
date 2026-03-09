@@ -5,6 +5,7 @@ import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles, Star, Clock } fro
 import { Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { CompatibilityModal, ModalMode } from './CompatibilityModal';
+import { trackPageView, trackCTA } from '../services/analytics';
 
 interface HomeProps {
   lang: Language;
@@ -12,8 +13,8 @@ interface HomeProps {
 
 export const Home: React.FC<HomeProps> = ({ lang }) => {
   const navigate = useNavigate();
-  const onFindNanny = () => navigate('/find-nanny');
-  const onBecomeNanny = () => navigate('/become-nanny');
+  const onFindNanny = () => { trackCTA('find_nanny', 'home_hero'); navigate('/find-nanny'); };
+  const onBecomeNanny = () => { trackCTA('become_nanny', 'home_hero'); navigate('/become-nanny'); };
   const text = t[lang];
   const [activeTrust, setActiveTrust] = useState<null | { title: string; desc: string; detail: string; icon: React.ReactNode; colorClass: string; bgClass: string }>(null);
   const [deepDiveMode, setDeepDiveMode] = useState<ModalMode | null>(null);

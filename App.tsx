@@ -196,6 +196,8 @@ export default function App() {
     });
     await sendToWebhook(saved);
     await notifyAdminNewRequest(saved);
+    // Track form submission
+    try { (await import('./services/analytics')).trackFormSubmit('parent'); } catch { }
     const allNannies = await getNannyProfiles();
     const aiMatchResult = await findBestMatch(data, allNannies, lang);
     // Navigate to match results if we have candidates, otherwise success

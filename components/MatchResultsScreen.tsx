@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, Button, Badge, EmptyState } from './UI';
 import { MessageCircle, ArrowLeft, Sparkles, Star, User, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { MatchResult, MatchCandidate, TrustBadge, Language } from '../types';
+import { trackMatchingResults, trackNannyCardClick } from '../services/analytics';
 
 interface MatchResultsScreenProps {
     lang: Language;
@@ -102,8 +103,8 @@ const CandidateCard: React.FC<{
                         <div
                             key={i}
                             className={`p-2.5 rounded-xl border text-xs leading-relaxed ${flag.level === 'critical'
-                                    ? 'bg-red-50/80 border-red-200/60 text-red-800'
-                                    : 'bg-amber-50/80 border-amber-200/60 text-amber-800'
+                                ? 'bg-red-50/80 border-red-200/60 text-red-800'
+                                : 'bg-amber-50/80 border-amber-200/60 text-amber-800'
                                 }`}
                         >
                             <div className="flex items-start gap-2">
@@ -143,8 +144,18 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
     const navigate = useNavigate();
     const matchResult = (location.state as any)?.matchResult as MatchResult | undefined;
 
-    const handleMessage = (nannyId: string) => {
-        // Navigate to chat with this nanny
+    // Track matching results view
+    useEffect(() => {
+        if (matchResult && matchResult.candidates.length > 0) {
+            trackMatchingResults(
+                matchResult.candidates.length,
+                matchResult.candidates[0]?.score || 0
+            );
+        }
+    }, [matchResult]);
+
+    const handleMessage = (nannyId: string, nannyName?: string, position?: number, score?: number) => {
+        trackNannyCardClick(nannyName || 'unknown', position || 0, score || 0);
         navigate('/parent/profile', { state: { openChat: nannyId } });
     };
 

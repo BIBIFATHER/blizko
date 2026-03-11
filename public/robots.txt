@@ -1,0 +1,27 @@
+# Blizko — robots.txt
+# Фокус: Яндекс (основной) + Google
+
+User-agent: Yandex
+Disallow: /admin
+Disallow: /api/
+Disallow: /parent/profile
+Disallow: /nanny/profile
+Allow: /
+Host: https://blizko.app
+Sitemap: https://blizko.app/sitemap.xml
+
+User-agent: Googlebot
+Disallow: /admin
+Disallow: /api/
+Disallow: /parent/profile
+Disallow: /nanny/profile
+Allow: /
+
+User-agent: *
+Disallow: /admin
+Disallow: /api/
+Disallow: /parent/profile
+Disallow: /nanny/profile
+Allow: /
+
+Sitemap: https://blizko.app/sitemap.xml

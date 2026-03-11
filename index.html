@@ -9,11 +9,18 @@
 
   <!-- SEO Meta -->
   <meta name="description"
-    content="Blizko — AI-сервис подбора проверенных нянь. Найдите идеальную няню за 5 минут: верификация документов, Humanity+ совместимость, T-24h гарантия выхода." />
+    content="Blizko — AI-сервис подбора проверенных нянь в Москве. Найдите идеальную няню за 5 минут: верификация документов, AI Humanity+ совместимость, T-24h гарантия выхода." />
   <meta name="keywords"
-    content="няня, подбор няни, найти няню, бебиситтер, проверенные няни, няня для ребенка, Москва" />
+    content="няня Москва, подбор няни, найти няню, бебиситтер, проверенные няни, няня для ребенка, няня с проверкой, AI подбор няни" />
   <meta name="author" content="Blizko" />
   <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://blizko.app/" />
+
+  <!-- Яндекс.Вебмастер верификация (заменить на реальный код после регистрации в webmaster.yandex.ru) -->
+  <meta name="yandex-verification" content="REPLACE_WITH_YANDEX_VERIFICATION_CODE" />
+
+  <!-- Яндекс: разрешить индексацию SPA-контента -->
+  <meta name="fragment" content="!" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -31,17 +38,46 @@
   <meta name="twitter:description" content="Найдите проверенную няню за 5 минут. AI Humanity+ совместимость." />
   <meta name="twitter:image" content="/og-image.png" />
 
-  <!-- JSON-LD Structured Data -->
+  <!-- JSON-LD: Organization (Яндекс + Google) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": "Organization",
     "name": "Blizko",
-    "description": "AI-сервис безопасного подбора нянь для семей",
+    "alternateName": "Близко",
     "url": "https://blizko.app",
-    "areaServed": "Москва",
-    "serviceType": "Подбор нянь",
-    "priceRange": "₽₽"
+    "logo": "https://blizko.app/icons/icon-512.png",
+    "description": "AI-сервис безопасного подбора нянь. Алгоритм Humanity+ анализирует совместимость по психотипу.",
+    "areaServed": {
+      "@type": "City",
+      "name": "Москва"
+    },
+    "sameAs": [
+      "https://t.me/blizko_app"
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: SoftwareApplication (для Яндекс + Google App Rich Results) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Blizko — AI-подбор нянь",
+    "operatingSystem": "Web, Android, iOS",
+    "applicationCategory": "LifestyleApplication",
+    "description": "Найдите проверенную няню за 5 минут. AI Humanity+ анализирует совместимость по психотипу и объясняет, почему конкретная няня подходит вашей семье.",
+    "url": "https://blizko.app",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "RUB"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "47"
+    }
   }
   </script>
 

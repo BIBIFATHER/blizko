@@ -18,6 +18,7 @@ chat_threads     — треды чата (type: 'support' | 'match')
 chat_messages    — сообщения
 chat_participants — участники тредов
 admin_actions    — лог действий модераторов
+matching_outcomes — RLHF-фидбек: hired/rejected/ghosted + feedback_text + score_at_match
 ```
 
 ### Ключевые связи

@@ -75,35 +75,74 @@ async function insertAiMessage(ticketId: string, text: string) {
 // ============================================
 // Gemini API call
 // ============================================
-async function callGemini(apiKey: string, prompt: string, options?: { json?: boolean }): Promise<string> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+async function callGemini(
+  apiKey: string,
+  userMessage: string,
+  options?: { json?: boolean; systemInstruction?: string }
+): Promise<string> {
+  // Try models in order
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
+  const preferredModel = (process.env.GEMINI_MODEL || '').trim();
+  if (preferredModel) models.unshift(preferredModel);
 
-  try {
-    const model = (process.env.GEMINI_MODEL || 'gemini-2.5-flash').trim();
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  for (const model of models) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    const payload: Record<string, unknown> = {
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    };
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-    if (options?.json) {
-      payload.generationConfig = { responseMimeType: 'application/json' };
+      const payload: Record<string, unknown> = {
+        contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+      };
+
+      // Use systemInstruction for proper system prompt handling
+      if (options?.systemInstruction) {
+        payload.systemInstruction = { parts: [{ text: options.systemInstruction }] };
+      }
+
+      if (options?.json) {
+        payload.generationConfig = { responseMimeType: 'application/json' };
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+
+      const data: any = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        console.error(`[Gemini] Model ${model} error ${response.status}:`, JSON.stringify(data?.error || data));
+        // Try next model on quota/rate limit or not found
+        if (response.status === 404 || response.status === 429 || response.status === 400) continue;
+        break;
+      }
+
+      const text = data?.candidates?.[0]?.content?.parts
+        ?.map((p: any) => p?.text)
+        .filter(Boolean)
+        .join('') || '';
+
+      if (text) return text;
+
+      // If empty but no error — log the finish reason and try next model
+      const finishReason = data?.candidates?.[0]?.finishReason;
+      console.warn(`[Gemini] Model ${model} returned empty. finishReason: ${finishReason}`);
+      if (finishReason === 'SAFETY' || finishReason === 'RECITATION') continue;
+      return text; // Return empty for other reasons
+    } catch (e: any) {
+      console.error(`[Gemini] Model ${model} exception:`, e?.message || e);
+    } finally {
+      clearTimeout(timeout);
     }
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-
-    const data: any = await response.json().catch(() => ({}));
-    return data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text).filter(Boolean).join('') || '';
-  } finally {
-    clearTimeout(timeout);
   }
+
+  return '';
 }
+
 
 // ============================================
 // Telegram Escalation (direct Bot API)
@@ -152,7 +191,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let needsHuman = false;
 
     try {
-      const sentimentPrompt = `Analyze the emotional tone of this message. Return ONLY JSON: {"score": <float -1.0 to 1.0>, "needs_human": <boolean>}. Set needs_human=true if user asks for a human operator/manager or says bot is not helping. Message: "${userMessage}"`;
+      const sentimentPrompt = `Analyze the emotional tone of this message. Return ONLY JSON: {"score": <float -1.0 to 1.0>, "needs_human": <boolean>}. Set needs_human=true if user asks for a human operator/manager. Message: "${userMessage}"`;
       const raw = await callGemini(apiKey, sentimentPrompt, { json: true });
       const parsed = JSON.parse(raw);
       sentiment = typeof parsed.score === 'number' ? Math.max(-1, Math.min(1, parsed.score)) : 0.0;
@@ -179,8 +218,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // ── Step 4: Generate empathetic response ─────────────────
-    const fullPrompt = `${SYSTEM_PROMPT}\n\nПользователь пишет: "${userMessage}"\n\nОтветь кратко и по-человечески:`;
-    const reply = await callGemini(apiKey, fullPrompt);
+    const reply = await callGemini(apiKey, userMessage, { systemInstruction: SYSTEM_PROMPT });
 
     if (!reply) {
       return res.status(200).json({

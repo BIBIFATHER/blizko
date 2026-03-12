@@ -26,13 +26,20 @@ export async function getOrCreateSupportThread(userId: string): Promise<SupportT
 
   if (!existingError && existing) return existing as SupportThread;
 
+  if (existingError && existingError.code !== 'PGRST116') {
+    console.error('getOrCreateSupportThread: existingError:', existingError);
+  }
+
   const { data: created, error: createError } = await supabase
     .from('chat_threads')
     .insert({ type: 'support', family_id: userId })
     .select('id,family_id,created_at')
     .single();
 
-  if (createError) return null;
+  if (createError) {
+    console.error('getOrCreateSupportThread: createError:', createError);
+    return null;
+  }
 
   // Ensure family is a participant
   await supabase
@@ -59,7 +66,10 @@ export async function sendSupportMessage(threadId: string, senderId: string, tex
     .insert({ thread_id: threadId, sender_id: senderId, text })
     .select('id,thread_id,sender_id,text,created_at')
     .single();
-  if (error) return null;
+  if (error) {
+    console.error('sendSupportMessage error:', error);
+    return null;
+  }
   return data as SupportMessage;
 }
 

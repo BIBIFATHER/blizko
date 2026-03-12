@@ -15,6 +15,7 @@
 - 22 тестовых профиля нянь в Supabase (seed)
 - **150 реальных откликов от нянь на hh.ru — НЕ РАЗОБРАНЫ!**
 - Matching Engine работает (Gemini AI)
+- AI Concierge работает (Gemini 1.5-flash, sentiment tracking, Telegram эскалация) ✅
 - Оплата НЕ подключена (ЮKassa — нет API key)
 
 ## Аналитика
@@ -26,14 +27,15 @@
 - **НЕ рассылать маркетинг пока нет реальных нянь в базе!**
 - 150 откликов hh.ru — главный приоритет для наполнения
 - Нужно: разобрать отклики → онбордить лучших → только потом маркетинг родителям
+- ОКВЭД коды добавлены ✅
 
 ## Технический стек
 - React SPA (Vite), TypeScript
 - Supabase (auth, DB, RLS)
 - Vercel (хостинг)
-- Gemini AI (matching)
+- Gemini AI (matching + AI Concierge)
 - Node 25.6.1, macOS
-- Проблема: node_modules иногда EPERM (права macOS)
+- **Важно:** Vercel API Functions — ESM, все импорты ОБЯЗАТЕЛЬНО с `.js` расширением!
 
 ## Товарный знак взаимодействия (AI Support Golden Rules)
 Главный принцип AI-поддержки Blizko: «Эмпатичный консьерж». Бот не робот, а заботливый эксперт.
@@ -42,3 +44,15 @@
 3. **Sentiment Tracking (Измерение настроения)**: Анализируйте эмоциональный окрас каждого сообщения (-1.0 до 1.0).
 4. **Немедленная эскалация (Human Handover)**: Если `sentiment_score` падает ниже -0.5 (раздражение, стресс), либо если звучит просьба "позвать человека", бот мгновенно прекращает попытки решить проблему самостоятельно, меняет статус тикета на `human_escalated` и отправляет пуш Антону в Telegram.
 5. **Тон**: Теплый, понимающий, решающий проблему, но не заискивающий. "Я здесь, чтобы помочь", "Антон уже в курсе, он сейчас подключится".
+
+## 100% Ready Checklist (Stability Sprint)
+- [x] Error Boundaries — `ErrorBoundary.tsx` с тёплым fallback
+- [x] Support Chat — bubble не перекрывает контент (bottom-20)
+- [x] Support Chat — responsive height для мобилок
+- [x] Support Chat — skeleton loading при загрузке
+- [x] Safe area padding — Home.tsx, NannyLandingPage.tsx (pb-24)
+- [x] Health endpoint — `/api/health` (Supabase, Telegram, Gemini, env vars)
+- [x] ESM imports — все API routes используют `.js` расширение
+- [x] AI Concierge — работает с Gemini 1.5-flash + fallback models
+- [ ] TMA header safe area — нужно тестирование в Telegram
+- [ ] Fat-thumb audit — кнопки ≥ 44px в TMA

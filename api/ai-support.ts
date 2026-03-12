@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCors } from './_cors';
+import { setCors } from './_cors.js';
 
 const REQUEST_TIMEOUT_MS = 25000;
 

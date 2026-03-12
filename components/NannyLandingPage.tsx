@@ -191,7 +191,7 @@ export const NannyLandingPage: React.FC = () => {
             </section>
 
             {/* Footer */}
-            <footer className="py-8 px-4 bg-stone-50 border-t border-stone-100 text-center">
+            <footer className="py-8 px-4 pb-24 bg-stone-50 border-t border-stone-100 text-center">
                 <p className="text-xs text-stone-400">
                     © 2026 Blizko. Все данные зашифрованы. Безопасность — наш приоритет.
                 </p>

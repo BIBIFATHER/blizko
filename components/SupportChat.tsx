@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MessageCircle, Send, Minimize2, Loader2, Sparkles, UserCheck } from 'lucide-react';
+import { MessageCircle, Send, Minimize2, Loader2, Sparkles, UserCheck, X } from 'lucide-react';
+import { ErrorBoundary } from './ErrorBoundary';
 import { Language, User } from '../types';
 import { t } from '../src/core/i18n/translations';
 import {
@@ -18,12 +19,13 @@ interface SupportChatProps {
   hideLauncher?: boolean;
 }
 
-export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLauncher = false }) => {
+const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher = false }) => {
   const text = t[lang];
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [ticket, setTicket] = useState<SupportTicket | null>(null);
   const [isEscalated, setIsEscalated] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -34,37 +36,42 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
     let unsubscribe: (() => void) | null = null;
 
     const init = async () => {
-      const t = await getOrCreateTicket(user.id as string);
-      if (!t) return;
-      setTicket(t);
-      setIsEscalated(t.status === 'human_escalated');
+      setIsLoading(true);
+      try {
+        const tk = await getOrCreateTicket(user.id as string);
+        if (!tk) return;
+        setTicket(tk);
+        setIsEscalated(tk.status === 'human_escalated');
 
-      const existing = await fetchTicketMessages(t.id);
-      setMessages(existing);
+        const existing = await fetchTicketMessages(tk.id);
+        setMessages(existing);
 
-      // If no messages yet, show a proactive welcome
-      if (existing.length === 0) {
-        setMessages([{
-          id: 'welcome',
-          ticket_id: t.id,
-          sender_type: 'ai_concierge',
-          text: lang === 'ru'
-            ? 'Привет! 👋 Я — AI-помощник Blizko. Спрашивайте что угодно о подборе няни, верификации или работе сервиса. Если понадобится человек — я сразу позову Антона.'
-            : 'Hi! 👋 I\'m the Blizko AI assistant. Ask me anything about nanny matching, verification, or how the service works. If you need a human — I\'ll connect you with Anton right away.',
-          created_at: new Date().toISOString(),
-        }]);
-      }
-
-      unsubscribe = subscribeToTicketMessages(t.id, (m) => {
-        setMessages((prev) => {
-          // Avoid duplicates (we already add AI messages optimistically)
-          if (prev.some(p => p.id === m.id)) return prev;
-          return [...prev, m];
-        });
-        if (m.sender_type === 'human_agent') {
-          setIsEscalated(false); // Human responded, reset escalation
+        // If no messages yet, show a proactive welcome
+        if (existing.length === 0) {
+          setMessages([{
+            id: 'welcome',
+            ticket_id: tk.id,
+            sender_type: 'ai_concierge',
+            text: lang === 'ru'
+              ? 'Привет! 👋 Я — AI-помощник Blizko. Спрашивайте что угодно о подборе няни, верификации или работе сервиса. Если понадобится человек — я сразу позову Антона.'
+              : 'Hi! 👋 I\'m the Blizko AI assistant. Ask me anything about nanny matching, verification, or how the service works. If you need a human — I\'ll connect you with Anton right away.',
+            created_at: new Date().toISOString(),
+          }]);
         }
-      });
+
+        unsubscribe = subscribeToTicketMessages(tk.id, (m) => {
+          setMessages((prev) => {
+            // Avoid duplicates (we already add AI messages optimistically)
+            if (prev.some(p => p.id === m.id)) return prev;
+            return [...prev, m];
+          });
+          if (m.sender_type === 'human_agent') {
+            setIsEscalated(false); // Human responded, reset escalation
+          }
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     init();
@@ -120,10 +127,11 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-[70] bg-stone-900 hover:bg-stone-800 text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
+        className="fixed bottom-20 right-4 z-[70] bg-stone-900 hover:bg-stone-800 text-white p-3.5 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
+        aria-label={lang === 'ru' ? 'Открыть чат поддержки' : 'Open support chat'}
       >
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse" />
-        <MessageCircle size={28} className="group-hover:rotate-12 transition-transform" />
+        <MessageCircle size={24} className="group-hover:rotate-12 transition-transform" />
       </button>
     );
   }
@@ -133,10 +141,15 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
   // ============================================
   if (!user?.id) {
     return (
-      <div className="fixed bottom-6 right-6 z-[70] w-full max-w-[340px] flex flex-col items-end animate-slide-up">
-        <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full h-[220px] flex flex-col p-4">
-          <div className="text-sm text-stone-700">{lang === 'ru' ? 'Для чата нужна авторизация.' : 'Please sign in to use support chat.'}</div>
-          <button onClick={() => setIsOpen(false)} className="mt-4 text-stone-500">{lang === 'ru' ? 'Закрыть' : 'Close'}</button>
+      <div className="fixed bottom-4 right-4 z-[70] w-full max-w-[340px] flex flex-col items-end animate-slide-up">
+        <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full flex flex-col p-5">
+          <div className="flex justify-between items-start mb-3">
+            <div className="text-sm font-medium text-stone-700">{lang === 'ru' ? 'Для чата нужна авторизация' : 'Please sign in to use chat'}</div>
+            <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-stone-600 transition-colors p-1" aria-label="Close">
+              <X size={16} />
+            </button>
+          </div>
+          <p className="text-xs text-stone-500 leading-relaxed">{lang === 'ru' ? 'Войдите в аккаунт, чтобы написать нам. Мы ответим за пару секунд!' : 'Sign in to chat with us. We respond in seconds!'}</p>
         </div>
       </div>
     );
@@ -158,8 +171,8 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[70] w-full max-w-[360px] flex flex-col items-end animate-slide-up">
-      <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full h-[520px] flex flex-col">
+    <div className="fixed bottom-4 right-4 z-[70] w-full max-w-[360px] flex flex-col items-end animate-slide-up">
+      <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full flex flex-col" style={{ height: 'min(520px, calc(100vh - 100px))' }}>
         {/* Header */}
         <div className="bg-stone-900 text-white p-4 flex justify-between items-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 blur-3xl rounded-full pointer-events-none" />
@@ -193,7 +206,20 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
         )}
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-stone-50">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-stone-50 min-h-0">
+          {/* Skeleton loader */}
+          {isLoading && (
+            <div className="space-y-3 animate-pulse">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="flex justify-start">
+                  <div className="max-w-[75%]">
+                    <div className="h-2.5 w-16 bg-stone-200 rounded mb-2" />
+                    <div className="bg-stone-200 rounded-2xl rounded-tl-sm h-12 w-48" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           {messages.map((msg) => {
             const info = getSenderInfo(msg);
             const isUser = msg.sender_type === 'user';
@@ -261,3 +287,10 @@ export const SupportChat: React.FC<SupportChatProps> = ({ lang, user, hideLaunch
     </div>
   );
 };
+
+// Wrapped with ErrorBoundary
+export const SupportChat: React.FC<SupportChatProps> = (props) => (
+  <ErrorBoundary fallbackMessage="Чат временно недоступен. Попробуйте обновить страницу или напишите нам на help@blizko.app">
+    <SupportChatInner {...props} />
+  </ErrorBoundary>
+);

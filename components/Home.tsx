@@ -159,7 +159,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
         </div>
 
         {/* Trust Badge — Anchoring */}
-        <div className="flex justify-center">
+        <div className="flex justify-center pb-24">
           <Badge variant="trust">
             {lang === 'ru' ? 'Все данные зашифрованы' : 'Data encrypted'}
           </Badge>

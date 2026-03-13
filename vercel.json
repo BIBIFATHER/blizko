@@ -30,7 +30,7 @@
                 },
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://*.telegram.org https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://*.googletagmanager.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://api.telegram.org https://gate.smsaero.ru https://api.resend.com https://www.google-analytics.com; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org; frame-src 'self' https://web.telegram.org;"
+                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://*.telegram.org https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://*.googletagmanager.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.blizko.app wss://api.blizko.app https://generativelanguage.googleapis.com https://api.telegram.org https://gate.smsaero.ru https://api.resend.com https://www.google-analytics.com; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org; frame-src 'self' https://web.telegram.org;"
                 }
             ]
         },

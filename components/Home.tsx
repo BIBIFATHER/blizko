@@ -141,7 +141,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
                 tabIndex={0}
                 style={{ animationDelay: `${index * 100 + 200}ms` }}
               >
-                <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
+                <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm flex-shrink-0`}>
                   {block.icon}
                 </div>
                 <div className="flex-1">

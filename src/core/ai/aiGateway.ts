@@ -1,3 +1,5 @@
+import { apiFetch } from '../api/apiFetch';
+
 export type AITextResponse = { text: string };
 
 type AIMessage = {
@@ -16,38 +18,27 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
   const prompt = [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
   if (!prompt.trim()) return '';
 
-  const res = await fetch('/api/ai', {
+  const { ok, status, data } = await apiFetch<AITextResponse>('/api/ai', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+    body: {
       prompt,
       messages,
       responseMimeType: options?.responseMimeType,
       responseSchema: options?.responseSchema,
-    }),
+    },
   });
 
-  if (!res.ok) {
-    let errPayload: any = null;
-    const contentType = res.headers.get('content-type') || '';
+  if (!ok) {
+    const errPayload = data as any;
+    const details = errPayload?.details?.error?.message || errPayload?.error || `HTTP ${status}`;
 
-    if (contentType.includes('application/json')) {
-      errPayload = await res.json().catch(() => null);
-    } else {
-      const errText = await res.text().catch(() => '');
-      errPayload = { error: errText || res.statusText };
-    }
-
-    const details = errPayload?.details?.error?.message || errPayload?.error || res.statusText;
-
-    if (res.status === 429) {
+    if (status === 429) {
       throw new Error(`RATE_LIMIT: ${details}`);
     }
 
-    throw new Error(`AI request failed (${res.status}): ${details}`);
+    throw new Error(`AI request failed (${status}): ${details}`);
   }
 
-  const data = (await res.json()) as AITextResponse;
   return data.text ?? '';
 }
 

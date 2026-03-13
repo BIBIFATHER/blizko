@@ -1,16 +1,12 @@
-/// <reference lib="dom" />
-// v2 — health check endpoint
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCors } from './_cors.js';
 
 /**
  * GET /api/health — System health check
- * 
- * Checks: Supabase connection, Telegram bot token, Gemini API key
- * Returns: { status: "ok"|"degraded"|"down", checks: {...} }
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  setCors(req.headers.origin, res);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(204).end();
 
@@ -36,26 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  // 2. RLS Policies — check if pg_policies has entries for support tables
-  if (supabaseUrl && supabaseKey) {
-    try {
-      const r = await fetch(`${supabaseUrl}/rest/v1/rpc/check_rls_active`, {
-        method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: '{}',
-      });
-      // RPC may not exist, so just check connection works
-      checks.rls = { ok: true, detail: r.ok ? 'RPC available' : 'RPC not configured (non-critical)' };
-    } catch {
-      checks.rls = { ok: true, detail: 'Check skipped (non-critical)' };
-    }
-  }
-
-  // 3. Telegram Bot Token
+  // 2. Telegram Bot Token
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   if (!botToken) {
     checks.telegram = { ok: false, detail: 'Missing TELEGRAM_BOT_TOKEN' };
@@ -72,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  // 4. Gemini API Key
+  // 3. Gemini API Key
   const geminiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
   if (!geminiKey) {
     checks.gemini = { ok: false, detail: 'Missing GEMINI_API_KEY' };
@@ -88,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
-  // 5. Environment Variables Presence Check
+  // 4. Environment Variables
   const requiredEnvs = [
     'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY',
     'TELEGRAM_BOT_TOKEN', 'TELEGRAM_ADMIN_CHAT_ID',

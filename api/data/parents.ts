@@ -2,6 +2,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import fs from 'fs';
 import path from 'path';
+import { setCors } from '../_cors.js';
+import { rateLimit } from '../_rate-limit.js';
 
 const TABLE = 'parents';
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
@@ -79,10 +81,12 @@ const fromRow = (r: any) => {
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
+
+  // Rate limit: 30 requests/min per IP
+  const rl = rateLimit(req, { max: 30, prefix: 'parents' });
+  if (!rl.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
 
   const { url, key, anon, admins } = env();
   if (!url || !key || !anon) return json(res, 500, { error: 'Supabase is not configured' });

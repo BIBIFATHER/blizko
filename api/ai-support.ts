@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
+import { rateLimit } from './_rate-limit.js';
 
 const REQUEST_TIMEOUT_MS = 25000;
 
@@ -172,6 +173,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  // Rate limit: 10 requests/min per IP
+  const rl = rateLimit(req, { max: 10, prefix: 'ai-support' });
+  if (!rl.ok) return res.status(429).json({ error: 'Слишком много запросов. Попробуйте позже.' });
 
   const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY' });

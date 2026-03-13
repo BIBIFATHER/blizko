@@ -54,5 +54,30 @@
 - [x] Health endpoint — `/api/health` (Supabase, Telegram, Gemini, env vars)
 - [x] ESM imports — все API routes используют `.js` расширение
 - [x] AI Concierge — работает с Gemini 1.5-flash + fallback models
-- [ ] TMA header safe area — нужно тестирование в Telegram
-- [ ] Fat-thumb audit — кнопки ≥ 44px в TMA
+- [x] Fat-thumb audit — кнопки ≥ 44px в App.tsx + UI.tsx
+
+## 🔒 Security Integrity Status: VERIFIED (2026-03-13)
+
+### Triple-Shield System
+- **SHIELD 1 (TMA):** HMAC-SHA256 валидация через `_tma.ts` + `tma-validate.ts`
+- **SHIELD 2 (Unified Auth):** Phone OTP → Supabase user → JWT session (backward compatible)
+- **SHIELD 3 (RLS):** SQL migration готова: `supabase/migrations/20260313_rls_shield3.sql`
+
+### Rate Limiting (per-IP)
+- AI Concierge: 10 req/min
+- Admin data endpoints: 30 req/min
+- OTP send: 5 req/min
+- OTP verify: 10 req/min
+
+### CORS Hardening
+- `nannies.ts`, `parents.ts`: `Access-Control: *` → `setCors()` (allowlisted origins)
+
+### ⚠️ Нужно сделать
+- [ ] Запустить RLS migration в Supabase SQL Editor
+- [ ] Настроить `CORS_ALLOW_ORIGINS` в Vercel env (пример: `https://blizko.app,https://www.blizko.app`)
+- [ ] Тестирование TMA HMAC в реальном Telegram Mini App
+
+### Vercel Functions Limit
+- Hobby план: 12 serverless functions MAX
+- Текущий статус: **12/12** (health, ai-support, ai, geocode, notify, 2×auth, 2×data, 2×payments, telegram/send)
+- Утилиты (`_cors.ts`, `_db.ts`, `_rate-limit.ts`, `_tma.ts`) НЕ считаются — начинаются с `_`

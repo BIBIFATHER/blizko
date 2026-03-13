@@ -136,8 +136,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       const data = await r.json().catch(() => ({}));
       if (!r.ok || !data?.ok) throw new Error(data?.error || 'Неверный код');
 
+      // SHIELD 2: If server returned a Supabase token, create real session
+      if (data.supabaseToken && supabase) {
+        try {
+          const { error: verifyErr } = await supabase.auth.verifyOtp({
+            token_hash: data.supabaseToken,
+            type: 'email', // magic link token type
+          });
+          if (!verifyErr) {
+            // Real Supabase session created! The onAuthStateChange listener
+            // will handle login automatically.
+            return;
+          }
+          console.warn('Supabase session fallback:', verifyErr.message);
+        } catch (e) {
+          console.warn('Supabase session fallback:', e);
+        }
+      }
+
+      // Fallback: old-style string ID (backward compatible)
       onLogin({
-        id: `phone:${data.phone || normalizePhone(contactValue)}`,
+        id: data.userId || `phone:${data.phone || normalizePhone(contactValue)}`,
         role,
         name: name || (lang === 'ru' ? 'Пользователь' : 'User'),
         phone: data.phone || normalizePhone(contactValue),

@@ -255,7 +255,7 @@ export default function App() {
             <button
               type="button"
               onClick={handleShare}
-              className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2 rounded-full hover:bg-white transition-all shadow-sm active:scale-95"
+              className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 p-2.5 rounded-full hover:bg-white transition-all shadow-sm active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center"
               title={t[lang].share}
               aria-label={t[lang].share}
             >
@@ -265,7 +265,7 @@ export default function App() {
             <button
               type="button"
               onClick={toggleLanguage}
-              className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95"
+              className="bg-white/80 backdrop-blur-md border border-stone-200 text-stone-600 px-3.5 py-2 rounded-full text-sm font-semibold hover:bg-white transition-all shadow-sm active:scale-95 min-h-[44px] flex items-center"
               aria-label={lang === 'ru' ? 'Переключить язык на английский' : 'Switch language to Russian'}
             >
               {lang === 'ru' ? 'EN' : 'RU'}
@@ -275,7 +275,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setAuthOpen(true)}
-                className="bg-stone-800 text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95"
+                className="bg-stone-800 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-stone-700 transition-all shadow-sm active:scale-95 min-h-[44px] flex items-center"
               >
                 {t[lang].login}
               </button>
@@ -287,7 +287,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setProfileOpen(true)}
-                  className="bg-white/80 backdrop-blur-md border border-stone-200 px-2.5 py-1.5 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5"
+                  className="bg-white/80 backdrop-blur-md border border-stone-200 px-3 py-2 rounded-full text-stone-600 hover:bg-white hover:text-amber-600 transition-all shadow-sm flex items-center gap-1.5 min-h-[44px]"
                   title={user.email || user.name}
                 >
                   <UserIcon size={16} />

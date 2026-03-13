@@ -126,7 +126,7 @@ interface CheckboxProps {
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onChange }) => (
-  <label className="flex items-center gap-3 cursor-pointer py-2 px-1 rounded-xl transition-all -ml-1 select-none active:scale-[0.98]">
+  <label className="flex items-center gap-3 cursor-pointer py-3 px-1 rounded-xl transition-all -ml-1 select-none active:scale-[0.98] min-h-[44px]">
     <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${checked
       ? 'chip-warm border border-amber-200/60'
       : 'border-2 border-stone-200 bg-white/60 hover:bg-white hover:border-stone-300'
@@ -185,7 +185,7 @@ export const ChipGroup: React.FC<ChipGroupProps> = ({ label, options, selected, 
               key={opt}
               type="button"
               onClick={() => toggle(opt)}
-              className={`px-3 py-1.5 md:px-4 md:py-2.5 rounded-full text-xs md:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-2 select-none border hover-lift ${isActive
+              className={`px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-2 select-none border hover-lift ${isActive
                 ? 'chip-warm shadow-sm'
                 : 'bg-white/60 backdrop-blur-sm border-stone-200/60 text-stone-600 hover:border-amber-200/60 hover:bg-amber-50/30'
                 }`}
@@ -295,7 +295,7 @@ export const RangeSlider: React.FC<RangeSliderProps> = ({ label, min, max, step,
         />
 
         <div
-          className="absolute top-1/2 -ml-3 -mt-3 w-6 h-6 bg-white border border-stone-200 rounded-full shadow-md cursor-grab active:cursor-grabbing flex items-center justify-center hover:scale-110 active:scale-95 active:shadow-inner transition-transform"
+          className="absolute top-1/2 -ml-[18px] -mt-[18px] w-9 h-9 bg-white border border-stone-200 rounded-full shadow-md cursor-grab active:cursor-grabbing flex items-center justify-center hover:scale-110 active:scale-95 active:shadow-inner transition-transform"
           style={{ left: `${getPercent(value[0])}%` }}
           onPointerDown={(e) => handlePointerDown(e, 'min')}
         >
@@ -303,7 +303,7 @@ export const RangeSlider: React.FC<RangeSliderProps> = ({ label, min, max, step,
         </div>
 
         <div
-          className="absolute top-1/2 -ml-3 -mt-3 w-6 h-6 bg-white border border-stone-200 rounded-full shadow-md cursor-grab active:cursor-grabbing flex items-center justify-center hover:scale-110 active:scale-95 active:shadow-inner transition-transform"
+          className="absolute top-1/2 -ml-[18px] -mt-[18px] w-9 h-9 bg-white border border-stone-200 rounded-full shadow-md cursor-grab active:cursor-grabbing flex items-center justify-center hover:scale-110 active:scale-95 active:shadow-inner transition-transform"
           style={{ left: `${getPercent(value[1])}%` }}
           onPointerDown={(e) => handlePointerDown(e, 'max')}
         >

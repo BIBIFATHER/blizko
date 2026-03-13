@@ -1,4 +1,5 @@
 /// <reference lib="dom" />
+// v2 — health check endpoint
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 

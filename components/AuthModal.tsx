@@ -4,6 +4,7 @@ import { X, Baby, Briefcase, Phone, Mail, ArrowRight, CheckCircle, Lock } from '
 import { Language, User } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { supabase } from '../services/supabase';
+import { getTmaHeaders } from '../src/core/auth/tma-validate';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -103,7 +104,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       }
       const r = await fetch('/api/auth/send-otp-phone', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getTmaHeaders() },
         body: JSON.stringify({ phone: contactValue }),
       });
       const data = await r.json().catch(() => ({}));
@@ -130,7 +131,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       }
       const r = await fetch('/api/auth/verify-otp-phone', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getTmaHeaders() },
         body: JSON.stringify({ phone: contactValue, code: otp }),
       });
       const data = await r.json().catch(() => ({}));

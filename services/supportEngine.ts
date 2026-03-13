@@ -5,6 +5,7 @@
  * Calls /api/ai-support for AI Concierge responses.
  */
 import { supabase } from './supabase';
+import { getTmaHeaders } from '../src/core/auth/tma-validate';
 
 export type SupportTicket = {
   id: string;
@@ -121,7 +122,7 @@ export async function callConcierge(
   try {
     const res = await fetch('/api/ai-support', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getTmaHeaders() },
       body: JSON.stringify({ ticketId, userId, message }),
     });
 

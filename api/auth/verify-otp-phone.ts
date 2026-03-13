@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getServiceSupabase } from './_supabase.js';
 import { setCors } from '../_cors.js';
 import { rateLimit } from '../_rate-limit.js';
+import { auditLog, maskPhone } from '../_audit.js';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
 
@@ -23,7 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Rate limit: 10 attempts/min per IP
   const rl = rateLimit(req, { max: 10, prefix: 'verify-otp' });
-  if (!rl.ok) return json(res, 429, { ok: false, error: 'Слишком много попыток. Подождите.' });
+  if (!rl.ok) {
+    auditLog(req, 'rate_limited', { endpoint: 'verify-otp' });
+    return json(res, 429, { ok: false, error: 'Слишком много попыток. Подождите.' });
+  }
 
   const phone = normalizePhone(req.body?.phone);
   const code = String(req.body?.code || '').trim();
@@ -59,11 +63,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (entry.code !== code) {
     await supabase.from('phone_otps').update({ attempts: nextAttempts }).eq('phone', phone);
+    auditLog(req, 'otp_failed', { phone: maskPhone(phone), attempt: nextAttempts });
     return json(res, 400, { ok: false, error: 'Неверный код' });
   }
 
   // OTP verified! Clean up
   await supabase.from('phone_otps').delete().eq('phone', phone);
+  auditLog(req, 'otp_verified', { phone: maskPhone(phone) });
 
   // 2. Find or create user in Supabase Auth (unified identity)
   try {

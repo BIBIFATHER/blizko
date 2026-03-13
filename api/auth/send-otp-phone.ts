@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getServiceSupabase } from './_supabase.js';
 import { setCors } from '../_cors.js';
 import { rateLimit } from '../_rate-limit.js';
+import { auditLog, maskPhone } from '../_audit.js';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
 
@@ -48,7 +49,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Rate limit: 5 OTP sends/min per IP (on top of per-phone limiting)
   const rl = rateLimit(req, { max: 5, prefix: 'send-otp' });
-  if (!rl.ok) return json(res, 429, { ok: false, error: 'Слишком много запросов. Подождите.' });
+  if (!rl.ok) {
+    auditLog(req, 'rate_limited', { endpoint: 'send-otp' });
+    return json(res, 429, { ok: false, error: 'Слишком много запросов. Подождите.' });
+  }
 
   const apiKey = process.env.SMSAERO_API_KEY;
   const email = process.env.SMSAERO_EMAIL;

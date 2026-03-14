@@ -2,8 +2,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
-import { validateTmaInitData } from './_tma.js';
-import { auditLog } from './_audit.js';
 
 const REQUEST_TIMEOUT_MS = 25000;
 
@@ -192,14 +190,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const userMessage = message.trim();
 
-  // Soft TMA validation — log but don't block (transition period)
-  const tmaData = validateTmaInitData(req.headers['x-tma-init-data'] as string);
-  if (tmaData) {
-    auditLog(req, 'tma_validated', { tmaUserId: tmaData.user.id, endpoint: 'ai-support' });
-  }
-
-  auditLog(req, 'ai_concierge_request', { userId, ticketId, hasTma: !!tmaData });
-
   try {
     // ── Step 1: Sentiment analysis ──────────────────────────
     let sentiment = 0.0;
@@ -226,7 +216,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // ── Step 3: Escalation path ──────────────────────────────
     if (shouldEscalate) {
-      auditLog(req, 'ai_concierge_escalated', { userId, ticketId, sentiment, needsHuman });
       await sendTelegramEscalation(userMessage, sentiment);
       const reply = 'Я понимаю, что ситуация непростая. Антон уже в курсе и скоро подключится лично. Вы в надёжных руках 💛';
       await insertAiMessage(ticketId, reply);

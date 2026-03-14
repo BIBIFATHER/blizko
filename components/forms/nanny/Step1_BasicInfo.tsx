@@ -40,9 +40,9 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
             <div className="section-label">{lang === 'ru' ? 'Давайте знакомиться' : 'Let\'s get to know you'}</div>
 
             {/* Photo Upload Block */}
-            <div className="flex items-center justify-center mb-6">
-                <label className="relative cursor-pointer group flex flex-col items-center">
-                    <div className={`w-28 h-28 min-w-[112px] min-h-[112px] sm:w-32 sm:h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-cloud-soft bg-white/40 backdrop-blur-sm border-2 ${photo ? 'border-amber-300' : 'border-amber-100/50'}`}>
+            <div className="flex justify-center mb-6">
+                <label className="relative cursor-pointer group">
+                    <div className={`w-32 h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-cloud-soft bg-white/40 backdrop-blur-sm border-2 ${photo ? 'border-amber-300' : 'border-amber-100/50'}`}>
                         {photo ? (
                             <img src={photo} alt="Profile" className="w-full h-full object-cover shadow-inner" />
                         ) : (
@@ -118,7 +118,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                         : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
                 </button>
                 <div className="mt-3 flex items-start gap-2 text-[11px] text-stone-500 leading-tight bg-stone-50 p-2.5 rounded-xl border border-stone-100">
-                    <Lock size={12} className="text-amber-600 mt-0.5 flex-shrink-0 min-w-[12px]" />
+                    <Lock size={12} className="text-amber-600 mt-0.5 flex-shrink-0" />
                     <span>{lang === 'ru' ? 'Ваши контакты скрыты. Семья увидит их только после взаимной симпатии.' : 'Your contacts are hidden. Family will see them only after a mutual match.'}</span>
                 </div>
             </div>

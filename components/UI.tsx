@@ -27,7 +27,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card: React.FC<CardProps> = ({ children, className = '', onClick, ...props }) => (
   <div
     onClick={onClick}
-    className={`bg-white/95 backdrop-blur-sm rounded-3xl card-cloud border border-stone-100/80 p-5 sm:p-6 transition-all duration-300 hover-lift hover:shadow-lg ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
+    className={`bg-white/95 backdrop-blur-sm rounded-3xl card-cloud border border-stone-100/80 p-5 sm:p-6 transition-all duration-300 hover-lift ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
     {...props}
   >
     {children}

@@ -18,5 +18,5 @@ export function setCors(reqOrigin: string | undefined, res: VercelResponse) {
 
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Notify-Token, X-TMA-Init-Data');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Notify-Token');
 }

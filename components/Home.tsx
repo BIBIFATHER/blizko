@@ -85,7 +85,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
     <>
       <div className="flex flex-col min-h-full animate-fade-in space-y-8 pb-10">
         {/* Hero — Peak-End: memorable first impression */}
-        <div className="text-center space-y-5 pt-10 sm:pt-12 bg-gradient-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="text-center space-y-5 pt-10 sm:pt-12 bg-gradient-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm max-w-xl mx-auto">
           <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight font-display">
             Blizko
           </div>
@@ -115,7 +115,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
         </div>
 
         {/* Primary CTA — Foot-in-the-Door: low barrier entry */}
-        <div className="space-y-3">
+        <div className="space-y-3 max-w-xl mx-auto">
           <Button onClick={onFindNanny} pulse>
             <Sparkles size={18} />
             {text.findNanny}
@@ -131,7 +131,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
             {text.whyTrust}
           </h2>
 
-          <div className="grid gap-3">
+          <div className="grid gap-3 md:grid-cols-3">
             {trustBlocks.map((block, index) => (
               <Card
                 key={block.id}
@@ -141,7 +141,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
                 tabIndex={0}
                 style={{ animationDelay: `${index * 100 + 200}ms` }}
               >
-                <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm flex-shrink-0`}>
+                <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
                   {block.icon}
                 </div>
                 <div className="flex-1">

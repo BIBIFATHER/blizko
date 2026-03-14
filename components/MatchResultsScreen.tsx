@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { slugify } from '../src/core/utils/slugify';
 import { Card, Button, Badge, EmptyState } from './UI';
 import {
     MessageCircle, ArrowLeft, Sparkles, Star, User,
@@ -148,11 +149,11 @@ const CandidateCard: React.FC<{
             style={{ animationDelay: `${index * 180 + 200}ms` }}
         >
             {/* ─── Bento Container ─── */}
-            <div className="grid grid-cols-5 gap-2.5 overflow-hidden">
+            <div className="grid grid-cols-5 gap-2.5">
 
                 {/* ── Row 1: Profile hero (full width) ── */}
-                <Card className={`col-span-5 !p-5 overflow-hidden bg-gradient-to-br ${gradients[index % 3]} border-white/60 hover-lift`}>
-                    <div className="flex items-center gap-x-4">
+                <Card className={`col-span-5 !p-5 bg-gradient-to-br ${gradients[index % 3]} border-white/60 hover-lift`}>
+                    <div className="flex items-center gap-4">
                         {/* Avatar */}
                         <div className={`w-[72px] h-[72px] rounded-[20px] bg-gradient-to-br ${avatarGradients[index % 3]} flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden ring-2 ring-white/80`}>
                             {nanny.photo ? (
@@ -165,10 +166,15 @@ const CandidateCard: React.FC<{
                         {/* Name + meta */}
                         <div className="flex-1 min-w-0">
                             <h3 className="text-xl font-bold text-stone-800 truncate leading-tight">
-                                {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
+                                <Link
+                                    to={`/nanny/${slugify(nanny.name, nanny.id)}`}
+                                    className="hover:text-amber-700 transition-colors"
+                                >
+                                    {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
+                                </Link>
                             </h3>
                             {hasMeta && (
-                                <div className="flex items-center gap-x-3 mt-1.5 text-stone-500">
+                                <div className="flex items-center gap-3 mt-1.5 text-stone-500">
                                     {nanny.city && (
                                         <span className="flex items-center gap-1 text-xs font-medium">
                                             <MapPin size={11} className="text-stone-400" />
@@ -197,7 +203,7 @@ const CandidateCard: React.FC<{
                 {/* ── Row 2: Score (2 cols) + Trust (3 cols) ── */}
 
                 {/* Score Ring */}
-                <Card className="col-span-2 !p-3 overflow-hidden flex flex-col items-center justify-center hover-lift bg-white/90">
+                <Card className="col-span-2 !p-3 flex flex-col items-center justify-center hover-lift bg-white/90">
                     <ScoreRing score={score} size={76} />
                     <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] mt-1.5">
                         {lang === 'ru' ? 'Совместимость' : 'Match'}
@@ -205,7 +211,7 @@ const CandidateCard: React.FC<{
                 </Card>
 
                 {/* Trust Badges Grid */}
-                <Card className="col-span-3 !p-3 overflow-hidden flex flex-col justify-center hover-lift bg-white/90">
+                <Card className="col-span-3 !p-3 flex flex-col justify-center hover-lift bg-white/90">
                     <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] mb-2 flex items-center gap-1">
                         <CheckCheck size={11} />
                         {lang === 'ru' ? 'Доверие' : 'Trust'}
@@ -230,16 +236,16 @@ const CandidateCard: React.FC<{
                 </Card>
 
                 {/* ── Row 3: AI Explanation (full width) ── */}
-                <Card className="col-span-5 !p-4 overflow-hidden hover-lift bg-white/90">
-                    <div className="flex gap-x-4">
-                        <div className="w-8 h-8 min-w-[2rem] rounded-xl bg-gradient-to-br from-violet-100 to-blue-50 flex items-center justify-center flex-shrink-0">
+                <Card className="col-span-5 !p-4 hover-lift bg-white/90">
+                    <div className="flex gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-100 to-blue-50 flex items-center justify-center flex-shrink-0">
                             <Sparkles size={16} className="text-violet-500" />
                         </div>
                         <div className="flex-1 min-w-0">
                             <span className="text-[9px] font-bold text-violet-500/80 uppercase tracking-[0.15em] block mb-1">
                                 {lang === 'ru' ? 'Почему вы подходите друг другу' : 'Why you match'}
                             </span>
-                            <p className="text-[13px] text-stone-700 leading-relaxed font-medium line-clamp-2">
+                            <p className="text-[13px] text-stone-700 leading-relaxed font-medium">
                                 {humanExplanation}
                             </p>
                         </div>
@@ -248,7 +254,7 @@ const CandidateCard: React.FC<{
 
                 {/* ── Row 4: Risk Flags (only if exist) ── */}
                 {riskFlags && riskFlags.length > 0 && (
-                    <Card className="col-span-5 !p-3 overflow-hidden hover-lift bg-stone-50/80 border-stone-200/60">
+                    <Card className="col-span-5 !p-3 hover-lift bg-stone-50/80 border-stone-200/60">
                         <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] block mb-2">
                             {lang === 'ru' ? 'На что обратить внимание' : 'Points to discuss'}
                         </span>
@@ -256,7 +262,7 @@ const CandidateCard: React.FC<{
                             {riskFlags.map((flag, i) => (
                                 <div
                                     key={i}
-                                    className={`flex items-start gap-x-3 p-2.5 rounded-xl text-xs leading-relaxed ${
+                                    className={`flex items-start gap-2 p-2.5 rounded-xl text-xs leading-relaxed ${
                                         flag.level === 'critical'
                                             ? 'bg-red-50/80 text-red-800'
                                             : 'bg-amber-50/60 text-amber-900'
@@ -327,7 +333,8 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
 
     const handleMessage = (nannyId: string, nannyName?: string, position?: number, score?: number) => {
         trackNannyCardClick(nannyName || 'unknown', position || 0, score || 0);
-        navigate('/parent/profile', { state: { openChat: nannyId } });
+        const slug = slugify(nannyName || nannyId, nannyId);
+        navigate(`/nanny/${slug}`);
     };
 
     if (!matchResult || matchResult.candidates.length === 0) {
@@ -385,7 +392,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
             </div>
 
             {/* Candidate Bento Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+            <div className="space-y-8 px-4">
                 {matchResult.candidates.map((candidate, index) => (
                     <CandidateCard
                         key={candidate.nanny.id}

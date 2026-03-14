@@ -28,6 +28,18 @@ export interface TmaValidationResult {
 }
 
 /**
+ * Web-mode sentinel returned when there is no TMA initData.
+ * In this case, auth is delegated to Supabase JWT (Authorization: Bearer <token>).
+ */
+export interface WebModeResult {
+  webMode: true;
+}
+
+export function isWebMode(result: TmaValidationResult | WebModeResult | null): result is WebModeResult {
+  return result !== null && (result as WebModeResult).webMode === true;
+}
+
+/**
  * Validates Telegram Mini App initData string.
  * Returns parsed user data if valid, null if invalid.
  *

@@ -1,5 +1,4 @@
 import { ChatMessage } from '../types';
-import { getTmaHeaders } from '../src/core/auth/tma-validate';
 
 const keyFor = (bookingId: string) => `blizko_chat_${bookingId}`;
 
@@ -61,7 +60,7 @@ const alertContactDetected = (bookingId: string, detection: ContactDetectionResu
   try {
     fetch('/api/telegram/send', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getTmaHeaders() },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: `⚠️ Обнаружена попытка обмена контактами!\n\n📋 Бронирование: ${bookingId}\n👤 Отправитель: ${senderRole}\n🔍 Тип: ${detection.type}\n💬 Контент: ${detection.match}\n\nПроверьте чат!`,
       }),

@@ -15,6 +15,7 @@ import { Forbidden } from './components/Forbidden';
 import { LoginPage } from './components/LoginPage';
 import { HowWeVerifyPage, HumanityPlusPage } from './components/seo/SeoPages';
 import { NannyLandingPage } from './components/NannyLandingPage';
+import { NannyPublicProfile } from './components/nanny/NannyPublicProfile';
 import { ViewState, ParentRequest, NannyProfile, SubmissionResult, Language, User } from './types';
 import { saveParentRequest, saveNannyProfile, getNannyProfiles, updateParentRequest } from './services/storage';
 import { sendToWebhook } from './services/api';
@@ -241,7 +242,7 @@ export default function App() {
 
       {/* Top Header: Sticky on scroll */}
       <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 top-safe ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-4'}`}>
-        <div className="max-w-md mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-screen-lg mx-auto px-4 md:px-8 flex items-center justify-between">
           <div
             className={`font-semibold text-stone-900 logo-serif text-xl transition-opacity duration-300 cursor-pointer ${isScrolled && location.pathname === '/' ? 'opacity-100' : 'opacity-0'}`}
             onClick={() => { if (location.pathname !== '/') navigate('/'); }}
@@ -299,9 +300,10 @@ export default function App() {
         </div>
       </div>
 
-      <main className="flex-1 w-full max-w-md mx-auto p-6 pb-24 relative pt-safe pl-safe pr-safe">
+      <main className="flex-1 w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-24 relative pt-safe">
         <Routes>
           <Route path="/" element={<Home lang={lang} />} />
+          <Route path="/nanny/:slug" element={<NannyPublicProfile lang={lang} />} />
           <Route path="/find-nanny" element={<ParentForm onSubmit={handleParentSubmit} lang={lang} />} />
           <Route path="/become-nanny" element={<NannyForm onSubmit={handleNannySubmit} lang={lang} />} />
           <Route path="/success" element={<SuccessScreen lang={lang} />} />

@@ -6,10 +6,6 @@ import { Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { CompatibilityModal, ModalMode } from './CompatibilityModal';
 import { trackPageView, trackCTA } from '../services/analytics';
-import { SearchSidebar } from './SearchSidebar';
-import { findBestMatch } from '../src/core/ai/matchingAi';
-import { getNannyProfiles } from '../services/storage';
-import { ParentRequest } from '../types';
 
 interface HomeProps {
   lang: Language;
@@ -22,30 +18,6 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
   const text = t[lang];
   const [activeTrust, setActiveTrust] = useState<null | { title: string; desc: string; detail: string; icon: React.ReactNode; colorClass: string; bgClass: string }>(null);
   const [deepDiveMode, setDeepDiveMode] = useState<ModalMode | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-
-  const handleSearch = async (searchData: Partial<ParentRequest>) => {
-    setIsSearching(true);
-    try {
-      trackCTA('desktop_sidebar_search', 'home_hero');
-      const allNannies = await getNannyProfiles();
-      
-      // We pass the partial searchData down to the matching engine
-      // The matching engine uses these parameters to filter nannies
-      const mockRequest = { ...searchData } as ParentRequest;
-      const aiMatchResult = await findBestMatch(mockRequest, allNannies, lang);
-      
-      if (aiMatchResult.matchResult && aiMatchResult.matchResult.candidates.length > 0) {
-        navigate('/match-results', { state: { matchResult: aiMatchResult.matchResult } });
-      } else {
-        navigate('/success', { state: { result: aiMatchResult } });
-      }
-    } catch (e) {
-      console.error('Search failed', e);
-    } finally {
-      setIsSearching(false);
-    }
-  };
 
   const trustBlocks = [
     {
@@ -111,17 +83,8 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-8 min-h-full animate-fade-in pb-10">
-        
-        {/* Desktop Search Sidebar (Hidden on mobile) */}
-        <aside className="hidden lg:block lg:w-96 flex-shrink-0">
-          <SearchSidebar lang={lang} onSearch={handleSearch} isLoading={isSearching} />
-        </aside>
-
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col space-y-8">
-          
-          {/* Hero — Peak-End: memorable first impression */}
+      <div className="flex flex-col min-h-full animate-fade-in space-y-8 pb-10">
+        {/* Hero — Peak-End: memorable first impression */}
         <div className="text-center space-y-5 pt-10 sm:pt-12 bg-gradient-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm max-w-xl mx-auto">
           <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight font-display">
             Blizko
@@ -151,8 +114,8 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
           </div>
         </div>
 
-          {/* Primary CTA — Foot-in-the-Door: low barrier entry (Mobile Only) */}
-          <div className="space-y-3 max-w-xl mx-auto lg:hidden">
+        {/* Primary CTA — Foot-in-the-Door: low barrier entry */}
+        <div className="space-y-3 max-w-xl mx-auto">
           <Button onClick={onFindNanny} pulse>
             <Sparkles size={18} />
             {text.findNanny}
@@ -196,13 +159,12 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
         </div>
 
         {/* Trust Badge — Anchoring */}
-        <div className="flex justify-center pb-24 lg:pb-8">
+        <div className="flex justify-center pb-24">
           <Badge variant="trust">
             {lang === 'ru' ? 'Все данные зашифрованы' : 'Data encrypted'}
           </Badge>
         </div>
       </div>
-    </div>
 
       {/* Deep Dive Modal */}
       {deepDiveMode && (

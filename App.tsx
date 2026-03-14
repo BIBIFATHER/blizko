@@ -14,6 +14,7 @@ import { ShareModal } from './components/ShareModal';
 import { Forbidden } from './components/Forbidden';
 import { LoginPage } from './components/LoginPage';
 import { HowWeVerifyPage, HumanityPlusPage } from './components/seo/SeoPages';
+import { SeoHead } from './components/seo/SeoHead';
 import { NannyLandingPage } from './components/NannyLandingPage';
 import { NannyPublicProfile } from './components/nanny/NannyPublicProfile';
 import { ViewState, ParentRequest, NannyProfile, SubmissionResult, Language, User } from './types';
@@ -233,6 +234,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
+      <SeoHead 
+        title={lang === 'ru' ? 'Blizko — Сервис по подбору нянь по совместимости' : 'Blizko — AI Nanny Matching Service'}
+        description={lang === 'ru' ? 'Blizko использует технологию Humanity+ для подбора няни, идеально совместимой с вашим стилем воспитания. Быстро, безопасно и 100% верифицировано.' : 'Blizko uses Humanity+ AI to match you with a nanny perfectly compatible with your parenting style. Fast, safe, and 100% verified.'}
+        canonical="https://blizko.app"
+      />
+      
       {/* Cloud background blobs */}
       <div className="cloud-bg">
         <div className="cloud-blob cloud-blob-peach" />

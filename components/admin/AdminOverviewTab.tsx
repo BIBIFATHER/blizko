@@ -14,13 +14,14 @@ import {
 } from 'lucide-react';
 import { Booking } from '../../services/booking';
 import { buildDashboardMetrics } from '../../services/dashboardMetrics';
-import { getAnalyticsEvents } from '../../services/analytics';
+import { AnalyticsEventRecord, getAnalyticsEvents } from '../../services/analytics';
 import { getNannyReadinessSnapshot } from '../../services/nannyReadiness';
 
 interface AdminOverviewTabProps {
     parents: ParentRequest[];
     nannies: NannyProfile[];
     bookings: Booking[];
+    events?: AnalyticsEventRecord[];
     unseenParentsCount: number;
 }
 
@@ -28,14 +29,15 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
     parents,
     nannies,
     bookings,
+    events,
     unseenParentsCount,
 }) => {
     const metrics = React.useMemo(() => buildDashboardMetrics({
         parents,
         nannies,
         bookings,
-        events: getAnalyticsEvents(),
-    }), [bookings, nannies, parents]);
+        events: events?.length ? events : getAnalyticsEvents(),
+    }), [bookings, events, nannies, parents]);
 
     const readiness = React.useMemo(() => nannies.map((n) => getNannyReadinessSnapshot(n)), [nannies]);
     const verified = nannies.filter((n) => n.isVerified).length;
@@ -175,6 +177,10 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                         </div>
                     </div>
                 </Card>
+            </div>
+
+            <div className="text-[11px] text-stone-400 mt-3">
+                Event source: {events?.length ? 'remote analytics store' : 'local browser fallback'}.
             </div>
         </>
     );

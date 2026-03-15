@@ -12,6 +12,11 @@ import { AdminParentsTab } from './admin/AdminParentsTab';
 import { AdminNanniesTab } from './admin/AdminNanniesTab';
 import { AdminBookingsTab } from './admin/AdminBookingsTab';
 import { getAllBookings, updateBookingStatus, Booking } from '../services/booking';
+import {
+  AnalyticsEventRecord,
+  fetchRemoteAnalyticsEvents,
+  getAnalyticsEvents,
+} from '../services/analytics';
 
 type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings';
 
@@ -23,14 +28,16 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [onlyProblematic, setOnlyProblematic] = useState(false);
   const [unseenParentsCount, setUnseenParentsCount] = useState(0);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [analyticsEvents, setAnalyticsEvents] = useState<AnalyticsEventRecord[]>([]);
 
   const loadData = async () => {
     const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    const [pr, nr] = await Promise.all([
+    const [pr, nr, remoteAnalytics] = await Promise.all([
       fetch('/api/data?resource=parents', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
       fetch('/api/data?resource=nannies', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetchRemoteAnalyticsEvents(30, token),
     ]);
 
     const p = Array.isArray(pr?.items) ? pr.items : [];
@@ -38,6 +45,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     setParents(p);
     setNannies(n);
+    setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
 
     const seenTs = Number(localStorage.getItem('blizko_admin_parents_seen_ts') || '0');
     const unseen = p.filter((item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs).length;
@@ -160,6 +168,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               parents={parents}
               nannies={nannies}
               bookings={bookings}
+              events={analyticsEvents}
               unseenParentsCount={unseenParentsCount}
             />
           )}

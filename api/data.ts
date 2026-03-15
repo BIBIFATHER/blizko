@@ -2,14 +2,45 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
-import { getServerEnv, verifyBearerAdmin } from './_auth.js';
+import { getServerEnv, verifyBearerAdmin, verifyBearerUser } from './_auth.js';
+import { getDbPool } from './_db.js';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
-const TABLES = new Set(['parents', 'nannies']);
+const RESOURCES = new Set(['parents', 'nannies', 'analytics']);
+const ANALYTICS_EVENT_LIMIT = 5_000;
+const ANALYTICS_ALLOWED_EVENTS = new Set([
+  'page_view',
+  'cta_clicked',
+  'form_step_completed',
+  'form_submitted',
+  'matching_results_viewed',
+  'nanny_card_clicked',
+  'chat_opened',
+  'booking_created',
+  'return_visit',
+  'document_uploaded',
+  'location_detected',
+  'resume_parsed',
+  'resume_autofill_applied',
+  'nanny_ready_for_match',
+  'match_profile_opened',
+  'match_follow_up_shown',
+  'match_follow_up_clicked',
+  'share_clicked',
+  'auth_modal_opened',
+  'auth_completed',
+  'language_switched',
+  'install_prompt_shown',
+  'install_accepted',
+  'nanny_offer_shown',
+  'nanny_offer_accepted',
+  'admin_panel_opened',
+]);
+let analyticsTableReady = false;
 
-function getTable(req: VercelRequest): 'parents' | 'nannies' | null {
+function getResource(req: VercelRequest): 'parents' | 'nannies' | 'analytics' | null {
   const resource = String((req.query as any)?.resource || '').trim().toLowerCase();
-  return TABLES.has(resource) ? (resource as 'parents' | 'nannies') : null;
+  return RESOURCES.has(resource) ? (resource as 'parents' | 'nannies' | 'analytics') : null;
 }
 
 async function sb(path: string, init: RequestInit, url: string, key: string) {
@@ -35,14 +66,145 @@ const fromRow = (r: any) => {
   };
 };
 
+function toAnalyticsRecord(row: any) {
+  return {
+    id: row?.id ? String(row.id) : undefined,
+    event: String(row?.event || ''),
+    properties: row?.properties && typeof row.properties === 'object' ? row.properties : {},
+    timestamp: row?.occurred_at ? new Date(row.occurred_at).toISOString() : new Date().toISOString(),
+    url: row?.url ? String(row.url) : undefined,
+  };
+}
+
+function sanitizeAnalyticsRecord(input: any) {
+  if (!input || typeof input !== 'object') return null;
+
+  const event = String(input.event || '').trim();
+  if (!ANALYTICS_ALLOWED_EVENTS.has(event)) return null;
+
+  const properties =
+    input.properties && typeof input.properties === 'object' && !Array.isArray(input.properties)
+      ? input.properties
+      : {};
+
+  const propertiesSize = JSON.stringify(properties).length;
+  if (propertiesSize > 8_192) return null;
+
+  const timestamp = String(input.timestamp || '');
+  const parsed = timestamp ? Date.parse(timestamp) : Date.now();
+  if (!Number.isFinite(parsed)) return null;
+
+  const sessionId = String((properties as any).session_id || '').trim().slice(0, 128);
+
+  return {
+    id: String(input.id || '').trim().slice(0, 128) || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+    event,
+    properties,
+    timestamp: new Date(parsed).toISOString(),
+    url: input.url ? String(input.url).slice(0, 256) : null,
+    sessionId: sessionId || null,
+  };
+}
+
+async function ensureAnalyticsTable() {
+  if (analyticsTableReady) return;
+
+  const pool = getDbPool();
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS analytics_events (
+      id TEXT PRIMARY KEY,
+      event TEXT NOT NULL,
+      properties JSONB NOT NULL DEFAULT '{}'::jsonb,
+      url TEXT,
+      session_id TEXT,
+      user_id TEXT,
+      occurred_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_analytics_events_event ON analytics_events(event)`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_analytics_events_occurred_at ON analytics_events(occurred_at DESC)`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_analytics_events_session_id ON analytics_events(session_id)`);
+  analyticsTableReady = true;
+}
+
+async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
+  try {
+    await ensureAnalyticsTable();
+  } catch {
+    if (req.method === 'POST') return json(res, 202, { ok: false, skipped: 'analytics_store_unavailable' });
+    return json(res, 200, { items: [], source: 'disabled' });
+  }
+
+  const pool = getDbPool();
+
+  if (req.method === 'GET') {
+    const adminUser = await verifyBearerAdmin(req);
+    if (!adminUser) return json(res, 403, { error: 'Admin access required' });
+
+    const daysRaw = Number((req.query as any)?.days || 30);
+    const days = Number.isFinite(daysRaw) ? Math.max(1, Math.min(90, Math.round(daysRaw))) : 30;
+
+    const result = await pool.query(
+      `
+        SELECT id, event, properties, url, occurred_at
+        FROM analytics_events
+        WHERE occurred_at >= now() - ($1 || ' days')::interval
+        ORDER BY occurred_at DESC
+        LIMIT $2
+      `,
+      [String(days), ANALYTICS_EVENT_LIMIT],
+    );
+
+    return json(res, 200, { items: result.rows.map(toAnalyticsRecord), days });
+  }
+
+  if (req.method === 'POST') {
+    const record = sanitizeAnalyticsRecord(req.body?.record);
+    if (!record) return json(res, 400, { error: 'Invalid analytics record' });
+
+    const verifiedUser = await verifyBearerUser(req);
+
+    await pool.query(
+      `
+        INSERT INTO analytics_events (id, event, properties, url, session_id, user_id, occurred_at)
+        VALUES ($1, $2, $3::jsonb, $4, $5, $6, $7::timestamptz)
+        ON CONFLICT (id) DO NOTHING
+      `,
+      [
+        record.id,
+        record.event,
+        JSON.stringify(record.properties),
+        record.url,
+        record.sessionId,
+        verifiedUser?.id || null,
+        record.timestamp,
+      ],
+    );
+
+    return json(res, 201, { ok: true });
+  }
+
+  return json(res, 405, { error: 'Method not allowed' });
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
 
-  const table = getTable(req);
-  if (!table) return json(res, 400, { error: 'Missing or invalid resource' });
+  const resource = getResource(req);
+  if (!resource) return json(res, 400, { error: 'Missing or invalid resource' });
 
-  const rl = rateLimit(req, { max: 30, prefix: `data:${table}` });
+  if (resource === 'analytics') {
+    const limit = rateLimit(req, {
+      max: req.method === 'POST' ? 180 : 20,
+      prefix: `data:${resource}:${req.method.toLowerCase()}`,
+    });
+    if (!limit.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
+    return handleAnalytics(req, res);
+  }
+
+  const rl = rateLimit(req, { max: 30, prefix: `data:${resource}` });
   if (!rl.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
 
   const { supabaseUrl, supabaseServiceRoleKey, supabaseAnonKey } = getServerEnv();
@@ -55,9 +217,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === 'GET') {
-      const response = await sb(`${table}?select=id,payload,created_at&order=created_at.desc`, { method: 'GET' }, supabaseUrl, supabaseServiceRoleKey);
+      const response = await sb(`${resource}?select=id,payload,created_at&order=created_at.desc`, { method: 'GET' }, supabaseUrl, supabaseServiceRoleKey);
       const data = await response.json().catch(() => []);
-      if (!response.ok) return json(res, response.status, { error: data?.message || `Failed to read ${table}` });
+      if (!response.ok) return json(res, response.status, { error: data?.message || `Failed to read ${resource}` });
       return json(res, 200, { items: (data || []).map(fromRow) });
     }
 
@@ -67,7 +229,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       const row = { id: item.id, payload: item };
       const response = await sb(
-        `${table}?on_conflict=id`,
+        `${resource}?on_conflict=id`,
         {
           method: 'POST',
           headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
@@ -77,7 +239,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         supabaseServiceRoleKey,
       );
       const data = await response.json().catch(() => []);
-      if (!response.ok) return json(res, response.status, { error: data?.message || `Failed to save ${table}` });
+      if (!response.ok) return json(res, response.status, { error: data?.message || `Failed to save ${resource}` });
       const saved = Array.isArray(data) && data[0] ? fromRow(data[0]) : item;
       return json(res, 200, { item: saved });
     }
@@ -85,10 +247,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'DELETE') {
       const testOnly = String((req.query as any)?.testOnly || '') === '1';
       const filter = testOnly ? 'id=like.test-%25' : 'id=neq.__none__';
-      const response = await sb(`${table}?${filter}`, { method: 'DELETE' }, supabaseUrl, supabaseServiceRoleKey);
+      const response = await sb(`${resource}?${filter}`, { method: 'DELETE' }, supabaseUrl, supabaseServiceRoleKey);
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        return json(res, response.status, { error: data?.message || `Failed to clear ${table}` });
+        return json(res, response.status, { error: data?.message || `Failed to clear ${resource}` });
       }
       return json(res, 200, { ok: true, testOnly });
     }

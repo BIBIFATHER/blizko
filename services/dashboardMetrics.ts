@@ -43,6 +43,26 @@ function countEvents(
   return events.filter((record) => record.event === event && (!predicate || predicate(record))).length;
 }
 
+function getSessionKey(record: AnalyticsEventRecord): string | null {
+  const value = record.properties?.session_id;
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function countUniqueSessions(
+  events: AnalyticsEventRecord[],
+  event: string,
+  predicate?: (record: AnalyticsEventRecord) => boolean,
+): number {
+  const matching = events.filter((record) => record.event === event && (!predicate || predicate(record)));
+  const sessionIds = new Set(
+    matching
+      .map(getSessionKey)
+      .filter((value): value is string => Boolean(value)),
+  );
+
+  return sessionIds.size > 0 ? sessionIds.size : matching.length;
+}
+
 function toPercent(numerator: number, denominator: number): number {
   if (denominator <= 0) return 0;
   return Math.round((numerator / denominator) * 100);
@@ -62,19 +82,19 @@ export function buildDashboardMetrics(params: {
   const readyForReview = readiness.filter((item) => item.readyForReview).length;
   const qualityApproved = readiness.filter((item) => item.qualityApproved).length;
 
-  const parentStarts = countEvents(
+  const parentStarts = countUniqueSessions(
     events,
     ANALYTICS_EVENTS.PAGE_VIEW,
     (record) => record.properties.page === 'parent_form' && record.properties.source === 'form_start',
   );
-  const parentSubmitted = countEvents(
+  const parentSubmitted = countUniqueSessions(
     events,
     ANALYTICS_EVENTS.FORM_SUBMITTED,
     (record) => record.properties.form_type === 'parent',
   );
-  const resultsViewed = countEvents(events, ANALYTICS_EVENTS.MATCHING_RESULTS_VIEWED);
+  const resultsViewed = countUniqueSessions(events, ANALYTICS_EVENTS.MATCHING_RESULTS_VIEWED);
 
-  const profileOpens = countEvents(events, ANALYTICS_EVENTS.MATCH_PROFILE_OPENED);
+  const profileOpens = countUniqueSessions(events, ANALYTICS_EVENTS.MATCH_PROFILE_OPENED);
   const bookingsCreated = params.bookings.length || countEvents(events, ANALYTICS_EVENTS.BOOKING_CREATED);
   const completedBookings = params.bookings.filter((booking) => booking.status === 'completed').length;
   const reviewsCaptured = params.nannies.reduce((sum, nanny) => sum + (nanny.reviews || []).length, 0);

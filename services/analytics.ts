@@ -29,9 +29,12 @@ declare global {
 }
 
 const ANALYTICS_BUFFER_KEY = 'blizko_analytics_events';
+const ANALYTICS_SESSION_KEY = 'blizko_analytics_session_id';
 const ANALYTICS_BUFFER_LIMIT = 500;
+const ANALYTICS_FLUSH_URL = '/api/data?resource=analytics';
 
 export interface AnalyticsEventRecord {
+    id?: string;
     event: string;
     properties: Record<string, unknown>;
     timestamp: string;
@@ -75,6 +78,33 @@ export const ANALYTICS_EVENTS = {
 
 type EventName = typeof ANALYTICS_EVENTS[keyof typeof ANALYTICS_EVENTS];
 
+function generateAnalyticsId(): string {
+    try {
+        if (typeof globalThis !== 'undefined' && globalThis.crypto?.randomUUID) {
+            return globalThis.crypto.randomUUID();
+        }
+    } catch {
+        // ignore
+    }
+
+    return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function getAnalyticsSessionId(): string {
+    try {
+        if (typeof window === 'undefined' || !window.localStorage) return 'server';
+
+        const existing = window.localStorage.getItem(ANALYTICS_SESSION_KEY);
+        if (existing) return existing;
+
+        const next = generateAnalyticsId();
+        window.localStorage.setItem(ANALYTICS_SESSION_KEY, next);
+        return next;
+    } catch {
+        return 'unknown-session';
+    }
+}
+
 function appendAnalyticsEvent(record: AnalyticsEventRecord): void {
     try {
         if (typeof window === 'undefined' || !window.localStorage) return;
@@ -97,24 +127,64 @@ export function getAnalyticsEvents(): AnalyticsEventRecord[] {
     }
 }
 
+async function flushAnalyticsEvent(record: AnalyticsEventRecord): Promise<void> {
+    if (typeof window === 'undefined' || typeof fetch === 'undefined') return;
+
+    try {
+        await fetch(ANALYTICS_FLUSH_URL, {
+            method: 'POST',
+            keepalive: true,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ record }),
+        });
+    } catch {
+        // remote analytics should never break UX
+    }
+}
+
+export async function fetchRemoteAnalyticsEvents(days = 30, accessToken?: string): Promise<AnalyticsEventRecord[]> {
+    try {
+        const headers: Record<string, string> = {};
+        if (accessToken) {
+            headers.Authorization = `Bearer ${accessToken}`;
+        }
+
+        const response = await fetch(`${ANALYTICS_FLUSH_URL}&days=${days}`, { headers });
+        if (!response.ok) return [];
+
+        const data = await response.json().catch(() => ({ items: [] }));
+        return Array.isArray(data?.items) ? data.items as AnalyticsEventRecord[] : [];
+    } catch {
+        return [];
+    }
+}
+
 // ---- Core Functions ----
 
 /** Track an event with optional properties */
 export function track(event: EventName, properties?: Record<string, unknown>): void {
     try {
+        const sessionId = getAnalyticsSessionId();
         const record: AnalyticsEventRecord = {
+            id: generateAnalyticsId(),
             event,
-            properties: properties || {},
+            properties: {
+                session_id: sessionId,
+                ...(properties || {}),
+            },
             timestamp: new Date().toISOString(),
             url: typeof window !== 'undefined' ? window.location.pathname : undefined,
         };
 
         appendAnalyticsEvent(record);
+        void flushAnalyticsEvent(record);
 
         // PostHog
-        if (window.posthog) {
+        if (typeof window !== 'undefined' && window.posthog) {
             window.posthog.capture(event, {
-                ...properties,
+                ...record.properties,
                 timestamp: record.timestamp,
                 url: record.url,
             });
@@ -132,7 +202,7 @@ export function track(event: EventName, properties?: Record<string, unknown>): v
 /** Identify a user (after login/signup) */
 export function identify(userId: string, traits?: Record<string, unknown>): void {
     try {
-        if (window.posthog) {
+        if (typeof window !== 'undefined' && window.posthog) {
             window.posthog.identify(userId, traits);
         }
         if (import.meta.env.DEV) {
@@ -146,7 +216,7 @@ export function identify(userId: string, traits?: Record<string, unknown>): void
 /** Reset user identity (on logout) */
 export function resetIdentity(): void {
     try {
-        if (window.posthog) {
+        if (typeof window !== 'undefined' && window.posthog) {
             window.posthog.reset();
         }
     } catch {

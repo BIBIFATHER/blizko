@@ -1,12 +1,15 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import fs from 'fs';
+import path from 'path';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
-import { getServerEnv, verifyBearerAdmin, verifyBearerUser } from './_auth.js';
+import { envWithLocalFallback, getServerEnv, verifyBearerAdmin, verifyBearerUser } from './_auth.js';
 import { getDbPool } from './_db.js';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
 const RESOURCES = new Set(['parents', 'nannies', 'analytics']);
+const ADMIN_ACTIONS = new Set(['apply_matching_outcomes_interest_signals']);
 const ANALYTICS_EVENT_LIMIT = 5_000;
 const ANALYTICS_ALLOWED_EVENTS = new Set([
   'page_view',
@@ -37,6 +40,17 @@ const ANALYTICS_ALLOWED_EVENTS = new Set([
   'admin_panel_opened',
 ]);
 let analyticsTableReady = false;
+
+function getAdminAction(req: VercelRequest) {
+  const action = String((req.query as any)?.action || req.body?.action || '').trim().toLowerCase();
+  return ADMIN_ACTIONS.has(action) ? action : null;
+}
+
+function hasInternalAdminToken(req: VercelRequest) {
+  const expected = String(envWithLocalFallback('NOTIFY_TOKEN') || '').trim();
+  const incoming = String(req.headers['x-notify-token'] || '').trim();
+  return Boolean(expected && incoming && expected === incoming);
+}
 
 function getResource(req: VercelRequest): 'parents' | 'nannies' | 'analytics' | null {
   const resource = String((req.query as any)?.resource || '').trim().toLowerCase();
@@ -269,9 +283,61 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
   return json(res, 405, { error: 'Method not allowed' });
 }
 
+async function runSqlMigration(fileName: string) {
+  const filePath = path.join(process.cwd(), 'supabase', 'migrations', fileName);
+  const sql = fs.readFileSync(filePath, 'utf8');
+  const pool = getDbPool();
+  await pool.query(sql);
+}
+
+async function handleAdminAction(req: VercelRequest, res: VercelResponse, action: string) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
+
+  const allowed = hasInternalAdminToken(req) || await verifyBearerAdmin(req);
+  if (!allowed) return json(res, 403, { error: 'Admin access required' });
+
+  if (action === 'apply_matching_outcomes_interest_signals') {
+    await runSqlMigration('20260315_matching_outcomes_interest_signals.sql');
+    const pool = getDbPool();
+    const verification = await pool.query(`
+      SELECT
+        (
+          SELECT is_nullable
+          FROM information_schema.columns
+          WHERE table_name = 'matching_outcomes' AND column_name = 'outcome'
+        ) AS outcome_nullable,
+        EXISTS (
+          SELECT 1
+          FROM pg_indexes
+          WHERE tablename = 'matching_outcomes'
+            AND indexname = 'idx_matching_outcomes_parent_nanny_unique'
+        ) AS unique_index_present
+    `);
+
+    return json(res, 200, {
+      ok: true,
+      action,
+      verification: verification.rows[0] || null,
+    });
+  }
+
+  return json(res, 400, { error: 'Unsupported action' });
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
+
+  const adminAction = getAdminAction(req);
+  if (adminAction) {
+    const limit = rateLimit(req, { max: 5, prefix: `data:admin-action:${adminAction}` });
+    if (!limit.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
+    try {
+      return await handleAdminAction(req, res, adminAction);
+    } catch (e: any) {
+      return json(res, 500, { error: String(e?.message || e) });
+    }
+  }
 
   const resource = getResource(req);
   if (!resource) return json(res, 400, { error: 'Missing or invalid resource' });

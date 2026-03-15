@@ -50,6 +50,7 @@ export interface ParentRequest {
   requirements: string[];
   comment: string;
   documents?: DocumentVerification[];
+  requesterId?: string;
   requesterEmail?: string;
   riskProfile?: ParentRiskProfile;
   createdAt: number;
@@ -104,6 +105,7 @@ export interface NannyRiskProfile {
 export interface NannyProfile {
   id: string;
   type: 'nanny';
+  userId?: string;
   name: string;
   photo?: string; // Base64 or URL
   city: string;

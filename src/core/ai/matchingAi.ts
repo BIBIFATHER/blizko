@@ -31,7 +31,7 @@ const SchemaType = {
 } as const;
 
 function norm(v?: string): string {
-  return String(v ?? "").trim().toLowerCase();
+  return String(v ?? "").trim().toLowerCase().replace(/ё/g, "е");
 }
 
 function includesAny(haystack: string, needles: string[]): boolean {

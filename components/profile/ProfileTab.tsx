@@ -7,10 +7,9 @@ import {
 } from 'lucide-react';
 import { Language, User, NannyProfile, ParentRequest, Review } from '../../types';
 import { t } from '../../src/core/i18n/translations';
-import { getNannyProfiles, getParentRequests, resubmitParentRequest } from '../../services/storage';
+import { getMyNannyProfile, getMyParentRequests, resubmitParentRequest } from '../../services/storage';
 import { notifyAdminResubmitted } from '../../services/notifications';
 import { supabase } from '../../services/supabase';
-import { findCurrentNannyProfile } from '../../services/currentNannyProfile';
 import { SERVICE_COMMISSION_RATE } from '../../src/core/config/pricing';
 import { ReferralWidget } from '../referral/ReferralWidget';
 
@@ -55,11 +54,10 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     useEffect(() => {
         const load = async () => {
             if (isNanny) {
-                const storedNannies = await getNannyProfiles();
-                const myProfile = findCurrentNannyProfile(storedNannies, user);
+                const myProfile = await getMyNannyProfile(user);
                 setMyNannyProfile(myProfile);
             } else {
-                const requests = await getParentRequests();
+                const requests = await getMyParentRequests(user);
                 setMyParentRequests(requests);
             }
         };
@@ -190,7 +188,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     const handleResubmit = async (id: string) => {
         const updated = await resubmitParentRequest(id);
         if (updated) await notifyAdminResubmitted(updated);
-        const requests = await getParentRequests();
+        const requests = await getMyParentRequests(user);
         setMyParentRequests(requests);
     };
 

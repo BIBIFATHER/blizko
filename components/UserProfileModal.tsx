@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Briefcase } from 'lucide-react';
 import { Language, User, Review, NannyProfile, ParentRequest } from '../types';
 import { t } from '../src/core/i18n/translations';
-import { getNannyProfiles } from '../services/storage';
-import { findCurrentNannyProfile } from '../services/currentNannyProfile';
+import { getMyNannyProfile } from '../services/storage';
 import { PaymentModal } from './PaymentModal';
 import { ProfileTab } from './profile/ProfileTab';
 import { BookingsTab } from './profile/BookingsTab';
@@ -33,8 +32,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
   useEffect(() => {
     if (isNanny) {
-      getNannyProfiles().then((storedNannies) => {
-        const myProfile = findCurrentNannyProfile(storedNannies, user);
+      getMyNannyProfile(user).then((myProfile) => {
         if (myProfile?.reviews) setReviews(myProfile.reviews);
       });
     }

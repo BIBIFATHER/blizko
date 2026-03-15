@@ -14,8 +14,13 @@ function normalizeContact(value?: string): string {
 
 export function findCurrentNannyProfile(
   profiles: NannyProfile[],
-  user: Pick<User, 'name' | 'email' | 'phone'>,
+  user: Pick<User, 'id' | 'name' | 'email' | 'phone'>,
 ): NannyProfile | undefined {
+  if (user.id) {
+    const byUserId = profiles.find((profile) => profile.userId === user.id);
+    if (byUserId) return byUserId;
+  }
+
   const normalizedName = normalizeText(user.name);
   const contactCandidates = [normalizeContact(user.email), normalizeContact(user.phone)].filter(Boolean);
 
@@ -36,4 +41,3 @@ export function findCurrentNannyProfile(
   const nameMatches = profiles.filter((profile) => normalizeText(profile.name) === normalizedName);
   return nameMatches.length === 1 ? nameMatches[0] : undefined;
 }
-

@@ -1,6 +1,7 @@
-import { ParentRequest, NannyProfile, Review } from '../types';
+import { ParentRequest, NannyProfile, Review, User } from '../types';
 import { getItem, setItem, removeItem } from '../src/core/platform/storage';
 import { supabase } from './supabase';
+import { findCurrentNannyProfile } from './currentNannyProfile';
 
 const STORAGE_KEY_PARENTS = 'blizko_parents';
 const STORAGE_KEY_NANNIES = 'blizko_nannies';
@@ -112,6 +113,19 @@ async function getCurrentUserId(): Promise<string | null> {
   return data.user?.id || null;
 }
 
+async function getCurrentUserIdentity(): Promise<Pick<User, 'id' | 'name' | 'email' | 'phone'>> {
+  if (!supabase) return {};
+  const { data } = await supabase.auth.getUser();
+  const authUser = data.user;
+
+  return {
+    id: authUser?.id || undefined,
+    email: authUser?.email || undefined,
+    phone: String(authUser?.user_metadata?.phone_e164 || authUser?.phone || '') || undefined,
+    name: String(authUser?.user_metadata?.name || authUser?.user_metadata?.full_name || '') || undefined,
+  };
+}
+
 async function remoteGet(table: 'parents' | 'nannies'): Promise<any[] | null> {
   try {
     if (!supabase) return null;
@@ -145,6 +159,25 @@ async function remoteGetOwnNanny(): Promise<any | null> {
 
     if (error || !data) return null;
     return data;
+  } catch {
+    return null;
+  }
+}
+
+async function remoteGetOwnParents(): Promise<any[] | null> {
+  try {
+    if (!supabase) return null;
+    const userId = await getCurrentUserId();
+    if (!userId) return null;
+
+    const { data, error } = await supabase
+      .from('parents')
+      .select('id,payload,created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) return null;
+    return Array.isArray(data) ? data : null;
   } catch {
     return null;
   }
@@ -311,13 +344,26 @@ export const resubmitParentRequest = async (id: string): Promise<ParentRequest |
 
 export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<NannyProfile> => {
   const existing = getLocalNannies();
+  const currentUserId = await getCurrentUserId();
 
   if (data.id) {
     const index = existing.findIndex((p) => p.id === data.id);
     if (index !== -1) {
-      const updatedProfile = { ...existing[index], ...data } as NannyProfile;
+      const updatedProfile = { ...existing[index], ...data, userId: currentUserId || existing[index].userId } as NannyProfile;
       return saveWithFallback('nannies', updatedProfile);
     }
+  }
+
+  const remoteOwn = await remoteGetOwnNanny();
+  if (remoteOwn) {
+    const remoteOwnProfile = fromRow<NannyProfile>(remoteOwn);
+    const updatedProfile = {
+      ...remoteOwnProfile,
+      ...data,
+      id: remoteOwnProfile.id,
+      userId: currentUserId || remoteOwnProfile.userId,
+    } as NannyProfile;
+    return saveWithFallback('nannies', updatedProfile);
   }
 
   const newProfile: NannyProfile = {
@@ -326,6 +372,7 @@ export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<Nan
     id: crypto.randomUUID(),
     createdAt: Date.now(),
     type: 'nanny',
+    userId: currentUserId || data.userId,
   } as NannyProfile;
 
   return saveWithFallback('nannies', newProfile);
@@ -371,6 +418,60 @@ export const getNannyProfiles = async (): Promise<NannyProfile[]> => {
     return merged;
   }
   return getLocalNannies();
+};
+
+function filterLocalParentsForUser(
+  items: ParentRequest[],
+  user: Pick<User, 'id' | 'email'>,
+): ParentRequest[] {
+  const userId = String(user.id || '').trim();
+  const userEmail = String(user.email || '').trim().toLowerCase();
+
+  return items.filter((item) => {
+    if (userId && item.requesterId === userId) return true;
+    if (userEmail && String(item.requesterEmail || '').trim().toLowerCase() === userEmail) return true;
+    return false;
+  });
+}
+
+export const getMyParentRequests = async (
+  user?: Pick<User, 'id' | 'email'>,
+): Promise<ParentRequest[]> => {
+  const identity = { ...(await getCurrentUserIdentity()), ...(user || {}) };
+  const localItems = filterLocalParentsForUser(getLocalParents(), identity);
+  const pendingIds = getPendingSyncIds('parents');
+  const remote = await remoteGetOwnParents();
+
+  if (remote) {
+    const remoteItems = remote.map((row) => fromRow<ParentRequest>(row));
+    return mergeRemoteWithPending(remoteItems, localItems, pendingIds);
+  }
+
+  return localItems;
+};
+
+export const getMyNannyProfile = async (
+  user?: Pick<User, 'id' | 'name' | 'email' | 'phone'>,
+): Promise<NannyProfile | undefined> => {
+  const identity = { ...(await getCurrentUserIdentity()), ...(user || {}) };
+  const localItems = getLocalNannies();
+  const pendingIds = getPendingSyncIds('nannies');
+  const remoteOwn = await remoteGetOwnNanny();
+
+  if (remoteOwn) {
+    const remoteProfile = fromRow<NannyProfile>(remoteOwn);
+    const pendingLocal = pendingIds.includes(remoteProfile.id)
+      ? localItems.find((item) => item.id === remoteProfile.id)
+      : undefined;
+
+    if (pendingLocal) return pendingLocal;
+
+    syncLocalNannies(remoteProfile);
+    clearPendingSync('nannies', remoteProfile.id);
+    return remoteProfile;
+  }
+
+  return findCurrentNannyProfile(localItems, identity);
 };
 
 export const addReview = async (review: Review, nannyId?: string): Promise<void> => {

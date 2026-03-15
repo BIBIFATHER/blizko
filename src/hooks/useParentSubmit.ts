@@ -37,6 +37,7 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
 
     const saved = await saveParentRequest({
       ...data,
+      requesterId: user?.id,
       requesterEmail: user?.email,
     });
     await sendToWebhook(saved);

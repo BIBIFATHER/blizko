@@ -10,6 +10,19 @@ import { supabase } from './supabase';
 export type MatchOutcome = 'hired' | 'rejected' | 'ghosted';
 export type MatchAction = 'interested' | 'hired' | 'rejected' | 'ghosted';
 
+function buildFeedbackText(
+  signalType: 'interest_signal' | 'final_outcome',
+  feedbackText?: string,
+): string | null {
+  if (!feedbackText && signalType === 'final_outcome') return null;
+
+  return JSON.stringify({
+    type: signalType,
+    note: feedbackText || null,
+    recordedAt: Date.now(),
+  });
+}
+
 /**
  * Record a matching outcome when user acts on a match result.
  *
@@ -29,8 +42,25 @@ export async function recordMatchOutcome(
   if (!supabase || !parentId || !nannyId) return;
 
   try {
-    // Map extended actions to DB enum ('interested' → stored but not in enum, use upsert)
-    const dbOutcome: MatchOutcome = outcome === 'interested' ? 'hired' : outcome as MatchOutcome;
+    if (outcome === 'interested') {
+      const { error } = await supabase
+        .from('matching_outcomes')
+        .upsert(
+          {
+            parent_id: parentId,
+            nanny_id: nannyId,
+            outcome: null,
+            feedback_text: buildFeedbackText('interest_signal', feedbackText),
+            score_at_match: scoreAtMatch ?? null,
+          },
+          { onConflict: 'parent_id,nanny_id' }
+        );
+
+      if (error) {
+        console.warn('[MatchingFeedback] Failed to record interest signal:', error.message);
+      }
+      return;
+    }
 
     const { error } = await supabase
       .from('matching_outcomes')
@@ -38,9 +68,9 @@ export async function recordMatchOutcome(
         {
           parent_id: parentId,
           nanny_id: nannyId,
-          outcome: dbOutcome,
-          feedback_text: feedbackText || null,
-          score_at_match: scoreAtMatch || null,
+          outcome,
+          feedback_text: buildFeedbackText('final_outcome', feedbackText),
+          score_at_match: scoreAtMatch ?? null,
         },
         { onConflict: 'parent_id,nanny_id' }
       );

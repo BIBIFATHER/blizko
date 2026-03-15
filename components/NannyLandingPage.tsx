@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card } from './UI';
+import { SERVICE_COMMISSION_PERCENT } from '../src/core/config/pricing';
 import {
     ShieldCheck, Star, Clock, Users, TrendingUp, CheckCircle,
     ArrowRight, Heart, Sparkles, Phone
@@ -22,7 +23,7 @@ export const NannyLandingPage: React.FC = () => {
         },
         {
             icon: <TrendingUp size={28} />,
-            title: 'Честная комиссия 15%',
+            title: `Честная комиссия ${SERVICE_COMMISSION_PERCENT}%`,
             desc: 'Только после успешного выхода. Никаких предоплат, скрытых платежей и абонентской платы.',
         },
         {

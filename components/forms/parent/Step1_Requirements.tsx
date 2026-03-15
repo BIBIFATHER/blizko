@@ -118,7 +118,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                     autoAdvance
                 />
                 <div className="text-center mt-3 text-xs text-emerald-600 font-medium bg-emerald-50 py-1.5 px-3 rounded-full mx-auto w-fit flex items-center gap-1.5">
-                    <Sparkles size={12} /> {lang === 'ru' ? 'Мы не берем комиссию с зарплаты няни' : 'We take 0% commission from nanny\'s salary'}
+                    <Sparkles size={12} /> {lang === 'ru' ? 'Прозрачные условия без скрытых комиссий' : 'Transparent terms with no hidden fees'}
                 </div>
             </div>
 

@@ -18,6 +18,8 @@ type NotifyPayload = {
   status?: string;
 };
 
+const CLIENT_TELEGRAM_EVENTS = new Set(['admin.contact_sharing_detected']);
+
 async function sendResendEmail(to: string, subject: string, text: string) {
   const apiKey = envWithLocalFallback('RESEND_API_KEY');
   const from = envWithLocalFallback('RESEND_FROM_EMAIL') || 'Blizko <no-reply@blizko.app>';
@@ -115,17 +117,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (channel === 'telegram') {
-      const chatId = String(body.chat_id || envWithLocalFallback('TELEGRAM_ADMIN_CHAT_ID') || '').trim();
+      const adminEmail = String(envWithLocalFallback('ADMIN_EMAIL') || '').trim().toLowerCase();
+      const isAdminUser = Boolean(verifiedUser?.email && verifiedUser.email === adminEmail);
+      const isAllowedClientTelegramEvent = CLIENT_TELEGRAM_EVENTS.has(event);
+
+      if (!hasInternalToken && !isAdminUser && !isAllowedClientTelegramEvent) {
+        return res.status(403).json({ ok: false, error: 'Admin access required' });
+      }
+
+      const chatId = String(
+        (!hasInternalToken && isAllowedClientTelegramEvent)
+          ? envWithLocalFallback('TELEGRAM_ADMIN_CHAT_ID')
+          : (body.chat_id || envWithLocalFallback('TELEGRAM_ADMIN_CHAT_ID'))
+      || '').trim();
       const message = String(body.text || body.message || '').trim();
       if (!chatId || !message) {
         return res.status(400).json({ ok: false, error: 'chat_id and message are required' });
-      }
-
-      if (!hasInternalToken) {
-        const adminEmail = String(envWithLocalFallback('ADMIN_EMAIL') || '').trim().toLowerCase();
-        if (!verifiedUser?.email || verifiedUser.email !== adminEmail) {
-          return res.status(403).json({ ok: false, error: 'Admin access required' });
-        }
       }
 
       const result = await sendTelegramMessage(chatId, message, {

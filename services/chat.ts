@@ -1,4 +1,5 @@
 import { ChatMessage } from '../types';
+import { sendToWebhook } from './api';
 
 const keyFor = (bookingId: string) => `blizko_chat_${bookingId}`;
 
@@ -55,21 +56,14 @@ export const detectContactSharing = (text: string): ContactDetectionResult => {
   return { hasContact: false, type: null, match: null };
 };
 
-// Alert admin via Telegram (fire-and-forget)
+// Alert admin via Telegram through the authenticated server-side notify path.
 const alertContactDetected = (bookingId: string, detection: ContactDetectionResult, senderRole: string) => {
-  try {
-    fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        channel: 'telegram',
-        chat_id: '',
-        message: `⚠️ Обнаружена попытка обмена контактами!\n\n📋 Бронирование: ${bookingId}\n👤 Отправитель: ${senderRole}\n🔍 Тип: ${detection.type}\n💬 Контент: ${detection.match}\n\nПроверьте чат!`,
-      }),
-    }).catch(() => { });
-  } catch {
-    // fire-and-forget
-  }
+  void sendToWebhook({
+    channel: 'telegram',
+    event: 'admin.contact_sharing_detected',
+    requestId: bookingId,
+    message: `⚠️ Обнаружена попытка обмена контактами!\n\n📋 Бронирование: ${bookingId}\n👤 Отправитель: ${senderRole}\n🔍 Тип: ${detection.type}\n💬 Контент: ${detection.match}\n\nПроверьте чат!`,
+  });
 };
 
 // ── Core chat functions ────────────────────────────────────────────────

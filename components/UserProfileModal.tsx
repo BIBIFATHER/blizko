@@ -3,6 +3,7 @@ import { X, Briefcase } from 'lucide-react';
 import { Language, User, Review, NannyProfile, ParentRequest } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { getNannyProfiles } from '../services/storage';
+import { findCurrentNannyProfile } from '../services/currentNannyProfile';
 import { PaymentModal } from './PaymentModal';
 import { ProfileTab } from './profile/ProfileTab';
 import { BookingsTab } from './profile/BookingsTab';
@@ -33,7 +34,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   useEffect(() => {
     if (isNanny) {
       getNannyProfiles().then((storedNannies) => {
-        const myProfile = storedNannies.find((n) => n.name === user.name) || storedNannies[0];
+        const myProfile = findCurrentNannyProfile(storedNannies, user);
         if (myProfile?.reviews) setReviews(myProfile.reviews);
       });
     }

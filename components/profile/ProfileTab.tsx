@@ -10,6 +10,8 @@ import { t } from '../../src/core/i18n/translations';
 import { getNannyProfiles, getParentRequests, resubmitParentRequest } from '../../services/storage';
 import { notifyAdminResubmitted } from '../../services/notifications';
 import { supabase } from '../../services/supabase';
+import { findCurrentNannyProfile } from '../../services/currentNannyProfile';
+import { SERVICE_COMMISSION_RATE } from '../../src/core/config/pricing';
 import { ReferralWidget } from '../referral/ReferralWidget';
 
 interface ProfileTabProps {
@@ -47,14 +49,14 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     const [paymentType, setPaymentType] = useState<'registration' | 'commission'>('registration');
 
     const earnedTotal = 12500;
-    const commissionRate = 0.2;
+    const commissionRate = SERVICE_COMMISSION_RATE;
     const commissionDue = earnedTotal * commissionRate;
 
     useEffect(() => {
         const load = async () => {
             if (isNanny) {
                 const storedNannies = await getNannyProfiles();
-                const myProfile = storedNannies.find(n => n.name === user.name) || storedNannies[0];
+                const myProfile = findCurrentNannyProfile(storedNannies, user);
                 setMyNannyProfile(myProfile);
             } else {
                 const requests = await getParentRequests();

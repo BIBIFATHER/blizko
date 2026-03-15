@@ -1,3 +1,5 @@
+import { SERVICE_COMMISSION_PERCENT } from '../config/pricing';
+
 export const t = {
   ru: {
     // ... existing keys ...
@@ -194,7 +196,7 @@ export const t = {
     nannyWallet: 'Мой кошелек',
     nannyRequests: 'Новые заявки',
     nannySchedule: 'Мое расписание',
-    payCommission: 'Оплатить комиссию (20%)',
+    payCommission: `Оплатить комиссию (${SERVICE_COMMISSION_PERCENT}%)`,
     payRegistration: 'Активация профиля (5 000 ₽)',
     regFeeLabel: 'Регистрационный взнос',
     withdrawMoney: 'Вывести средства',
@@ -256,7 +258,7 @@ export const t = {
       'Я действую самостоятельно и несу полную ответственность за безопасность ребёнка.',
       'ФИНАНСОВЫЕ УСЛОВИЯ И КОМИССИИ:',
       '• Единоразовый регистрационный взнос за подключение к сервису: 5 000 (Пять тысяч) рублей.',
-      '• Комиссия сервиса: 20% от суммы каждого выполненного заказа.',
+      `• Комиссия сервиса: ${SERVICE_COMMISSION_PERCENT}% от суммы каждого выполненного заказа.`,
       '• Все расчеты и переводы осуществляются через платежный модуль Точка Банк.',
       'Я обязуюсь:',
       '• бережно и уважительно относиться к ребёнку;',
@@ -526,7 +528,7 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     nannyWallet: 'My Wallet',
     nannyRequests: 'New Requests',
     nannySchedule: 'My Schedule',
-    payCommission: 'Pay Commission (20%)',
+    payCommission: `Pay Commission (${SERVICE_COMMISSION_PERCENT}%)`,
     payRegistration: 'Profile Activation (5,000 ₽)',
     regFeeLabel: 'Registration Fee',
     withdrawMoney: 'Withdraw',
@@ -588,7 +590,7 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
       'I act independently and bear full responsibility for the safety of the child.',
       'FINANCIAL TERMS:',
       '• One-time registration fee: 5,000 RUB.',
-      '• Service commission: 20% of each order.',
+      `• Service commission: ${SERVICE_COMMISSION_PERCENT}% of each order.`,
       '• All payments are processed via Tochka Bank module.',
       'I undertake to:',
       '• treat the child with care and respect;',

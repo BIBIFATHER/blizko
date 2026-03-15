@@ -76,6 +76,20 @@ function toAnalyticsRecord(row: any) {
   };
 }
 
+function toAuditAnalyticsRecord(row: any) {
+  const details = row?.details && typeof row.details === 'object' ? row.details : {};
+  const eventType = String(row?.event_type || '');
+  const event = eventType.startsWith('product_') ? eventType.slice('product_'.length) : eventType;
+
+  return {
+    id: details?.record_id ? String(details.record_id) : row?.id ? String(row.id) : undefined,
+    event,
+    properties: details?.properties && typeof details.properties === 'object' ? details.properties : {},
+    timestamp: details?.occurred_at ? String(details.occurred_at) : row?.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+    url: details?.url ? String(details.url) : undefined,
+  };
+}
+
 function sanitizeAnalyticsRecord(input: any) {
   if (!input || typeof input !== 'object') return null;
 
@@ -128,16 +142,56 @@ async function ensureAnalyticsTable() {
   analyticsTableReady = true;
 }
 
+function getAnalyticsRestConfig() {
+  const { supabaseUrl, supabaseServiceRoleKey } = getServerEnv();
+  return supabaseUrl && supabaseServiceRoleKey
+    ? { supabaseUrl, supabaseServiceRoleKey }
+    : null;
+}
+
+async function fetchAnalyticsViaSupabase(days: number) {
+  const config = getAnalyticsRestConfig();
+  if (!config) return null;
+
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const path = `security_audit_log?select=id,event_type,details,created_at&event_type=like.product_%25&created_at=gte.${encodeURIComponent(since)}&order=created_at.desc&limit=${ANALYTICS_EVENT_LIMIT}`;
+  const response = await sb(path, { method: 'GET' }, config.supabaseUrl, config.supabaseServiceRoleKey);
+  const data = await response.json().catch(() => []);
+  if (!response.ok) return null;
+  return Array.isArray(data) ? data.map(toAuditAnalyticsRecord) : [];
+}
+
+async function saveAnalyticsViaSupabase(record: ReturnType<typeof sanitizeAnalyticsRecord>, userId?: string | null) {
+  const config = getAnalyticsRestConfig();
+  if (!config || !record) return false;
+
+  const row = {
+    event_type: `product_${record.event}`,
+    user_id: userId || null,
+    details: {
+      source: 'product_analytics',
+      record_id: record.id,
+      url: record.url,
+      session_id: record.sessionId,
+      occurred_at: record.timestamp,
+      properties: record.properties,
+    },
+  };
+
+  const response = await sb(
+    'security_audit_log',
+    {
+      method: 'POST',
+      body: JSON.stringify([row]),
+    },
+    config.supabaseUrl,
+    config.supabaseServiceRoleKey,
+  );
+
+  return response.ok;
+}
+
 async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
-  try {
-    await ensureAnalyticsTable();
-  } catch {
-    if (req.method === 'POST') return json(res, 202, { ok: false, skipped: 'analytics_store_unavailable' });
-    return json(res, 200, { items: [], source: 'disabled' });
-  }
-
-  const pool = getDbPool();
-
   if (req.method === 'GET') {
     const adminUser = await verifyBearerAdmin(req);
     if (!adminUser) return json(res, 403, { error: 'Admin access required' });
@@ -145,18 +199,26 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
     const daysRaw = Number((req.query as any)?.days || 30);
     const days = Number.isFinite(daysRaw) ? Math.max(1, Math.min(90, Math.round(daysRaw))) : 30;
 
-    const result = await pool.query(
-      `
-        SELECT id, event, properties, url, occurred_at
-        FROM analytics_events
-        WHERE occurred_at >= now() - ($1 || ' days')::interval
-        ORDER BY occurred_at DESC
-        LIMIT $2
-      `,
-      [String(days), ANALYTICS_EVENT_LIMIT],
-    );
+    try {
+      await ensureAnalyticsTable();
+      const pool = getDbPool();
+      const result = await pool.query(
+        `
+          SELECT id, event, properties, url, occurred_at
+          FROM analytics_events
+          WHERE occurred_at >= now() - ($1 || ' days')::interval
+          ORDER BY occurred_at DESC
+          LIMIT $2
+        `,
+        [String(days), ANALYTICS_EVENT_LIMIT],
+      );
 
-    return json(res, 200, { items: result.rows.map(toAnalyticsRecord), days });
+      return json(res, 200, { items: result.rows.map(toAnalyticsRecord), days, source: 'postgres' });
+    } catch {
+      const items = await fetchAnalyticsViaSupabase(days);
+      if (items) return json(res, 200, { items, days, source: 'security_audit_log' });
+      return json(res, 200, { items: [], days, source: 'disabled' });
+    }
   }
 
   if (req.method === 'POST') {
@@ -165,24 +227,33 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
 
     const verifiedUser = await verifyBearerUser(req);
 
-    await pool.query(
-      `
-        INSERT INTO analytics_events (id, event, properties, url, session_id, user_id, occurred_at)
-        VALUES ($1, $2, $3::jsonb, $4, $5, $6, $7::timestamptz)
-        ON CONFLICT (id) DO NOTHING
-      `,
-      [
-        record.id,
-        record.event,
-        JSON.stringify(record.properties),
-        record.url,
-        record.sessionId,
-        verifiedUser?.id || null,
-        record.timestamp,
-      ],
-    );
+    try {
+      await ensureAnalyticsTable();
+      const pool = getDbPool();
 
-    return json(res, 201, { ok: true });
+      await pool.query(
+        `
+          INSERT INTO analytics_events (id, event, properties, url, session_id, user_id, occurred_at)
+          VALUES ($1, $2, $3::jsonb, $4, $5, $6, $7::timestamptz)
+          ON CONFLICT (id) DO NOTHING
+        `,
+        [
+          record.id,
+          record.event,
+          JSON.stringify(record.properties),
+          record.url,
+          record.sessionId,
+          verifiedUser?.id || null,
+          record.timestamp,
+        ],
+      );
+
+      return json(res, 201, { ok: true, source: 'postgres' });
+    } catch {
+      const saved = await saveAnalyticsViaSupabase(record, verifiedUser?.id || null);
+      if (saved) return json(res, 201, { ok: true, source: 'security_audit_log' });
+      return json(res, 202, { ok: false, skipped: 'analytics_store_unavailable' });
+    }
   }
 
   return json(res, 405, { error: 'Method not allowed' });

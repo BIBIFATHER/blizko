@@ -2,7 +2,27 @@ import { Pool } from 'pg';
 
 let pool: Pool | null = null;
 
+function normalizeConnectionString(connectionString: string) {
+  try {
+    const url = new URL(connectionString);
+    url.searchParams.set('sslmode', 'no-verify');
+    return url.toString();
+  } catch {
+    return connectionString;
+  }
+}
+
 function buildPoolConfig() {
+  const connectionString =
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL;
+
+  if (connectionString) {
+    return { connectionString: normalizeConnectionString(connectionString) };
+  }
+
   const host = process.env.POSTGRES_HOST;
   const user = process.env.POSTGRES_USER;
   const password = process.env.POSTGRES_PASSWORD;
@@ -12,15 +32,7 @@ function buildPoolConfig() {
   if (host && user && password && database) {
     return { host, user, password, database, port };
   }
-
-  const connectionString =
-    process.env.DATABASE_URL ||
-    process.env.POSTGRES_URL_NON_POOLING ||
-    process.env.POSTGRES_URL ||
-    process.env.POSTGRES_PRISMA_URL;
-
-  if (!connectionString) return null;
-  return { connectionString };
+  return null;
 }
 
 export function getDbPool() {

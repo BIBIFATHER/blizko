@@ -8,7 +8,15 @@ import {
     Heart, Clock, MapPin, Check
 } from 'lucide-react';
 import { MatchResult, MatchCandidate, TrustBadge, Language } from '../types';
-import { trackMatchingResults, trackNannyCardClick } from '../services/analytics';
+import {
+    trackMatchingResults,
+    trackMatchProfileOpen,
+    trackNannyCardClick,
+} from '../services/analytics';
+import {
+    markMatchFollowUpProfileOpened,
+    saveMatchFollowUp,
+} from '../services/matchFollowUp';
 
 interface MatchResultsScreenProps {
     lang: Language;
@@ -48,9 +56,9 @@ const CandidateCard: React.FC<{
     candidate: MatchCandidate;
     index: number;
     lang: Language;
-    onMessage: (nannyId: string) => void;
+    onOpenProfile: (nannyId: string, nannyName: string, position: number, score: number, navigateToProfile?: boolean) => void;
     onShareToast: () => void;
-}> = ({ candidate, index, lang, onMessage, onShareToast }) => {
+}> = ({ candidate, index, lang, onOpenProfile, onShareToast }) => {
     const { nanny, score, humanExplanation, trustBadges, riskFlags } = candidate;
 
     const initials = (nanny.name || '?')
@@ -84,6 +92,14 @@ const CandidateCard: React.FC<{
         }
     }, [nanny, score, humanExplanation, lang, onShareToast]);
 
+    const handleOpenProfile = useCallback(() => {
+        onOpenProfile(nanny.id, nanny.name || 'unknown', index + 1, score, true);
+    }, [index, nanny.id, nanny.name, onOpenProfile, score]);
+
+    const handleTrackProfileOpen = useCallback(() => {
+        onOpenProfile(nanny.id, nanny.name || 'unknown', index + 1, score, false);
+    }, [index, nanny.id, nanny.name, onOpenProfile, score]);
+
     const hasMeta = !!(nanny.experience || nanny.city || nanny.district);
 
     return (
@@ -106,6 +122,7 @@ const CandidateCard: React.FC<{
                                     <h3 className="text-lg sm:text-xl font-semibold text-stone-800 truncate leading-tight">
                                         <Link
                                             to={`/nanny/${slugify(nanny.name, nanny.id)}`}
+                                            onClick={handleTrackProfileOpen}
                                             className="hover:text-amber-700 transition-colors"
                                         >
                                             {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
@@ -216,7 +233,7 @@ const CandidateCard: React.FC<{
                     <div className="grid grid-cols-5 gap-2.5">
                         <Button
                             variant="primary"
-                            onClick={() => onMessage(nanny.id)}
+                            onClick={handleOpenProfile}
                             className="col-span-3 !py-3.5 !rounded-[20px] shadow-lg"
                         >
                             <MessageCircle size={16} />
@@ -255,11 +272,21 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                 matchResult.candidates.length,
                 matchResult.candidates[0]?.score || 0
             );
+            saveMatchFollowUp(matchResult);
         }
     }, [matchResult]);
 
-    const handleMessage = (nannyId: string, nannyName?: string, position?: number, score?: number) => {
+    const handleOpenProfile = (
+        nannyId: string,
+        nannyName?: string,
+        position?: number,
+        score?: number,
+        navigateToProfile = true,
+    ) => {
         trackNannyCardClick(nannyName || 'unknown', position || 0, score || 0);
+        trackMatchProfileOpen(nannyId, position || 0, score || 0);
+        markMatchFollowUpProfileOpened(nannyId);
+        if (!navigateToProfile) return;
         const slug = slugify(nannyName || nannyId, nannyId);
         navigate(`/nanny/${slug}`);
     };
@@ -353,7 +380,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                         candidate={candidate}
                         index={index}
                         lang={lang}
-                        onMessage={handleMessage}
+                        onOpenProfile={handleOpenProfile}
                         onShareToast={handleShareToast}
                     />
                 ))}

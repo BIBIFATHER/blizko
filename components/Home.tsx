@@ -1,11 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card } from './UI';
 import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles, Star, Clock, CheckCircle2, Bell, Search, HelpCircle, Shield, MessageCircle, ArrowUpRight, Check, Headphones } from 'lucide-react';
 import { Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { CompatibilityModal, ModalMode } from './CompatibilityModal';
-import { trackPageView, trackCTA } from '../services/analytics';
+import {
+  trackCTA,
+  trackMatchFollowUpClicked,
+  trackMatchFollowUpShown,
+  trackPageView,
+} from '../services/analytics';
+import {
+  dismissMatchFollowUp,
+  getPendingMatchFollowUp,
+  MatchFollowUpState,
+} from '../services/matchFollowUp';
 
 interface HomeProps {
   lang: Language;
@@ -18,10 +28,21 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
   const text = t[lang];
   const [activeTrust, setActiveTrust] = useState<null | { title: string; desc: string; detail: string; icon: React.ReactNode; colorClass: string; bgClass: string }>(null);
   const [deepDiveMode, setDeepDiveMode] = useState<ModalMode | null>(null);
+  const [matchFollowUp, setMatchFollowUp] = useState<MatchFollowUpState | null>(null);
+  const trackedFollowUpRef = useRef<string | null>(null);
 
   useEffect(() => {
     trackPageView('home');
+    setMatchFollowUp(getPendingMatchFollowUp());
   }, []);
+
+  useEffect(() => {
+    if (!matchFollowUp) return;
+    const key = `${matchFollowUp.matchResult.requestId || 'no-request'}:${matchFollowUp.stage}`;
+    if (trackedFollowUpRef.current === key) return;
+    trackMatchFollowUpShown(matchFollowUp.stage);
+    trackedFollowUpRef.current = key;
+  }, [matchFollowUp]);
 
   const trustBlocks = [
     {
@@ -121,6 +142,19 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
     },
   ];
 
+  const topCandidate = matchFollowUp?.matchResult.candidates[0];
+
+  const handleResumeMatches = () => {
+    if (!matchFollowUp) return;
+    trackMatchFollowUpClicked(matchFollowUp.stage);
+    navigate('/match-results', { state: { matchResult: matchFollowUp.matchResult } });
+  };
+
+  const handleDismissFollowUp = () => {
+    dismissMatchFollowUp();
+    setMatchFollowUp(null);
+  };
+
   return (
     <>
       <div className="app-shell flex flex-col min-h-full animate-fade-in space-y-4">
@@ -198,6 +232,55 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
             </div>
           </div>
         </section>
+
+        {matchFollowUp && topCandidate && (
+          <section className="rounded-[28px] bg-emerald-50/80 border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.18em] font-bold text-emerald-600 mb-2">
+                  {lang === 'ru' ? 'Вернуться к мэтчу' : 'Continue after match'}
+                </div>
+                <h2 className="text-lg font-semibold text-stone-900 leading-tight">
+                  {matchFollowUp.stage === 'engaged'
+                    ? (lang === 'ru' ? 'Вернитесь к последнему сильному мэтчу и продолжите диалог.' : 'Return to your strongest match and continue the conversation.')
+                    : (lang === 'ru' ? 'У вас уже есть сильные кандидаты. Не теряйте тёплый момент.' : 'You already have strong candidates. Do not lose the warm moment.')}
+                </h2>
+                <p className="text-sm text-stone-600 mt-2 leading-relaxed">
+                  {lang === 'ru'
+                    ? `Сохранено ${matchFollowUp.matchResult.candidates.length} кандидата. Первый в списке: ${topCandidate.nanny.name} (${topCandidate.score}% совместимости).`
+                    : `${matchFollowUp.matchResult.candidates.length} candidates saved. Top match: ${topCandidate.nanny.name} (${topCandidate.score}% match).`}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleDismissFollowUp}
+                className="w-9 h-9 rounded-full border border-emerald-100 bg-white/80 text-stone-400 hover:text-stone-600 flex items-center justify-center"
+                aria-label={lang === 'ru' ? 'Закрыть напоминание' : 'Dismiss reminder'}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Button
+                type="button"
+                onClick={handleResumeMatches}
+                className="!bg-stone-900 !text-white !border-stone-900 hover:!bg-stone-800"
+              >
+                <MessageCircle size={17} />
+                {lang === 'ru' ? 'Вернуться к мэтчам' : 'Resume matches'}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleDismissFollowUp}
+                className="!bg-white !border-emerald-100 !text-stone-700"
+              >
+                {lang === 'ru' ? 'Позже' : 'Later'}
+              </Button>
+            </div>
+          </section>
+        )}
 
         <section className="space-y-3">
           <div className="flex items-center justify-between px-1">

@@ -5,6 +5,12 @@ import { ShieldCheck, Check, FileText, Upload } from 'lucide-react';
 import { DocumentUploadModal } from '../../DocumentUploadModal';
 import { t } from '../../../src/core/i18n/translations';
 import { Language, DocumentVerification } from '../../../types';
+import {
+    trackDocumentUploaded,
+    trackResumeAutofillApplied,
+    trackResumeParsed,
+} from '../../../services/analytics';
+import { getNannyReadinessLabel } from '../../../services/nannyReadiness';
 
 interface Props {
     lang: Language;
@@ -16,7 +22,8 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
         isVerified,
         documents, setDocuments,
         resumeNormalized, setResumeNormalized,
-        setFormData, setSkills,
+        applyResumeNormalized,
+        readinessSnapshot,
         prevStep, nextStep
     } = useNannyForm();
 
@@ -24,25 +31,15 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
 
     const handleDocumentVerified = (doc: DocumentVerification) => {
         setDocuments(prev => [...prev, doc]);
+        trackDocumentUploaded('nanny', doc.type);
 
         if (doc.type === 'resume' && doc.normalizedResume) {
             const r = doc.normalizedResume;
             setResumeNormalized(r);
-
-            // Auto-fill form data if AI confidence is high enough
-            if ((doc.aiConfidence || 0) >= 80) {
-                setFormData((prev) => ({
-                    ...prev,
-                    name: prev.name || r.fullName || '',
-                    city: prev.city || r.city || '',
-                    contact: prev.contact || r.phone || r.email || '',
-                    about: prev.about || r.summary || '',
-                    experience: prev.experience || (typeof r.experienceYears === 'number' ? String(r.experienceYears) : ''),
-                }));
-
-                if (Array.isArray(r.skills) && r.skills.length > 0) {
-                    setSkills((prev) => Array.from(new Set([...(prev || []), ...r.skills!])));
-                }
+            const appliedFields = applyResumeNormalized(r);
+            trackResumeParsed(doc.aiConfidence || 0, appliedFields);
+            if (appliedFields > 0) {
+                trackResumeAutofillApplied(appliedFields);
             }
         }
     };
@@ -163,6 +160,46 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                                 >
                                     + {lang === 'ru' ? 'Добавить еще' : 'Add more'}
                                 </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </Card>
+
+            <Card className={`transition-all duration-300 ${readinessSnapshot.qualityApproved ? 'bg-emerald-50/60 border-emerald-200/60 shadow-sm' : 'bg-amber-50/50 border-amber-100/60 shadow-sm'}`}>
+                <div className="flex items-start gap-4">
+                    <div className={`p-3 rounded-full flex-shrink-0 ${readinessSnapshot.qualityApproved ? 'bg-emerald-200 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                        <Check size={24} />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="font-semibold text-stone-800 mb-1">
+                            {lang === 'ru' ? 'Статус quality funnel' : 'Quality funnel status'}
+                        </h3>
+                        <p className="text-sm text-stone-500 mb-3">
+                            {getNannyReadinessLabel(readinessSnapshot, lang)} • Score {readinessSnapshot.qualityScore}/100
+                        </p>
+
+                        {readinessSnapshot.qualityApproved ? (
+                            <div className="text-xs text-emerald-700 bg-white/70 border border-emerald-100 rounded-lg px-3 py-2">
+                                {lang === 'ru'
+                                    ? 'Профиль уже выглядит готовым к показу семье. Осталось дождаться или пройти финальную ручную проверку.'
+                                    : 'Profile already looks ready to be shown to families. Final manual review is the last step.'}
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                <div className="text-xs font-semibold text-stone-600">
+                                    {lang === 'ru' ? 'Что ещё нужно закрыть:' : 'What is still missing:'}
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {readinessSnapshot.missingFields.map((item) => (
+                                        <span
+                                            key={item}
+                                            className="inline-flex items-center rounded-full bg-white/70 border border-amber-100 px-2.5 py-1 text-[11px] font-medium text-stone-600"
+                                        >
+                                            {item}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>

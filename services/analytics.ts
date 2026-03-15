@@ -28,6 +28,16 @@ declare global {
     }
 }
 
+const ANALYTICS_BUFFER_KEY = 'blizko_analytics_events';
+const ANALYTICS_BUFFER_LIMIT = 500;
+
+export interface AnalyticsEventRecord {
+    event: string;
+    properties: Record<string, unknown>;
+    timestamp: string;
+    url?: string;
+}
+
 // ---- Event Names (type-safe) ----
 export const ANALYTICS_EVENTS = {
     // Funnel
@@ -40,6 +50,14 @@ export const ANALYTICS_EVENTS = {
     CHAT_OPENED: 'chat_opened',
     BOOKING_CREATED: 'booking_created',
     RETURN_VISIT: 'return_visit',
+    DOCUMENT_UPLOADED: 'document_uploaded',
+    LOCATION_DETECTED: 'location_detected',
+    RESUME_PARSED: 'resume_parsed',
+    RESUME_AUTOFILL_APPLIED: 'resume_autofill_applied',
+    NANNY_READY_FOR_MATCH: 'nanny_ready_for_match',
+    MATCH_PROFILE_OPENED: 'match_profile_opened',
+    MATCH_FOLLOW_UP_SHOWN: 'match_follow_up_shown',
+    MATCH_FOLLOW_UP_CLICKED: 'match_follow_up_clicked',
 
     // Engagement
     SHARE_CLICKED: 'share_clicked',
@@ -57,17 +75,48 @@ export const ANALYTICS_EVENTS = {
 
 type EventName = typeof ANALYTICS_EVENTS[keyof typeof ANALYTICS_EVENTS];
 
+function appendAnalyticsEvent(record: AnalyticsEventRecord): void {
+    try {
+        if (typeof window === 'undefined' || !window.localStorage) return;
+        const raw = window.localStorage.getItem(ANALYTICS_BUFFER_KEY);
+        const existing = raw ? JSON.parse(raw) as AnalyticsEventRecord[] : [];
+        const next = [...existing, record].slice(-ANALYTICS_BUFFER_LIMIT);
+        window.localStorage.setItem(ANALYTICS_BUFFER_KEY, JSON.stringify(next));
+    } catch {
+        // ignore local analytics buffer failures
+    }
+}
+
+export function getAnalyticsEvents(): AnalyticsEventRecord[] {
+    try {
+        if (typeof window === 'undefined' || !window.localStorage) return [];
+        const raw = window.localStorage.getItem(ANALYTICS_BUFFER_KEY);
+        return raw ? JSON.parse(raw) as AnalyticsEventRecord[] : [];
+    } catch {
+        return [];
+    }
+}
+
 // ---- Core Functions ----
 
 /** Track an event with optional properties */
 export function track(event: EventName, properties?: Record<string, unknown>): void {
     try {
+        const record: AnalyticsEventRecord = {
+            event,
+            properties: properties || {},
+            timestamp: new Date().toISOString(),
+            url: typeof window !== 'undefined' ? window.location.pathname : undefined,
+        };
+
+        appendAnalyticsEvent(record);
+
         // PostHog
         if (window.posthog) {
             window.posthog.capture(event, {
                 ...properties,
-                timestamp: new Date().toISOString(),
-                url: window.location.pathname,
+                timestamp: record.timestamp,
+                url: record.url,
             });
         }
 
@@ -176,6 +225,27 @@ export function trackReturnVisit(daysSinceLast: number): void {
     track(ANALYTICS_EVENTS.RETURN_VISIT, { days_since_last: daysSinceLast });
 }
 
+export function trackDocumentUploaded(owner: 'parent' | 'nanny', documentType: string): void {
+    track(ANALYTICS_EVENTS.DOCUMENT_UPLOADED, { owner, document_type: documentType });
+}
+
+export function trackLocationDetected(owner: 'parent' | 'nanny'): void {
+    track(ANALYTICS_EVENTS.LOCATION_DETECTED, { owner, method: 'geolocation' });
+}
+
+export function trackResumeParsed(confidence: number, appliedFieldsCount: number): void {
+    track(ANALYTICS_EVENTS.RESUME_PARSED, {
+        confidence,
+        applied_fields_count: appliedFieldsCount,
+    });
+}
+
+export function trackResumeAutofillApplied(appliedFieldsCount: number): void {
+    track(ANALYTICS_EVENTS.RESUME_AUTOFILL_APPLIED, {
+        applied_fields_count: appliedFieldsCount,
+    });
+}
+
 export function trackNannyFormStarted(): void {
     track(ANALYTICS_EVENTS.PAGE_VIEW, { page: 'nanny_form', source: 'form_start' });
 }
@@ -194,4 +264,31 @@ export function trackNannyOfferShown(): void {
 
 export function trackNannyOfferAccepted(): void {
     track(ANALYTICS_EVENTS.NANNY_OFFER_ACCEPTED);
+}
+
+export function trackNannyReadyForMatch(score: number): void {
+    track(ANALYTICS_EVENTS.NANNY_READY_FOR_MATCH, { quality_score: score });
+}
+
+export function trackMatchProfileOpen(nannyId: string, position: number, score: number): void {
+    track(ANALYTICS_EVENTS.MATCH_PROFILE_OPENED, {
+        nanny_id: nannyId,
+        position,
+        score,
+    });
+}
+
+export function trackMatchFollowUpShown(stage: 'fresh' | 'engaged'): void {
+    track(ANALYTICS_EVENTS.MATCH_FOLLOW_UP_SHOWN, { stage });
+}
+
+export function trackMatchFollowUpClicked(stage: 'fresh' | 'engaged'): void {
+    track(ANALYTICS_EVENTS.MATCH_FOLLOW_UP_CLICKED, { stage });
+}
+
+export function trackBookingCreated(parentId: string, nannyId: string): void {
+    track(ANALYTICS_EVENTS.BOOKING_CREATED, {
+        parent_id: parentId,
+        nanny_id: nannyId,
+    });
 }

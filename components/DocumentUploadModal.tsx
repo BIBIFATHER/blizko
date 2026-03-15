@@ -3,6 +3,7 @@ import { Button } from './UI';
 import { X, UploadCloud, CheckCircle, FileText, ShieldCheck } from 'lucide-react';
 import { Language, DocumentVerification } from '../types';
 import { t } from '../src/core/i18n/translations';
+import { analyzeDocument } from '../src/core/ai/documentAi';
 
 interface DocumentUploadModalProps {
   onClose: () => void;
@@ -12,33 +13,35 @@ interface DocumentUploadModalProps {
 
 export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClose, onVerify, lang }) => {
   const text = t[lang];
-  const [step, setStep] = useState<'select' | 'result'>('select');
+  const [step, setStep] = useState<'select' | 'processing' | 'result'>('select');
   const [docType, setDocType] = useState<DocumentVerification['type']>('other');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [uploadedDoc, setUploadedDoc] = useState<DocumentVerification | null>(null);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
     setFileName(file.name);
+    setStep('processing');
 
     // Use an object URL for immediate preview/attachment (fast + reliable for MVP).
     const objectUrl = URL.createObjectURL(file);
 
+    const analyzed = await analyzeDocument(file, docType, lang);
     const doc: DocumentVerification = {
+      ...analyzed,
       type: docType,
-      status: 'pending',
-      aiConfidence: 0,
-      aiNotes: lang === 'ru' ? 'Документ загружен и ожидает проверки.' : 'Document uploaded and awaiting review.',
       verifiedAt: Date.now(),
       fileName: file.name,
       fileDataUrl: objectUrl,
     };
 
     onVerify(doc);
+    setUploadedDoc(doc);
     setStep('result');
     // Close automatically after a short delay so the counter is visible in the form.
-    setTimeout(() => onClose(), 600);
+    setTimeout(() => onClose(), 1000);
   };
 
   return (
@@ -92,6 +95,22 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
           </div>
         )}
 
+        {step === 'processing' && (
+          <div className="p-6 flex-1 flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 bg-sky-100 rounded-full flex items-center justify-center text-sky-600 mb-4 animate-pulse">
+              <UploadCloud size={34} />
+            </div>
+            <h3 className="text-xl font-bold text-stone-800 mb-2">
+              {lang === 'ru' ? 'Сканируем документ' : 'Scanning document'}
+            </h3>
+            <p className="text-sm text-stone-500 max-w-[260px]">
+              {lang === 'ru'
+                ? 'AI извлекает основные поля, чтобы сократить ручной ввод.'
+                : 'AI is extracting key fields to reduce manual form filling.'}
+            </p>
+          </div>
+        )}
+
         {step === 'result' && (
           <div className="p-6 flex-1 flex flex-col items-center justify-center text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 animate-pop-in">
@@ -107,6 +126,19 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
                 <FileText size={16} />
                 {lang === 'ru' ? 'Статус: загружено' : 'Status: uploaded'}
               </div>
+              {uploadedDoc && (
+                <div className="mt-2 text-xs text-stone-500 space-y-1">
+                  <div>
+                    {lang === 'ru' ? 'AI confidence' : 'AI confidence'}: {uploadedDoc.aiConfidence}%
+                  </div>
+                  <div>{uploadedDoc.aiNotes}</div>
+                  {uploadedDoc.type === 'resume' && uploadedDoc.normalizedResume && (
+                    <div className="pt-1 text-stone-600">
+                      {lang === 'ru' ? 'Резюме распознано и готово для автозаполнения.' : 'Resume parsed and ready for autofill.'}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <Button onClick={onClose}>OK</Button>

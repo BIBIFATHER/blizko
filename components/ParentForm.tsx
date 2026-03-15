@@ -8,7 +8,14 @@ import { ParentOfferModal } from './ParentOfferModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { t } from '../src/core/i18n/translations';
 import { detectUserLocation } from '../services/geolocation';
-import { trackCTA, trackParentFormStarted, trackFormStep, trackOfferAccepted } from '../services/analytics';
+import {
+  trackCTA,
+  trackDocumentUploaded,
+  trackFormStep,
+  trackLocationDetected,
+  trackOfferAccepted,
+  trackParentFormStarted,
+} from '../services/analytics';
 
 interface ParentFormProps {
   onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }) => Promise<void>;
@@ -144,6 +151,9 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
     if (result.success) {
       const value = [result.city, result.district].filter(Boolean).join(', ');
       setFormData((prev) => ({ ...prev, city: value || prev.city }));
+      if (value) {
+        trackLocationDetected('parent');
+      }
       if (!value) {
         alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
       }
@@ -540,7 +550,10 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
       {showDocUpload && (
         <DocumentUploadModal
           onClose={() => setShowDocUpload(false)}
-          onVerify={(doc) => setDocuments((prev) => [...prev, doc])}
+          onVerify={(doc) => {
+            trackDocumentUploaded('parent', doc.type);
+            setDocuments((prev) => [...prev, doc]);
+          }}
           lang={lang}
         />
       )}

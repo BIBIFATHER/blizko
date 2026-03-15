@@ -1,5 +1,6 @@
 import { supabase, hasSupabaseClient } from './supabase';
 import { getItem, setItem } from '../src/core/platform/storage';
+import { trackBookingCreated } from './analytics';
 
 // Types
 export interface Booking {
@@ -44,6 +45,7 @@ export async function createBooking(data: {
     // Local
     const local = getLocalBookings();
     setLocalBookings([booking, ...local]);
+    trackBookingCreated(booking.parent_id, booking.nanny_id);
 
     // Remote
     if (hasSupabaseClient && supabase) {

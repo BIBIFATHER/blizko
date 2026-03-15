@@ -2,13 +2,15 @@ import { NavigateFunction } from 'react-router-dom';
 import { Language, NannyProfile, SubmissionResult } from '../../types';
 import { saveNannyProfile } from '../../services/storage';
 import { sendToWebhook } from '../../services/api';
+import { trackFormSubmit, trackNannyReadyForMatch } from '../../services/analytics';
+import { getNannyReadinessSnapshot, getNannySuccessRecommendations } from '../../services/nannyReadiness';
 
-function generateNannyRegistrationResult(language: Language): SubmissionResult {
+function generateNannyRegistrationResult(language: Language, data: Partial<NannyProfile>): SubmissionResult {
+  const readiness = getNannyReadinessSnapshot(data);
+
   return {
-    matchScore: 0,
-    recommendations: language === 'ru'
-      ? ['Заполните "О себе" подробнее', 'Добавьте видеовизитку', 'Пройдите верификацию']
-      : ['Fill "About" in detail', 'Add video intro', 'Get verified'],
+    matchScore: readiness.qualityScore,
+    recommendations: getNannySuccessRecommendations(readiness, language),
   };
 }
 
@@ -22,12 +24,18 @@ export function useNannySubmit({ navigate, lang }: NannySubmitDeps) {
     const isEdit = Boolean(data.id);
     const saved = await saveNannyProfile(data);
     await sendToWebhook(saved);
+    trackFormSubmit('nanny');
+
+    const readiness = getNannyReadinessSnapshot(saved);
+    if (readiness.qualityApproved) {
+      trackNannyReadyForMatch(readiness.qualityScore);
+    }
 
     if (isEdit) {
       navigate('/');
       return;
     }
 
-    navigate('/success', { state: { result: generateNannyRegistrationResult(lang) } });
+    navigate('/success', { state: { result: generateNannyRegistrationResult(lang, saved) } });
   };
 }

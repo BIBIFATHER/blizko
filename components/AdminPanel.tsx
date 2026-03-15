@@ -159,6 +159,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <AdminOverviewTab
               parents={parents}
               nannies={nannies}
+              bookings={bookings}
               unseenParentsCount={unseenParentsCount}
             />
           )}

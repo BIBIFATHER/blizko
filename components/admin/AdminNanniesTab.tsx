@@ -4,6 +4,10 @@ import { NannyProfile, DocumentVerification } from '../../types';
 import { AvailabilityCalendar, SlotStatus } from '../AvailabilityCalendar';
 import { saveNannyProfile } from '../../services/storage';
 import {
+    getNannyReadinessLabel,
+    getNannyReadinessSnapshot,
+} from '../../services/nannyReadiness';
+import {
     X,
     ShieldCheck,
     BrainCircuit,
@@ -244,10 +248,12 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                     <div className="space-y-3">
                         {filteredNannies.map((n) => {
                             const docs = n.documents || [];
+                            const readiness = getNannyReadinessSnapshot(n);
                             const isProb =
                                 !n.isVerified ||
                                 docs.length === 0 ||
-                                docs.some((d) => d.status === 'rejected' || d.status === 'pending' || (d.aiConfidence || 0) < 70);
+                                docs.some((d) => d.status === 'rejected' || d.status === 'pending' || (d.aiConfidence || 0) < 70) ||
+                                !readiness.readyForReview;
 
                             return (
                                 <Card key={n.id} className={`!p-4 ${n.isVerified ? 'bg-green-50 border-green-100' : 'bg-sky-50/50'}`}>
@@ -298,6 +304,42 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                         >
                                             Календарь занятости
                                         </button>
+                                    </div>
+
+                                    <div className="mt-3 bg-white/80 p-3 rounded-xl border border-stone-100">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div>
+                                                <div className="text-[11px] uppercase tracking-wide text-stone-400 font-bold">
+                                                    Quality funnel
+                                                </div>
+                                                <div className="text-sm font-semibold text-stone-800 mt-1">
+                                                    {getNannyReadinessLabel(readiness, 'ru')}
+                                                </div>
+                                            </div>
+                                            <div className={`text-xs font-bold px-2.5 py-1 rounded-full ${readiness.qualityApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                {readiness.qualityScore}/100
+                                            </div>
+                                        </div>
+                                        <div className="mt-2 flex items-center justify-between text-xs text-stone-500">
+                                            <span>Готовность профиля</span>
+                                            <strong className="text-stone-700">{readiness.completionRatio}%</strong>
+                                        </div>
+                                        {readiness.missingFields.length > 0 ? (
+                                            <div className="mt-3 flex flex-wrap gap-1.5">
+                                                {readiness.missingFields.slice(0, 5).map((item) => (
+                                                    <span
+                                                        key={item}
+                                                        className="inline-flex items-center rounded-full border border-amber-100 bg-amber-50 px-2 py-1 text-[10px] font-medium text-amber-800"
+                                                    >
+                                                        {item}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="mt-3 text-[11px] text-emerald-700 font-medium">
+                                                Профиль закрывает quality floor и готов к показу семье.
+                                            </div>
+                                        )}
                                     </div>
 
                                     {n.softSkills && (

@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo, useRef } from 'react';
 import { NannyProfile, Language, SoftSkillsProfile, DocumentVerification, NormalizedResume } from '../../../types';
 import { detectUserLocation } from '../../../services/geolocation';
+import { trackLocationDetected, trackNannyReadyForMatch } from '../../../services/analytics';
+import { getNannyReadinessSnapshot, NannyReadinessSnapshot } from '../../../services/nannyReadiness';
 
 export interface NannyFormData {
     name: string;
@@ -59,10 +61,12 @@ export interface NannyFormContextType {
 
     resumeNormalized: NormalizedResume | undefined;
     setResumeNormalized: React.Dispatch<React.SetStateAction<NormalizedResume | undefined>>;
+    applyResumeNormalized: (resume: NormalizedResume) => number;
 
     // Psychology
     riskProfile: NannyProfile['riskProfile'];
     setRiskProfile: React.Dispatch<React.SetStateAction<NannyProfile['riskProfile']>>;
+    readinessSnapshot: NannyReadinessSnapshot;
 
     // Location logic helpers
     citySuggestions: string[];
@@ -127,6 +131,72 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
     const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
     const [showCitySuggestions, setShowCitySuggestions] = useState(false);
     const [detectingLocation, setDetectingLocation] = useState(false);
+    const trackedReadyRef = useRef(false);
+
+    const applyResumeNormalized = (resume: NormalizedResume): number => {
+        let appliedCount = 0;
+
+        setFormData((prev) => {
+            const next = { ...prev };
+
+            if (!prev.name && resume.fullName) {
+                next.name = resume.fullName;
+                appliedCount += 1;
+            }
+            if (!prev.city && resume.city) {
+                next.city = resume.city;
+                appliedCount += 1;
+            }
+            if (!prev.contact && (resume.phone || resume.email)) {
+                next.contact = resume.phone || resume.email || '';
+                appliedCount += 1;
+            }
+            if (!prev.about && resume.summary) {
+                next.about = resume.summary;
+                appliedCount += 1;
+            }
+            if (!prev.experience && typeof resume.experienceYears === 'number') {
+                next.experience = String(resume.experienceYears);
+                appliedCount += 1;
+            }
+
+            return next;
+        });
+
+        if (Array.isArray(resume.skills) && resume.skills.length > 0) {
+            const nextSkills = Array.from(new Set([...(skills || []), ...resume.skills]));
+            if (nextSkills.length !== skills.length) {
+                appliedCount += 1;
+                setSkills(nextSkills);
+            }
+        }
+
+        return appliedCount;
+    };
+
+    const readinessSnapshot = useMemo(() => getNannyReadinessSnapshot({
+        id: initialData?.id,
+        ...formData,
+        childAges,
+        skills,
+        isVerified,
+        documents,
+        resumeNormalized,
+        riskProfile,
+        softSkills,
+        reviews: initialData?.reviews,
+    }), [
+        childAges,
+        documents,
+        formData,
+        initialData?.id,
+        initialData?.reviews,
+        isVerified,
+        resumeNormalized,
+        riskProfile,
+        skills,
+        softSkills,
+    ]);
 
     const nextStep = () => setStep(s => Math.min(s + 1, totalSteps));
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
@@ -138,6 +208,9 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
         if (result.success) {
             const value = [result.city, result.district].filter(Boolean).join(', ');
             setFormData((prev) => ({ ...prev, city: value || prev.city }));
+            if (value) {
+                trackLocationDetected('nanny');
+            }
             if (!value) {
                 alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
             }
@@ -173,6 +246,17 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
         return () => clearTimeout(tmr);
     }, [formData.city]);
 
+    useEffect(() => {
+        if (readinessSnapshot.qualityApproved && !trackedReadyRef.current) {
+            trackNannyReadyForMatch(readinessSnapshot.qualityScore);
+            trackedReadyRef.current = true;
+        }
+
+        if (!readinessSnapshot.qualityApproved) {
+            trackedReadyRef.current = false;
+        }
+    }, [readinessSnapshot.qualityApproved, readinessSnapshot.qualityScore]);
+
     return (
         <NannyFormContext.Provider value={{
             currentStep, setStep, nextStep, prevStep, totalSteps,
@@ -185,7 +269,9 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
             softSkills, setSoftSkills,
             documents, setDocuments,
             resumeNormalized, setResumeNormalized,
+            applyResumeNormalized,
             riskProfile, setRiskProfile,
+            readinessSnapshot,
             citySuggestions, setCitySuggestions,
             showCitySuggestions, setShowCitySuggestions,
             detectingLocation, detectLocation,

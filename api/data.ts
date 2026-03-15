@@ -154,8 +154,17 @@ async function fetchAnalyticsViaSupabase(days: number) {
   if (!config) return null;
 
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-  const path = `security_audit_log?select=id,event_type,details,created_at&event_type=like.product_%25&created_at=gte.${encodeURIComponent(since)}&order=created_at.desc&limit=${ANALYTICS_EVENT_LIMIT}`;
-  const response = await sb(path, { method: 'GET' }, config.supabaseUrl, config.supabaseServiceRoleKey);
+  const response = await fetch(
+    `${config.supabaseUrl}/rest/v1/security_audit_log?select=id,event_type,details,created_at&event_type=like.product_%25&created_at=gte.${encodeURIComponent(since)}&order=created_at.desc&limit=${ANALYTICS_EVENT_LIMIT}`,
+    {
+      method: 'GET',
+      headers: {
+        apikey: config.supabaseServiceRoleKey,
+        Authorization: `Bearer ${config.supabaseServiceRoleKey}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
   const data = await response.json().catch(() => []);
   if (!response.ok) return null;
   return Array.isArray(data) ? data.map(toAuditAnalyticsRecord) : [];
@@ -178,15 +187,16 @@ async function saveAnalyticsViaSupabase(record: ReturnType<typeof sanitizeAnalyt
     },
   };
 
-  const response = await sb(
-    'security_audit_log',
-    {
-      method: 'POST',
-      body: JSON.stringify([row]),
+  const response = await fetch(`${config.supabaseUrl}/rest/v1/security_audit_log`, {
+    method: 'POST',
+    headers: {
+      apikey: config.supabaseServiceRoleKey,
+      Authorization: `Bearer ${config.supabaseServiceRoleKey}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
     },
-    config.supabaseUrl,
-    config.supabaseServiceRoleKey,
-  );
+    body: JSON.stringify(row),
+  });
 
   return response.ok;
 }

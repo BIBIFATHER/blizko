@@ -3,6 +3,7 @@ import { MessageCircle, Send, Minimize2, Loader2, Sparkles, UserCheck, X } from 
 import { ErrorBoundary } from './ErrorBoundary';
 import { Language, User } from '../types';
 import { t } from '../src/core/i18n/translations';
+import { trackChatOpen } from '../services/analytics';
 import {
   getOrCreateTicket,
   fetchTicketMessages,
@@ -82,6 +83,16 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
   }, [isOpen, user?.id, lang]);
 
   useEffect(() => {
+    const openFromEvent = () => {
+      setIsOpen(true);
+      trackChatOpen('custom_event');
+    };
+
+    window.addEventListener('blizko:open-support-chat', openFromEvent);
+    return () => window.removeEventListener('blizko:open-support-chat', openFromEvent);
+  }, []);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen, isAiThinking]);
 
@@ -126,7 +137,10 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
     if (hideLauncher) return null;
     return (
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setIsOpen(true);
+          trackChatOpen('launcher');
+        }}
         className="fixed bottom-20 right-4 z-[70] bg-stone-900 hover:bg-stone-800 text-white p-3.5 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
         aria-label={lang === 'ru' ? 'Открыть чат поддержки' : 'Open support chat'}
       >
@@ -150,6 +164,13 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
             </button>
           </div>
           <p className="text-xs text-stone-500 leading-relaxed">{lang === 'ru' ? 'Войдите в аккаунт, чтобы написать нам. Мы ответим за пару секунд!' : 'Sign in to chat with us. We respond in seconds!'}</p>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('blizko:open-auth-modal', { detail: { source: 'support_chat_gate' } }))}
+            className="mt-4 w-full bg-stone-900 text-white rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-stone-800 transition-colors"
+          >
+            {lang === 'ru' ? 'Войти и написать' : 'Sign in to chat'}
+          </button>
         </div>
       </div>
     );

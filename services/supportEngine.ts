@@ -120,9 +120,18 @@ export async function callConcierge(
   message: string
 ): Promise<ConciergeResponse> {
   try {
+    // Get session token for server-side auth verification
+    const authHeaders: Record<string, string> = { ...getTmaHeaders() };
+    if (supabase) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        authHeaders['Authorization'] = `Bearer ${session.access_token}`;
+      }
+    }
+
     const res = await fetch('/api/ai-support', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getTmaHeaders() },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ ticketId, userId, message }),
     });
 

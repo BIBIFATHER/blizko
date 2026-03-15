@@ -58,10 +58,12 @@ export const detectContactSharing = (text: string): ContactDetectionResult => {
 // Alert admin via Telegram (fire-and-forget)
 const alertContactDetected = (bookingId: string, detection: ContactDetectionResult, senderRole: string) => {
   try {
-    fetch('/api/telegram/send', {
+    fetch('/api/notify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        channel: 'telegram',
+        chat_id: '',
         message: `⚠️ Обнаружена попытка обмена контактами!\n\n📋 Бронирование: ${bookingId}\n👤 Отправитель: ${senderRole}\n🔍 Тип: ${detection.type}\n💬 Контент: ${detection.match}\n\nПроверьте чат!`,
       }),
     }).catch(() => { });

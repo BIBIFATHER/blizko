@@ -1,14 +1,24 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { verifyBearerAdmin } from './_auth.js';
+import { setCors } from './_cors.js';
 
 /**
  * GET /api/health — System health check
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  setCors(req.headers.origin, res);
 
   if (req.method === 'OPTIONS') return res.status(204).end();
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+
+  const healthToken = process.env.HEALTHCHECK_TOKEN || '';
+  const incomingToken = String(req.headers['x-health-token'] || '').trim();
+  const isAuthorizedByToken = Boolean(healthToken && incomingToken === healthToken);
+  const adminUser = isAuthorizedByToken ? null : await verifyBearerAdmin(req);
+
+  if (!isAuthorizedByToken && !adminUser) {
+    return res.status(404).json({ error: 'Not found' });
+  }
 
   const checks: Record<string, { ok: boolean; detail?: string }> = {};
 
@@ -50,7 +60,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // 3. Gemini API Key
-  const geminiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY || '';
   if (!geminiKey) {
     checks.gemini = { ok: false, detail: 'Missing GEMINI_API_KEY' };
   } else {

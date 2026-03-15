@@ -102,10 +102,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       if (!contactValue.trim()) {
         throw new Error(lang === 'ru' ? 'Введите номер телефона' : 'Enter phone number');
       }
-      const r = await fetch('/api/auth/send-otp-phone', {
+      const r = await fetch('/api/auth/phone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getTmaHeaders() },
-        body: JSON.stringify({ phone: contactValue }),
+        body: JSON.stringify({ action: 'send', phone: contactValue }),
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить код');
@@ -124,15 +124,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     if (error) throw new Error(error.message);
   };
 
-  const verifyOtp = async () => {
+  const verifyOtp = async (): Promise<boolean> => {
     if (method === 'phone') {
       if (!contactValue.trim() || !otp.trim()) {
         throw new Error(lang === 'ru' ? 'Введите номер и код' : 'Enter phone and code');
       }
-      const r = await fetch('/api/auth/verify-otp-phone', {
+      const r = await fetch('/api/auth/phone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getTmaHeaders() },
-        body: JSON.stringify({ phone: contactValue, code: otp }),
+        body: JSON.stringify({ action: 'verify', phone: contactValue, code: otp }),
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok || !data?.ok) throw new Error(data?.error || 'Неверный код');
@@ -165,7 +165,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       });
       setStep('success');
       setTimeout(() => onClose(), 600);
-      return;
+      return true; // Login already handled by phone fallback
     }
 
     if (!supabase) {
@@ -179,6 +179,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
       type: 'email',
     });
     if (error) throw new Error(error.message);
+    return false; // Login NOT yet handled — caller should proceed with getUser
   };
 
   const handleSendCode = async (e: React.FormEvent) => {
@@ -209,7 +210,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     setError('');
 
     try {
-      await verifyOtp();
+      const alreadyHandled = await verifyOtp();
+      if (alreadyHandled) return; // Phone fallback already called onLogin
 
       const { data } = await supabase!.auth.getUser();
       const authUser = data.user;
@@ -252,39 +254,52 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white/95 backdrop-blur-xl w-full max-w-sm rounded-3xl card-cloud border border-stone-100/80 overflow-hidden animate-slide-up relative">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-md sheet-modal card-cloud overflow-hidden animate-slide-up relative border-b-0 sm:border-b">
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-br from-amber-100/45 via-white/5 to-emerald-100/30 pointer-events-none" />
+        <div className="sm:hidden flex justify-center pt-3">
+          <div className="w-10 h-1.5 rounded-full bg-stone-300/80" />
+        </div>
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 transition-colors z-10"
+          className="absolute top-5 right-5 text-stone-400 hover:text-stone-800 transition-colors z-10 bg-white/80 rounded-full p-2 border border-white/70 shadow-sm"
         >
           <X size={20} />
         </button>
 
-        <div className="p-8">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-semibold text-stone-800 tracking-tight">
+        <div className="p-5 sm:p-8 pt-4 sm:pt-8 relative">
+          <div className="mb-6">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="text-[11px] uppercase tracking-[0.18em] font-bold text-stone-400">
+                {lang === 'ru' ? 'Вход в Blizko' : 'Access Blizko'}
+              </div>
+              <div className="topbar-chip">
+                <Lock size={12} />
+                {lang === 'ru' ? 'Безопасно' : 'Secure'}
+              </div>
+            </div>
+            <h3 className="text-[1.8rem] sm:text-[2.25rem] leading-[0.98] font-display font-semibold text-stone-900 pr-12">
               {step === 'success' ? (lang === 'ru' ? 'Успешно!' : 'Success!') : text.authTitle}
             </h3>
-            <p className="text-stone-500 text-sm mt-1">
-              {step === 'method' && (lang === 'ru' ? 'Войдите или зарегистрируйтесь' : 'Login or Register')}
+            <p className="text-stone-500 text-sm mt-2 leading-relaxed max-w-sm">
+              {step === 'method' && (lang === 'ru' ? 'Выберите роль и удобный способ входа.' : 'Choose your role and preferred sign-in method.')}
               {step === 'otp' &&
                 (lang === 'ru' ? `Код отправлен на ${contactValue}` : `Code sent to ${contactValue}`)}
               {step === 'email_wait' &&
-                (lang === 'ru' ? `Отправили ссылку на ${contactValue}. Подтвердите вход в письме.` : `Login link sent to ${contactValue}. Confirm sign-in from the email.`)}
+                (lang === 'ru' ? `Мы отправили ссылку на ${contactValue}. Подтвердите вход в письме.` : `We sent a sign-in link to ${contactValue}. Confirm it from your email.`)}
               {step === 'success' && (lang === 'ru' ? 'Переходим в профиль...' : 'Redirecting to profile...')}
             </p>
           </div>
 
           {step === 'method' && (
             <form onSubmit={handleSendCode} className="space-y-4">
-              <div className="flex gap-2 mb-6">
+              <div className="surface-panel rounded-[24px] p-2 grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setRole('parent')}
-                  className={`flex-1 py-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${role === 'parent'
-                    ? 'border-sky-200 bg-sky-50 text-sky-800'
-                    : 'border-stone-100 text-stone-400 hover:border-stone-200'
+                  className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'parent'
+                    ? 'bg-sky-50/90 border border-sky-200 text-sky-900 shadow-sm'
+                    : 'bg-transparent text-stone-500'
                     }`}
                 >
                   <Baby size={20} />
@@ -293,9 +308,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 <button
                   type="button"
                   onClick={() => setRole('nanny')}
-                  className={`flex-1 py-3 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${role === 'nanny'
-                    ? 'border-amber-200 bg-amber-50 text-amber-800'
-                    : 'border-stone-100 text-stone-400 hover:border-stone-200'
+                  className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'nanny'
+                    ? 'bg-amber-50/90 border border-amber-200 text-amber-900 shadow-sm'
+                    : 'bg-transparent text-stone-500'
                     }`}
                 >
                   <Briefcase size={20} />
@@ -303,7 +318,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 </button>
               </div>
 
-              <div className="flex bg-stone-100 p-1 rounded-xl mb-4">
+              <div className="surface-panel rounded-[22px] p-1 flex border-white/70 shadow-none">
                 {phoneAuthEnabled && (
                   <button
                     type="button"
@@ -312,7 +327,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                       setContactValue('');
                       setError('');
                     }}
-                    className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                    className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
                       }`}
                   >
                     <Phone size={14} /> Phone
@@ -325,7 +340,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                     setContactValue('');
                     setError('');
                   }}
-                  className={`flex-1 py-2 text-xs font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-2 ${method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                  className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
                     }`}
                 >
                   <Mail size={14} /> Email
@@ -336,26 +351,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 <p className="text-[11px] text-stone-500 -mt-2">{lang === 'ru' ? 'Вход по телефону скоро будет доступен.' : 'Phone auth will be available soon.'}</p>
               )}
 
-              <Input
-                label={method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'}
-                type={method === 'phone' ? 'tel' : 'email'}
-                placeholder={method === 'phone' ? '+7 999 000-00-00' : 'hello@example.com'}
-                value={contactValue}
-                onChange={(e) => setContactValue(e.target.value)}
-                required
-                autoFocus
-              />
+              <div className="surface-panel rounded-[28px] p-4 sm:p-5">
+                <Input
+                  label={method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'}
+                  type={method === 'phone' ? 'tel' : 'email'}
+                  placeholder={method === 'phone' ? '+7 999 000-00-00' : 'hello@example.com'}
+                  value={contactValue}
+                  onChange={(e) => setContactValue(e.target.value)}
+                  required
+                  autoFocus
+                />
 
-              <Input
-                label={text.nameLabelSimple}
-                placeholder={lang === 'ru' ? 'Как к вам обращаться?' : 'Your Name'}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+                <Input
+                  label={text.nameLabelSimple}
+                  placeholder={lang === 'ru' ? 'Как к вам обращаться?' : 'Your Name'}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mb-0"
+                />
+              </div>
 
-              {error && <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded-lg text-center font-medium border border-amber-100">{error}</p>}
+              {error && <p className="text-xs text-amber-700 bg-amber-50/90 p-3 rounded-2xl text-center font-medium border border-amber-100">{error}</p>}
 
-              <Button type="submit" isLoading={loading} className="mt-4">
+              <Button type="submit" isLoading={loading} className="mt-1">
                 {method === 'email'
                   ? (lang === 'ru' ? 'Получить ссылку' : 'Get login link')
                   : (lang === 'ru' ? 'Получить код' : 'Get Code')}
@@ -367,19 +385,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
           {step === 'otp' && (
             <form onSubmit={handleVerifyCode} className="space-y-6">
               <div className="flex justify-center">
-                <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-stone-500 mb-2">
+                <div className="w-[4rem] h-[4rem] surface-panel rounded-[20px] flex items-center justify-center text-stone-500 mb-2 p-3">
                   <Lock size={32} />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="block text-center text-sm font-medium text-stone-500">
+                <label className="block text-center text-[13px] uppercase tracking-[0.15em] font-bold text-stone-500">
                   {lang === 'ru' ? 'Введите код из сообщения' : 'Enter code from message'}
                 </label>
                 <input
                   type="text"
                   maxLength={6}
-                  className={`w-full text-center text-3xl font-mono tracking-[0.5em] py-4 bg-stone-50 border-2 ${error ? 'border-amber-300 ring-2 ring-amber-100' : 'border-stone-200'} rounded-xl focus:border-amber-400 focus:bg-white focus:outline-none transition-all`}
+                  className={`w-full text-center text-3xl font-mono tracking-[0.35em] py-4 input-glass ${error ? 'border-amber-300 ring-2 ring-amber-100' : ''} rounded-[20px]`}
                   placeholder="000000"
                   value={otp}
                   onChange={(e) => {
@@ -390,7 +408,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 />
               </div>
 
-              {error && <p className="text-xs text-amber-600 text-center font-medium bg-amber-50 mx-auto w-fit px-3 py-1.5 rounded-lg border border-amber-100">{error}</p>}
+              {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
 
               <Button type="submit" isLoading={loading} disabled={otp.length < 4}>
                 {lang === 'ru' ? 'Подтвердить' : 'Verify'}
@@ -431,13 +449,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
           {step === 'email_wait' && (
             <div className="space-y-4">
-              <div className="bg-sky-50 border border-sky-100 text-sky-700 text-sm rounded-xl p-4">
+              <div className="surface-panel text-sky-800 text-sm rounded-[24px] p-5 border-sky-100/70">
                 {lang === 'ru'
                   ? 'Откройте письмо и нажмите ссылку подтверждения. После подтверждения вход выполнится автоматически.'
                   : 'Open your email and tap the confirmation link. You will be signed in automatically.'}
               </div>
 
-              {error && <p className="text-xs text-amber-600 text-center font-medium bg-amber-50 mx-auto w-fit px-3 py-1.5 rounded-lg border border-amber-100">{error}</p>}
+              {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
 
               <div className="text-center">
                 {timer > 0 ? (
@@ -473,7 +491,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
           {step === 'success' && (
             <div className="flex flex-col items-center justify-center py-8 animate-pop-in">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
+              <div className="w-20 h-20 bg-green-100/90 rounded-[28px] flex items-center justify-center text-green-600 mb-4 shadow-sm border border-green-200/60">
                 <CheckCircle size={48} />
               </div>
               <p className="font-bold text-stone-800 text-lg">

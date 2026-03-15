@@ -29,8 +29,8 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     const [pr, nr] = await Promise.all([
-      fetch('/api/data/parents', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-      fetch('/api/data/nannies', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch('/api/data?resource=parents', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch('/api/data?resource=nannies', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
     ]);
 
     const p = Array.isArray(pr?.items) ? pr.items : [];

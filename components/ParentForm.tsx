@@ -8,6 +8,7 @@ import { ParentOfferModal } from './ParentOfferModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { t } from '../src/core/i18n/translations';
 import { detectUserLocation } from '../services/geolocation';
+import { trackCTA, trackParentFormStarted, trackFormStep, trackOfferAccepted } from '../services/analytics';
 
 interface ParentFormProps {
   onSubmit: (data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & { id?: string; status?: ParentRequest['status'] }) => Promise<void>;
@@ -26,6 +27,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const [trackedMilestones, setTrackedMilestones] = useState<number[]>([]);
   const [advanced, setAdvanced] = useState({
     cameras: 'ok',
     travel: 'no',
@@ -97,12 +99,14 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    trackCTA('parent_offer_open', initialData ? 'parent_form_edit' : 'parent_form');
     setShowOffer(true);
   };
 
   const handleOfferAccept = async () => {
     setShowOffer(false);
     setLoading(true);
+    trackOfferAccepted('parent');
 
     try {
       const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
@@ -189,6 +193,27 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
     return Math.max(10, Math.round((filled / total) * 100));
   };
 
+  const progress = calcProgress();
+
+  useEffect(() => {
+    trackParentFormStarted();
+  }, []);
+
+  useEffect(() => {
+    const milestones = [
+      { threshold: 25, step: 1, label: 'parent_progress_25' },
+      { threshold: 50, step: 2, label: 'parent_progress_50' },
+      { threshold: 75, step: 3, label: 'parent_progress_75' },
+    ];
+
+    milestones.forEach((milestone) => {
+      if (progress >= milestone.threshold && !trackedMilestones.includes(milestone.threshold)) {
+        trackFormStep('parent', milestone.step, milestone.label);
+        setTrackedMilestones((prev) => [...prev, milestone.threshold]);
+      }
+    });
+  }, [progress, trackedMilestones]);
+
   return (
     <div className="animate-slide-up">
       <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-4 flex items-center gap-2 transition-colors">
@@ -198,7 +223,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
       <div className="mb-5">
         <h2 className="text-2xl font-semibold text-stone-800">{initialData ? 'Редактировать заявку' : text.pFormTitle}</h2>
         <p className="text-sm text-stone-500 mt-1">{initialData ? 'Обновите данные вашей заявки' : text.pFormSubtitle}</p>
-        <ProgressBar value={calcProgress()} showPercent label={lang === 'ru' ? 'Заполнено' : 'Completed'} className="mt-3" />
+        <ProgressBar value={progress} showPercent label={lang === 'ru' ? 'Заполнено' : 'Completed'} className="mt-3" />
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
@@ -491,7 +516,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
         <Button
           type="button"
           isLoading={loading}
-          pulse={calcProgress() >= 80}
+          pulse={progress >= 80}
           className="mt-3"
           disabled={initialData?.status === 'approved'}
           onClick={() => setShowOffer(true)}

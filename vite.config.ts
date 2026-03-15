@@ -8,6 +8,12 @@ const sentryPlugin = process.env.SENTRY_AUTH_TOKEN
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
+      telemetry: false,
+      sourcemaps: {
+        // Limit uploads to browser bundles so Vercel's server artifacts do not
+        // generate noisy "no sourcemap found" warnings during deploys.
+        assets: ['./dist/assets/**', './dist/sw.js'],
+      },
     })
   : null;
 
@@ -26,6 +32,24 @@ export default defineConfig({
         target: 'https://ai-proxy.blizko-ai.workers.dev',
         changeOrigin: true,
         secure: true,
+      },
+    },
+  },
+  build: {
+    sourcemap: 'hidden',
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+
+          if (id.includes('@supabase')) {
+            return 'supabase-vendor';
+          }
+          if (id.includes('lucide-react')) {
+            return 'icons-vendor';
+          }
+          return undefined;
+        },
       },
     },
   },

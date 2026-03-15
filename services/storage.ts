@@ -4,6 +4,8 @@ import { supabase } from './supabase';
 
 const STORAGE_KEY_PARENTS = 'blizko_parents';
 const STORAGE_KEY_NANNIES = 'blizko_nannies';
+const STORAGE_KEY_PENDING_PARENTS = 'blizko_parents_pending_sync';
+const STORAGE_KEY_PENDING_NANNIES = 'blizko_nannies_pending_sync';
 
 const safeJsonParse = <T>(value: string, fallback: T): T => {
   try {
@@ -31,6 +33,79 @@ const getLocalNannies = (): NannyProfile[] => {
 const setLocalParents = (items: ParentRequest[]) => setItem(STORAGE_KEY_PARENTS, JSON.stringify(items));
 const setLocalNannies = (items: NannyProfile[]) => setItem(STORAGE_KEY_NANNIES, JSON.stringify(items));
 
+const getPendingIds = (key: string): string[] => {
+  const data = getItem(key);
+  if (!data) return [];
+  const parsed = safeJsonParse<string[]>(data, []);
+  return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+};
+
+const setPendingIds = (key: string, ids: string[]) => {
+  if (ids.length === 0) {
+    removeItem(key);
+    return;
+  }
+
+  setItem(key, JSON.stringify(Array.from(new Set(ids))));
+};
+
+function replaceById<T extends { id: string }>(items: T[], item: T): T[] {
+  const index = items.findIndex((existing) => existing.id === item.id);
+  if (index === -1) {
+    return [item, ...items];
+  }
+
+  const next = [...items];
+  next[index] = item;
+  return next;
+}
+
+function syncLocalParents(item: ParentRequest) {
+  setLocalParents(replaceById(getLocalParents(), item));
+}
+
+function syncLocalNannies(item: NannyProfile) {
+  setLocalNannies(replaceById(getLocalNannies(), item));
+}
+
+function markPendingSync(table: 'parents' | 'nannies', id: string) {
+  const key = table === 'parents' ? STORAGE_KEY_PENDING_PARENTS : STORAGE_KEY_PENDING_NANNIES;
+  setPendingIds(key, [...getPendingIds(key), id]);
+}
+
+function clearPendingSync(table: 'parents' | 'nannies', id: string) {
+  const key = table === 'parents' ? STORAGE_KEY_PENDING_PARENTS : STORAGE_KEY_PENDING_NANNIES;
+  setPendingIds(key, getPendingIds(key).filter((pendingId) => pendingId !== id));
+}
+
+function getPendingSyncIds(table: 'parents' | 'nannies') {
+  const key = table === 'parents' ? STORAGE_KEY_PENDING_PARENTS : STORAGE_KEY_PENDING_NANNIES;
+  return getPendingIds(key);
+}
+
+function syncLocalItem(table: 'parents', item: ParentRequest): void;
+function syncLocalItem(table: 'nannies', item: NannyProfile): void;
+function syncLocalItem(table: 'parents' | 'nannies', item: ParentRequest | NannyProfile) {
+  if (table === 'parents') {
+    syncLocalParents(item as ParentRequest);
+    return;
+  }
+
+  syncLocalNannies(item as NannyProfile);
+}
+
+function mergeRemoteWithPending<T extends { id: string }>(
+  remoteItems: T[],
+  localItems: T[],
+  pendingIds: string[],
+): T[] {
+  if (pendingIds.length === 0) return remoteItems;
+
+  const remoteIds = new Set(remoteItems.map((item) => item.id));
+  const pendingItems = localItems.filter((item) => pendingIds.includes(item.id) && !remoteIds.has(item.id));
+  return [...pendingItems, ...remoteItems];
+}
+
 async function getCurrentUserId(): Promise<string | null> {
   if (!supabase) return null;
   const { data } = await supabase.auth.getUser();
@@ -40,13 +115,53 @@ async function getCurrentUserId(): Promise<string | null> {
 async function remoteGet(table: 'parents' | 'nannies'): Promise<any[] | null> {
   try {
     if (!supabase) return null;
+    // For nannies: read from nannies_public view (PII stripped)
+    // For parents: read from parents table directly
+    const source = table === 'nannies' ? 'nannies_public' : table;
     const { data, error } = await supabase
-      .from(table)
+      .from(source)
       .select('id,payload,created_at')
       .order('created_at', { ascending: false });
 
     if (error) return null;
     return Array.isArray(data) ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+// Owner reads their own full nanny profile (includes PII for editing)
+async function remoteGetOwnNanny(): Promise<any | null> {
+  try {
+    if (!supabase) return null;
+    const userId = await getCurrentUserId();
+    if (!userId) return null;
+
+    const { data, error } = await supabase
+      .from('nannies')
+      .select('id,payload,created_at')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<any | null> {
+  try {
+    if (!supabase) return null;
+
+    const { data, error } = await supabase
+      .from(table)
+      .select('id,payload,created_at')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data;
   } catch {
     return null;
   }
@@ -75,6 +190,30 @@ async function remoteSave(table: 'parents' | 'nannies', item: any): Promise<any 
   } catch {
     return null;
   }
+}
+
+async function saveWithFallback(table: 'parents', item: ParentRequest): Promise<ParentRequest>;
+async function saveWithFallback(table: 'nannies', item: NannyProfile): Promise<NannyProfile>;
+async function saveWithFallback(
+  table: 'parents' | 'nannies',
+  item: ParentRequest | NannyProfile,
+): Promise<ParentRequest | NannyProfile> {
+  const remote = await remoteSave(table, item);
+  const canonical = (remote as ParentRequest | NannyProfile) || item;
+
+  if (table === 'parents') {
+    syncLocalItem(table, canonical as ParentRequest);
+  } else {
+    syncLocalItem(table, canonical as NannyProfile);
+  }
+
+  if (remote) {
+    clearPendingSync(table, canonical.id);
+  } else {
+    markPendingSync(table, canonical.id);
+  }
+
+  return canonical;
 }
 
 async function remoteClear(table: 'parents' | 'nannies', testOnly = false): Promise<boolean> {
@@ -113,12 +252,7 @@ export const saveParentRequest = async (
     changeLog: [{ at: now, type: 'created', by: 'user', note: 'Заявка создана' }],
   };
 
-  const existing = getLocalParents();
-  const next = [newRequest, ...existing];
-  setLocalParents(next);
-
-  const remote = await remoteSave('parents', newRequest);
-  return (remote as ParentRequest) || newRequest;
+  return saveWithFallback('parents', newRequest);
 };
 
 export const updateParentRequest = async (
@@ -126,10 +260,10 @@ export const updateParentRequest = async (
   options?: { actor?: 'user' | 'admin'; note?: string; allowApprovedEdit?: boolean; forceStatusEvent?: boolean }
 ): Promise<ParentRequest | null> => {
   const existing = getLocalParents();
-  const index = existing.findIndex((p) => p.id === data.id);
-  if (index === -1) return null;
-
-  const prev = existing[index];
+  const localPrev = existing.find((p) => p.id === data.id);
+  const remotePrev = localPrev ? null : await remoteGetById('parents', data.id);
+  const prev = localPrev || (remotePrev ? fromRow<ParentRequest>(remotePrev) : null);
+  if (!prev) return null;
   if (prev.status === 'approved' && !options?.allowApprovedEdit) return null;
 
   const now = Date.now();
@@ -151,19 +285,15 @@ export const updateParentRequest = async (
     ],
   } as ParentRequest;
 
-  existing[index] = updated;
-  setLocalParents(existing);
-
-  const remote = await remoteSave('parents', updated);
-  return (remote as ParentRequest) || updated;
+  return saveWithFallback('parents', updated);
 };
 
 export const resubmitParentRequest = async (id: string): Promise<ParentRequest | null> => {
   const existing = getLocalParents();
-  const index = existing.findIndex((p) => p.id === id);
-  if (index === -1) return null;
-
-  const prev = existing[index];
+  const localPrev = existing.find((p) => p.id === id);
+  const remotePrev = localPrev ? null : await remoteGetById('parents', id);
+  const prev = localPrev || (remotePrev ? fromRow<ParentRequest>(remotePrev) : null);
+  if (!prev) return null;
   const now = Date.now();
   const updated: ParentRequest = {
     ...prev,
@@ -176,11 +306,7 @@ export const resubmitParentRequest = async (id: string): Promise<ParentRequest |
     ],
   };
 
-  existing[index] = updated;
-  setLocalParents(existing);
-
-  const remote = await remoteSave('parents', updated);
-  return (remote as ParentRequest) || updated;
+  return saveWithFallback('parents', updated);
 };
 
 export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<NannyProfile> => {
@@ -190,10 +316,7 @@ export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<Nan
     const index = existing.findIndex((p) => p.id === data.id);
     if (index !== -1) {
       const updatedProfile = { ...existing[index], ...data } as NannyProfile;
-      existing[index] = updatedProfile;
-      setLocalNannies(existing);
-      const remote = await remoteSave('nannies', updatedProfile);
-      return (remote as NannyProfile) || updatedProfile;
+      return saveWithFallback('nannies', updatedProfile);
     }
   }
 
@@ -205,43 +328,75 @@ export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<Nan
     type: 'nanny',
   } as NannyProfile;
 
-  setLocalNannies([newProfile, ...existing]);
-  const remote = await remoteSave('nannies', newProfile);
-  return (remote as NannyProfile) || newProfile;
+  return saveWithFallback('nannies', newProfile);
 };
 
 export const getParentRequests = async (): Promise<ParentRequest[]> => {
+  // Remote is the preferred source of truth.
+  // Pending local-only writes stay visible until they are synced remotely.
   const remote = await remoteGet('parents');
   if (remote) {
-    const items = remote.map((r) => fromRow<ParentRequest>(r));
-    setLocalParents(items);
-    return items;
+    const remoteItems = remote.map((r) => fromRow<ParentRequest>(r));
+    const pendingIds = getPendingSyncIds('parents');
+    const localItems = getLocalParents();
+    const merged = mergeRemoteWithPending(remoteItems, localItems, pendingIds);
+    const syncedIds = remoteItems.map((item) => item.id);
+
+    setLocalParents(merged);
+    setPendingIds(
+      STORAGE_KEY_PENDING_PARENTS,
+      pendingIds.filter((id) => !syncedIds.includes(id)),
+    );
+    return merged;
   }
   return getLocalParents();
 };
 
 export const getNannyProfiles = async (): Promise<NannyProfile[]> => {
+  // Remote is the preferred source of truth.
+  // Pending local-only writes stay visible until they are synced remotely.
   const remote = await remoteGet('nannies');
   if (remote) {
-    const items = remote.map((r) => fromRow<NannyProfile>(r));
-    setLocalNannies(items);
-    return items;
+    const remoteItems = remote.map((r) => fromRow<NannyProfile>(r));
+    const pendingIds = getPendingSyncIds('nannies');
+    const localItems = getLocalNannies();
+    const merged = mergeRemoteWithPending(remoteItems, localItems, pendingIds);
+    const syncedIds = remoteItems.map((item) => item.id);
+
+    setLocalNannies(merged);
+    setPendingIds(
+      STORAGE_KEY_PENDING_NANNIES,
+      pendingIds.filter((id) => !syncedIds.includes(id)),
+    );
+    return merged;
   }
   return getLocalNannies();
 };
 
-export const addReview = async (review: Review): Promise<void> => {
+export const addReview = async (review: Review, nannyId?: string): Promise<void> => {
   const nannies = await getNannyProfiles();
   if (nannies.length === 0) return;
 
-  nannies[0].reviews = [review, ...(nannies[0].reviews || [])];
-  setLocalNannies(nannies);
-  await remoteSave('nannies', nannies[0]);
+  const targetNannyId = nannyId || (review as Review & { nannyId?: string }).nannyId;
+  if (!targetNannyId) return;
+
+  const nanny = nannies.find((item) => item.id === targetNannyId);
+  if (!nanny) return;
+
+  const updated = {
+    ...nanny,
+    reviews: [review, ...(nanny.reviews || [])],
+  };
+
+  syncLocalNannies(updated);
+  await saveWithFallback('nannies', updated);
 };
 
 export const clearAllData = async () => {
   removeItem(STORAGE_KEY_PARENTS);
   removeItem(STORAGE_KEY_NANNIES);
+  removeItem(STORAGE_KEY_PENDING_PARENTS);
+  removeItem(STORAGE_KEY_PENDING_NANNIES);
   await Promise.all([remoteClear('parents'), remoteClear('nannies')]);
 };
 
@@ -250,5 +405,7 @@ export const clearTestData = async () => {
   const localNannies = getLocalNannies().filter((n) => !String(n.id || '').startsWith('test-'));
   setLocalParents(localParents);
   setLocalNannies(localNannies);
+  setPendingIds(STORAGE_KEY_PENDING_PARENTS, getPendingSyncIds('parents').filter((id) => !String(id).startsWith('test-')));
+  setPendingIds(STORAGE_KEY_PENDING_NANNIES, getPendingSyncIds('nannies').filter((id) => !String(id).startsWith('test-')));
   await Promise.all([remoteClear('parents', true), remoteClear('nannies', true)]);
 };

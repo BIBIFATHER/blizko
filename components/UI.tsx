@@ -27,7 +27,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card: React.FC<CardProps> = ({ children, className = '', onClick, ...props }) => (
   <div
     onClick={onClick}
-    className={`bg-white/95 backdrop-blur-sm rounded-3xl card-cloud border border-stone-100/80 p-5 sm:p-6 transition-all duration-300 hover-lift ${onClick ? 'active:scale-[0.98] cursor-pointer' : ''} ${className}`}
+    className={`rounded-[28px] card-cloud p-5 sm:p-6 transition-all duration-300 hover-lift ${onClick ? 'active:scale-[0.985] cursor-pointer' : ''} ${className}`}
     {...props}
   >
     {children}
@@ -49,13 +49,13 @@ export const Button: React.FC<ButtonProps> = ({
   pulse,
   ...props
 }) => {
-  const baseStyles = "w-full py-3.5 sm:py-4 rounded-full font-semibold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation select-none hover-lift";
+  const baseStyles = "w-full min-h-[52px] py-3.5 sm:py-4 rounded-full font-semibold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 text-sm sm:text-base tracking-[0.01em] touch-manipulation select-none hover-lift";
 
   const variants = {
-    primary: `btn-honey ring-1 ring-amber-100/40 ${pulse && !props.disabled ? 'btn-honey-pulse' : ''}`,
-    secondary: "bg-white/70 backdrop-blur-sm border border-stone-200/60 text-stone-700 hover:bg-white/90 shadow-sm",
-    outline: "border border-stone-200/80 text-stone-600 hover:border-amber-200 hover:bg-amber-50/30",
-    ghost: "text-stone-500 hover:text-stone-800 text-sm py-2",
+    primary: `btn-honey ${pulse && !props.disabled ? 'btn-honey-pulse' : ''}`,
+    secondary: "surface-panel border border-white/70 text-stone-700 hover:bg-white/95 shadow-cloud-soft",
+    outline: "bg-transparent border border-[var(--cloud-border-strong)] text-stone-700 hover:border-amber-300 hover:bg-white/60",
+    ghost: "text-stone-500 hover:text-stone-800 text-sm py-2 min-h-0",
     danger: "bg-red-50 border border-red-200/60 text-red-700 hover:bg-red-100/80 shadow-sm"
   };
 
@@ -80,7 +80,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input: React.FC<InputProps> = ({ label, className = '', autoAdvance, onBlur, ...props }) => (
   <div className="mb-4">
-    <label className="block text-sm font-medium text-stone-500 mb-1.5 ml-1">{label}</label>
+    <label className="block text-[13px] font-semibold uppercase tracking-[0.08em] text-stone-500/90 mb-2 ml-1">{label}</label>
     <input
       data-auto-advance-target={autoAdvance ? 'true' : undefined}
       onBlur={(e) => {
@@ -89,7 +89,7 @@ export const Input: React.FC<InputProps> = ({ label, className = '', autoAdvance
           scrollToNext(e.currentTarget);
         }
       }}
-      className={`input-glass w-full px-4 py-3.5 text-stone-800 placeholder:text-stone-300/80 ${props.value && String(props.value).trim() !== '' ? 'input-success' : ''} ${className}`}
+      className={`input-glass w-full px-4 py-3.5 text-stone-800 placeholder:text-stone-400/70 ${props.value && String(props.value).trim() !== '' ? 'input-success' : ''} ${className}`}
       {...props}
     />
   </div>
@@ -103,7 +103,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 export const Textarea: React.FC<TextareaProps> = ({ label, className = '', autoAdvance, onBlur, ...props }) => (
   <div className="mb-4">
-    <label className="block text-sm font-medium text-stone-500 mb-1.5 ml-1">{label}</label>
+    <label className="block text-[13px] font-semibold uppercase tracking-[0.08em] text-stone-500/90 mb-2 ml-1">{label}</label>
     <textarea
       data-auto-advance-target={autoAdvance ? 'true' : undefined}
       onBlur={(e) => {
@@ -112,7 +112,7 @@ export const Textarea: React.FC<TextareaProps> = ({ label, className = '', autoA
           scrollToNext(e.currentTarget);
         }
       }}
-      className={`input-glass w-full px-4 py-3.5 text-stone-800 placeholder:text-stone-300/80 min-h-[100px] resize-none ${props.value && String(props.value).trim() !== '' ? 'input-success' : ''} ${className}`}
+      className={`input-glass w-full px-4 py-3.5 text-stone-800 placeholder:text-stone-400/70 min-h-[100px] resize-none ${props.value && String(props.value).trim() !== '' ? 'input-success' : ''} ${className}`}
       {...props}
     />
   </div>

@@ -15,11 +15,11 @@ CREATE TABLE IF NOT EXISTS public.payments (
 -- Enable RLS (Optional, can be skipped if you manage auth via API keys in Vercel)
 ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated/service role to insert/update
-CREATE POLICY "Allow service role full access" ON public.payments
+-- Only service_role can access payments (API uses pg pool with service credentials)
+CREATE POLICY "payments_service_only" ON public.payments
     FOR ALL
-    USING (true)
-    WITH CHECK (true);
+    USING (auth.role() = 'service_role')
+    WITH CHECK (auth.role() = 'service_role');
 
 -- Index for fast webhook lookups
 CREATE INDEX IF NOT EXISTS idx_payments_yk_id ON public.payments(yk_payment_id);

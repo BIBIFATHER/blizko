@@ -1,31 +1,22 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import fs from 'fs';
-import path from 'path';
 import { setCors } from './_cors.js';
+import { rateLimit } from './_rate-limit.js';
+import { envWithLocalFallback, verifyBearerUser } from './_auth.js';
 
 type NotifyPayload = {
+  channel?: 'email' | 'telegram';
   event?: string;
   to?: string;
   subject?: string;
   text?: string;
+  chat_id?: string;
+  message?: string;
+  parse_mode?: 'HTML' | 'Markdown';
+  reply_markup?: Record<string, unknown>;
   requestId?: string;
   status?: string;
 };
-
-function envWithLocalFallback(key: string): string | undefined {
-  const direct = process.env[key];
-  if (direct) return direct;
-
-  try {
-    const envPath = path.join(process.cwd(), '.env.local');
-    const raw = fs.readFileSync(envPath, 'utf8');
-    const m = raw.match(new RegExp(`^${key}=(.*)$`, 'm'));
-    return m?.[1]?.trim();
-  } catch {
-    return undefined;
-  }
-}
 
 async function sendResendEmail(to: string, subject: string, text: string) {
   const apiKey = envWithLocalFallback('RESEND_API_KEY');
@@ -63,29 +54,88 @@ async function sendResendEmail(to: string, subject: string, text: string) {
   return data;
 }
 
+async function sendTelegramMessage(
+  chatId: string,
+  text: string,
+  options?: { parse_mode?: 'HTML' | 'Markdown'; reply_markup?: Record<string, unknown> }
+) {
+  const botToken = envWithLocalFallback('TELEGRAM_BOT_TOKEN');
+  if (!botToken) {
+    throw new Error('TELEGRAM_BOT_TOKEN not configured');
+  }
+
+  const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      parse_mode: options?.parse_mode || 'HTML',
+      reply_markup: options?.reply_markup,
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data?.description || 'Telegram API error');
+  }
+
+  return data;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const requiredToken = process.env.NOTIFY_TOKEN;
-  if (!requiredToken) {
-    return res.status(500).json({ ok: false, error: 'Server misconfigured' });
+  const rl = rateLimit(req, { max: 20, prefix: 'notify' });
+  if (!rl.ok) {
+    return res.status(429).json({ ok: false, error: 'Too many requests' });
   }
 
+  const requiredToken = process.env.NOTIFY_TOKEN;
   const incoming = String(req.headers['x-notify-token'] || '').trim();
-  if (!incoming || incoming !== requiredToken) {
-    return res.status(401).json({ ok: false, error: 'Unauthorized' });
-  }
+  const hasInternalToken = Boolean(requiredToken && incoming && incoming === requiredToken);
+  const verifiedUser = hasInternalToken ? null : await verifyBearerUser(req);
 
   const body = (req.body || {}) as NotifyPayload;
+  const channel = String(body.channel || '').trim().toLowerCase();
   const event = String(body.event || 'unknown');
   const subject = String(body.subject || 'Blizko уведомление');
   const text = String(body.text || '');
 
+  if (!hasInternalToken) {
+    // Client-initiated notifications are limited to authenticated in-app users
+    // and may only target internal admin inboxes.
+    if (!verifiedUser || !event.startsWith('admin.')) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized' });
+    }
+  }
+
   try {
-    let to = String(body.to || '').trim();
+    if (channel === 'telegram') {
+      const chatId = String(body.chat_id || envWithLocalFallback('TELEGRAM_ADMIN_CHAT_ID') || '').trim();
+      const message = String(body.text || body.message || '').trim();
+      if (!chatId || !message) {
+        return res.status(400).json({ ok: false, error: 'chat_id and message are required' });
+      }
+
+      if (!hasInternalToken) {
+        const adminEmail = String(envWithLocalFallback('ADMIN_EMAIL') || '').trim().toLowerCase();
+        if (!verifiedUser?.email || verifiedUser.email !== adminEmail) {
+          return res.status(403).json({ ok: false, error: 'Admin access required' });
+        }
+      }
+
+      const result = await sendTelegramMessage(chatId, message, {
+        parse_mode: body.parse_mode,
+        reply_markup: body.reply_markup,
+      });
+      return res.status(200).json({ ok: true, message_id: result?.result?.message_id || null });
+    }
+
+    let to = hasInternalToken ? String(body.to || '').trim() : '';
 
     if (!to && event.startsWith('admin.')) {
       to = String(envWithLocalFallback('ADMIN_EMAIL') || '').trim();

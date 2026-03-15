@@ -1,3 +1,5 @@
+import { supabase } from './supabase';
+
 /**
  * Blizko Telegram Notification Service (Client-safe)
  * 
@@ -10,8 +12,6 @@
  * 3. Set NOTIFY_TOKEN in server env for auth
  */
 
-const NOTIFY_TOKEN = import.meta.env.VITE_NOTIFY_TOKEN || '';
-
 // Core send function — calls server-side API
 async function sendTelegramMessage(chatId: string, text: string, options?: {
     parse_mode?: 'HTML' | 'Markdown';
@@ -23,13 +23,21 @@ async function sendTelegramMessage(chatId: string, text: string, options?: {
     }
 
     try {
-        const res = await fetch('/api/telegram/send', {
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+        };
+        if (supabase) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+                headers.Authorization = `Bearer ${session.access_token}`;
+            }
+        }
+
+        const res = await fetch('/api/notify', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(NOTIFY_TOKEN ? { 'x-notify-token': NOTIFY_TOKEN } : {}),
-            },
+            headers,
             body: JSON.stringify({
+                channel: 'telegram',
                 chat_id: chatId,
                 text,
                 parse_mode: options?.parse_mode || 'HTML',

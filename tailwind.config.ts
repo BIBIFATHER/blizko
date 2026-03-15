@@ -32,7 +32,6 @@ const config: Config = {
             },
             fontFamily: {
                 sans: [
-                    'Inter',
                     'system-ui',
                     '-apple-system',
                     'BlinkMacSystemFont',
@@ -42,7 +41,7 @@ const config: Config = {
                     'Arial',
                     'sans-serif',
                 ],
-                display: ['Quicksand', 'Inter', 'sans-serif'],
+                display: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
             },
             spacing: {
                 '18': '4.5rem',

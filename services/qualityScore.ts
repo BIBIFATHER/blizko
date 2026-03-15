@@ -70,7 +70,7 @@ export function calculateQualityScore(nanny: NannyProfile): QualityScoreBreakdow
     if (nanny.experience && nanny.experience.length > 10) filled++;
     if (nanny.skills && nanny.skills.length > 0) filled++;
     if (nanny.childAges && nanny.childAges.length > 0) filled++;
-    if (nanny.phone) filled++;
+    if (nanny.contact) filled++;
     if (nanny.riskProfile) filled++;
     profileCompleteness = Math.round((filled / 8) * 10);
 

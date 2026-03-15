@@ -9,6 +9,7 @@ import { t } from '../../src/core/i18n/translations';
 import { NannyChatModal } from '../NannyChatModal';
 import { LeaveReviewModal } from '../LeaveReviewModal';
 import { addReview } from '../../services/storage';
+import { getBookingsForUser } from '../../services/booking';
 
 interface BookingsTabProps {
     user: User;
@@ -21,6 +22,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
     const isNanny = user.role === 'nanny';
     const [chatBooking, setChatBooking] = useState<Booking | null>(null);
     const [reviewBookingId, setReviewBookingId] = useState<string | null>(null);
+    const [bookingNannyMap, setBookingNannyMap] = useState<Record<string, string>>({});
 
     // Mock data
     const nannyRequests = [
@@ -57,9 +59,23 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
         { id: 'b3', nannyName: lang === 'ru' ? 'Анна К.' : 'Anna K.', date: '01 Oct, 18:00 - 22:00', status: 'completed', amount: '2 000 ₽', avatarColor: 'bg-amber-100 text-amber-700', isPaid: true, hasReview: true },
     ]);
 
+    React.useEffect(() => {
+        if (!user.id) return;
+
+        getBookingsForUser(user.id).then((items) => {
+            const next = items.reduce<Record<string, string>>((acc, item) => {
+                if (item.id && item.nanny_id) acc[item.id] = item.nanny_id;
+                return acc;
+            }, {});
+            setBookingNannyMap(next);
+        }).catch(() => {
+            setBookingNannyMap({});
+        });
+    }, [user.id]);
+
     const handleReviewSubmit = async (review: Review) => {
         setHistoryBookings((prev) => prev.map((b) => (b.id === review.bookingId ? { ...b, hasReview: true } : b)));
-        await addReview(review);
+        await addReview(review, review.bookingId ? bookingNannyMap[review.bookingId] : undefined);
         setReviewBookingId(null);
         onReviewSubmit(review);
     };

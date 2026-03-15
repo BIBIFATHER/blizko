@@ -143,17 +143,17 @@ export function budgetScore(
 
     // Exact match (within ±10%)
     if (ratio >= 0.9 && ratio <= 1.1) {
-        return { score: 15, reason: 'Ставка точно в бюджете' };
+        return { score: 15, reason: 'Ставка точно в бюджете', exclude: false };
     }
 
     // Close match (within ±20%)
     if (ratio >= 0.8 && ratio <= 1.2) {
-        return { score: 12, reason: 'Ставка близка к бюджету' };
+        return { score: 12, reason: 'Ставка близка к бюджету', exclude: false };
     }
 
     // Acceptable (within ±50%)
     if (ratio >= 0.5 && ratio <= 1.5) {
-        return { score: 8, reason: 'Ставка в допустимом диапазоне' };
+        return { score: 8, reason: 'Ставка в допустимом диапазоне', exclude: false };
     }
 
     // Outside range but not excluded

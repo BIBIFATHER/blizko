@@ -39,6 +39,7 @@ export const ANALYTICS_EVENTS = {
     NANNY_CARD_CLICKED: 'nanny_card_clicked',
     CHAT_OPENED: 'chat_opened',
     BOOKING_CREATED: 'booking_created',
+    RETURN_VISIT: 'return_visit',
 
     // Engagement
     SHARE_CLICKED: 'share_clicked',
@@ -47,6 +48,8 @@ export const ANALYTICS_EVENTS = {
     LANGUAGE_SWITCHED: 'language_switched',
     INSTALL_PROMPT_SHOWN: 'install_prompt_shown',
     INSTALL_ACCEPTED: 'install_accepted',
+    NANNY_OFFER_SHOWN: 'nanny_offer_shown',
+    NANNY_OFFER_ACCEPTED: 'nanny_offer_accepted',
 
     // Admin
     ADMIN_PANEL_OPENED: 'admin_panel_opened',
@@ -114,6 +117,14 @@ export function trackCTA(buttonName: string, location: string): void {
     track(ANALYTICS_EVENTS.CTA_CLICKED, { button: buttonName, location });
 }
 
+export function trackOfferAccepted(offerType: 'parent' | 'nanny'): void {
+    track(ANALYTICS_EVENTS.FORM_SUBMITTED, { offer_type: offerType, source: 'offer_accept' });
+}
+
+export function trackParentFormStarted(): void {
+    track(ANALYTICS_EVENTS.PAGE_VIEW, { page: 'parent_form', source: 'form_start' });
+}
+
 /** Track form step completion */
 export function trackFormStep(formType: 'parent' | 'nanny', step: number, stepName: string): void {
     track(ANALYTICS_EVENTS.FORM_STEP_COMPLETED, {
@@ -143,4 +154,44 @@ export function trackNannyCardClick(nannyName: string, position: number, score: 
         position,
         score
     });
+}
+
+export function trackShare(location: string): void {
+    track(ANALYTICS_EVENTS.SHARE_CLICKED, { location });
+}
+
+export function trackAuthModalOpen(source: string): void {
+    track(ANALYTICS_EVENTS.AUTH_MODAL_OPENED, { source });
+}
+
+export function trackLanguageSwitch(language: 'ru' | 'en'): void {
+    track(ANALYTICS_EVENTS.LANGUAGE_SWITCHED, { language });
+}
+
+export function trackChatOpen(source: string): void {
+    track(ANALYTICS_EVENTS.CHAT_OPENED, { source });
+}
+
+export function trackReturnVisit(daysSinceLast: number): void {
+    track(ANALYTICS_EVENTS.RETURN_VISIT, { days_since_last: daysSinceLast });
+}
+
+export function trackNannyFormStarted(): void {
+    track(ANALYTICS_EVENTS.PAGE_VIEW, { page: 'nanny_form', source: 'form_start' });
+}
+
+export function trackNannyFormStep(step: number, stepName: string): void {
+    track(ANALYTICS_EVENTS.FORM_STEP_COMPLETED, {
+        form_type: 'nanny',
+        step,
+        step_name: stepName,
+    });
+}
+
+export function trackNannyOfferShown(): void {
+    track(ANALYTICS_EVENTS.NANNY_OFFER_SHOWN);
+}
+
+export function trackNannyOfferAccepted(): void {
+    track(ANALYTICS_EVENTS.NANNY_OFFER_ACCEPTED);
 }

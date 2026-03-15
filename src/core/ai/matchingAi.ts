@@ -1,4 +1,3 @@
-import { Type } from "@google/genai";
 import {
   ParentRequest,
   NannyProfile,
@@ -12,13 +11,24 @@ import { aiText } from "./aiGateway";
 import { getQualityScore } from "../../../services/qualityScore";
 import { geoScore, budgetScore } from "./geoAndBudget";
 import { detectRiskFlags, RiskFlag } from "./riskEngine";
+import { getWeights, type MatchingWeights } from "./matchingWeights";
+import { logShadowScores, applyEpsilonGreedy, type ScoredCandidate } from "./shadowScoring";
+import { formatInsightsBlock } from "./insightsLoader";
 
 type RankedCandidate = {
   nanny: NannyProfile;
   score: number;
   reasons: string[];
   riskFlags: RiskFlag[];
+  factors: Record<string, number>;
 };
+
+const SchemaType = {
+  OBJECT: 'OBJECT',
+  INTEGER: 'INTEGER',
+  ARRAY: 'ARRAY',
+  STRING: 'STRING',
+} as const;
 
 function norm(v?: string): string {
   return String(v ?? "").trim().toLowerCase();
@@ -30,7 +40,8 @@ function includesAny(haystack: string, needles: string[]): boolean {
 
 function rankCandidates(
   request: Omit<ParentRequest, "id" | "createdAt" | "type">,
-  candidates: NannyProfile[]
+  candidates: NannyProfile[],
+  w: MatchingWeights = {} as MatchingWeights
 ): RankedCandidate[] {
   const city = norm(request.city);
   const childAge = norm(request.childAge);
@@ -58,8 +69,9 @@ function rankCandidates(
     // Pre-filter: budget hard filter (nanny rate > 2x parent budget = exclude)
     .filter((nanny) => !budgetScore(request.budget, nanny.expectedRate).exclude)
     .map((nanny) => {
-      let score = 40;
+      let score = w.base;
       const reasons: string[] = [];
+      const factors: Record<string, number> = {};
 
       const nannyCity = norm(nanny.city);
       const about = norm(nanny.about);
@@ -75,6 +87,7 @@ function rankCandidates(
       );
       if (geo.score > 0) {
         score += geo.score;
+        factors.geo = geo.score;
         if (geo.reason) reasons.push(geo.reason);
       }
 
@@ -82,28 +95,34 @@ function rankCandidates(
       const budget = budgetScore(request.budget, nanny.expectedRate);
       if (budget.score > 0) {
         score += budget.score;
+        factors.budget = budget.score;
         if (budget.reason) reasons.push(budget.reason);
       }
 
       if (nanny.isVerified) {
-        score += 12;
+        score += w.verification;
+        factors.verification = w.verification;
         reasons.push("Профиль верифицирован");
       }
 
       if (childAge && (childAges.includes(childAge) || about.includes(childAge))) {
-        score += 10;
+        score += w.childAge;
+        factors.childAge = w.childAge;
         reasons.push("Есть релевантный опыт по возрасту ребёнка");
       }
 
       if (schedule && includesAny(profileText, [schedule])) {
-        score += 6;
+        score += w.schedule;
+        factors.schedule = w.schedule;
         reasons.push("Похожий график/доступность");
       }
 
       if (reqs.length) {
         const matchedReq = reqs.filter((r) => profileText.includes(r));
         if (matchedReq.length > 0) {
-          score += Math.min(18, matchedReq.length * 6);
+          const reqScore = Math.min(18, matchedReq.length * w.requirementMatch);
+          score += reqScore;
+          factors.requirements = reqScore;
           reasons.push(`Совпали требования: ${matchedReq.slice(0, 2).join(", ")}`);
         }
       }
@@ -113,69 +132,75 @@ function rankCandidates(
       let growthScore = 0;
 
       if (familyStyle && nannyBehavior.routineStyle) {
-        if (familyStyle === 'structured' && nannyBehavior.routineStyle === 'structured') mirrorScore += 10;
-        if (familyStyle === 'balanced' && nannyBehavior.routineStyle === 'balanced') mirrorScore += 8;
-        if (familyStyle === 'warm' && nannyBehavior.disciplineStyle === 'gentle') mirrorScore += 10;
+        if (familyStyle === 'structured' && nannyBehavior.routineStyle === 'structured') mirrorScore += w.familyStyleMatch;
+        if (familyStyle === 'balanced' && nannyBehavior.routineStyle === 'balanced') mirrorScore += Math.round(w.familyStyleMatch * 0.8);
+        if (familyStyle === 'warm' && nannyBehavior.disciplineStyle === 'gentle') mirrorScore += w.familyStyleMatch;
       }
 
       if (nannyStylePref && nannyBehavior.disciplineStyle) {
-        if (nannyStylePref === 'gentle' && nannyBehavior.disciplineStyle === 'gentle') mirrorScore += 6;
-        if (nannyStylePref === 'strict' && nannyBehavior.disciplineStyle === 'strict') mirrorScore += 6;
-        if (nannyStylePref === 'playful' && (nannyBehavior.strengths || []).includes('Игра')) mirrorScore += 6;
+        if (nannyStylePref === 'gentle' && nannyBehavior.disciplineStyle === 'gentle') mirrorScore += w.disciplineMatch;
+        if (nannyStylePref === 'strict' && nannyBehavior.disciplineStyle === 'strict') mirrorScore += w.disciplineMatch;
+        if (nannyStylePref === 'playful' && (nannyBehavior.strengths || []).includes('Игра')) mirrorScore += w.disciplineMatch;
       }
 
       if (communicationPreference && nannyBehavior.communicationStyle) {
-        if (communicationPreference === nannyBehavior.communicationStyle) mirrorScore += 6;
+        if (communicationPreference === nannyBehavior.communicationStyle) mirrorScore += w.communicationMatch;
       }
 
       if (childStress && nannyBehavior.tantrumFirstStep) {
-        if (['tantrum', 'cry'].includes(childStress) && nannyBehavior.tantrumFirstStep === 'calm') mirrorScore += 6;
-        if (childStress === 'aggressive' && nannyBehavior.tantrumFirstStep === 'boundaries') mirrorScore += 6;
-        if (childStress === 'withdraw' && nannyBehavior.tantrumFirstStep === 'distract') mirrorScore += 4;
+        if (['tantrum', 'cry'].includes(childStress) && nannyBehavior.tantrumFirstStep === 'calm') mirrorScore += w.stressResponseMatch;
+        if (childStress === 'aggressive' && nannyBehavior.tantrumFirstStep === 'boundaries') mirrorScore += w.stressResponseMatch;
+        if (childStress === 'withdraw' && nannyBehavior.tantrumFirstStep === 'distract') mirrorScore += Math.round(w.stressResponseMatch * 0.67);
       }
 
       const strengths = nannyBehavior.strengths || [];
       if (needs.length && strengths.length) {
         const matched = needs.filter((x) => strengths.includes(x));
         if (matched.length) {
-          growthScore += Math.min(12, matched.length * 6);
+          growthScore += Math.min(w.growthMax, matched.length * w.growthPerNeed);
           reasons.push(`Учитывает потребности семьи: ${matched.slice(0, 2).join(", ")}`);
         }
       }
 
       if (parentPcm && nannyBehavior.pcmType && parentPcm === nannyBehavior.pcmType) {
-        mirrorScore += 6;
+        mirrorScore += w.pcmMatch;
         reasons.push("Совпадение по стилю общения (PCM)");
       }
 
       if (mirrorScore > 0) {
-        score += Math.min(18, mirrorScore);
+        const cappedMirror = Math.min(w.mirrorMax, mirrorScore);
+        score += cappedMirror;
+        factors.mirror = cappedMirror;
         reasons.push("Совпадение по стилю семьи");
       }
 
       if (nanny.softSkills?.rawScore) {
-        score += Math.min(8, Math.round(nanny.softSkills.rawScore / 20));
+        const ssScore = Math.min(w.softSkillsMax, Math.round(nanny.softSkills.rawScore / 20));
+        score += ssScore;
+        factors.softSkills = ssScore;
         reasons.push("Есть AI-оценка soft skills");
       }
 
       score += growthScore;
+      if (growthScore > 0) factors.growth = growthScore;
 
       // Nanny Sharing compatibility bonus
       if (request.isNannySharing && nanny.isNannySharing) {
-        score += 8;
+        score += w.nannySharing;
+        factors.nannySharing = w.nannySharing;
         reasons.push("Готова к совместному шерингу няни");
       }
 
       // Quality Score bonus (up to +10)
       const qs = getQualityScore(nanny);
-      if (qs >= 85) { score += 10; reasons.push("Премиум-рейтинг качества"); }
-      else if (qs >= 70) { score += 6; }
+      if (qs >= 85) { score += w.qualityPremium; factors.quality = w.qualityPremium; reasons.push("Премиум-рейтинг качества"); }
+      else if (qs >= 70) { score += w.qualityGood; factors.quality = w.qualityGood; }
 
       // Risk flags
       const riskFlags = detectRiskFlags(request, nanny);
 
       score = Math.max(0, Math.min(100, score));
-      return { nanny, score, reasons, riskFlags };
+      return { nanny, score, reasons, riskFlags, factors };
     })
     .sort((a, b) => b.score - a.score);
 }
@@ -280,7 +305,7 @@ async function buildMatchResult(
 
   const candidates: MatchCandidate[] = top3.map((r, i) => ({
     nanny: r.nanny,
-    score: Math.max(55, Math.min(98, r.score)),
+    score: Math.max(0, Math.min(98, r.score)),
     reasons: r.reasons,
     humanExplanation: explanations[i],
     trustBadges: buildTrustBadges(r.nanny),
@@ -325,7 +350,7 @@ function buildHeuristicFallback(
   }
 
   const top = ranked[0];
-  const score = Math.max(55, Math.min(98, top.score));
+  const score = Math.max(0, Math.min(98, top.score));
 
   const recsRu = [
     `Лучший текущий матч: ${top.nanny.name || "кандидат"} (${score}%)`,
@@ -348,12 +373,25 @@ function buildHeuristicFallback(
 export const findBestMatch = async (
   request: Omit<ParentRequest, "id" | "createdAt" | "type">,
   candidates: NannyProfile[],
-  lang: Language
+  lang: Language,
+  parentId?: string,
 ): Promise<SubmissionResult> => {
-  const ranked = rankCandidates(request, candidates);
-  const topCandidates = ranked.slice(0, 25);
-  const heuristicFallback = buildHeuristicFallback(ranked, lang);
-  const matchResult = await buildMatchResult(ranked, request, lang);
+  // Load dynamic weights (cached, falls back to defaults)
+  const w = await getWeights();
+  const ranked = rankCandidates(request, candidates, w);
+
+  // Shadow Mode: log scores for RLHF training (fire-and-forget)
+  logShadowScores(ranked.slice(0, 10) as ScoredCandidate[], undefined, parentId);
+
+  // ε-Greedy: inject wildcard candidate (10% chance)
+  const { candidates: greedyRanked, wildcardId } = applyEpsilonGreedy(ranked);
+  if (wildcardId) {
+    console.log(`[ε-Greedy] Wildcard injected: ${wildcardId}`);
+  }
+
+  const topCandidates = greedyRanked.slice(0, 25);
+  const heuristicFallback = buildHeuristicFallback(greedyRanked, lang);
+  const matchResult = await buildMatchResult(greedyRanked, request, lang);
 
   const candidateData =
     topCandidates.length > 0
@@ -373,9 +411,12 @@ export const findBestMatch = async (
       )
       : "No candidates in database. Provide recommendations to improve request quality.";
 
+  // Этап 1: Inject Learned Insights into prompt
+  const insightsBlock = await formatInsightsBlock();
+
   const prompt = `
 Role: You are an expert HR matching algorithm for a Nanny Matching Service called Blizko.
-
+${insightsBlock}
 Task:
 Analyze PARENT REQUEST and TOP CANDIDATES shortlist.
 Return realistic compatibility score and 3 practical, SPECIFIC recommendations for the parent.
@@ -413,12 +454,12 @@ Output JSON only:
       temperature: 0.4,
       responseMimeType: "application/json",
       responseSchema: {
-        type: Type.OBJECT,
+        type: SchemaType.OBJECT,
         properties: {
-          matchScore: { type: Type.INTEGER },
+          matchScore: { type: SchemaType.INTEGER },
           recommendations: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING },
+            type: SchemaType.ARRAY,
+            items: { type: SchemaType.STRING },
           },
         },
         required: ["matchScore", "recommendations"],

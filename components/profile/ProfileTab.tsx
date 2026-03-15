@@ -84,10 +84,10 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         setPhoneVerifyLoading(true);
         setPhoneVerifyError('');
         try {
-            const r = await fetch('/api/auth/send-otp-phone', {
+            const r = await fetch('/api/auth/phone', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone: phoneInput }),
+                body: JSON.stringify({ action: 'send', phone: phoneInput }),
             });
             const data = await r.json().catch(() => ({}));
             if (!r.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить код');
@@ -104,10 +104,10 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         setPhoneVerifyLoading(true);
         setPhoneVerifyError('');
         try {
-            const r = await fetch('/api/auth/verify-otp-phone', {
+            const r = await fetch('/api/auth/phone', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone: phoneInput, code: phoneCode }),
+                body: JSON.stringify({ action: 'verify', phone: phoneInput, code: phoneCode }),
             });
             const data = await r.json().catch(() => ({}));
             if (!r.ok || !data?.ok) throw new Error(data?.error || 'Неверный код');

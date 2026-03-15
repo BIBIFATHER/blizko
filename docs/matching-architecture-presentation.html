@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blizko Самообучающийся матчинг</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap");
+
+      html,
+      body {
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      html {
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+      }
+
+      :root {
+        --bg: #07111f;
+        --bg-2: #0d1b2f;
+        --ink: #eef4ff;
+        --muted: #9eb2cd;
+        --line: rgba(174, 212, 255, 0.18);
+        --cyan: #54d5ff;
+        --blue: #4a7cff;
+        --lime: #c7ff5e;
+        --amber: #ffbc42;
+        --coral: #ff6b6b;
+        --violet: #7d8cff;
+        --card: rgba(10, 23, 41, 0.82);
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+        --title-size: clamp(1.8rem, 5.4vw, 4.8rem);
+        --h2-size: clamp(1.15rem, 3vw, 2.4rem);
+        --h3-size: clamp(0.95rem, 2vw, 1.35rem);
+        --body-size: clamp(0.78rem, 1.3vw, 1.04rem);
+        --small-size: clamp(0.64rem, 1vw, 0.82rem);
+        --slide-padding: clamp(1rem, 4vw, 4rem);
+        --content-gap: clamp(0.6rem, 1.4vw, 1.4rem);
+        --element-gap: clamp(0.35rem, 0.9vw, 0.9rem);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Manrope", sans-serif;
+        background:
+          radial-gradient(circle at 12% 20%, rgba(84, 213, 255, 0.18), transparent 28%),
+          radial-gradient(circle at 88% 30%, rgba(74, 124, 255, 0.18), transparent 32%),
+          radial-gradient(circle at 50% 100%, rgba(199, 255, 94, 0.08), transparent 28%),
+          linear-gradient(180deg, #04101d 0%, #081223 48%, #07111f 100%);
+        color: var(--ink);
+      }
+
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        isolation: isolate;
+      }
+
+      .slide::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(130deg, rgba(84, 213, 255, 0.08), transparent 30%),
+          linear-gradient(320deg, rgba(125, 140, 255, 0.08), transparent 25%);
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .slide-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-height: 100%;
+        overflow: hidden;
+        padding: var(--slide-padding);
+        gap: var(--content-gap);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        width: fit-content;
+        padding: 0.4rem 0.75rem;
+        border: 1px solid rgba(84, 213, 255, 0.26);
+        border-radius: 999px;
+        color: var(--cyan);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: var(--small-size);
+        background: rgba(8, 17, 31, 0.72);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        max-width: 13ch;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: var(--title-size);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+      }
+
+      h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: var(--h2-size);
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      h3 {
+        font-size: var(--h3-size);
+        line-height: 1.15;
+      }
+
+      p,
+      li,
+      .body {
+        font-size: var(--body-size);
+        line-height: 1.45;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: clamp(1rem, 2vw, 2rem);
+        align-items: end;
+      }
+
+      .hero-copy {
+        display: flex;
+        flex-direction: column;
+        gap: var(--content-gap);
+      }
+
+      .subhead {
+        max-width: 60ch;
+      }
+
+      .metric-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.9rem;
+        margin-top: 0.4rem;
+      }
+
+      .metric {
+        padding: 1rem;
+        border-radius: 1.2rem;
+        background: rgba(7, 18, 32, 0.86);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+      }
+
+      .metric strong {
+        display: block;
+        margin-bottom: 0.2rem;
+        font-size: clamp(1.2rem, 2vw, 2rem);
+        line-height: 1;
+        color: var(--ink);
+      }
+
+      .hero-panel,
+      .card,
+      .stack-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 1.35rem;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+      }
+
+      .hero-panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: min(68vh, 44rem);
+        padding: 1.2rem;
+        overflow: hidden;
+      }
+
+      .signal-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+      }
+
+      .signal-card {
+        padding: 0.9rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .signal-card span,
+      .legend span {
+        display: inline-flex;
+        margin-bottom: 0.45rem;
+        font-size: var(--small-size);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .layout-two {
+        display: grid;
+        grid-template-columns: 0.98fr 1.02fr;
+        gap: clamp(0.9rem, 2vw, 1.6rem);
+        align-items: stretch;
+      }
+
+      .left-copy {
+        display: flex;
+        flex-direction: column;
+        gap: var(--content-gap);
+      }
+
+      .bullet-list {
+        display: grid;
+        gap: 0.75rem;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .bullet-list li {
+        display: grid;
+        grid-template-columns: 1.35rem 1fr;
+        gap: 0.7rem;
+        align-items: start;
+      }
+
+      .bullet-list li::before {
+        content: "";
+        margin-top: 0.33rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--cyan), var(--blue));
+        box-shadow: 0 0 16px rgba(84, 213, 255, 0.5);
+      }
+
+      .process-flow,
+      .feedback-map,
+      .timeline {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .process-flow {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: center;
+      }
+
+      .flow-card {
+        position: relative;
+        min-height: 14rem;
+        padding: 1rem;
+        border-radius: 1.1rem;
+        background: linear-gradient(180deg, rgba(11, 27, 48, 0.92), rgba(8, 18, 32, 0.92));
+        border: 1px solid var(--line);
+      }
+
+      .flow-card::after {
+        content: "→";
+        position: absolute;
+        top: 50%;
+        right: -0.72rem;
+        transform: translateY(-50%);
+        color: rgba(198, 225, 255, 0.8);
+        font-size: 1.5rem;
+      }
+
+      .flow-card:last-child::after {
+        display: none;
+      }
+
+      .flow-number {
+        display: inline-flex;
+        width: 2rem;
+        height: 2rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(84, 213, 255, 0.15);
+        color: var(--cyan);
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+      }
+
+      .flow-card p {
+        margin-top: 0.55rem;
+        font-size: var(--small-size);
+      }
+
+      .formula-panel {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 0.9rem;
+      }
+
+      .formula-box,
+      .weights-box,
+      .rail-card,
+      .timeline-card,
+      .moat-card,
+      .dashboard,
+      .journey-card {
+        padding: 1rem;
+        border-radius: 1.15rem;
+        background: rgba(5, 16, 29, 0.8);
+        border: 1px solid var(--line);
+      }
+
+      .formula {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        align-items: center;
+        margin-top: 0.8rem;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: clamp(1rem, 2.1vw, 1.9rem);
+        color: var(--ink);
+      }
+
+      .pill {
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .pill.alpha {
+        color: var(--cyan);
+      }
+
+      .pill.beta {
+        color: var(--lime);
+      }
+
+      .pill.gamma {
+        color: var(--amber);
+      }
+
+      .weights-box {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .weight-bar {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .weight-track {
+        height: 0.7rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+      }
+
+      .weight-fill {
+        height: 100%;
+        border-radius: inherit;
+      }
+
+      .blue {
+        background: linear-gradient(90deg, #54d5ff, #4a7cff);
+      }
+
+      .green {
+        background: linear-gradient(90deg, #b6ff68, #4ce28c);
+      }
+
+      .amber {
+        background: linear-gradient(90deg, #ffd76e, #ff9e42);
+      }
+
+      .feedback-map {
+        grid-template-columns: 1.15fr 0.8fr 1.15fr;
+        align-items: center;
+      }
+
+      .stack-card {
+        padding: 1rem;
+        min-height: 17rem;
+      }
+
+      .stack {
+        display: grid;
+        gap: 0.7rem;
+        margin-top: 0.9rem;
+      }
+
+      .stack-step {
+        padding: 0.8rem 0.9rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .arrow-column {
+        display: grid;
+        justify-items: center;
+        gap: 0.8rem;
+      }
+
+      .arrow-chip {
+        padding: 0.55rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(84, 213, 255, 0.12);
+        color: var(--cyan);
+        font-size: var(--small-size);
+        border: 1px solid rgba(84, 213, 255, 0.22);
+      }
+
+      .triangle {
+        width: 0;
+        height: 0;
+        border-left: 0.65rem solid transparent;
+        border-right: 0.65rem solid transparent;
+        border-top: 1rem solid rgba(84, 213, 255, 0.55);
+      }
+
+      .rail-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.8rem;
+      }
+
+      .rail-card strong,
+      .timeline-card strong,
+      .journey-card strong,
+      .moat-card strong {
+        display: block;
+        margin-bottom: 0.4rem;
+        color: var(--ink);
+      }
+
+      .moat-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 0.9rem;
+      }
+
+      .moat-layers {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .moat-card {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .copy-badge {
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: var(--small-size);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .low {
+        color: var(--coral);
+      }
+
+      .med {
+        color: var(--amber);
+      }
+
+      .high {
+        color: var(--lime);
+      }
+
+      .tower {
+        display: grid;
+        align-content: end;
+        gap: 0.4rem;
+        min-height: 20rem;
+      }
+
+      .tower-step {
+        border-radius: 0.9rem;
+        padding: 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .dashboard-grid,
+      .journey-grid,
+      .timeline {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr 1fr 0.8fr;
+      }
+
+      .mini-bars {
+        display: grid;
+        gap: 0.55rem;
+        margin-top: 0.8rem;
+      }
+
+      .mini-bars div {
+        display: grid;
+        gap: 0.25rem;
+      }
+
+      .mini-bars span {
+        font-size: var(--small-size);
+        color: var(--muted);
+      }
+
+      .journey-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .journey-card {
+        min-height: 15rem;
+      }
+
+      .timeline {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .timeline-card {
+        min-height: 14.5rem;
+        position: relative;
+      }
+
+      .timeline-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0.25rem;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--cyan), transparent);
+      }
+
+      .legend {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 0.35rem;
+      }
+
+      .legend span {
+        margin: 0;
+        padding: 0.32rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+      }
+
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0.22rem;
+        background: rgba(255, 255, 255, 0.04);
+        z-index: 20;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--cyan), var(--lime));
+      }
+
+      .nav-dots {
+        position: fixed;
+        right: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: grid;
+        gap: 0.45rem;
+        z-index: 20;
+      }
+
+      .nav-dots button {
+        width: 0.72rem;
+        height: 0.72rem;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      .nav-dots button.active {
+        background: var(--cyan);
+        transform: scale(1.22);
+      }
+
+      .footer-note {
+        position: fixed;
+        left: 1rem;
+        bottom: 0.85rem;
+        font-size: var(--small-size);
+        color: rgba(220, 236, 255, 0.6);
+        z-index: 20;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+
+      .slide.is-visible .reveal {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .slide.is-visible .reveal:nth-child(2) {
+        transition-delay: 0.08s;
+      }
+
+      .slide.is-visible .reveal:nth-child(3) {
+        transition-delay: 0.16s;
+      }
+
+      .slide.is-visible .reveal:nth-child(4) {
+        transition-delay: 0.24s;
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .layout-two,
+        .formula-panel,
+        .feedback-map,
+        .moat-grid,
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .process-flow,
+        .rail-grid,
+        .journey-grid,
+        .timeline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .flow-card::after {
+          display: none;
+        }
+
+        .hero-panel {
+          min-height: auto;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .metric-row,
+        .process-flow,
+        .rail-grid,
+        .journey-grid,
+        .timeline {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-dots,
+        .footer-note {
+          display: none;
+        }
+      }
+
+      @media (max-height: 700px) {
+        :root {
+          --slide-padding: clamp(0.8rem, 3vw, 2rem);
+          --title-size: clamp(1.35rem, 4.4vw, 2.7rem);
+          --h2-size: clamp(1rem, 2.4vw, 1.75rem);
+          --body-size: clamp(0.7rem, 1vw, 0.92rem);
+        }
+
+        .flow-card,
+        .journey-card,
+        .timeline-card,
+        .stack-card {
+          min-height: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.2s !important;
+        }
+
+        html {
+          scroll-behavior: auto;
+        }
+
+        .reveal {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+    <nav class="nav-dots" aria-label="Навигация по слайдам" id="navDots"></nav>
+    <div class="footer-note">Архитектура матчинга Blizko · стрелки / свайп / колесо</div>
+
+    <main>
+      <section class="slide" id="slide-1">
+        <div class="slide-content">
+          <div class="hero">
+            <div class="hero-copy">
+              <div class="eyebrow reveal">Blizko · Самообучающийся матчинг</div>
+              <h1 class="reveal">Матчинг, оптимизированный под удержание</h1>
+              <p class="subhead reveal">
+                От rule-based shortlist к системе, которая учится на каждом показе, каждом найме, каждом отказе и первой неделе совместной работы.
+              </p>
+              <div class="metric-row reveal">
+                <div class="metric">
+                  <strong>30d</strong>
+                  <p>Главная метрика: удержание после найма, а не просто CTR или открытие чата.</p>
+                </div>
+                <div class="metric">
+                  <strong>3 слоя</strong>
+                  <p>Эвристический prior → обучаемый скор → прогноз удержания с жестким fallback.</p>
+                </div>
+                <div class="metric">
+                  <strong>Защита</strong>
+                  <p>Метки исходов, скрытая таксономия, сигнатура няни, память о семье.</p>
+                </div>
+              </div>
+            </div>
+            <div class="hero-panel reveal">
+              <div>
+                <div class="eyebrow">Главный тезис</div>
+                <p style="margin-top:0.8rem;">
+                  Это не поиск по фильтрам. Это двусторонняя рекомендательная система с редкими и отложенными наградами.
+                </p>
+              </div>
+              <div class="signal-grid">
+                <div class="signal-card">
+                  <span style="color:var(--cyan);">Вход</span>
+                  <p>Анкета семьи, поведенческий опрос, гео, бюджет, контекст ухода за ребенком.</p>
+                </div>
+                <div class="signal-card">
+                  <span style="color:var(--amber);">Политика</span>
+                  <p>Контекстный бандит с защищенным top-2 и исследованием только в безопасной зоне.</p>
+                </div>
+                <div class="signal-card">
+                  <span style="color:var(--lime);">Обратная связь</span>
+                  <p>Открытие чата, бронирование, опрос первой недели, причина оттока, повторный поиск.</p>
+                </div>
+                <div class="signal-card">
+                  <span style="color:var(--coral);">Ограничители</span>
+                  <p>Без чувствительных признаков в скоринге, proxy-мониторинг, справедливое распределение показов.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="slide-2">
+        <div class="slide-content">
+          <div class="layout-two">
+            <div class="left-copy reveal">
+              <div class="eyebrow">Карта процесса</div>
+              <h2>Пятиступенчатый пайплайн</h2>
+              <ul class="bullet-list">
+                <li><span></span><div><strong>Фильтр:</strong> жесткие ограничения по бюджету, качеству, безопасности и логике blacklist.</div></li>
+                <li><span></span><div><strong>Отбор:</strong> рабочий набор из 20–50 кандидатов, сначала эвристики, позже общие embeddings.</div></li>
+                <li><span></span><div><strong>Ранг:</strong> гибридный скор с прозрачными снимками факторов и версионированием.</div></li>
+                <li><span></span><div><strong>Исследование:</strong> epsilon-greedy только в безопасной зоне, без деградации top-2.</div></li>
+                <li><span></span><div><strong>Объяснение:</strong> Gemini пишет доверительный текст уже после решения ранкера.</div></li>
+              </ul>
+            </div>
+            <div class="process-flow reveal">
+              <article class="flow-card">
+                <div class="flow-number">1</div>
+                <h3>Фильтр</h3>
+                <p>Порог по бюджету</p>
+                <p>Качество ≥ 50</p>
+                <p>Blacklist / cooldown</p>
+                <p>Флаги безопасности</p>
+              </article>
+              <article class="flow-card">
+                <div class="flow-number">2</div>
+                <h3>Отбор</h3>
+                <p>Близость по гео</p>
+                <p>Совпадение графика</p>
+                <p>Подходящий возраст ребенка</p>
+                <p>Набор top 20–50</p>
+              </article>
+              <article class="flow-card">
+                <div class="flow-number">3</div>
+                <h3>Ранг</h3>
+                <p>Эвристический prior</p>
+                <p>Обучаемый скор</p>
+                <p>Прокси удержания</p>
+                <p>Лог факторов</p>
+              </article>
+              <article class="flow-card">
+                <div class="flow-number">4</div>
+                <h3>Исследование</h3>
+                <p>10% wildcard</p>
+                <p>Только позиции 4–8</p>
+                <p>Контроль показов</p>
+                <p>Анти-пузырь</p>
+              </article>
+              <article class="flow-card">
+                <div class="flow-number">5</div>
+                <h3>Объяснение</h3>
+                <p>Обученные инсайты</p>
+                <p>Теплый человеческий текст</p>
+                <p>Только top-3</p>
+                <p>Без владения скором</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="slide-3">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Гибридный скоринг</div>
+          <h2 class="reveal">Трехслойный скор с поэтапной передачей роли</h2>
+          <div class="formula-panel">
+            <div class="formula-box reveal">
+              <p>Путь принятия решения должен быть объяснимым и стабильным. Поэтому скор живет вне LLM.</p>
+              <div class="formula">
+                <span>Итоговый скор =</span>
+                <span class="pill alpha">α × Эвристический prior</span>
+                <span>+</span>
+                <span class="pill beta">β × Обучаемый скор</span>
+                <span>+</span>
+                <span class="pill gamma">γ × Прогноз удержания</span>
+              </div>
+              <div class="legend">
+                <span>α стартует с 1.0</span>
+                <span>β растет с накоплением исходов</span>
+                <span>γ включается после стабильных 30d-меток</span>
+              </div>
+            </div>
+            <div class="weights-box reveal">
+              <div class="weight-bar">
+                <p>Этап 0 · мост только на эвристиках</p>
+                <div class="weight-track"><div class="weight-fill blue" style="width:100%"></div></div>
+              </div>
+              <div class="weight-bar">
+                <p>Этап 1 · ранжирование, усиленное данными</p>
+                <div class="weight-track"><div class="weight-fill blue" style="width:78%"></div></div>
+                <div class="weight-track"><div class="weight-fill green" style="width:22%; margin-top:-0.7rem"></div></div>
+              </div>
+              <div class="weight-bar">
+                <p>Этап 2 · персонализированный ранк с учетом удержания</p>
+                <div class="weight-track"><div class="weight-fill blue" style="width:58%"></div></div>
+                <div class="weight-track"><div class="weight-fill green" style="width:28%; margin-top:-0.7rem"></div></div>
+                <div class="weight-track"><div class="weight-fill amber" style="width:14%; margin-top:-0.7rem"></div></div>
+              </div>
+              <div class="weight-bar">
+                <p>Этап 3 · обучаемый ранкер основной, эвристический fallback сохранен</p>
+                <div class="weight-track"><div class="weight-fill blue" style="width:38%"></div></div>
+                <div class="weight-track"><div class="weight-fill green" style="width:42%; margin-top:-0.7rem"></div></div>
+                <div class="weight-track"><div class="weight-fill amber" style="width:20%; margin-top:-0.7rem"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="rail-grid reveal">
+            <div class="rail-card">
+              <strong>Почему не Gemini-скорер</strong>
+              <p>Нестабильные баллы, сложная калибровка, дорого масштабировать на полный candidate set.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Почему это работает</strong>
+              <p>Можно логировать factor attribution, делать A/B, откатывать веса и сверять calibration.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Обучаемый слой</strong>
+              <p>Bandit policy плюс weekly conservative updates, регуляризация к prior weights.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Слой удержания</strong>
+              <p>Сначала value proxy на 30-day survival, полный LTV только после стабилизации revenue data.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="slide-4">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Петля обратной связи</div>
+          <h2 class="reveal">Как система самообучается после каждого показа</h2>
+          <div class="feedback-map reveal">
+            <div class="stack-card">
+              <h3>Онлайн-события</h3>
+              <div class="stack">
+                <div class="stack-step">Показ / позиция в выдаче / версия policy</div>
+                <div class="stack-step">Открытие профиля / dwell time / повторный визит</div>
+                <div class="stack-step">Старт чата / скорость ответа / число сообщений</div>
+                <div class="stack-step">Бронирование / отмена / новый поиск замены</div>
+                <div class="stack-step">Ответы опросов на 3-й / 5-й / 7-й день</div>
+              </div>
+            </div>
+            <div class="arrow-column">
+              <div class="arrow-chip">лог событий</div>
+              <div class="triangle"></div>
+              <div class="arrow-chip">еженедельные задачи</div>
+              <div class="triangle"></div>
+              <div class="arrow-chip">следующий запрос</div>
+            </div>
+            <div class="stack-card">
+              <h3>Результаты обучения</h3>
+              <div class="stack">
+                <div class="stack-step">`matching_outcomes` со снимком факторов и флагом исследования</div>
+                <div class="stack-step">`matching_weights` с консервативными онлайн-обновлениями</div>
+                <div class="stack-step">`family_prefs` с корректировкой скрытых предпочтений</div>
+                <div class="stack-step">`matching_insights` для RAG-объяснений</div>
+                <div class="stack-step">Новая политика ранжирования с безопасным rollback</div>
+              </div>
+            </div>
+          </div>
+          <div class="rail-grid reveal">
+            <div class="rail-card">
+              <strong>Слабые сигналы</strong>
+              <p>Dwell time, повторные визиты, пропуски. Полезны как ранние намеки, но не как финальная награда.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Сильные сигналы</strong>
+              <p>Бронирование, завершение, причина отмены, активность через 30 дней.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Критически важное логирование</strong>
+              <p>Propensity, снимок скора, размер набора кандидатов, версия модели, версия policy.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Извлечение причин</strong>
+              <p>LLM нужен для taxономии оттока и объяснений, а не для владения ранжированием.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="slide-5">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Конкурентная защита</div>
+          <h2 class="reveal">Почему это сложно скопировать</h2>
+          <div class="moat-grid">
+            <div class="moat-layers reveal">
+              <div class="moat-card">
+                <div>
+                  <strong>1. Собственные метки</strong>
+                  <p>Показ → открытие чата → найм → удержание 30d → причина оттока. Это уже не обычная продуктовая телеметрия.</p>
+                </div>
+                <div class="copy-badge low">Сложно скопировать</div>
+              </div>
+              <div class="moat-card">
+                <div>
+                  <strong>2. Скрытая таксономия</strong>
+                  <p>NLP-мэппинг “она слишком строгая” в структурированные причины: конфликт дисциплины, перегрузка коммуникацией, дефицит доверия.</p>
+                </div>
+                <div class="copy-badge med">Еще сложнее</div>
+              </div>
+              <div class="moat-card">
+                <div>
+                  <strong>3. Рабочая сигнатура няни</strong>
+                  <p>Как няня реально работает в семье: responsiveness, стабильность, спокойствие, fit по сегментам.</p>
+                </div>
+                <div class="copy-badge high">Очень сложно</div>
+              </div>
+              <div class="moat-card">
+                <div>
+                  <strong>4. Память о предпочтениях семьи</strong>
+                  <p>Скрытый профиль семьи после нескольких поисков и замен. Это растущий private graph, а не фича.</p>
+                </div>
+                <div class="copy-badge high">Усиливается со временем</div>
+              </div>
+            </div>
+            <div class="tower reveal">
+              <div class="tower-step" style="height: 18%;">
+                <strong>Защита кодом</strong>
+                <p>Минимальная</p>
+              </div>
+              <div class="tower-step" style="height: 23%;">
+                <strong>Защита моделью</strong>
+                <p>Умеренная</p>
+              </div>
+              <div class="tower-step" style="height: 27%;">
+                <strong>Защита данными</strong>
+                <p>Сильная</p>
+              </div>
+              <div class="tower-step" style="height: 32%; background: rgba(199,255,94,0.08);">
+                <strong>Защита отношениями</strong>
+                <p>Самая сильная со временем</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="slide-6">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Ограничители</div>
+          <h2 class="reveal">Справедливость, наблюдаемость, rollback</h2>
+          <div class="dashboard-grid reveal">
+            <div class="dashboard">
+              <h3>Панель справедливости</h3>
+              <div class="mini-bars">
+                <div>
+                  <span>Показы по proxy района</span>
+                  <div class="weight-track"><div class="weight-fill blue" style="width:72%"></div></div>
+                </div>
+                <div>
+                  <span>Показы по ценовому диапазону</span>
+                  <div class="weight-track"><div class="weight-fill green" style="width:61%"></div></div>
+                </div>
+                <div>
+                  <span>Дрейф proxy образования</span>
+                  <div class="weight-track"><div class="weight-fill amber" style="width:28%"></div></div>
+                </div>
+              </div>
+              <p style="margin-top:0.8rem;">Нет чувствительных признаков в скоринге, но proxy-аудиты обязательны каждую неделю.</p>
+            </div>
+            <div class="dashboard">
+              <h3>Стек наблюдаемости</h3>
+              <div class="stack">
+                <div class="stack-step">Версия модели + версия policy</div>
+                <div class="stack-step">Позиция в выдаче + propensity</div>
+                <div class="stack-step">Снимок факторов в момент решения</div>
+                <div class="stack-step">Проверки калибровки по сегментам</div>
+                <div class="stack-step">Rollback к предыдущим весам</div>
+              </div>
+            </div>
+            <div class="dashboard">
+              <h3>Жесткие правила</h3>
+              <div class="stack">
+                <div class="stack-step">Top-2 защищен от исследования</div>
+                <div class="stack-step">Изменение веса ограничено в неделю</div>
+                <div class="stack-step">Без тихого promotion в прод</div>
+                <div class="stack-step">Ручной review первых insights</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="slide-7">
+        <div class="slide-content">
+          <div class="eyebrow reveal">UX</div>
+          <h2 class="reveal">Как это ощущается пользователю</h2>
+          <div class="journey-grid reveal">
+            <div class="journey-card">
+              <strong>Холодный старт</strong>
+              <p>Топ-3 выглядят надежными и понятными. Объяснения фактические: рядом, есть нужный опыт, понятный стиль.</p>
+            </div>
+            <div class="journey-card">
+              <strong>После отказа</strong>
+              <p>Следующая подборка заметно отличается. Пользователь чувствует, что сервис “понял сигнал”, а не повторяет те же лица.</p>
+            </div>
+            <div class="journey-card">
+              <strong>После удачной недели</strong>
+              <p>Короткий опрос без допроса. Сервис учится мягко, а не заставляет пользователя дообучать модель вручную.</p>
+            </div>
+            <div class="journey-card">
+              <strong>Повторный поиск</strong>
+              <p>Ощущение “мне не нужно заново все объяснять”. Это уже не фильтр, а память об отношениях.</p>
+            </div>
+          </div>
+          <div class="legend reveal">
+            <span>2 надежных совпадения</span>
+            <span>1 интересная альтернатива</span>
+            <span>Короткий текст “почему эта няня”</span>
+            <span>Контролы предпочтений без creepy feel</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="slide-8">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Развертывание</div>
+          <h2 class="reveal">Поэтапный запуск без поломки MVP</h2>
+          <div class="timeline reveal">
+            <article class="timeline-card">
+              <strong>Этап 0 · Shadow mode</strong>
+              <p>Логируем эвристические скоры, разложение по факторам и explore flag. Без риска для пользователя.</p>
+              <p><span style="color:var(--cyan);">Цель:</span> надежное покрытие тренировочными данными.</p>
+            </article>
+            <article class="timeline-card">
+              <strong>Этап 1 · Инжект insights</strong>
+              <p>Сбор исходов, weekly insights, лучшие объяснения, первая дисциплина телеметрии.</p>
+              <p><span style="color:var(--lime);">Цель:</span> рост hired/shown при безопасном review.</p>
+            </article>
+            <article class="timeline-card">
+              <strong>Этап 2 · Персонализированный ранк</strong>
+              <p>Векторы предпочтений семьи, консервативные онлайн-обновления, прокси удержания.</p>
+              <p><span style="color:var(--amber);">Цель:</span> более высокое 30-day survival при повторном поиске.</p>
+            </article>
+            <article class="timeline-card">
+              <strong>Этап 3 · Retrieval + обучаемый ранкер</strong>
+              <p>Общие embeddings, более сильный ранкер, richer exploration policy, эвристический fallback сохранен.</p>
+              <p><span style="color:var(--coral);">Цель:</span> масштабирование без потери explainability.</p>
+            </article>
+          </div>
+          <div class="rail-grid reveal">
+            <div class="rail-card">
+              <strong>Go / no-go критерии</strong>
+              <p>Продвижение только при нормальной калибровке, покрытии сегментов и отсутствии fairness regression.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Логика rollback</strong>
+              <p>Prior weights и предыдущая версия policy всегда должны восстанавливаться.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Зоны ответственности команды</strong>
+              <p>Product определяет награды, DS валидирует модели, eng владеет логированием и надежностью.</p>
+            </div>
+            <div class="rail-card">
+              <strong>Главный ориентир</strong>
+              <p>Не “умный AI”, а меньше ошибочных интервью и больше устойчивых совпадений.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      class DeckController {
+        constructor() {
+          this.slides = Array.from(document.querySelectorAll(".slide"));
+          this.progressBar = document.getElementById("progressBar");
+          this.navDots = document.getElementById("navDots");
+          this.currentIndex = 0;
+          this.touchStartY = 0;
+          this.buildDots();
+          this.bindEvents();
+          this.observeSlides();
+          this.updateUI(0);
+        }
+
+        buildDots() {
+          this.slides.forEach((slide, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute("aria-label", `Слайд ${index + 1}`);
+            button.addEventListener("click", () => this.goTo(index));
+            this.navDots.appendChild(button);
+          });
+        }
+
+        bindEvents() {
+          window.addEventListener("keydown", (event) => {
+            if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+              event.preventDefault();
+              this.next();
+            }
+            if (["ArrowUp", "PageUp"].includes(event.key)) {
+              event.preventDefault();
+              this.prev();
+            }
+            if (event.key === "Home") this.goTo(0);
+            if (event.key === "End") this.goTo(this.slides.length - 1);
+          });
+
+          window.addEventListener("wheel", (event) => {
+            if (Math.abs(event.deltaY) < 28) return;
+            clearTimeout(this.wheelTimer);
+            this.wheelTimer = setTimeout(() => {
+              if (event.deltaY > 0) this.next();
+              if (event.deltaY < 0) this.prev();
+            }, 70);
+          }, { passive: true });
+
+          window.addEventListener("touchstart", (event) => {
+            this.touchStartY = event.changedTouches[0].clientY;
+          }, { passive: true });
+
+          window.addEventListener("touchend", (event) => {
+            const deltaY = this.touchStartY - event.changedTouches[0].clientY;
+            if (Math.abs(deltaY) < 40) return;
+            if (deltaY > 0) this.next();
+            if (deltaY < 0) this.prev();
+          }, { passive: true });
+        }
+
+        observeSlides() {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              const index = this.slides.indexOf(entry.target);
+              if (entry.isIntersecting) {
+                this.currentIndex = index;
+                entry.target.classList.add("is-visible");
+                this.updateUI(index);
+              }
+            });
+          }, { threshold: 0.56 });
+
+          this.slides.forEach((slide) => observer.observe(slide));
+        }
+
+        updateUI(index) {
+          const pct = ((index + 1) / this.slides.length) * 100;
+          this.progressBar.style.width = `${pct}%`;
+          Array.from(this.navDots.children).forEach((dot, dotIndex) => {
+            dot.classList.toggle("active", dotIndex === index);
+          });
+        }
+
+        goTo(index) {
+          const safeIndex = Math.max(0, Math.min(index, this.slides.length - 1));
+          this.slides[safeIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        next() {
+          this.goTo(this.currentIndex + 1);
+        }
+
+        prev() {
+          this.goTo(this.currentIndex - 1);
+        }
+      }
+
+      new DeckController();
+    </script>
+  </body>
+</html>

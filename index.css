@@ -1,5 +1,9 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
 @config "./tailwind.config.ts";
+@source "./App.tsx";
+@source "./index.tsx";
+@source "./components";
+@source "./src";
 
 /* Safe-area environment variables */
 :root {
@@ -11,14 +15,20 @@
   /* ===== Cloud Design System ===== */
 
   /* Core palette */
-  --cloud-bg: #F9F6F1;
-  --cloud-surface: rgba(255, 255, 255, 0.85);
-  --cloud-honey: linear-gradient(135deg, #E8D5A3, #F2E6C5);
-  --cloud-honey-solid: #E8D5A3;
-  --cloud-text: #44403C;
-  --cloud-text-muted: #A8A29E;
-  --cloud-brand: #5D4E37;
-  --cloud-border: rgba(245, 245, 244, 0.8);
+  --cloud-bg: #f7f2e8;
+  --cloud-bg-secondary: #fdfaf4;
+  --cloud-surface: rgba(255, 251, 245, 0.86);
+  --cloud-surface-strong: rgba(255, 255, 255, 0.94);
+  --cloud-honey: linear-gradient(135deg, #e9d6a1 0%, #f5e8c8 52%, #ead2a2 100%);
+  --cloud-honey-solid: #ead39f;
+  --cloud-text: #332b22;
+  --cloud-text-muted: #8e8376;
+  --cloud-brand: #4e4032;
+  --cloud-brand-soft: #75614c;
+  --cloud-border: rgba(115, 96, 74, 0.11);
+  --cloud-border-strong: rgba(115, 96, 74, 0.18);
+  --cloud-ink: #241c15;
+  --cloud-olive: #7e8262;
 
   /* Trust & Status colors */
   --cloud-trust-green: #16a34a;
@@ -33,10 +43,10 @@
   --cloud-info-bg: rgba(99, 102, 241, 0.1);
 
   /* Shadows */
-  --cloud-shadow: 0 8px 32px rgba(120, 113, 108, 0.06);
-  --cloud-shadow-soft: 0 4px 20px rgba(120, 113, 108, 0.04), 0 2px 8px rgba(120, 113, 108, 0.02);
-  --cloud-shadow-hover: 0 12px 40px rgba(120, 113, 108, 0.1);
-  --cloud-shadow-elevated: 0 20px 60px rgba(120, 113, 108, 0.12);
+  --cloud-shadow: 0 16px 40px rgba(96, 77, 58, 0.08);
+  --cloud-shadow-soft: 0 10px 24px rgba(96, 77, 58, 0.05), 0 2px 8px rgba(96, 77, 58, 0.04);
+  --cloud-shadow-hover: 0 22px 54px rgba(96, 77, 58, 0.12);
+  --cloud-shadow-elevated: 0 30px 80px rgba(70, 56, 43, 0.15);
 
   /* Radii */
   --cloud-radius-card: 24px;
@@ -93,8 +103,35 @@
 
 body {
   -webkit-tap-highlight-color: transparent;
-  background-color: #F9F6F1;
+  background:
+    radial-gradient(circle at top left, rgba(249, 224, 181, 0.42), transparent 26%),
+    radial-gradient(circle at 80% 0%, rgba(213, 229, 211, 0.32), transparent 20%),
+    linear-gradient(180deg, var(--cloud-bg-secondary) 0%, var(--cloud-bg) 100%);
+  color: var(--cloud-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   overscroll-behavior-y: none;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -0.03em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.font-brand {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: -0.03em;
 }
 
 ::-webkit-scrollbar {
@@ -180,27 +217,36 @@ a {
 
 /* Cloud Concept utilities */
 .logo-serif {
-  font-family: 'Quicksand', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #5D4E37;
 }
 
 .btn-honey {
-  background: linear-gradient(135deg, #E8D5A3, #F2E6C5);
-  color: #5D4E37;
-  font-weight: 600;
+  background: var(--cloud-honey);
+  color: var(--cloud-brand);
+  font-weight: 700;
   border-radius: 9999px;
-  box-shadow: 0 8px 24px rgba(232, 213, 163, 0.35);
-  transition: all 0.2s ease;
+  box-shadow: 0 12px 28px rgba(233, 214, 161, 0.34);
+  transition: transform 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out), filter 0.24s var(--ease-out);
+  border: 1px solid rgba(255, 255, 255, 0.72);
 }
 
 .btn-honey:hover {
-  box-shadow: 0 10px 28px rgba(232, 213, 163, 0.45);
+  box-shadow: 0 18px 36px rgba(233, 214, 161, 0.42);
   filter: brightness(1.03);
+  transform: translateY(-1px);
+}
+
+.btn-honey:active {
+  transform: translateY(0) scale(0.985);
 }
 
 /* Cloud-style soft card shadow */
 .card-cloud {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 250, 243, 0.82) 100%);
   box-shadow: var(--cloud-shadow);
+  border: 1px solid var(--cloud-border);
+  backdrop-filter: blur(16px);
 }
 
 .shadow-cloud-soft {
@@ -238,6 +284,220 @@ a {
 
 .animate-slide-down {
   animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hover-lift {
+  transition: transform 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out), border-color 0.24s var(--ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cloud-shadow-hover);
+}
+
+.surface-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(252, 247, 240, 0.9) 100%);
+  border: 1px solid var(--cloud-border);
+  box-shadow: var(--cloud-shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+.section-shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.8), rgba(247, 240, 228, 0.78));
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--cloud-shadow-soft);
+}
+
+.section-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(233, 214, 161, 0.22), transparent 26%),
+    radial-gradient(circle at bottom left, rgba(126, 130, 98, 0.12), transparent 18%);
+  pointer-events: none;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--cloud-brand-soft);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(115, 96, 74, 0.1);
+}
+
+.editorial-title {
+  color: var(--cloud-ink);
+  font-family: "Manrope", sans-serif;
+  font-weight: 800;
+  line-height: 0.98;
+}
+
+.editorial-subtitle {
+  color: var(--cloud-text-muted);
+  line-height: 1.65;
+}
+
+.app-shell {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: calc(var(--sat) + 0.75rem) 1rem calc(var(--sab) + 1.5rem);
+}
+
+.app-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(251, 246, 239, 0.9));
+  border: 1px solid rgba(115, 96, 74, 0.08);
+  box-shadow: var(--cloud-shadow-soft);
+  border-radius: 1.75rem;
+}
+
+.topbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(115, 96, 74, 0.08);
+  color: var(--cloud-brand-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.sheet-modal {
+  border-radius: 2rem 2rem 0 0;
+}
+
+@media (min-width: 640px) {
+  .sheet-modal {
+    border-radius: 2rem;
+  }
+}
+
+.input-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(115, 96, 74, 0.1);
+  border-radius: var(--cloud-radius-input);
+  box-shadow: inset 0 1px 4px rgba(120, 113, 108, 0.06);
+  transition: border-color 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out), background 0.22s var(--ease-out), transform 0.22s var(--ease-out);
+}
+
+.input-glass:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(234, 211, 159, 0.82);
+  box-shadow:
+    inset 0 1px 3px rgba(120, 113, 108, 0.04),
+    0 0 0 4px rgba(234, 211, 159, 0.2);
+}
+
+.input-success {
+  border-color: rgba(126, 130, 98, 0.24);
+}
+
+.chip-warm {
+  background: linear-gradient(180deg, rgba(248, 233, 199, 0.95), rgba(244, 224, 181, 0.84));
+  color: var(--cloud-brand);
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--cloud-trust-green);
+  border: 1px solid rgba(22, 163, 74, 0.12);
+}
+
+.trust-badge-blue {
+  background: rgba(8, 145, 178, 0.1);
+  color: var(--cloud-trust-blue);
+  border-color: rgba(8, 145, 178, 0.12);
+}
+
+.trust-badge-warning {
+  background: rgba(202, 138, 4, 0.12);
+  color: var(--cloud-warning);
+  border-color: rgba(202, 138, 4, 0.12);
+}
+
+.progress-bar {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: rgba(51, 43, 34, 0.08);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--cloud-honey);
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.35);
+  transition: width 0.5s var(--ease-out);
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.status-dot-active {
+  background: var(--cloud-trust-green);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+}
+
+.status-dot-pending {
+  background: var(--cloud-warning);
+  box-shadow: 0 0 0 4px rgba(202, 138, 4, 0.12);
+}
+
+.status-dot-inactive {
+  background: rgba(142, 131, 118, 0.55);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 18rem;
+  padding: 2rem 1.5rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(115, 96, 74, 0.08);
+  box-shadow: var(--cloud-shadow-soft);
+}
+
+.empty-state-icon {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  background: rgba(234, 211, 159, 0.24);
+  color: var(--cloud-brand);
 }
 
 @keyframes scaleIn {

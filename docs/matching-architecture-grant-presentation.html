@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blizko Grant Deck</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+      html,
+      body {
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      html {
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+      }
+
+      :root {
+        --bg: #f4f0e6;
+        --paper: rgba(255, 252, 247, 0.88);
+        --paper-strong: rgba(255, 255, 255, 0.94);
+        --ink: #182431;
+        --muted: #546272;
+        --line: rgba(24, 36, 49, 0.12);
+        --teal: #0b7a75;
+        --green: #5b8c2a;
+        --gold: #c68b1b;
+        --red: #b24b3f;
+        --blue: #315b9a;
+        --shadow: 0 18px 48px rgba(32, 44, 58, 0.12);
+        --title-size: clamp(1.8rem, 5.2vw, 4.6rem);
+        --h2-size: clamp(1.2rem, 3vw, 2.5rem);
+        --h3-size: clamp(1rem, 1.8vw, 1.35rem);
+        --body-size: clamp(0.78rem, 1.28vw, 1.02rem);
+        --small-size: clamp(0.64rem, 0.9vw, 0.82rem);
+        --slide-padding: clamp(1rem, 4vw, 4rem);
+        --content-gap: clamp(0.7rem, 1.4vw, 1.4rem);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "IBM Plex Sans", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 18% 20%, rgba(11, 122, 117, 0.11), transparent 24%),
+          radial-gradient(circle at 88% 18%, rgba(198, 139, 27, 0.09), transparent 22%),
+          linear-gradient(180deg, #f6f2e8 0%, #f0eadf 100%);
+      }
+
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        scroll-snap-align: start;
+        position: relative;
+      }
+
+      .slide-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--content-gap);
+        padding: var(--slide-padding);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        width: fit-content;
+        padding: 0.38rem 0.7rem;
+        border-radius: 999px;
+        border: 1px solid rgba(11, 122, 117, 0.18);
+        color: var(--teal);
+        background: rgba(255, 255, 255, 0.68);
+        font-size: var(--small-size);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      h1, h2, h3, p { margin: 0; }
+
+      h1 {
+        font-family: "Manrope", sans-serif;
+        font-size: var(--title-size);
+        line-height: 0.96;
+        letter-spacing: -0.05em;
+        max-width: 12ch;
+      }
+
+      h2 {
+        font-family: "Manrope", sans-serif;
+        font-size: var(--h2-size);
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+      }
+
+      h3 {
+        font-size: var(--h3-size);
+        line-height: 1.15;
+      }
+
+      p, li {
+        color: var(--muted);
+        font-size: var(--body-size);
+        line-height: 1.45;
+      }
+
+      .grid-hero,
+      .split,
+      .flow-grid,
+      .metrics,
+      .four-grid,
+      .timeline,
+      .budget-grid {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .grid-hero {
+        grid-template-columns: 1.08fr 0.92fr;
+        align-items: end;
+      }
+
+      .panel,
+      .card,
+      .step,
+      .metric,
+      .timeline-card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 1.25rem;
+        box-shadow: var(--shadow);
+      }
+
+      .panel,
+      .card,
+      .step,
+      .metric,
+      .timeline-card {
+        padding: 1rem;
+      }
+
+      .hero-copy {
+        display: flex;
+        flex-direction: column;
+        gap: var(--content-gap);
+      }
+
+      .metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .metric strong {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-size: clamp(1.15rem, 2.2vw, 2.1rem);
+        color: var(--ink);
+      }
+
+      .split {
+        grid-template-columns: 0.95fr 1.05fr;
+        align-items: stretch;
+      }
+
+      .bullet-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .bullet-list li {
+        display: grid;
+        grid-template-columns: 1.1rem 1fr;
+        gap: 0.65rem;
+      }
+
+      .bullet-list li::before {
+        content: "";
+        width: 0.7rem;
+        height: 0.7rem;
+        margin-top: 0.35rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--teal), var(--blue));
+      }
+
+      .flow-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .step {
+        min-height: 13.5rem;
+        position: relative;
+      }
+
+      .step::after {
+        content: "→";
+        position: absolute;
+        right: -0.68rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(24, 36, 49, 0.35);
+        font-size: 1.4rem;
+      }
+
+      .step:last-child::after { display: none; }
+
+      .num {
+        display: inline-flex;
+        width: 1.9rem;
+        height: 1.9rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: rgba(11, 122, 117, 0.12);
+        color: var(--teal);
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+      }
+
+      .formula {
+        margin-top: 0.7rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        align-items: center;
+        font-family: "Manrope", sans-serif;
+        font-size: clamp(1rem, 2vw, 1.8rem);
+      }
+
+      .token {
+        padding: 0.4rem 0.72rem;
+        border-radius: 999px;
+        background: var(--paper-strong);
+        border: 1px solid var(--line);
+      }
+
+      .alpha { color: var(--blue); }
+      .beta { color: var(--green); }
+      .gamma { color: var(--gold); }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+      }
+
+      .bar {
+        margin-top: 0.55rem;
+      }
+
+      .track {
+        height: 0.68rem;
+        border-radius: 999px;
+        background: rgba(24, 36, 49, 0.08);
+        overflow: hidden;
+      }
+
+      .fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--teal), var(--blue));
+      }
+
+      .fill.green { background: linear-gradient(90deg, #5b8c2a, #7fb13e); }
+      .fill.gold { background: linear-gradient(90deg, #c68b1b, #e0b85e); }
+
+      .four-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .timeline {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .timeline-card {
+        min-height: 14rem;
+        position: relative;
+      }
+
+      .timeline-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0.24rem;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--teal), transparent);
+      }
+
+      .budget-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+
+      .kpi-list {
+        display: grid;
+        gap: 0.65rem;
+      }
+
+      .kpi {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 0.85rem;
+        border-radius: 0.95rem;
+        background: rgba(255, 255, 255, 0.56);
+        border: 1px solid var(--line);
+      }
+
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0.22rem;
+        background: rgba(24, 36, 49, 0.08);
+        z-index: 30;
+      }
+
+      .progress-bar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--teal), var(--gold));
+      }
+
+      .nav-dots {
+        position: fixed;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: grid;
+        gap: 0.4rem;
+        z-index: 30;
+      }
+
+      .nav-dots button {
+        width: 0.68rem;
+        height: 0.68rem;
+        border-radius: 999px;
+        border: 0;
+        background: rgba(24, 36, 49, 0.18);
+        cursor: pointer;
+      }
+
+      .nav-dots button.active { background: var(--teal); }
+
+      .note {
+        position: fixed;
+        left: 1rem;
+        bottom: 0.8rem;
+        color: rgba(24, 36, 49, 0.55);
+        font-size: var(--small-size);
+        z-index: 30;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.55s ease, transform 0.55s ease;
+      }
+
+      .slide.is-visible .reveal {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .slide.is-visible .reveal:nth-child(2) { transition-delay: 0.08s; }
+      .slide.is-visible .reveal:nth-child(3) { transition-delay: 0.16s; }
+      .slide.is-visible .reveal:nth-child(4) { transition-delay: 0.24s; }
+
+      @media (max-width: 980px) {
+        .grid-hero, .split, .budget-grid { grid-template-columns: 1fr; }
+        .flow-grid, .four-grid, .timeline, .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .step::after { display: none; }
+      }
+
+      @media (max-width: 640px) {
+        .flow-grid, .four-grid, .timeline, .metrics, .mini-grid { grid-template-columns: 1fr; }
+        .nav-dots, .note { display: none; }
+      }
+
+      @media (max-height: 700px) {
+        :root {
+          --title-size: clamp(1.4rem, 4.5vw, 2.8rem);
+          --h2-size: clamp(1.05rem, 2.6vw, 1.8rem);
+          --body-size: clamp(0.7rem, 1vw, 0.92rem);
+          --slide-padding: clamp(0.8rem, 2.5vw, 2rem);
+        }
+        .step, .timeline-card { min-height: 0; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.2s !important;
+        }
+        html { scroll-behavior: auto; }
+        .reveal { opacity: 1; transform: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <nav class="nav-dots" id="navDots" aria-label="Навигация по слайдам"></nav>
+    <div class="note">Grant narrative · impact, safety, scalability</div>
+
+    <main>
+      <section class="slide" id="s1">
+        <div class="slide-content">
+          <div class="grid-hero">
+            <div class="hero-copy">
+              <div class="eyebrow reveal">Blizko · grant presentation</div>
+              <h1 class="reveal">AI matching infrastructure for safer, more stable childcare</h1>
+              <p class="reveal">
+                Цель проекта — снизить количество ошибочных подборов и повысить устойчивость найма между семьями и нянями за счет прозрачной, самообучающейся системы матчинга.
+              </p>
+              <div class="metrics reveal">
+                <div class="metric">
+                  <strong>Social value</strong>
+                  <p>Меньше неудачных наймов, меньше стресса для семьи и ребенка, выше устойчивость сотрудничества.</p>
+                </div>
+                <div class="metric">
+                  <strong>Technical value</strong>
+                  <p>От explainable heuristics к responsible AI pipeline с feedback loops и auditability.</p>
+                </div>
+                <div class="metric">
+                  <strong>Economic value</strong>
+                  <p>Ниже cost of mismatch, выше retention, меньше повторных поисков и ручной поддержки.</p>
+                </div>
+              </div>
+            </div>
+            <div class="panel reveal">
+              <h3>Problem framing</h3>
+              <p style="margin-top:0.7rem;">
+                Подбор няни — это не search problem. Это bilateral trust decision с delayed feedback, sparse labels и high emotional cost of mismatch.
+              </p>
+              <div class="kpi-list" style="margin-top:0.9rem;">
+                <div class="kpi"><span>Primary outcome</span><strong>30-day retention</strong></div>
+                <div class="kpi"><span>Secondary outcomes</span><strong>hire rate, churn, time-to-match</strong></div>
+                <div class="kpi"><span>AI principle</span><strong>LLM explains, pipeline decides</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s2">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Need</div>
+          <h2 class="reveal">Почему обычные фильтры здесь не решают задачу</h2>
+          <div class="split">
+            <div class="card reveal">
+              <h3>Current market failure</h3>
+              <ul class="bullet-list" style="margin-top:0.9rem;">
+                <li><span></span><div>Формальные совпадения по району и бюджету не гарантируют реального поведенческого fit.</div></li>
+                <li><span></span><div>Причины неудачи часто “мягкие”: стиль общения, нагрузка коммуникации, дисциплина, тревожность.</div></li>
+                <li><span></span><div>Негативный исход дорого обходится: время, тревога, нарушение рутины ребенка.</div></li>
+              </ul>
+            </div>
+            <div class="card reveal">
+              <h3>Grant rationale</h3>
+              <ul class="bullet-list" style="margin-top:0.9rem;">
+                <li><span></span><div>Нужна инфраструктура, которая превращает разрозненные сигналы в measurable quality improvements.</div></li>
+                <li><span></span><div>Нужна ответственная AI-архитектура с объяснимостью, fairness и rollback.</div></li>
+                <li><span></span><div>Нужна data flywheel, который со временем повышает качество сервиса для всех участников рынка.</div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s3">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Architecture</div>
+          <h2 class="reveal">Production-ready matching pipeline</h2>
+          <div class="flow-grid reveal">
+            <article class="step">
+              <div class="num">1</div>
+              <h3>Filter</h3>
+              <p>Hard constraints: budget, quality floor, safety, blacklist cooldown.</p>
+            </article>
+            <article class="step">
+              <div class="num">2</div>
+              <h3>Retrieve</h3>
+              <p>Candidate set 20–50. Сначала explainable heuristics, позже embedding retrieval.</p>
+            </article>
+            <article class="step">
+              <div class="num">3</div>
+              <h3>Rank</h3>
+              <p>Hybrid score from heuristic prior, learned signals, retention proxy.</p>
+            </article>
+            <article class="step">
+              <div class="num">4</div>
+              <h3>Explore</h3>
+              <p>Contextual bandit with protected top-2 and controlled novelty.</p>
+            </article>
+            <article class="step">
+              <div class="num">5</div>
+              <h3>Explain</h3>
+              <p>LLM writes warm, human-facing rationale only after deterministic ranking.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s4">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Scoring model</div>
+          <h2 class="reveal">Hybrid scorer with safe transition from MVP to learning system</h2>
+          <div class="split">
+            <div class="card reveal">
+              <p>Формула designed to preserve reliability at low data volumes and gradually unlock personalization.</p>
+              <div class="formula">
+                <span>Final score =</span>
+                <span class="token alpha">α × Heuristic prior</span>
+                <span>+</span>
+                <span class="token beta">β × Learned score</span>
+                <span>+</span>
+                <span class="token gamma">γ × Retention proxy</span>
+              </div>
+              <p style="margin-top:0.8rem;">Heuristic layer never disappears fully; it remains the safety rail and rollback path.</p>
+            </div>
+            <div class="mini-grid reveal">
+              <div class="card">
+                <h3>Stage 0–1</h3>
+                <p>Build labels, validate logging, improve explanations.</p>
+                <div class="bar">
+                  <div class="track"><div class="fill" style="width:84%"></div></div>
+                </div>
+              </div>
+              <div class="card">
+                <h3>Stage 2</h3>
+                <p>Personalized weighting after stable feedback and retention labels.</p>
+                <div class="bar">
+                  <div class="track"><div class="fill green" style="width:56%"></div></div>
+                </div>
+              </div>
+              <div class="card">
+                <h3>Stage 3</h3>
+                <p>Retrieval + learned ranker at scale, still with fallback governance.</p>
+                <div class="bar">
+                  <div class="track"><div class="fill gold" style="width:42%"></div></div>
+                </div>
+              </div>
+              <div class="card">
+                <h3>Why fund this</h3>
+                <p>Grant capital de-risks the data and reliability layer before full commercial compounding.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s5">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Feedback loop</div>
+          <h2 class="reveal">Data flywheel: from user actions to measurable system improvement</h2>
+          <div class="four-grid reveal">
+            <div class="card">
+              <h3>Behavioral events</h3>
+              <p>Impressions, profile opens, dwell time, chat starts, reply latency, booking creation.</p>
+            </div>
+            <div class="card">
+              <h3>Post-hire signals</h3>
+              <p>Day-3, Day-5, Day-7 micro-surveys, cancellation reason, repeat booking or replacement.</p>
+            </div>
+            <div class="card">
+              <h3>Learning outputs</h3>
+              <p>Updated weights, family preference memory, churn taxonomy, insight summaries.</p>
+            </div>
+            <div class="card">
+              <h3>Public benefit</h3>
+              <p>Each additional labeled outcome increases service quality and reduces future mismatch risk.</p>
+            </div>
+          </div>
+          <div class="panel reveal">
+            <h3>Critical instrumentation</h3>
+            <p style="margin-top:0.6rem;">request_id, shown_position, propensity score, model version, factor snapshot, explore flag, outcome labels. Без этого невозможна honest evaluation of impact.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s6">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Responsible AI</div>
+          <h2 class="reveal">Fairness, transparency, and governance</h2>
+          <div class="four-grid reveal">
+            <div class="card">
+              <h3>No sensitive features</h3>
+              <p>Возраст, этничность, фото и иные прямые чувствительные признаки не входят в scoring.</p>
+            </div>
+            <div class="card">
+              <h3>Proxy audits</h3>
+              <p>Weekly review on geo, language, education, price bands to detect proxy bias drift.</p>
+            </div>
+            <div class="card">
+              <h3>Human review</h3>
+              <p>Первичные insights и policy shifts проходят ручной review before promotion.</p>
+            </div>
+            <div class="card">
+              <h3>Rollback</h3>
+              <p>Previous weights and policy versions are preserved to prevent unsafe model drift.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s7">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Impact</div>
+          <h2 class="reveal">Expected outcomes and evaluation framework</h2>
+          <div class="budget-grid">
+            <div class="card reveal">
+              <h3>Impact metrics</h3>
+              <div class="kpi-list" style="margin-top:0.8rem;">
+                <div class="kpi"><span>Hire conversion</span><strong>directional uplift vs baseline</strong></div>
+                <div class="kpi"><span>Week-1 churn</span><strong>reduction over control group</strong></div>
+                <div class="kpi"><span>30-day retention</span><strong>primary grant success metric</strong></div>
+                <div class="kpi"><span>Time-to-match</span><strong>lower search friction</strong></div>
+                <div class="kpi"><span>Exposure fairness</span><strong>monitored across cohorts</strong></div>
+              </div>
+            </div>
+            <div class="card reveal">
+              <h3>Evaluation method</h3>
+              <ul class="bullet-list" style="margin-top:0.8rem;">
+                <li><span></span><div>Shadow mode validation before user-facing policy change.</div></li>
+                <li><span></span><div>A/B tests for each promotion stage.</div></li>
+                <li><span></span><div>Calibration and fairness checks before rollout expansion.</div></li>
+                <li><span></span><div>Retention used as final impact metric, not clicks alone.</div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s8">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Rollout plan</div>
+          <h2 class="reveal">Phased implementation roadmap</h2>
+          <div class="timeline reveal">
+            <article class="timeline-card">
+              <h3>Stage 0</h3>
+              <p>Shadow logging, factor capture, exploration telemetry, baseline monitoring.</p>
+            </article>
+            <article class="timeline-card">
+              <h3>Stage 1</h3>
+              <p>Outcome tracking, insight generation, event wiring, first micro-survey loop.</p>
+            </article>
+            <article class="timeline-card">
+              <h3>Stage 2</h3>
+              <p>Personalized ranking, conservative weight updates, retention proxy model.</p>
+            </article>
+            <article class="timeline-card">
+              <h3>Stage 3</h3>
+              <p>Embedding retrieval and stronger learned ranker with full observability.</p>
+            </article>
+          </div>
+          <div class="panel reveal">
+            <h3>Use of grant funding</h3>
+            <p style="margin-top:0.65rem;">Funding accelerates the non-glamorous but high-leverage layer: outcome instrumentation, responsible AI governance, survey loop, evaluation stack, and reliable deployment of matching intelligence.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="s9">
+        <div class="slide-content">
+          <div class="eyebrow reveal">Closing</div>
+          <h2 class="reveal">Why this project matters</h2>
+          <div class="split">
+            <div class="card reveal">
+              <h3>For families</h3>
+              <p style="margin-top:0.7rem;">More stable childcare, fewer failed transitions, lower emotional and operational cost of finding trusted help.</p>
+            </div>
+            <div class="card reveal">
+              <h3>For the ecosystem</h3>
+              <p style="margin-top:0.7rem;">A reproducible example of responsible AI in high-trust domestic services: measurable, explainable, and designed to improve over time.</p>
+            </div>
+          </div>
+          <div class="panel reveal">
+            <h3>Grant thesis</h3>
+            <p style="margin-top:0.6rem;">Мы просим поддержать не “еще один AI-виджет”, а инфраструктуру принятия решений, которая повышает качество реальных человеческих совпадений и со временем становится общественно полезнее за счет накопления качественной обратной связи.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      class GrantDeck {
+        constructor() {
+          this.slides = Array.from(document.querySelectorAll(".slide"));
+          this.progressBar = document.getElementById("progressBar");
+          this.navDots = document.getElementById("navDots");
+          this.currentIndex = 0;
+          this.touchStartY = 0;
+          this.buildDots();
+          this.bindEvents();
+          this.observeSlides();
+          this.updateUI(0);
+        }
+
+        buildDots() {
+          this.slides.forEach((_, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.setAttribute("aria-label", `Slide ${index + 1}`);
+            button.addEventListener("click", () => this.goTo(index));
+            this.navDots.appendChild(button);
+          });
+        }
+
+        bindEvents() {
+          window.addEventListener("keydown", (event) => {
+            if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+              event.preventDefault();
+              this.next();
+            }
+            if (["ArrowUp", "PageUp"].includes(event.key)) {
+              event.preventDefault();
+              this.prev();
+            }
+          });
+
+          window.addEventListener("wheel", (event) => {
+            if (Math.abs(event.deltaY) < 28) return;
+            clearTimeout(this.wheelTimer);
+            this.wheelTimer = setTimeout(() => {
+              if (event.deltaY > 0) this.next();
+              if (event.deltaY < 0) this.prev();
+            }, 70);
+          }, { passive: true });
+
+          window.addEventListener("touchstart", (event) => {
+            this.touchStartY = event.changedTouches[0].clientY;
+          }, { passive: true });
+
+          window.addEventListener("touchend", (event) => {
+            const deltaY = this.touchStartY - event.changedTouches[0].clientY;
+            if (Math.abs(deltaY) < 40) return;
+            if (deltaY > 0) this.next();
+            if (deltaY < 0) this.prev();
+          }, { passive: true });
+        }
+
+        observeSlides() {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              const index = this.slides.indexOf(entry.target);
+              if (entry.isIntersecting) {
+                this.currentIndex = index;
+                entry.target.classList.add("is-visible");
+                this.updateUI(index);
+              }
+            });
+          }, { threshold: 0.56 });
+
+          this.slides.forEach((slide) => observer.observe(slide));
+        }
+
+        updateUI(index) {
+          this.progressBar.style.width = `${((index + 1) / this.slides.length) * 100}%`;
+          Array.from(this.navDots.children).forEach((dot, dotIndex) => {
+            dot.classList.toggle("active", dotIndex === index);
+          });
+        }
+
+        goTo(index) {
+          const safeIndex = Math.max(0, Math.min(index, this.slides.length - 1));
+          this.slides[safeIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        next() { this.goTo(this.currentIndex + 1); }
+        prev() { this.goTo(this.currentIndex - 1); }
+      }
+
+      new GrantDeck();
+    </script>
+  </body>
+</html>

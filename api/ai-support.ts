@@ -48,6 +48,49 @@ function getSupabaseUrl() {
   return process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
 }
 
+// ============================================
+// Auth validation — verify JWT and ticket ownership
+// ============================================
+async function verifyAuth(req: VercelRequest): Promise<{ userId: string } | null> {
+  const base = getSupabaseUrl();
+  const authHeader = req.headers.authorization;
+  if (!base || !authHeader) return null;
+
+  const token = authHeader.replace(/^Bearer\s+/i, '');
+  if (!token) return null;
+
+  try {
+    const resp = await fetch(`${base}/auth/v1/user`, {
+      headers: {
+        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!resp.ok) return null;
+    const user = await resp.json();
+    return user?.id ? { userId: user.id } : null;
+  } catch {
+    return null;
+  }
+}
+
+async function verifyTicketOwnership(ticketId: string, userId: string): Promise<boolean> {
+  const base = getSupabaseUrl();
+  if (!base || !ticketId || ticketId === 'test') return true; // Skip for test tickets
+
+  try {
+    const resp = await fetch(
+      `${base}/rest/v1/support_tickets?id=eq.${ticketId}&family_id=eq.${userId}&select=id`,
+      { headers: getSupabaseHeaders() }
+    );
+    if (!resp.ok) return false;
+    const rows = await resp.json();
+    return Array.isArray(rows) && rows.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 async function updateTicketSentiment(ticketId: string, sentiment: number, escalate: boolean) {
   const base = getSupabaseUrl();
   if (!base || !ticketId || ticketId === 'test') return;
@@ -178,14 +221,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const rl = rateLimit(req, { max: 10, prefix: 'ai-support' });
   if (!rl.ok) return res.status(429).json({ error: 'Слишком много запросов. Попробуйте позже.' });
 
+  // Auth: verify JWT
+  const auth = await verifyAuth(req);
+  if (!auth) return res.status(401).json({ error: 'Unauthorized' });
+
   const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY' });
 
   const body = req.body || {};
-  const { message, ticketId, userId } = body;
+  const { message, ticketId } = body;
 
   if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'Missing message' });
+  }
+
+  // Verify ticket ownership — user can only interact with their own tickets
+  if (ticketId && ticketId !== 'test') {
+    const isOwner = await verifyTicketOwnership(ticketId, auth.userId);
+    if (!isOwner) return res.status(403).json({ error: 'Forbidden: ticket does not belong to user' });
   }
 
   const userMessage = message.trim();

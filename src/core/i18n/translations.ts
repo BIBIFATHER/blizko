@@ -15,7 +15,7 @@ export const t = {
     trust1Detail: `Каждая няня проходит заботливый, но очень внимательный процесс знакомства:
 1. Базовая надежность. Мы просим показать паспорт и профильные документы (например, медкнижку). Всё сверяется с официальными базами для вашего спокойствия.
 2. Тепло прошлых семей. Обязательный этап — разговор с предыдущими работодателями. Мы узнаем, насколько комфортно и радостно было детям с этой няней.
-3. Живое общение и AI. На коротком видеоинтервью мы обращаем внимание на улыбку, теплоту голоса и эмпатию. Умные алгоритмы помогают нам убедиться в искренности кандидата.
+3. Живое общение и AI. На коротком видеоинтервью мы оцениваем ясность речи, спокойствие подачи и стиль общения. Алгоритмы помогают структурировать наблюдаемые сигналы, но не заменяют человеческую модерацию.
 4. Психологический комфорт. Мы предлагаем разобрать простые жизненные ситуации (например, малыш не хочет спать), чтобы понять, как няня реагирует на усталость и эмоции ребенка.
 5. Закрытое комьюнити. Мы работаем только с теми, кто разделяет наши ценности бережного отношения к детям.
 Результат: К вам придет человек, которому действительно можно доверять.
@@ -347,7 +347,7 @@ export const t = {
     trust1Detail: `Every nanny passes 5 levels of verification before being admitted:
 1. Documents and Identity. We verify the passport, medical book, and police clearance certificate. Data is checked against official databases.
 2. References and Experience. Each profile contains at least two contacts from previous jobs. We contact families to verify the authenticity of reviews.
-3. Video Interview and AI Analysis. The nanny completes a short video interview. AI analyzes speech, intonations, and reactions — helping to identify attention, empathy, and responsibility.
+3. Video Interview and AI Analysis. The nanny completes a short video interview. AI helps structure observable communication signals such as speech clarity, pacing, and interaction style. It does not make clinical or definitive judgments about character.
 4. Psychological Test. No clinical assessment — only practical situations to understand reactions in real conditions: tantrums, stress, fatigue.
 5. Trust System and Blacklist. Rule violations or lying lead to blocking and blacklisting.
 Result: Only reliable candidates. Every visit insured. 100% transparency.

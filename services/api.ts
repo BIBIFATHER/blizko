@@ -1,9 +1,15 @@
+import { supabase } from './supabase';
+
 // Универсальная отправка событий уведомлений
 export const sendToWebhook = async (payload: any): Promise<void> => {
   try {
-    const token = import.meta.env.VITE_NOTIFY_TOKEN as string | undefined;
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['x-notify-token'] = token;
+    if (supabase) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        headers.Authorization = `Bearer ${session.access_token}`;
+      }
+    }
 
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), 8000);

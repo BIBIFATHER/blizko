@@ -6,6 +6,7 @@ import { updateParentRequest } from '../../services/storage';
 import { notifyUserStatusChanged } from '../../services/notifications';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
+type ParentWorkflowStatus = NonNullable<ParentRequest['status']>;
 
 interface AdminParentsTabProps {
     parents: ParentRequest[];
@@ -58,7 +59,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         return 'bg-sky-100 text-sky-700';
     };
 
-    const setParentStatus = async (parent: ParentRequest, status: Exclude<ParentStatusFilter, 'all'>) => {
+    const setParentStatus = async (parent: ParentRequest, status: ParentWorkflowStatus) => {
         const updated = await updateParentRequest(
             { id: parent.id, status },
             { actor: 'admin', note: `Админ изменил статус на: ${status}`, allowApprovedEdit: true }

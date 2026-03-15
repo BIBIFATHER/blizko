@@ -10,6 +10,7 @@ import { Step2_Experience } from './Step2_Experience';
 import { Step3_Verification } from './Step3_Verification';
 import { Step4_Psychology } from './Step4_Psychology';
 import { NannyOfferModal } from '../../NannyOfferModal';
+import { trackCTA, trackNannyFormStarted, trackNannyFormStep, trackNannyOfferShown, trackNannyOfferAccepted } from '../../../services/analytics';
 
 interface NannyFormWrapperProps {
     onSubmit: (data: Partial<NannyProfile>) => void;
@@ -43,6 +44,16 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
         riskProfile
     } = useNannyForm();
 
+    React.useEffect(() => {
+        if (!isEditing) {
+            trackNannyFormStarted();
+        }
+    }, [isEditing]);
+
+    React.useEffect(() => {
+        trackNannyFormStep(currentStep, `nanny_step_${currentStep}`);
+    }, [currentStep]);
+
     const onBack = () => {
         if (currentStep > 1) {
             prevStep();
@@ -63,6 +74,8 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
     const handleFinalSubmit = () => {
         if (!isEditing) {
             // Show offer only for new registrations
+            trackCTA('nanny_offer_open', 'nanny_form');
+            trackNannyOfferShown();
             setShowOffer(true);
         } else {
             // Direct submit for edits
@@ -94,6 +107,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
 
     const handleOfferAccept = () => {
         setShowOffer(false);
+        trackNannyOfferAccepted();
         submitData();
     };
 

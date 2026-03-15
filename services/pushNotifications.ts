@@ -46,14 +46,16 @@ export async function sendLocalNotification(
     const hasPermission = await requestNotificationPermission();
     if (!hasPermission) return;
 
-    await registration.showNotification(title, {
+    const notificationOptions: NotificationOptions & { vibrate?: number[] } = {
         body,
         icon: options?.icon || '/icons/icon-192.png',
         badge: '/icons/icon-192.png',
         vibrate: [100, 50, 100],
         tag: options?.tag || 'blizko-local',
         data: { url: options?.url || '/' },
-    });
+    };
+
+    await registration.showNotification(title, notificationOptions);
 }
 
 // Pre-built notification templates for Blizko

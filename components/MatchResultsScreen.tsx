@@ -3,9 +3,9 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { slugify } from '../src/core/utils/slugify';
 import { Card, Button, Badge, EmptyState } from './UI';
 import {
-    MessageCircle, ArrowLeft, Sparkles, Star, User,
+    MessageCircle, ArrowLeft, Sparkles, User,
     AlertTriangle, ShieldAlert, Share2, CheckCheck,
-    Heart, Clock, MapPin, Copy, Check
+    Heart, Clock, MapPin, Check
 } from 'lucide-react';
 import { MatchResult, MatchCandidate, TrustBadge, Language } from '../types';
 import { trackMatchingResults, trackNannyCardClick } from '../services/analytics';
@@ -28,57 +28,6 @@ const TRUST_BADGE_ICONS: Record<TrustBadge, string> = {
     ai_checked: '🤖',
     soft_skills: '🧠',
     has_reviews: '⭐',
-};
-
-/* ─── Circular Score Ring ─── */
-const ScoreRing: React.FC<{ score: number; size?: number }> = ({ score, size = 80 }) => {
-    const strokeWidth = 5;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (score / 100) * circumference;
-
-    // Color based on score
-    const getColor = (s: number) => {
-        if (s >= 85) return { stroke: '#16a34a', glow: 'rgba(22,163,74,0.2)' }; // green
-        if (s >= 70) return { stroke: '#d97706', glow: 'rgba(217,119,6,0.2)' };  // amber
-        return { stroke: '#ea580c', glow: 'rgba(234,88,12,0.2)' };               // orange
-    };
-
-    const color = getColor(score);
-
-    return (
-        <div className="relative" style={{ width: size, height: size }}>
-            <svg width={size} height={size} className="transform -rotate-90">
-                {/* Background track */}
-                <circle
-                    cx={size / 2} cy={size / 2} r={radius}
-                    fill="none" stroke="rgba(0,0,0,0.04)"
-                    strokeWidth={strokeWidth}
-                />
-                {/* Score arc */}
-                <circle
-                    cx={size / 2} cy={size / 2} r={radius}
-                    fill="none" stroke={color.stroke}
-                    strokeWidth={strokeWidth}
-                    strokeLinecap="round"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={offset}
-                    className="transition-all duration-1000 ease-out"
-                    style={{
-                        filter: `drop-shadow(0 0 6px ${color.glow})`,
-                    }}
-                />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-stone-800 leading-none tracking-tight">
-                    {score}
-                </span>
-                <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">
-                    %
-                </span>
-            </div>
-        </div>
-    );
 };
 
 /* ─── Toast notification for copy feedback ─── */
@@ -111,16 +60,10 @@ const CandidateCard: React.FC<{
         .slice(0, 2)
         .toUpperCase();
 
-    const gradients = [
-        'from-amber-100 via-orange-50 to-yellow-50',
-        'from-sky-100 via-cyan-50 to-blue-50',
-        'from-emerald-100 via-teal-50 to-green-50',
-    ];
-
     const avatarGradients = [
-        'from-amber-300 to-orange-200',
-        'from-sky-300 to-cyan-200',
-        'from-emerald-300 to-teal-200',
+        'from-amber-300 to-[#d8b886]',
+        'from-[#aab79a] to-[#d3decb]',
+        'from-[#b79c82] to-[#dfc5a8]',
     ];
 
     const copyShareLink = useCallback(() => {
@@ -144,16 +87,10 @@ const CandidateCard: React.FC<{
     const hasMeta = !!(nanny.experience || nanny.city || nanny.district);
 
     return (
-        <div
-            className="animate-pop-in"
-            style={{ animationDelay: `${index * 180 + 200}ms` }}
-        >
-            {/* ─── Bento Container ─── */}
-            <div className="grid grid-cols-5 gap-2.5">
-
-                {/* ── Row 1: Profile hero (full width) ── */}
-                <Card className={`col-span-5 !p-5 bg-gradient-to-br ${gradients[index % 3]} border-white/60 hover-lift`}>
-                    <div className="flex items-center gap-4">
+        <div className="animate-pop-in" style={{ animationDelay: `${index * 140 + 200}ms` }}>
+            <Card className="!p-4 sm:!p-5">
+                <div className="space-y-4">
+                    <div className="flex items-start gap-4">
                         {/* Avatar */}
                         <div className={`w-[72px] h-[72px] rounded-[20px] bg-gradient-to-br ${avatarGradients[index % 3]} flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden ring-2 ring-white/80`}>
                             {nanny.photo ? (
@@ -163,32 +100,41 @@ const CandidateCard: React.FC<{
                             )}
                         </div>
 
-                        {/* Name + meta */}
                         <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-bold text-stone-800 truncate leading-tight">
-                                <Link
-                                    to={`/nanny/${slugify(nanny.name, nanny.id)}`}
-                                    className="hover:text-amber-700 transition-colors"
-                                >
-                                    {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
-                                </Link>
-                            </h3>
-                            {hasMeta && (
-                                <div className="flex items-center gap-3 mt-1.5 text-stone-500">
-                                    {nanny.city && (
-                                        <span className="flex items-center gap-1 text-xs font-medium">
-                                            <MapPin size={11} className="text-stone-400" />
-                                            {nanny.district || nanny.city}
-                                        </span>
-                                    )}
-                                    {nanny.experience && (
-                                        <span className="flex items-center gap-1 text-xs font-medium">
-                                            <Clock size={11} className="text-stone-400" />
-                                            {nanny.experience}
-                                        </span>
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <h3 className="text-lg sm:text-xl font-semibold text-stone-800 truncate leading-tight">
+                                        <Link
+                                            to={`/nanny/${slugify(nanny.name, nanny.id)}`}
+                                            className="hover:text-amber-700 transition-colors"
+                                        >
+                                            {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
+                                        </Link>
+                                    </h3>
+                                    {hasMeta && (
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-stone-500">
+                                            {nanny.city && (
+                                                <span className="flex items-center gap-1 text-xs font-medium">
+                                                    <MapPin size={11} className="text-stone-400" />
+                                                    {nanny.district || nanny.city}
+                                                </span>
+                                            )}
+                                            {nanny.experience && (
+                                                <span className="flex items-center gap-1 text-xs font-medium">
+                                                    <Clock size={11} className="text-stone-400" />
+                                                    {nanny.experience}
+                                                </span>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
-                            )}
+                                <div className="rounded-[18px] bg-stone-50 border border-stone-100 px-3 py-2 flex flex-col items-center justify-center shrink-0 min-w-[70px]">
+                                    <span className="text-xl font-black text-stone-800 leading-none">{score}</span>
+                                    <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-stone-400 mt-1">
+                                        {lang === 'ru' ? 'Match' : 'Match'}
+                                    </span>
+                                </div>
+                            </div>
                             {/* Nanny Sharing badge inline */}
                             {nanny.isNannySharing && (
                                 <span className="inline-flex items-center gap-1 mt-2 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
@@ -198,114 +144,95 @@ const CandidateCard: React.FC<{
                             )}
                         </div>
                     </div>
-                </Card>
 
-                {/* ── Row 2: Score (2 cols) + Trust (3 cols) ── */}
-
-                {/* Score Ring */}
-                <Card className="col-span-2 !p-3 flex flex-col items-center justify-center hover-lift bg-white/90">
-                    <ScoreRing score={score} size={76} />
-                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] mt-1.5">
-                        {lang === 'ru' ? 'Совместимость' : 'Match'}
-                    </span>
-                </Card>
-
-                {/* Trust Badges Grid */}
-                <Card className="col-span-3 !p-3 flex flex-col justify-center hover-lift bg-white/90">
-                    <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] mb-2 flex items-center gap-1">
-                        <CheckCheck size={11} />
-                        {lang === 'ru' ? 'Доверие' : 'Trust'}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                        {trustBadges.length > 0 ? (
-                            trustBadges.slice(0, 4).map(badge => (
-                                <span
-                                    key={badge}
-                                    className="inline-flex items-center gap-1 text-[10px] font-medium text-stone-600 bg-stone-50 border border-stone-100 rounded-full px-2 py-0.5"
-                                >
-                                    <span className="text-[10px]">{TRUST_BADGE_ICONS[badge]}</span>
-                                    {TRUST_BADGE_LABELS[badge]?.[lang] || badge}
-                                </span>
-                            ))
-                        ) : (
-                            <span className="text-[10px] text-stone-400 font-medium italic">
-                                {lang === 'ru' ? 'Базовая проверка пройдена' : 'Basic check passed'}
+                    <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_0.9fr] gap-3">
+                        <div className="rounded-[22px] bg-stone-50/80 border border-stone-100 p-3.5">
+                            <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] block mb-1.5">
+                                {lang === 'ru' ? 'Почему подходит' : 'Why it fits'}
                             </span>
-                        )}
-                    </div>
-                </Card>
-
-                {/* ── Row 3: AI Explanation (full width) ── */}
-                <Card className="col-span-5 !p-4 hover-lift bg-white/90">
-                    <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-100 to-blue-50 flex items-center justify-center flex-shrink-0">
-                            <Sparkles size={16} className="text-violet-500" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <span className="text-[9px] font-bold text-violet-500/80 uppercase tracking-[0.15em] block mb-1">
-                                {lang === 'ru' ? 'Почему вы подходите друг другу' : 'Why you match'}
-                            </span>
-                            <p className="text-[13px] text-stone-700 leading-relaxed font-medium">
+                            <p className="text-[13px] sm:text-sm text-stone-700 leading-relaxed font-medium">
                                 {humanExplanation}
                             </p>
                         </div>
-                    </div>
-                </Card>
 
-                {/* ── Row 4: Risk Flags (only if exist) ── */}
-                {riskFlags && riskFlags.length > 0 && (
-                    <Card className="col-span-5 !p-3 hover-lift bg-stone-50/80 border-stone-200/60">
-                        <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] block mb-2">
-                            {lang === 'ru' ? 'На что обратить внимание' : 'Points to discuss'}
-                        </span>
-                        <div className="space-y-1.5">
-                            {riskFlags.map((flag, i) => (
-                                <div
-                                    key={i}
-                                    className={`flex items-start gap-2 p-2.5 rounded-xl text-xs leading-relaxed ${
-                                        flag.level === 'critical'
-                                            ? 'bg-red-50/80 text-red-800'
-                                            : 'bg-amber-50/60 text-amber-900'
-                                    }`}
-                                >
-                                    {flag.level === 'critical'
-                                        ? <ShieldAlert size={14} className="text-red-500 flex-shrink-0 mt-px" />
-                                        : <AlertTriangle size={14} className="text-amber-500 flex-shrink-0 mt-px" />
-                                    }
-                                    <div>
-                                        <p className="font-semibold">{flag.message}</p>
-                                        {flag.advice && (
-                                            <p className="mt-0.5 opacity-75 font-medium">
-                                                💡 {flag.advice}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="rounded-[22px] bg-white/80 border border-stone-100 p-3.5">
+                            <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] mb-2 flex items-center gap-1">
+                                <CheckCheck size={11} />
+                                {lang === 'ru' ? 'Доверие' : 'Trust'}
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                                {trustBadges.length > 0 ? (
+                                    trustBadges.slice(0, 4).map(badge => (
+                                        <span
+                                            key={badge}
+                                            className="inline-flex items-center gap-1 text-[10px] font-medium text-stone-600 bg-stone-50 border border-stone-100 rounded-full px-2 py-0.5"
+                                        >
+                                            <span className="text-[10px]">{TRUST_BADGE_ICONS[badge]}</span>
+                                            {TRUST_BADGE_LABELS[badge]?.[lang] || badge}
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="text-[10px] text-stone-400 font-medium italic">
+                                        {lang === 'ru' ? 'Базовая проверка пройдена' : 'Basic check passed'}
+                                    </span>
+                                )}
+                            </div>
                         </div>
-                    </Card>
-                )}
+                    </div>
 
-                {/* ── Row 5: Action Buttons (full width) ── */}
-                <div className="col-span-5 grid grid-cols-5 gap-2.5 mt-0.5">
-                    <Button
-                        variant="primary"
-                        onClick={() => onMessage(nanny.id)}
-                        className="col-span-3 !py-3.5 !rounded-2xl bg-stone-800 hover:bg-stone-900 border-none shadow-lg text-white"
-                    >
-                        <MessageCircle size={16} />
-                        {lang === 'ru' ? 'Написать' : 'Message'}
-                    </Button>
-                    <Button
-                        variant="outline"
-                        onClick={copyShareLink}
-                        className="col-span-2 !py-3.5 !rounded-2xl border-stone-200 text-stone-600 hover:bg-stone-50 bg-white shadow-sm"
-                    >
-                        <Share2 size={15} className="text-stone-400" />
-                        {lang === 'ru' ? 'Обсудить' : 'Share'}
-                    </Button>
+                    {riskFlags && riskFlags.length > 0 && (
+                        <div className="rounded-[20px] bg-stone-50/80 border border-stone-200/60 p-3">
+                            <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] block mb-2">
+                                {lang === 'ru' ? 'Обсудить заранее' : 'Discuss in advance'}
+                            </span>
+                            <div className="space-y-1.5">
+                                {riskFlags.map((flag, i) => (
+                                    <div
+                                        key={i}
+                                        className={`flex items-start gap-2 p-2.5 rounded-xl text-xs leading-relaxed ${
+                                            flag.level === 'critical'
+                                                ? 'bg-red-50/80 text-red-800'
+                                                : 'bg-amber-50/60 text-amber-900'
+                                        }`}
+                                    >
+                                        {flag.level === 'critical'
+                                            ? <ShieldAlert size={14} className="text-red-500 flex-shrink-0 mt-px" />
+                                            : <AlertTriangle size={14} className="text-amber-500 flex-shrink-0 mt-px" />
+                                        }
+                                        <div>
+                                            <p className="font-semibold">{flag.message}</p>
+                                            {flag.advice && (
+                                                <p className="mt-0.5 opacity-75 font-medium">
+                                                    💡 {flag.advice}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-5 gap-2.5">
+                        <Button
+                            variant="primary"
+                            onClick={() => onMessage(nanny.id)}
+                            className="col-span-3 !py-3.5 !rounded-[20px] shadow-lg"
+                        >
+                            <MessageCircle size={16} />
+                            {lang === 'ru' ? 'Написать' : 'Message'}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={copyShareLink}
+                            className="col-span-2 !py-3.5 !rounded-[20px] border-stone-200 text-stone-600 hover:bg-stone-50 bg-white shadow-sm"
+                        >
+                            <Share2 size={15} className="text-stone-400" />
+                            {lang === 'ru' ? 'Обсудить' : 'Share'}
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 };
@@ -373,18 +300,45 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                     <span className="text-sm font-medium">{lang === 'ru' ? 'На главную' : 'Home'}</span>
                 </button>
 
-                <div className="text-center space-y-3 mb-8">
-                    {/* Status pill */}
-                    <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-5 py-2.5 rounded-full text-sm font-semibold border border-emerald-100/60 animate-pop-in shadow-sm">
-                        <Sparkles size={15} className="text-emerald-500" />
-                        {lang === 'ru'
-                            ? `ИИ подобрал ${matchResult.candidates.length} ${matchResult.candidates.length === 1 ? 'няню' : 'нянь'} для вас`
-                            : `AI found ${matchResult.candidates.length} match${matchResult.candidates.length === 1 ? '' : 'es'} for you`}
+                <div className="surface-panel space-y-4 mb-6 p-5 sm:p-6 rounded-[28px]">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold border border-emerald-100/60 animate-pop-in shadow-sm">
+                            <Sparkles size={15} className="text-emerald-500" />
+                            {lang === 'ru'
+                                ? `Найдено ${matchResult.candidates.length} сильных совпадения`
+                                : `${matchResult.candidates.length} strong matches found`}
+                        </div>
+                        <div className="topbar-chip">
+                            <CheckCheck size={12} />
+                            {lang === 'ru' ? 'Проверка включена' : 'Trust checked'}
+                        </div>
                     </div>
 
-                    {/* Overall advice */}
+                    <div className="space-y-2">
+                        <h1 className="text-[1.8rem] sm:text-[2.2rem] leading-[1.02] font-display font-semibold text-stone-900 max-w-lg">
+                            {lang === 'ru' ? 'Кандидаты, с которыми можно спокойно идти дальше.' : 'Candidates you can calmly move forward with.'}
+                        </h1>
+                        <p className="text-sm sm:text-base text-stone-500 max-w-xl leading-relaxed">
+                            {lang === 'ru'
+                                ? 'Мы оставили профили, где совпадают требования семьи, базовые сигналы доверия и общий стиль общения.'
+                                : 'We kept the profiles where family needs, trust signals, and overall style align.'}
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                        {[
+                            lang === 'ru' ? 'AI shortlist' : 'AI shortlist',
+                            lang === 'ru' ? 'Верификация' : 'Verification',
+                            lang === 'ru' ? 'Поддержка рядом' : 'Support nearby',
+                        ].map((item) => (
+                            <div key={item} className="rounded-[18px] bg-white/75 border border-stone-100 px-3 py-2.5 text-[11px] sm:text-xs font-semibold text-stone-600 text-center">
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+
                     {matchResult.overallAdvice && (
-                        <p className="text-sm text-stone-400 max-w-sm mx-auto leading-relaxed animate-pop-in" style={{ animationDelay: '100ms' }}>
+                        <p className="text-sm text-stone-500 leading-relaxed animate-pop-in" style={{ animationDelay: '100ms' }}>
                             {matchResult.overallAdvice}
                         </p>
                     )}

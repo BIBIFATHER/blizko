@@ -6,6 +6,8 @@ interface SeoHeadProps {
     description: string;
     canonical: string;
     ogImage?: string;
+    robots?: string;
+    ogType?: string;
     schema?: Record<string, unknown>;
 }
 
@@ -18,19 +20,22 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
     description,
     canonical,
     ogImage = '/og-image.png',
+    robots = 'index, follow',
+    ogType = 'website',
     schema,
 }) => {
     return (
         <Helmet>
             <title>{title}</title>
             <meta name="description" content={description} />
+            <meta name="robots" content={robots} />
             <link rel="canonical" href={canonical} />
 
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
             <meta property="og:url" content={canonical} />
             <meta property="og:image" content={ogImage} />
-            <meta property="og:type" content="website" />
+            <meta property="og:type" content={ogType} />
 
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={title} />

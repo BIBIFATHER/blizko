@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     parent_id UUID REFERENCES auth.users(id),
     nanny_id UUID REFERENCES auth.users(id),
-    request_id TEXT REFERENCES parents(id),
+    request_id UUID REFERENCES parents(id),
     date TIMESTAMPTZ,
     status TEXT NOT NULL DEFAULT 'pending' CHECK (
         status IN (
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     thread_id UUID REFERENCES chat_threads(id) ON DELETE CASCADE,
     sender_id UUID REFERENCES auth.users(id),
-    content TEXT NOT NULL,
+    text TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- 7. Chat Participants

@@ -11,7 +11,7 @@
  *   import { apiFetch } from '../core/api/apiFetch';
  *   const data = await apiFetch('/api/ai-support', { method: 'POST', body: ... });
  */
-import { getTmaHeaders } from '../core/auth/tma-validate';
+import { getTmaHeaders } from '../auth/tma-validate';
 
 interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
   body?: Record<string, unknown> | string;

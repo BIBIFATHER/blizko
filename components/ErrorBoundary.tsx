@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, MessageCircle } from 'lucide-react';
 
 interface Props {
@@ -11,7 +11,11 @@ interface State {
   error?: Error;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+export class ErrorBoundary extends React.Component<Props, State> {
+  declare props: Readonly<Props>;
+  declare state: Readonly<State>;
+  declare setState: React.Component<Props, State>['setState'];
+
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };

@@ -40,10 +40,10 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
         const res = await fetch(`/api/nannies?id=${nannyId}`);
         if (!res.ok) throw new Error('Not found');
         const data = await res.json();
-        // API returns array — find by id fragment
-        const found = Array.isArray(data)
-          ? data.find((n: NannyProfile) => n.id.startsWith(nannyId))
-          : data;
+        const payload = data?.item ?? data;
+        const found = Array.isArray(payload)
+          ? payload.find((n: NannyProfile) => n.id.startsWith(nannyId))
+          : payload;
         if (!found) throw new Error('Профиль не найден');
         setNanny(found);
 

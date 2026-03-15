@@ -269,7 +269,7 @@ const COMPATIBILITY_DATA = {
     {
       id: 2,
       title: "What does AI see?",
-      text: "While standard recruiting looks at diplomas, our algorithm analyzes 50+ subtle parameters during video interviews:\n\n• Voice tone and micro-expressions\n• Levels of hidden aggression or fatigue\n• Sincerity of emotions in responses",
+      text: "While standard recruiting looks only at diplomas, our system structures observable communication signals during short introductions:\n\n• Speech clarity and pacing\n• Interaction style and composure\n• Consistency between answers and profile",
       bg: "bg-gradient-to-b from-orange-50 to-rose-50",
       icon: <ScanFace size={60} className="text-rose-400" />
     },
@@ -282,7 +282,7 @@ const COMPATIBILITY_DATA = {
         {
           icon: <Video size={20} className="text-purple-600" />,
           title: "Computer Vision",
-          desc: "Analysis of non-verbal signals: open posture, eye contact, smiling."
+          desc: "Analysis of observable non-verbal signals such as posture, eye contact, and overall presentation."
         },
         {
           icon: <BrainCircuit size={20} className="text-amber-600" />,
@@ -292,7 +292,7 @@ const COMPATIBILITY_DATA = {
         {
           icon: <Fingerprint size={20} className="text-emerald-600" />,
           title: "Predictive Matching",
-          desc: "The system predicts how comfortable a specific nanny will be in your specific family."
+          desc: "The system estimates likely fit for a specific nanny in your specific family."
         },
       ]
     },

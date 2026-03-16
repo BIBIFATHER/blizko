@@ -317,7 +317,7 @@ export const RangeSlider: React.FC<RangeSliderProps> = ({ label, min, max, step,
 // --- Badge (Trust / Status / Info) ---
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'trust' | 'warning' | 'status' | 'info' | 'neutral';
+  variant?: 'trust' | 'warning' | 'status' | 'success' | 'danger' | 'info' | 'neutral';
   icon?: React.ReactNode;
   className?: string;
 }
@@ -327,6 +327,8 @@ export const Badge: React.FC<BadgeProps> = ({ children, variant = 'trust', icon,
     trust: 'trust-badge',
     warning: 'trust-badge trust-badge-warning',
     status: 'trust-badge bg-red-100 text-red-700',
+    success: 'trust-badge bg-green-100 text-green-700',
+    danger: 'trust-badge bg-red-100 text-red-700',
     info: 'trust-badge trust-badge-blue',
     neutral: 'trust-badge bg-stone-100 text-stone-600',
   };
@@ -335,6 +337,8 @@ export const Badge: React.FC<BadgeProps> = ({ children, variant = 'trust', icon,
     trust: <ShieldCheck size={12} />,
     warning: <AlertCircle size={12} />,
     status: <AlertCircle size={12} />,
+    success: <ShieldCheck size={12} />,
+    danger: <AlertCircle size={12} />,
     info: <Info size={12} />,
     neutral: null,
   };

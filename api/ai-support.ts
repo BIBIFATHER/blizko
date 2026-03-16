@@ -2,6 +2,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
+import { getGeminiApiKey, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
 
 const REQUEST_TIMEOUT_MS = 25000;
 
@@ -122,12 +123,9 @@ async function insertAiMessage(ticketId: string, text: string) {
 async function callGemini(
   apiKey: string,
   userMessage: string,
-  options?: { json?: boolean; systemInstruction?: string }
+  options?: { json?: boolean; systemInstruction?: string; temperature?: number }
 ): Promise<string> {
-  // Try models in order
-  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
-  const preferredModel = (process.env.GEMINI_MODEL || '').trim();
-  if (preferredModel) models.unshift(preferredModel);
+  const models = getGeminiModels('support');
 
   for (const model of models) {
     const controller = new AbortController();
@@ -145,8 +143,12 @@ async function callGemini(
         payload.systemInstruction = { parts: [{ text: options.systemInstruction }] };
       }
 
-      if (options?.json) {
-        payload.generationConfig = { responseMimeType: 'application/json' };
+      const temperature = normalizeGeminiTemperature(options?.temperature);
+      if (options?.json || temperature !== undefined) {
+        payload.generationConfig = {
+          ...(options?.json ? { responseMimeType: 'application/json' } : {}),
+          ...(temperature !== undefined ? { temperature } : {}),
+        };
       }
 
       const response = await fetch(url, {
@@ -225,7 +227,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const auth = await verifyAuth(req);
   if (!auth) return res.status(401).json({ error: 'Unauthorized' });
 
-  const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+  const apiKey = getGeminiApiKey();
   if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY' });
 
   const body = req.body || {};
@@ -244,16 +246,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const userMessage = message.trim();
 
   try {
-    // ── Step 1: Sentiment analysis ──────────────────────────
     let sentiment = 0.0;
     let needsHuman = false;
+    let draftReply = '';
 
     try {
-      const sentimentPrompt = `Analyze the emotional tone of this message. Return ONLY JSON: {"score": <float -1.0 to 1.0>, "needs_human": <boolean>}. Set needs_human=true if user asks for a human operator/manager. Message: "${userMessage}"`;
-      const raw = await callGemini(apiKey, sentimentPrompt, { json: true });
+      const raw = await callGemini(apiKey, userMessage, {
+        json: true,
+        temperature: 0.35,
+        systemInstruction:
+          `${SYSTEM_PROMPT}
+
+Return ONLY valid JSON with this exact shape:
+{
+  "reply": string,
+  "sentiment": number,
+  "needs_human": boolean
+}
+
+Rules:
+- sentiment must be between -1.0 and 1.0
+- set needs_human=true if the user explicitly asks for a human, manager, operator, or if the request is beyond AI support
+- keep reply warm, concise, and actionable
+- if needs_human=true, reply should acknowledge escalation and avoid over-solving`,
+      });
       const parsed = JSON.parse(raw);
-      sentiment = typeof parsed.score === 'number' ? Math.max(-1, Math.min(1, parsed.score)) : 0.0;
+      sentiment = typeof parsed.sentiment === 'number' ? Math.max(-1, Math.min(1, parsed.sentiment)) : 0.0;
       needsHuman = parsed.needs_human === true;
+      draftReply = typeof parsed.reply === 'string' ? parsed.reply.trim() : '';
     } catch {
       sentiment = 0.0;
     }
@@ -263,11 +283,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const escalationKeywords = ['человек', 'оператор', 'менеджер', 'позови', 'живой', 'не помогает', 'не понимаешь', 'хочу поговорить'];
     if (escalationKeywords.some(kw => lower.includes(kw))) needsHuman = true;
 
-    // ── Step 2: Update ticket ────────────────────────────────
     const shouldEscalate = needsHuman || sentiment < -0.5;
     await updateTicketSentiment(ticketId, sentiment, shouldEscalate);
 
-    // ── Step 3: Escalation path ──────────────────────────────
     if (shouldEscalate) {
       await sendTelegramEscalation(userMessage, sentiment);
       const reply = 'Я понимаю, что ситуация непростая. Антон уже в курсе и скоро подключится лично. Вы в надёжных руках 💛';
@@ -275,10 +293,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ reply, sentiment, escalated: true });
     }
 
-    // ── Step 4: Generate empathetic response ─────────────────
-    const reply = await callGemini(apiKey, userMessage, { systemInstruction: SYSTEM_PROMPT });
-
-    if (!reply) {
+    if (!draftReply) {
       return res.status(200).json({
         reply: 'Я здесь! Уточните, пожалуй, вопрос — и я постараюсь помочь.',
         sentiment,
@@ -286,8 +301,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    await insertAiMessage(ticketId, reply);
-    return res.status(200).json({ reply, sentiment, escalated: false });
+    await insertAiMessage(ticketId, draftReply);
+    return res.status(200).json({ reply: draftReply, sentiment, escalated: false });
 
   } catch (e: any) {
     console.error('[AI Support] Error:', e);

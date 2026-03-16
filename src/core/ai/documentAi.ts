@@ -1,6 +1,13 @@
-import { Type } from "@google/genai";
 import { DocumentVerification, Language } from "../types";
 import { aiImage } from "./aiGateway";
+
+const SchemaType = {
+  OBJECT: 'OBJECT',
+  STRING: 'STRING',
+  INTEGER: 'INTEGER',
+  NUMBER: 'NUMBER',
+  ARRAY: 'ARRAY',
+} as const;
 
 export const analyzeDocument = async (
   file: File,
@@ -79,27 +86,27 @@ Return JSON with:
     const responseText = await aiImage(file, prompt, {
       responseMimeType: "application/json",
       responseSchema: {
-        type: Type.OBJECT,
+        type: SchemaType.OBJECT,
         properties: {
-          status: { type: Type.STRING, enum: ["verified", "rejected"] },
-          confidence: { type: Type.INTEGER },
-          notes: { type: Type.STRING },
-          docNumber: { type: Type.STRING, nullable: true },
-          expiry: { type: Type.STRING, nullable: true },
+          status: { type: SchemaType.STRING, enum: ["verified", "rejected"] },
+          confidence: { type: SchemaType.INTEGER },
+          notes: { type: SchemaType.STRING },
+          docNumber: { type: SchemaType.STRING, nullable: true },
+          expiry: { type: SchemaType.STRING, nullable: true },
           normalizedResume: {
-            type: Type.OBJECT,
+            type: SchemaType.OBJECT,
             nullable: true,
             properties: {
-              fullName: { type: Type.STRING, nullable: true },
-              city: { type: Type.STRING, nullable: true },
-              phone: { type: Type.STRING, nullable: true },
-              email: { type: Type.STRING, nullable: true },
-              summary: { type: Type.STRING, nullable: true },
-              experienceYears: { type: Type.NUMBER, nullable: true },
+              fullName: { type: SchemaType.STRING, nullable: true },
+              city: { type: SchemaType.STRING, nullable: true },
+              phone: { type: SchemaType.STRING, nullable: true },
+              email: { type: SchemaType.STRING, nullable: true },
+              summary: { type: SchemaType.STRING, nullable: true },
+              experienceYears: { type: SchemaType.NUMBER, nullable: true },
               skills: {
-                type: Type.ARRAY,
+                type: SchemaType.ARRAY,
                 nullable: true,
-                items: { type: Type.STRING },
+                items: { type: SchemaType.STRING },
               },
             },
           },

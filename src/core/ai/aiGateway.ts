@@ -22,6 +22,7 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
     body: JSON.stringify({
       prompt,
       messages,
+      temperature: options?.temperature,
       responseMimeType: options?.responseMimeType,
       responseSchema: options?.responseSchema,
     }),

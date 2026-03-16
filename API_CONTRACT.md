@@ -24,6 +24,7 @@ This contract is intentionally simple:
 {
   "prompt": "string",
   "messages": [{"role":"user","content":"string"}],
+  "temperature": "number 0..2 (optional)",
   "responseMimeType": "string (optional)",
   "responseSchema": "object (optional)"
 }
@@ -39,6 +40,7 @@ Use `prompt` or `messages` and embed the image as a data URL marker:
 ```
 
 The server parses `[image_data_url]` from the **user** content and splits text + image.
+If `messages` contains a `system` role, the server forwards it as Gemini `systemInstruction`.
 
 ### Image field format
 

@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
+import { getGeminiApiKey, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
 
 const REQUEST_TIMEOUT_MS = 20000;
 const MAX_RETRIES = 2;
@@ -11,6 +12,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 type BodyLike = {
   prompt?: string;
   messages?: Array<{ role?: string; content?: string }>;
+  temperature?: number;
   responseMimeType?: string;
   responseSchema?: unknown;
 };
@@ -26,6 +28,16 @@ function extractUserContent(body: BodyLike): string {
 
   const directPrompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
   return directPrompt;
+}
+
+function extractSystemInstruction(body: BodyLike): string {
+  const messages = Array.isArray(body?.messages) ? body.messages : [];
+  const systemMessage = messages
+    .slice()
+    .reverse()
+    .find((m) => m?.role === 'system' && typeof m?.content === 'string')?.content;
+
+  return systemMessage?.trim() || '';
 }
 
 function parseImagePayload(userContent: string): {
@@ -48,12 +60,6 @@ function parseImagePayload(userContent: string): {
       data: m[2].replace(/\s+/g, ''),
     },
   };
-}
-
-function getModels(): string[] {
-  const preferred = (process.env.GEMINI_MODEL || 'gemini-2.5-flash').trim();
-  const fallback = ['gemini-2.5-flash', 'gemini-2.0-flash'];
-  return Array.from(new Set([preferred, ...fallback]));
 }
 
 async function callGemini(apiKey: string, model: string, body: BodyLike): Promise<any> {
@@ -79,10 +85,17 @@ async function callGemini(apiKey: string, model: string, body: BodyLike): Promis
       contents: [{ role: 'user', parts: parts.length ? parts : [{ text: userContent }] }],
     };
 
-    if (body.responseMimeType || body.responseSchema) {
+    const systemInstruction = extractSystemInstruction(body);
+    if (systemInstruction) {
+      payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+    }
+
+    const temperature = normalizeGeminiTemperature(body.temperature);
+    if (body.responseMimeType || body.responseSchema || temperature !== undefined) {
       payload.generationConfig = {
         ...(body.responseMimeType ? { responseMimeType: body.responseMimeType } : {}),
         ...(body.responseSchema ? { responseSchema: body.responseSchema } : {}),
+        ...(temperature !== undefined ? { temperature } : {}),
       };
     }
 
@@ -107,7 +120,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = getGeminiApiKey();
   if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY on server' });
 
   const body = (req.body || {}) as BodyLike;
@@ -116,7 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ text: '' });
   }
 
-  const models = getModels();
+  const models = getGeminiModels();
   let lastStatus = 500;
   let lastError = 'Unknown AI provider error';
 

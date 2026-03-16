@@ -93,17 +93,17 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
     return text.split('. ').filter(s => s.trim().length > 0).map(s => s.trim().endsWith('.') ? s : s + '.');
   };
 
-  // Social proof stats — Bandwagon Effect
+  // Trust signals — concrete service guarantees instead of inflated counters.
   const socialProof = lang === 'ru'
     ? [
-      { icon: <Users size={14} />, label: '150+ семей' },
-      { icon: <Star size={14} />, label: '97% совпадений' },
-      { icon: <Clock size={14} />, label: '< 24ч ответ' },
+      { icon: <ShieldCheck size={14} />, label: 'Проверка профилей включена' },
+      { icon: <Star size={14} />, label: 'Подбор: AI + человек' },
+      { icon: <Clock size={14} />, label: 'Поддержка отвечает < 24ч' },
     ]
     : [
-      { icon: <Users size={14} />, label: '150+ families' },
-      { icon: <Star size={14} />, label: '97% match rate' },
-      { icon: <Clock size={14} />, label: '< 24h response' },
+      { icon: <ShieldCheck size={14} />, label: 'Profile checks are active' },
+      { icon: <Star size={14} />, label: 'Matching: AI + human' },
+      { icon: <Clock size={14} />, label: 'Support replies < 24h' },
     ];
 
   const serviceSignals = lang === 'ru'

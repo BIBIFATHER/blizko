@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Card, Badge } from '../UI';
 import { NannyProfile, DocumentVerification } from '../../types';
-import { AvailabilityCalendar, SlotStatus } from '../AvailabilityCalendar';
 import { saveNannyProfile } from '../../services/storage';
 import {
     getNannyReadinessLabel,
@@ -156,19 +155,6 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
             })
         );
         onDataChanged();
-    };
-
-    const buildCalendarMap = (nanny: NannyProfile): Record<string, SlotStatus> => {
-        const map: Record<string, SlotStatus> = {};
-        const seed = (nanny.id || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-        for (let d = 0; d < 7; d++) {
-            for (let s = 0; s < 6; s++) {
-                const v = (seed + d * 7 + s * 13) % 10;
-                if (v < 2) map[`${d}-${s}`] = 'busy';
-                else if (v < 4) map[`${d}-${s}`] = 'reserved';
-            }
-        }
-        return map;
     };
 
     return (
@@ -471,15 +457,17 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                         </div>
                         <div className="p-4 space-y-3">
                             <div className="bg-amber-50 border border-amber-100 text-amber-700 text-[11px] rounded-lg p-2">
-                                Гарантия: активна • Резерв: назначен • Подтверждения: T‑24ч ✅ · T‑3–4ч ⏳
+                                Здесь больше нет синтетического календаря. Показываем только то, что няня реально указала в анкете.
                             </div>
-                            <AvailabilityCalendar
-                                title="Сетка недели"
-                                subtitle="Слоты: свободно / резерв / занято"
-                                statusMap={buildCalendarMap(calendarNanny)}
-                                readonly
-                                legend
-                            />
+                            <Card className="!p-4 bg-stone-50 border-stone-100">
+                                <div className="text-xs font-semibold text-stone-500 uppercase mb-2">График из анкеты</div>
+                                <div className="text-sm text-stone-700">
+                                    {calendarNanny.schedule || 'Няня ещё не указала структурированный график.'}
+                                </div>
+                                <div className="mt-2 text-[11px] text-stone-500">
+                                    Для точной сетки занятости нужен отдельный server-backed availability layer.
+                                </div>
+                            </Card>
                         </div>
                     </div>
                 </div>

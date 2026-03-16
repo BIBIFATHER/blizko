@@ -11,6 +11,7 @@ import { getMyNannyProfile, getMyParentRequests, resubmitParentRequest } from '.
 import { notifyAdminResubmitted } from '../../services/notifications';
 import { supabase } from '../../services/supabase';
 import { SERVICE_COMMISSION_RATE } from '../../src/core/config/pricing';
+import { getNannyReadinessSnapshot } from '../../services/nannyReadiness';
 import { ReferralWidget } from '../referral/ReferralWidget';
 
 interface ProfileTabProps {
@@ -40,16 +41,32 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
 
     // Nanny-specific
     const [showCalendar, setShowCalendar] = useState(false);
-    const [calendarSlots, setCalendarSlots] = useState<Record<string, SlotStatus>>({
-        '0-1': 'reserved', '1-2': 'available', '2-3': 'busy', '3-4': 'available', '4-2': 'reserved',
-    });
+    const [calendarSlots, setCalendarSlots] = useState<Record<string, SlotStatus>>({});
     const [isRegistrationPaid, setIsRegistrationPaid] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [paymentType, setPaymentType] = useState<'registration' | 'commission'>('registration');
 
-    const earnedTotal = 12500;
+    const earnedTotal = Number((myNannyProfile as NannyProfile & { bookingStats?: { earnedTotal?: number } } | undefined)?.bookingStats?.earnedTotal || 0);
     const commissionRate = SERVICE_COMMISSION_RATE;
     const commissionDue = earnedTotal * commissionRate;
+    const nannyReadiness = myNannyProfile ? getNannyReadinessSnapshot(myNannyProfile) : null;
+    const nannyReviewCount = myNannyProfile?.reviews?.length || 0;
+    const nannyAverageRating = nannyReviewCount > 0
+        ? (myNannyProfile!.reviews!.reduce((sum, review) => sum + review.rating, 0) / nannyReviewCount).toFixed(1)
+        : null;
+    const nannyCompletedHours = Number((myNannyProfile as NannyProfile & { bookingStats?: { completedHours?: number } } | undefined)?.bookingStats?.completedHours || 0) || null;
+    const latestParentRequest = myParentRequests[0];
+    const parentProfileProgress = latestParentRequest
+        ? Math.round((
+            [
+                latestParentRequest.city,
+                latestParentRequest.childAge,
+                latestParentRequest.schedule,
+                latestParentRequest.budget,
+                latestParentRequest.comment,
+            ].filter(Boolean).length + (latestParentRequest.requirements?.length ? 1 : 0) + (latestParentRequest.documents?.length ? 1 : 0)
+        ) / 7 * 100)
+        : 0;
 
     useEffect(() => {
         const load = async () => {
@@ -260,17 +277,19 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                     {isNanny && (
                         <div className="flex justify-center gap-4 border-t border-stone-100 pt-4 mt-4">
                             <div className="text-center">
-                                <div className="text-lg font-bold text-stone-800 flex items-center justify-center gap-1">4.9 <Star size={12} className="fill-amber-400 text-amber-400" /></div>
+                                <div className="text-lg font-bold text-stone-800 flex items-center justify-center gap-1">
+                                    {nannyAverageRating || '—'} {nannyAverageRating && <Star size={12} className="fill-amber-400 text-amber-400" />}
+                                </div>
                                 <div className="text-[10px] text-stone-400 uppercase">{text.statRating}</div>
                             </div>
                             <div className="w-px bg-stone-100" />
                             <div className="text-center">
-                                <div className="text-lg font-bold text-stone-800">124</div>
+                                <div className="text-lg font-bold text-stone-800">{nannyCompletedHours ?? '—'}</div>
                                 <div className="text-[10px] text-stone-400 uppercase">{text.statHours}</div>
                             </div>
                             <div className="w-px bg-stone-100" />
                             <div className="text-center">
-                                <div className="text-lg font-bold text-stone-800">15</div>
+                                <div className="text-lg font-bold text-stone-800">{nannyReviewCount}</div>
                                 <div className="text-[10px] text-stone-400 uppercase">{text.statReviews}</div>
                             </div>
                         </div>
@@ -293,12 +312,16 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                 {/* Progress — Goal-Gradient */}
                 <div className="bg-white p-4 rounded-2xl border border-stone-100 text-left">
                     <ProgressBar
-                        value={isNanny ? 65 : 55}
+                        value={isNanny ? (nannyReadiness?.completionRatio || 0) : parentProfileProgress}
                         showPercent
                         label={lang === 'ru' ? 'Прогресс профиля' : 'Profile progress'}
                     />
                     <div className="mt-2 text-[11px] text-stone-500">
-                        {isNanny ? 'Добавьте документы и подтвердите телефон, чтобы поднять доверие.' : 'Добавьте документы и подтвердите телефон для быстрого подбора.'}
+                        {isNanny
+                            ? (nannyReadiness?.missingFields.length
+                                ? `Не хватает: ${nannyReadiness.missingFields.join(', ')}.`
+                                : 'Профиль заполнен и готов к следующему шагу проверки.')
+                            : 'Добавьте документы и заполните ключевые поля, чтобы ускорить подбор.'}
                     </div>
                 </div>
 

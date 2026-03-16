@@ -87,16 +87,16 @@ export const NannyLandingPage: React.FC = () => {
             <section className="py-8 bg-white border-y border-stone-100">
                 <div className="max-w-lg mx-auto px-4 flex justify-around text-center">
                     <div>
-                        <div className="text-2xl font-bold text-stone-800">50+</div>
-                        <div className="text-xs text-stone-500">нянь в сервисе</div>
+                        <div className="text-2xl font-bold text-stone-800">Проверка</div>
+                        <div className="text-xs text-stone-500">анкеты семей проверяются вручную</div>
                     </div>
                     <div>
-                        <div className="text-2xl font-bold text-stone-800">4.8</div>
-                        <div className="text-xs text-stone-500">средний рейтинг</div>
+                        <div className="text-2xl font-bold text-stone-800">{SERVICE_COMMISSION_PERCENT}%</div>
+                        <div className="text-xs text-stone-500">комиссия только после выхода</div>
                     </div>
                     <div>
-                        <div className="text-2xl font-bold text-stone-800">150+</div>
-                        <div className="text-xs text-stone-500">семей доверяют</div>
+                        <div className="text-2xl font-bold text-stone-800">0 ₽</div>
+                        <div className="text-xs text-stone-500">абонентская плата отсутствует</div>
                     </div>
                 </div>
             </section>

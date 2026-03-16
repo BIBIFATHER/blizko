@@ -31,6 +31,7 @@ export const notifyUserStatusChanged = async (req: ParentRequest) => {
   const statusMap: Record<string, string> = {
     new: 'Новая',
     in_review: 'На проверке',
+    resubmitted: 'Отправлена повторно',
     approved: 'Одобрена',
     rejected: 'Отклонена',
   };

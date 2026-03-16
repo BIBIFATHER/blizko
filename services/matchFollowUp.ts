@@ -1,4 +1,5 @@
 import { MatchResult } from '../types';
+import { getItem, removeItem, setItem } from '../src/core/platform/storage';
 
 const MATCH_FOLLOW_UP_KEY = 'blizko_match_follow_up';
 const MAX_MATCH_FOLLOW_UP_AGE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -16,7 +17,7 @@ export interface MatchFollowUpState {
 
 function readState(): MatchFollowUpState | null {
   try {
-    const raw = window.localStorage.getItem(MATCH_FOLLOW_UP_KEY);
+    const raw = getItem(MATCH_FOLLOW_UP_KEY);
     return raw ? JSON.parse(raw) as MatchFollowUpState : null;
   } catch {
     return null;
@@ -26,10 +27,10 @@ function readState(): MatchFollowUpState | null {
 function writeState(state: MatchFollowUpState | null): void {
   try {
     if (!state) {
-      window.localStorage.removeItem(MATCH_FOLLOW_UP_KEY);
+      removeItem(MATCH_FOLLOW_UP_KEY);
       return;
     }
-    window.localStorage.setItem(MATCH_FOLLOW_UP_KEY, JSON.stringify(state));
+    setItem(MATCH_FOLLOW_UP_KEY, JSON.stringify(state));
   } catch {
     // ignore
   }

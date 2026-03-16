@@ -13,6 +13,8 @@
  * 8. booking_created
  */
 
+import { getItem, setItem } from '../src/core/platform/storage';
+
 // PostHog types (inline to avoid dependency)
 interface PostHogInstance {
     capture: (event: string, properties?: Record<string, unknown>) => void;
@@ -92,13 +94,13 @@ function generateAnalyticsId(): string {
 
 function getAnalyticsSessionId(): string {
     try {
-        if (typeof window === 'undefined' || !window.localStorage) return 'server';
+        if (typeof window === 'undefined') return 'server';
 
-        const existing = window.localStorage.getItem(ANALYTICS_SESSION_KEY);
+        const existing = getItem(ANALYTICS_SESSION_KEY);
         if (existing) return existing;
 
         const next = generateAnalyticsId();
-        window.localStorage.setItem(ANALYTICS_SESSION_KEY, next);
+        setItem(ANALYTICS_SESSION_KEY, next);
         return next;
     } catch {
         return 'unknown-session';
@@ -107,11 +109,11 @@ function getAnalyticsSessionId(): string {
 
 function appendAnalyticsEvent(record: AnalyticsEventRecord): void {
     try {
-        if (typeof window === 'undefined' || !window.localStorage) return;
-        const raw = window.localStorage.getItem(ANALYTICS_BUFFER_KEY);
+        if (typeof window === 'undefined') return;
+        const raw = getItem(ANALYTICS_BUFFER_KEY);
         const existing = raw ? JSON.parse(raw) as AnalyticsEventRecord[] : [];
         const next = [...existing, record].slice(-ANALYTICS_BUFFER_LIMIT);
-        window.localStorage.setItem(ANALYTICS_BUFFER_KEY, JSON.stringify(next));
+        setItem(ANALYTICS_BUFFER_KEY, JSON.stringify(next));
     } catch {
         // ignore local analytics buffer failures
     }
@@ -119,8 +121,8 @@ function appendAnalyticsEvent(record: AnalyticsEventRecord): void {
 
 export function getAnalyticsEvents(): AnalyticsEventRecord[] {
     try {
-        if (typeof window === 'undefined' || !window.localStorage) return [];
-        const raw = window.localStorage.getItem(ANALYTICS_BUFFER_KEY);
+        if (typeof window === 'undefined') return [];
+        const raw = getItem(ANALYTICS_BUFFER_KEY);
         return raw ? JSON.parse(raw) as AnalyticsEventRecord[] : [];
     } catch {
         return [];

@@ -14,6 +14,7 @@ import { detectRiskFlags, RiskFlag } from "./riskEngine";
 import { getWeights, type MatchingWeights } from "./matchingWeights";
 import { logShadowScores, applyEpsilonGreedy, type ScoredCandidate } from "./shadowScoring";
 import { formatInsightsBlock } from "./insightsLoader";
+import { pluralizeRu } from "../i18n/plural";
 
 type RankedCandidate = {
   nanny: NannyProfile;
@@ -318,7 +319,7 @@ async function buildMatchResult(
 
   const overallAdvice = lang === 'ru'
     ? candidates.length > 0
-      ? `Мы подобрали ${candidates.length} ${candidates.length === 1 ? 'кандидата' : 'кандидатов'} для вашей семьи. Напишите понравившейся няне — это ни к чему не обязывает.`
+      ? `Мы подобрали ${candidates.length} ${pluralizeRu(candidates.length, ['кандидат', 'кандидата', 'кандидатов'])} для вашей семьи. Напишите понравившейся няне — это ни к чему не обязывает.`
       : 'Пока кандидатов нет, но мы расширим поиск. Попробуйте скорректировать бюджет или график.'
     : candidates.length > 0
       ? `We found ${candidates.length} candidate${candidates.length === 1 ? '' : 's'} for your family. Message the one you like — no obligation.`

@@ -1,5 +1,6 @@
 // Blizko Push Notification Service
 // Handles SW registration, permission requests, and sending push notifications
+import { pluralizeRu } from '../src/core/i18n/plural';
 
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
     if (!('serviceWorker' in navigator)) {
@@ -88,7 +89,7 @@ export const BlizkoNotifications = {
     matchFound: (count: number) =>
         sendLocalNotification(
             '🎉 Найдены подходящие няни!',
-            `Мы подобрали ${count} ${count === 1 ? 'кандидата' : 'кандидатов'} для вашей семьи. Посмотрите результаты.`,
+            `Мы подобрали ${count} ${pluralizeRu(count, ['кандидат', 'кандидата', 'кандидатов'])} для вашей семьи. Посмотрите результаты.`,
             { url: '/match-results', tag: 'match-found' }
         ),
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card } from './UI';
 import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles, Star, Clock, CheckCircle2, Bell, Search, HelpCircle, Shield, MessageCircle, ArrowUpRight, Check, Headphones } from 'lucide-react';
 import { Language } from '../types';
+import { pluralizeRu } from '../src/core/i18n/plural';
 import { t } from '../src/core/i18n/translations';
 import { CompatibilityModal, ModalMode } from './CompatibilityModal';
 import {
@@ -247,7 +248,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
                 </h2>
                 <p className="text-sm text-stone-600 mt-2 leading-relaxed">
                   {lang === 'ru'
-                    ? `Сохранено ${matchFollowUp.matchResult.candidates.length} кандидата. Первый в списке: ${topCandidate.nanny.name} (${topCandidate.score}% совместимости).`
+                    ? `Сохранено ${matchFollowUp.matchResult.candidates.length} ${pluralizeRu(matchFollowUp.matchResult.candidates.length, ['кандидат', 'кандидата', 'кандидатов'])}. Первый в списке: ${topCandidate.nanny.name} (${topCandidate.score}% совместимости).`
                     : `${matchFollowUp.matchResult.candidates.length} candidates saved. Top match: ${topCandidate.nanny.name} (${topCandidate.score}% match).`}
                 </p>
               </div>

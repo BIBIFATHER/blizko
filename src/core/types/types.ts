@@ -60,11 +60,47 @@ export interface ParentRequest {
   isNannySharing?: boolean;
 }
 
+export type SoftSkillTrait = 'empathy' | 'stability' | 'responsibility' | 'structure';
+export type AssessmentSignalName =
+  | 'calm_deescalation'
+  | 'transparent_reporting'
+  | 'routine_preference'
+  | 'empathy_first'
+  | 'safety_priority'
+  | 'low_incident_reporting'
+  | 'low_structure_preference';
+
+export interface AssessmentSignal {
+  signal: AssessmentSignalName;
+  strength: number; // 0..1
+  direction: 'positive' | 'watch';
+  evidence: string[];
+}
+
+export interface AIStructuredSummary {
+  method: 'ai_structured_summary_v1';
+  parentSafeSummary: string;
+  moderationNotes: string;
+  extractedSignals: string[];
+  watchouts: string[];
+  generatedAt: number;
+}
+
 export interface SoftSkillsProfile {
+  method: 'rule_based_v1';
   rawScore: number; // 0-100
   dominantStyle: 'Empathetic' | 'Structured' | 'Balanced';
-  summary: string; // The "AI" generated text
+  summary: string; // Backward-compatible family-safe summary.
+  familySummary: string;
+  moderationSummary: string;
   completedAt: number;
+  coverage: number; // 0..1
+  confidenceReason: 'full_answers' | 'partial_answers';
+  answeredItems: number;
+  totalItems: number;
+  traits: Record<SoftSkillTrait, number>;
+  signals: AssessmentSignal[];
+  aiStructuredSummary?: AIStructuredSummary;
 }
 
 export interface NormalizedResume {

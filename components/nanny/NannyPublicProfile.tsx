@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, Phone, Messa
 import { NannyProfile, Language } from '../../types';
 import { idFromSlug } from '../../src/core/utils/slugify';
 import { t } from '../../src/core/i18n/translations';
+import { getAssessmentSignalLabel } from '../../services/assessment';
 
 interface NannyPublicProfileProps {
   lang: Language;
@@ -209,6 +210,30 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               </span>
             ))}
           </div>
+        </div>
+      )}
+
+      {nanny.softSkills && (
+        <div className="bg-white border border-stone-100 rounded-2xl p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-stone-600 uppercase tracking-wide mb-2">Стиль работы с детьми</h2>
+          <p className="text-stone-700 text-sm leading-relaxed">
+            {nanny.softSkills.familySummary || nanny.softSkills.summary}
+          </p>
+          {nanny.softSkills.signals?.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {nanny.softSkills.signals
+                .filter((signal) => signal.direction === 'positive')
+                .slice(0, 3)
+                .map((signal) => (
+                  <span
+                    key={signal.signal}
+                    className="text-xs font-medium bg-rose-50 text-rose-700 border border-rose-100 px-3 py-1 rounded-lg"
+                  >
+                    {getAssessmentSignalLabel(signal.signal, lang)}
+                  </span>
+                ))}
+            </div>
+          )}
         </div>
       )}
 

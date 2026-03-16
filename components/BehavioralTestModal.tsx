@@ -3,15 +3,16 @@ import { Button } from './UI';
 import { X, BrainCircuit } from 'lucide-react';
 import { Language, SoftSkillsProfile } from '../types';
 import { t } from '../src/core/i18n/translations';
-import { assessmentItems, analyzeAssessment } from '../services/assessment';
+import { assessmentItems, analyzeAssessment, type AssessmentCandidateInfo } from '../services/assessment';
 
 interface BehavioralTestModalProps {
   onClose: () => void;
   onComplete: (profile: SoftSkillsProfile) => void;
   lang: Language;
+  candidateInfo?: AssessmentCandidateInfo;
 }
 
-export const BehavioralTestModal: React.FC<BehavioralTestModalProps> = ({ onClose, onComplete, lang }) => {
+export const BehavioralTestModal: React.FC<BehavioralTestModalProps> = ({ onClose, onComplete, lang, candidateInfo }) => {
   const text = t[lang];
   const [step, setStep] = useState(0); 
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -30,7 +31,7 @@ export const BehavioralTestModal: React.FC<BehavioralTestModalProps> = ({ onClos
       setStep(prev => prev + 1);
     } else {
       setAnalyzing(true);
-      const result = await analyzeAssessment(answers, lang);
+      const result = await analyzeAssessment(answers, lang, candidateInfo);
       onComplete(result);
     }
   };

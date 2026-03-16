@@ -5,6 +5,7 @@ import { BrainCircuit, Check } from 'lucide-react';
 import { BehavioralTestModal } from '../../BehavioralTestModal';
 import { t } from '../../../src/core/i18n/translations';
 import { Language, SoftSkillsProfile } from '../../../types';
+import { getAssessmentSignalLabel } from '../../../services/assessment';
 
 interface Props {
     lang: Language;
@@ -63,8 +64,28 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                                     <Check size={16} /> {text.testCompletedBadge}
                                 </div>
                                 <div className="bg-white/60 p-3 rounded-lg text-xs text-stone-600 italic leading-relaxed border border-amber-100">
-                                    "{softSkills.summary}"
+                                    "{softSkills.familySummary || softSkills.summary}"
                                 </div>
+                                {softSkills.signals?.length > 0 && (
+                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                        {softSkills.signals
+                                            .filter((signal) => signal.direction === 'positive')
+                                            .slice(0, 3)
+                                            .map((signal) => (
+                                                <span
+                                                    key={signal.signal}
+                                                    className="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-[10px] font-medium text-amber-800"
+                                                >
+                                                    {getAssessmentSignalLabel(signal.signal, lang)}
+                                                </span>
+                                            ))}
+                                    </div>
+                                )}
+                                {softSkills.coverage < 0.99 && (
+                                    <div className="mt-2 text-[11px] text-stone-500">
+                                        {lang === 'ru' ? 'Вывод предварительный: анкета заполнена не полностью.' : 'This is a preliminary read because the questionnaire is incomplete.'}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

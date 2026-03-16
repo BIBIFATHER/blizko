@@ -125,10 +125,10 @@ export const t = {
 
     // Soft Skills / Assessment
     softSkillsTitle: 'Тест: Поведенческий профиль',
-    softSkillsDesc: 'Пройдите расширенный анализ (AI). Это выделит вашу анкету.',
+    softSkillsDesc: 'Пройдите расширенную анкету по стилю работы. Это помогает точнее подобрать семью.',
     startTest: 'Начать тест',
     testResultTitle: 'Ваш поведенческий профиль',
-    testCompletedBadge: 'Анализ завершен',
+    testCompletedBadge: 'Профиль собран',
 
     // Assessment Modal
     assessModalTitle: 'Поведенческий анализ',
@@ -137,7 +137,7 @@ export const t = {
     assessDisclaimer: 'Данная оценка анализирует поведенческие характеристики и не является медицинской или психологической диагностикой.',
     assessNext: 'Далее',
     assessFinish: 'Завершить',
-    assessAnalyzing: 'AI анализирует паттерны...',
+    assessAnalyzing: 'Собираем профиль по ответам...',
 
     // Scale Labels
     scaleDisagree: 'Не согласна',
@@ -457,10 +457,10 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
 
     // Soft Skills
     softSkillsTitle: 'Test: Behavioral Profile',
-    softSkillsDesc: 'Take the extended AI behavioral analysis. It makes your profile stand out.',
+    softSkillsDesc: 'Take the extended work-style questionnaire. It helps us match you with the right family.',
     startTest: 'Start Test',
     testResultTitle: 'Your Behavioral Profile',
-    testCompletedBadge: 'Analysis Complete',
+    testCompletedBadge: 'Profile Ready',
 
     // Assessment Modal
     assessModalTitle: 'Behavioral Analysis',
@@ -469,7 +469,7 @@ Result: Only reliable candidates. Every visit insured. 100% transparency.
     assessDisclaimer: 'This assessment evaluates behavioral characteristics and is not a psychological or medical diagnosis.',
     assessNext: 'Next',
     assessFinish: 'Finish',
-    assessAnalyzing: 'AI is analyzing patterns...',
+    assessAnalyzing: 'Building your profile from the answers...',
 
     // Scale Labels
     scaleDisagree: 'Disagree',

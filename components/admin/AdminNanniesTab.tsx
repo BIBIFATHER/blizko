@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Card, Badge } from '../UI';
 import { NannyProfile, DocumentVerification } from '../../types';
 import { saveNannyProfile } from '../../services/storage';
+import { getAssessmentSignalLabel } from '../../services/assessment';
 import {
     getNannyReadinessLabel,
     getNannyReadinessSnapshot,
@@ -331,9 +332,37 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                     {n.softSkills && (
                                         <div className="mt-3 bg-white p-2 rounded border border-stone-100">
                                             <div className="flex items-center gap-1 text-xs font-bold text-amber-600 mb-1">
-                                                <BrainCircuit size={12} /> AI-профиль ({n.softSkills.dominantStyle})
+                                                <BrainCircuit size={12} /> Поведенческий профиль ({n.softSkills.dominantStyle})
                                             </div>
-                                            <p className="text-[10px] text-stone-500 leading-tight">{n.softSkills.summary}</p>
+                                            <p className="text-[10px] text-stone-500 leading-tight">
+                                                {n.softSkills.moderationSummary || n.softSkills.summary}
+                                            </p>
+                                            <div className="mt-2 flex items-center gap-2 text-[10px] text-stone-400">
+                                                <span>{n.softSkills.method || 'legacy_profile'}</span>
+                                                <span>•</span>
+                                                <span>coverage {Math.round((n.softSkills.coverage ?? 1) * 100)}%</span>
+                                            </div>
+                                            {n.softSkills.signals?.length > 0 && (
+                                                <div className="mt-2 flex flex-wrap gap-1">
+                                                    {n.softSkills.signals.slice(0, 3).map((signal) => (
+                                                        <span
+                                                            key={signal.signal}
+                                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                                                                signal.direction === 'watch'
+                                                                    ? 'bg-rose-50 text-rose-700'
+                                                                    : 'bg-amber-50 text-amber-700'
+                                                            }`}
+                                                        >
+                                                            {getAssessmentSignalLabel(signal.signal, 'ru')}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {n.softSkills.aiStructuredSummary?.moderationNotes && (
+                                                <p className="mt-2 text-[10px] leading-tight text-stone-500">
+                                                    {n.softSkills.aiStructuredSummary.moderationNotes}
+                                                </p>
+                                            )}
                                         </div>
                                     )}
 

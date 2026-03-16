@@ -8,7 +8,7 @@ import { NannyProfile } from '../types';
  * Факторы:
  * - Документы (30%) — сколько документов верифицировано
  * - Отзывы (25%) — средний рейтинг и количество
- * - Soft Skills (20%) — AI-оценка поведенческих качеств
+ * - Soft Skills (20%) — structured behavioral assessment
  * - Надёжность (15%) — процент успешных выходов
  * - Профиль (10%) — полнота заполнения профиля
  */
@@ -48,7 +48,8 @@ export function calculateQualityScore(nanny: NannyProfile): QualityScoreBreakdow
     // 3. Soft Skills (20 points max)
     if (nanny.softSkills) {
         const rawScore = nanny.softSkills.rawScore || 0;
-        softSkills += Math.round((Math.min(rawScore, 100) / 100) * 20);
+        const coverage = typeof nanny.softSkills.coverage === 'number' ? nanny.softSkills.coverage : 1;
+        softSkills += Math.round((Math.min(rawScore, 100) / 100) * Math.max(0, Math.min(1, coverage)) * 20);
     }
 
     // 4. Reliability (15 points max)

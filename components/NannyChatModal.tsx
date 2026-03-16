@@ -87,7 +87,10 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nanny
     const textValue = inputValue.trim();
     setInputValue('');
 
-    await sendMatchMessage(threadId, currentUserId, textValue);
+    await sendMatchMessage(threadId, currentUserId, textValue, {
+      bookingId,
+      senderRole: currentUserRole === 'parent' ? 'family' : 'nanny',
+    });
   };
 
   return (

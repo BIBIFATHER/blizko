@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { detectContactSharing, notifyContactSharing } from './contactSharing';
 
 export type MatchThread = {
   id: string;
@@ -78,8 +79,23 @@ export async function fetchMatchMessages(threadId: string): Promise<MatchMessage
   return (data as MatchMessage[]) || [];
 }
 
-export async function sendMatchMessage(threadId: string, senderId: string, text: string): Promise<MatchMessage | null> {
+export async function sendMatchMessage(
+  threadId: string,
+  senderId: string,
+  text: string,
+  options?: { bookingId?: string; senderRole?: 'family' | 'nanny' }
+): Promise<MatchMessage | null> {
   if (!supabase) return null;
+
+  const detection = detectContactSharing(text);
+  if (detection.hasContact && options?.bookingId && options?.senderRole) {
+    void notifyContactSharing({
+      bookingId: options.bookingId,
+      senderRole: options.senderRole,
+      detection,
+    });
+  }
+
   const { data, error } = await supabase
     .from('chat_messages')
     .insert({ thread_id: threadId, sender_id: senderId, text })

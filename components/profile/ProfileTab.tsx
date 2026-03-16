@@ -12,6 +12,7 @@ import { notifyAdminResubmitted } from '../../services/notifications';
 import { supabase } from '../../services/supabase';
 import { SERVICE_COMMISSION_RATE } from '../../src/core/config/pricing';
 import { getNannyReadinessSnapshot } from '../../services/nannyReadiness';
+import { getItem, setItem } from '../../src/core/platform/storage';
 import { ReferralWidget } from '../referral/ReferralWidget';
 
 interface ProfileTabProps {
@@ -21,6 +22,8 @@ interface ProfileTabProps {
     onEditProfile?: (profile?: NannyProfile) => void;
     onEditParentRequest?: (request?: ParentRequest) => void;
 }
+
+const PARENT_MODERATION_SEEN_KEY = 'blizko_parent_moderation_seen';
 
 export const ProfileTab: React.FC<ProfileTabProps> = ({
     user, lang, onLogout, onEditProfile, onEditParentRequest,
@@ -80,7 +83,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         };
         load();
         try {
-            const raw = localStorage.getItem('blizko_parent_moderation_seen');
+            const raw = getItem(PARENT_MODERATION_SEEN_KEY);
             if (raw) setModerationSeenMap(JSON.parse(raw));
         } catch { /* ignore */ }
     }, [isNanny, user.name]);
@@ -200,7 +203,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             if (ts > 0) next[req.id] = ts;
         });
         setModerationSeenMap(next);
-        try { localStorage.setItem('blizko_parent_moderation_seen', JSON.stringify(next)); } catch { /* ignore */ }
+        try { setItem(PARENT_MODERATION_SEEN_KEY, JSON.stringify(next)); } catch { /* ignore */ }
     };
     const handleResubmit = async (id: string) => {
         const updated = await resubmitParentRequest(id);

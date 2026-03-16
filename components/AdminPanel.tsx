@@ -7,6 +7,7 @@ import { ParentRequest, NannyProfile } from '../types';
 import { Button } from './UI';
 import { supabase } from '../services/supabase';
 import { Trash2, X, Search } from 'lucide-react';
+import { getItem, setItem } from '../src/core/platform/storage';
 import { AdminOverviewTab } from './admin/AdminOverviewTab';
 import { AdminParentsTab } from './admin/AdminParentsTab';
 import { AdminNanniesTab } from './admin/AdminNanniesTab';
@@ -19,6 +20,8 @@ import {
 } from '../services/analytics';
 
 type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings';
+const ADMIN_PARENTS_SEEN_TS_KEY = 'blizko_admin_parents_seen_ts';
+const ADMIN_ACTIONS_KEY = 'blizko_admin_actions';
 
 export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [parents, setParents] = useState<ParentRequest[]>([]);
@@ -47,7 +50,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setNannies(n);
     setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
 
-    const seenTs = Number(localStorage.getItem('blizko_admin_parents_seen_ts') || '0');
+    const seenTs = Number(getItem(ADMIN_PARENTS_SEEN_TS_KEY) || '0');
     const unseen = p.filter((item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs).length;
     setUnseenParentsCount(unseen);
 
@@ -62,10 +65,10 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   const logAdminAction = (action: string, meta?: Record<string, any>) => {
     try {
-      const raw = localStorage.getItem('blizko_admin_actions') || '[]';
+      const raw = getItem(ADMIN_ACTIONS_KEY) || '[]';
       const items = JSON.parse(raw);
       items.unshift({ action, meta, at: Date.now() });
-      localStorage.setItem('blizko_admin_actions', JSON.stringify(items.slice(0, 200)));
+      setItem(ADMIN_ACTIONS_KEY, JSON.stringify(items.slice(0, 200)));
     } catch {
       // ignore
     }
@@ -89,7 +92,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const markParentsAsSeen = () => {
-    localStorage.setItem('blizko_admin_parents_seen_ts', String(Date.now()));
+    setItem(ADMIN_PARENTS_SEEN_TS_KEY, String(Date.now()));
     setUnseenParentsCount(0);
   };
 

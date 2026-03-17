@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Card, Badge } from '../UI';
 import { NannyProfile, DocumentVerification } from '../../types';
-import { saveNannyProfile } from '../../services/storage';
+import { adminUpdateNannyProfile } from '../../services/adminApi';
 import { getAssessmentSignalLabel } from '../../services/assessment';
 import {
     getNannyReadinessLabel,
@@ -84,7 +84,11 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
     }, [nannies, query, onlyProblematic, issueFilter]);
 
     const toggleVerified = async (nanny: NannyProfile) => {
-        await saveNannyProfile({ id: nanny.id, isVerified: !nanny.isVerified });
+        const updated = await adminUpdateNannyProfile(nanny.id, { isVerified: !nanny.isVerified });
+        if (!updated) {
+            alert('Не удалось обновить статус верификации на сервере.');
+            return;
+        }
         onDataChanged();
     };
 
@@ -120,7 +124,11 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
             verifiedAt: Date.now(),
         };
 
-        await saveNannyProfile({ id: nanny.id, documents: docs });
+        const updated = await adminUpdateNannyProfile(nanny.id, { documents: docs });
+        if (!updated) {
+            alert('Не удалось сохранить статус документа на сервере.');
+            return;
+        }
         onDataChanged();
     };
 
@@ -128,7 +136,10 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
         if (filteredNannies.length === 0) return;
         if (!confirm(`Подтвердить профиль у ${filteredNannies.length} анкет?`)) return;
         logAdminAction('bulk_verify_profiles', { count: filteredNannies.length });
-        await Promise.all(filteredNannies.map((n) => saveNannyProfile({ id: n.id, isVerified: true })));
+        const results = await Promise.all(filteredNannies.map((n) => adminUpdateNannyProfile(n.id, { isVerified: true })));
+        if (results.some((item) => !item)) {
+            alert('Часть профилей не удалось обновить на сервере.');
+        }
         onDataChanged();
     };
 
@@ -151,7 +162,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                     verifiedAt: Date.now(),
                 }));
                 if (docs.length > 0) {
-                    await saveNannyProfile({ id: n.id, documents: docs });
+                    await adminUpdateNannyProfile(n.id, { documents: docs });
                 }
             })
         );

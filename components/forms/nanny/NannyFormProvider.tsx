@@ -132,6 +132,11 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
     const [showCitySuggestions, setShowCitySuggestions] = useState(false);
     const [detectingLocation, setDetectingLocation] = useState(false);
     const trackedReadyRef = useRef(false);
+    const skillsRef = useRef<string[]>(initialData?.skills || []);
+
+    useEffect(() => {
+        skillsRef.current = skills;
+    }, [skills]);
 
     const applyResumeNormalized = (resume: NormalizedResume): number => {
         let appliedCount = 0;
@@ -164,8 +169,9 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
         });
 
         if (Array.isArray(resume.skills) && resume.skills.length > 0) {
-            const nextSkills = Array.from(new Set([...(skills || []), ...resume.skills]));
-            if (nextSkills.length !== skills.length) {
+            const currentSkills = skillsRef.current || [];
+            const nextSkills = Array.from(new Set([...currentSkills, ...resume.skills]));
+            if (nextSkills.length !== currentSkills.length) {
                 appliedCount += 1;
                 setSkills(nextSkills);
             }

@@ -55,6 +55,24 @@ function rankCandidates(
   const childStress = request.riskProfile?.childStress;
   const needs = request.riskProfile?.needs || [];
   const parentPcm = request.riskProfile?.pcmType;
+  const requirementMax = reqs.length ? Math.min(18, reqs.length * w.requirementMatch) : 0;
+  const growthPossible = needs.length ? Math.min(w.growthMax, needs.length * w.growthPerNeed) : 0;
+  const sharingPossible = request.isNannySharing ? w.nannySharing : 0;
+  const maxScore = Math.max(
+    1,
+    w.base +
+      20 + // geo exact match
+      15 + // budget exact match
+      w.verification +
+      w.childAge +
+      w.schedule +
+      requirementMax +
+      w.mirrorMax +
+      w.softSkillsMax +
+      growthPossible +
+      sharingPossible +
+      w.qualityPremium
+  );
 
   // Deduplicate by nanny ID (prevents same nanny appearing twice from localStorage + Supabase sync)
   const seen = new Set<string>();
@@ -70,7 +88,7 @@ function rankCandidates(
     // Pre-filter: budget hard filter (nanny rate > 2x parent budget = exclude)
     .filter((nanny) => !budgetScore(request.budget, nanny.expectedRate).exclude)
     .map((nanny) => {
-      let score = w.base;
+      let rawScore = w.base;
       const reasons: string[] = [];
       const factors: Record<string, number> = {};
 
@@ -87,7 +105,7 @@ function rankCandidates(
         nanny.district, nanny.metro, nanny.city
       );
       if (geo.score > 0) {
-        score += geo.score;
+        rawScore += geo.score;
         factors.geo = geo.score;
         if (geo.reason) reasons.push(geo.reason);
       }
@@ -95,25 +113,25 @@ function rankCandidates(
       // --- BUDGET SCORING ---
       const budget = budgetScore(request.budget, nanny.expectedRate);
       if (budget.score > 0) {
-        score += budget.score;
+        rawScore += budget.score;
         factors.budget = budget.score;
         if (budget.reason) reasons.push(budget.reason);
       }
 
       if (nanny.isVerified) {
-        score += w.verification;
+        rawScore += w.verification;
         factors.verification = w.verification;
         reasons.push("Профиль верифицирован");
       }
 
       if (childAge && (childAges.includes(childAge) || about.includes(childAge))) {
-        score += w.childAge;
+        rawScore += w.childAge;
         factors.childAge = w.childAge;
         reasons.push("Есть релевантный опыт по возрасту ребёнка");
       }
 
       if (schedule && includesAny(profileText, [schedule])) {
-        score += w.schedule;
+        rawScore += w.schedule;
         factors.schedule = w.schedule;
         reasons.push("Похожий график/доступность");
       }
@@ -122,7 +140,7 @@ function rankCandidates(
         const matchedReq = reqs.filter((r) => profileText.includes(r));
         if (matchedReq.length > 0) {
           const reqScore = Math.min(18, matchedReq.length * w.requirementMatch);
-          score += reqScore;
+          rawScore += reqScore;
           factors.requirements = reqScore;
           reasons.push(`Совпали требования: ${matchedReq.slice(0, 2).join(", ")}`);
         }
@@ -170,37 +188,37 @@ function rankCandidates(
 
       if (mirrorScore > 0) {
         const cappedMirror = Math.min(w.mirrorMax, mirrorScore);
-        score += cappedMirror;
+        rawScore += cappedMirror;
         factors.mirror = cappedMirror;
         reasons.push("Совпадение по стилю семьи");
       }
 
       if (nanny.softSkills?.rawScore) {
         const ssScore = Math.min(w.softSkillsMax, Math.round(nanny.softSkills.rawScore / 20));
-        score += ssScore;
+        rawScore += ssScore;
         factors.softSkills = ssScore;
         reasons.push("Есть AI-оценка soft skills");
       }
 
-      score += growthScore;
+      rawScore += growthScore;
       if (growthScore > 0) factors.growth = growthScore;
 
       // Nanny Sharing compatibility bonus
       if (request.isNannySharing && nanny.isNannySharing) {
-        score += w.nannySharing;
+        rawScore += w.nannySharing;
         factors.nannySharing = w.nannySharing;
         reasons.push("Готова к совместному шерингу няни");
       }
 
       // Quality Score bonus (up to +10)
       const qs = getQualityScore(nanny);
-      if (qs >= 85) { score += w.qualityPremium; factors.quality = w.qualityPremium; reasons.push("Премиум-рейтинг качества"); }
-      else if (qs >= 70) { score += w.qualityGood; factors.quality = w.qualityGood; }
+      if (qs >= 85) { rawScore += w.qualityPremium; factors.quality = w.qualityPremium; reasons.push("Премиум-рейтинг качества"); }
+      else if (qs >= 70) { rawScore += w.qualityGood; factors.quality = w.qualityGood; }
 
       // Risk flags
       const riskFlags = detectRiskFlags(request, nanny);
 
-      score = Math.max(0, Math.min(100, score));
+      const score = Math.max(0, Math.min(100, Math.round((rawScore / maxScore) * 100)));
       return { nanny, score, reasons, riskFlags, factors };
     })
     .sort((a, b) => b.score - a.score);

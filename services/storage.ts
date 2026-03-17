@@ -101,10 +101,12 @@ function mergeRemoteWithPending<T extends { id: string }>(
   pendingIds: string[],
 ): T[] {
   if (pendingIds.length === 0) return remoteItems;
-
-  const remoteIds = new Set(remoteItems.map((item) => item.id));
-  const pendingItems = localItems.filter((item) => pendingIds.includes(item.id) && !remoteIds.has(item.id));
-  return [...pendingItems, ...remoteItems];
+  const merged = new Map(remoteItems.map((item) => [item.id, item] as const));
+  const pendingItems = localItems.filter((item) => pendingIds.includes(item.id));
+  pendingItems.forEach((item) => {
+    merged.set(item.id, item);
+  });
+  return Array.from(merged.values());
 }
 
 async function getCurrentUserId(): Promise<string | null> {

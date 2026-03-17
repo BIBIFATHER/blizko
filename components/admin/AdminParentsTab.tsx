@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Badge } from '../UI';
 import { ParentRequest, DocumentVerification } from '../../types';
 import { X } from 'lucide-react';
-import { updateParentRequest } from '../../services/storage';
+import { adminUpdateParentRequest } from '../../services/adminApi';
 import { notifyUserStatusChanged } from '../../services/notifications';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
@@ -62,14 +62,19 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     };
 
     const setParentStatus = async (parent: ParentRequest, status: ParentWorkflowStatus) => {
-        const updated = await updateParentRequest(
-            { id: parent.id, status },
-            { actor: 'admin', note: `Админ изменил статус на: ${status}`, allowApprovedEdit: true }
-        );
+        const updated = await adminUpdateParentRequest({
+            id: parent.id,
+            changes: { status },
+            note: `Админ изменил статус на: ${status}`,
+        });
+        if (!updated) {
+            alert('Не удалось сохранить статус на сервере.');
+            return;
+        }
         if (updated) await notifyUserStatusChanged(updated);
         onDataChanged();
         if (selectedParent?.id === parent.id) {
-            setSelectedParent({ ...parent, status });
+            setSelectedParent(updated);
         }
     };
 
@@ -97,9 +102,9 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
 
         const note = `Отклонено: ${reasonMap[rejectReasonCode]}. ${reasonText}`;
 
-        const updated = await updateParentRequest(
-            {
-                id: parent.id,
+        const updated = await adminUpdateParentRequest({
+            id: parent.id,
+            changes: {
                 status: 'rejected',
                 rejectionInfo: {
                     reasonCode: rejectReasonCode,
@@ -108,8 +113,13 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     rejectedBy: 'admin',
                 },
             },
-            { actor: 'admin', note, allowApprovedEdit: true, forceStatusEvent: true }
-        );
+            note,
+            forceStatusEvent: true,
+        });
+        if (!updated) {
+            alert('Не удалось сохранить отклонение на сервере.');
+            return;
+        }
 
         if (updated) await notifyUserStatusChanged(updated);
         setRejectReasonText('');

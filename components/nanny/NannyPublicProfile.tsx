@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, Phone, MessageCircle, Users } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, MessageCircle, Users } from 'lucide-react';
 import { NannyProfile, Language } from '../../types';
 import { idFromSlug } from '../../src/core/utils/slugify';
 import { t } from '../../src/core/i18n/translations';
@@ -12,12 +12,13 @@ interface NannyPublicProfileProps {
 
 // Trust badge display config
 const BADGE_CONFIG = {
-  verified_docs: { icon: ShieldCheck, label: 'Документы проверены', color: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
   verified_moderation: { icon: Award, label: 'Ручная модерация', color: 'text-blue-700 bg-blue-50 border-blue-100' },
   ai_checked: { icon: Star, label: 'AI-проверка', color: 'text-violet-700 bg-violet-50 border-violet-100' },
   soft_skills: { icon: Heart, label: 'Soft skills оценены', color: 'text-rose-700 bg-rose-50 border-rose-100' },
   has_reviews: { icon: Users, label: 'Есть отзывы', color: 'text-amber-700 bg-amber-50 border-amber-100' },
 };
+
+const DEFAULT_OG_IMAGE = 'https://www.blizko.app/icons/icon-512.png';
 
 export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) => {
   const { slug } = useParams<{ slug: string }>();
@@ -50,12 +51,15 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
         // --- Dynamic OG / meta tags ---
         document.title = `${found.name} — Няня в ${found.city} | Blizko`;
-        updateMeta('description', `Опыт ${found.experience}. Верифицирована. Доступна в ${found.district || found.city}.`);
+        updateMeta(
+          'description',
+          `Опыт ${found.experience}. ${found.isVerified ? 'Профиль прошёл модерацию.' : 'Профиль доступен в Blizko.'} Район: ${found.district || found.city}.`
+        );
         updateMeta('og:title', `${found.name} — Няня | Blizko`);
         updateMeta('og:description', found.about?.slice(0, 150) ?? '');
         updateMeta('og:url', window.location.href);
         updateMeta('og:type', 'profile');
-        if (found.photo) updateMeta('og:image', found.photo);
+        updateMeta('og:image', found.photo && /^https?:\/\//.test(found.photo) ? found.photo : DEFAULT_OG_IMAGE);
       } catch {
         setError('Профиль не найден. Попробуйте поискать другую няню.');
       } finally {
@@ -170,11 +174,11 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
         </div>
 
         {/* Trust badges */}
-        {nanny.documents?.some(d => d.status === 'verified') && (
+        {(nanny.isVerified || Boolean(nanny.softSkills) || Boolean(nanny.reviews?.length)) && (
           <div className="flex flex-wrap gap-1.5 mt-4">
-            {(nanny.isVerified) && (
-              <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-lg border ${BADGE_CONFIG.verified_docs.color}`}>
-                <ShieldCheck size={11} /> {BADGE_CONFIG.verified_docs.label}
+            {nanny.isVerified && (
+              <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-lg border ${BADGE_CONFIG.verified_moderation.color}`}>
+                <Award size={11} /> {BADGE_CONFIG.verified_moderation.label}
               </span>
             )}
             {nanny.softSkills && (
@@ -282,14 +286,6 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
           >
             <MessageCircle size={17} /> Найти похожую няню
           </Link>
-          {nanny.contact && (
-            <a
-              href={`tel:${nanny.contact}`}
-              className="flex items-center justify-center gap-1.5 border border-stone-200 text-stone-700 px-4 py-3 rounded-xl text-sm font-medium hover:bg-stone-50 active:scale-[0.97] transition-all"
-            >
-              <Phone size={16} />
-            </a>
-          )}
         </div>
       </div>
     </article>

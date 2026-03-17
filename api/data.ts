@@ -65,6 +65,50 @@ const fromRow = (r: any) => {
   };
 };
 
+async function fetchResourceRow(
+  resource: 'parents' | 'nannies',
+  id: string,
+  supabaseUrl: string,
+  supabaseServiceRoleKey: string,
+) {
+  const response = await sb(
+    `${resource}?id=eq.${encodeURIComponent(id)}&select=id,user_id,payload,created_at&limit=1`,
+    { method: 'GET' },
+    supabaseUrl,
+    supabaseServiceRoleKey,
+  );
+  const data = await response.json().catch(() => []);
+  if (!response.ok) {
+    throw new Error(data?.message || `Failed to load ${resource} item`);
+  }
+  return Array.isArray(data) && data[0] ? data[0] : null;
+}
+
+async function updateResourcePayload(
+  resource: 'parents' | 'nannies',
+  id: string,
+  payload: any,
+  userId: string | null,
+  supabaseUrl: string,
+  supabaseServiceRoleKey: string,
+) {
+  const response = await sb(
+    `${resource}?id=eq.${encodeURIComponent(id)}`,
+    {
+      method: 'PATCH',
+      headers: { Prefer: 'return=representation' },
+      body: JSON.stringify({ payload, user_id: userId }),
+    },
+    supabaseUrl,
+    supabaseServiceRoleKey,
+  );
+  const data = await response.json().catch(() => []);
+  if (!response.ok) {
+    throw new Error(data?.message || `Failed to update ${resource}`);
+  }
+  return Array.isArray(data) && data[0] ? data[0] : null;
+}
+
 function toAnalyticsRecord(row: any) {
   return {
     id: row?.id ? String(row.id) : undefined,
@@ -298,6 +342,68 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!response.ok) return json(res, response.status, { error: data?.message || `Failed to save ${resource}` });
       const saved = Array.isArray(data) && data[0] ? fromRow(data[0]) : item;
       return json(res, 200, { item: saved });
+    }
+
+    if (req.method === 'PATCH') {
+      const id = String(req.body?.id || '').trim();
+      const changes = req.body?.changes && typeof req.body.changes === 'object' ? req.body.changes : null;
+      if (!id || !changes) return json(res, 400, { error: 'Missing id or changes' });
+
+      const row = await fetchResourceRow(resource, id, supabaseUrl, supabaseServiceRoleKey);
+      if (!row) return json(res, 404, { error: `${resource} item not found` });
+
+      const current = fromRow(row);
+
+      if (resource === 'parents') {
+        const statusChanged = typeof changes.status !== 'undefined' && changes.status !== current.status;
+        const forceStatusEvent = Boolean(req.body?.forceStatusEvent);
+        const now = Date.now();
+        const next = {
+          ...current,
+          ...changes,
+          updatedAt: now,
+          rejectionInfo: typeof changes.status !== 'undefined' && changes.status !== 'rejected'
+            ? undefined
+            : (typeof changes.rejectionInfo !== 'undefined' ? changes.rejectionInfo : current.rejectionInfo),
+          changeLog: [
+            ...(current.changeLog || []),
+            {
+              at: now,
+              type: (statusChanged || forceStatusEvent) ? 'status_changed' : 'updated',
+              by: 'admin',
+              note: String(req.body?.note || '').trim() || (statusChanged
+                ? `Статус: ${current.status || 'new'} → ${changes.status}`
+                : 'Заявка обновлена администратором'),
+            },
+          ],
+        };
+
+        const savedRow = await updateResourcePayload(
+          resource,
+          id,
+          next,
+          row?.user_id ? String(row.user_id) : null,
+          supabaseUrl,
+          supabaseServiceRoleKey,
+        );
+        return json(res, 200, { item: savedRow ? fromRow(savedRow) : next });
+      }
+
+      const next = {
+        ...current,
+        ...changes,
+        id: current.id,
+        createdAt: current.createdAt,
+      };
+      const savedRow = await updateResourcePayload(
+        resource,
+        id,
+        next,
+        row?.user_id ? String(row.user_id) : null,
+        supabaseUrl,
+        supabaseServiceRoleKey,
+      );
+      return json(res, 200, { item: savedRow ? fromRow(savedRow) : next });
     }
 
     if (req.method === 'DELETE') {

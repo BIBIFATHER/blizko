@@ -41,7 +41,11 @@ export async function sendLocalNotification(
         icon?: string;
     }
 ): Promise<void> {
-    const registration = await navigator.serviceWorker?.ready;
+    if (!('serviceWorker' in navigator)) return;
+    const registration = await Promise.race<ServiceWorkerRegistration | null>([
+        navigator.serviceWorker.ready,
+        new Promise<null>((resolve) => window.setTimeout(() => resolve(null), 3000)),
+    ]);
     if (!registration) return;
 
     const hasPermission = await requestNotificationPermission();

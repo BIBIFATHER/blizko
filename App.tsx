@@ -24,6 +24,10 @@ const NannyLandingPage = lazy(() => import('./components/NannyLandingPage').then
 const NannyPublicProfile = lazy(() => import('./components/nanny/NannyPublicProfile').then((module) => ({ default: module.NannyPublicProfile })));
 const HowWeVerifyPage = lazy(() => import('./components/seo/SeoPages').then((module) => ({ default: module.HowWeVerifyPage })));
 const HumanityPlusPage = lazy(() => import('./components/seo/SeoPages').then((module) => ({ default: module.HumanityPlusPage })));
+const OfertaPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.OfertaPage })));
+const AboutPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.AboutPage })));
+const SafeDealPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.SafeDealPage })));
+const PrivacyPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.PrivacyPage })));
 const SupportChat = lazy(() => import('./components/SupportChat').then((module) => ({ default: module.SupportChat })));
 const AuthModal = lazy(() => import('./components/AuthModal').then((module) => ({ default: module.AuthModal })));
 const UserProfileModal = lazy(() => import('./components/UserProfileModal').then((module) => ({ default: module.UserProfileModal })));
@@ -183,6 +187,10 @@ export default function App() {
             <Route path="/match-results" element={<MatchResultsScreen lang={lang} />} />
             <Route path="/how-we-verify" element={<HowWeVerifyPage />} />
             <Route path="/humanity-plus" element={<HumanityPlusPage />} />
+            <Route path="/oferta" element={<OfertaPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/safe-deal" element={<SafeDealPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/for-nannies" element={<NannyLandingPage />} />
             <Route
               path="/nanny-dashboard"

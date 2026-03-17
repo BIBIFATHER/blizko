@@ -165,12 +165,14 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
 
     // Parent helpers
     const parentStatusLabel = (status?: ParentRequest['status']) => {
+        if (status === 'payment_pending') return 'Ожидает оплаты';
         if (status === 'in_review') return 'На проверке';
         if (status === 'approved') return 'Одобрена';
         if (status === 'rejected') return 'Отклонена';
         return 'Новая';
     };
     const parentStatusClass = (status?: ParentRequest['status']) => {
+        if (status === 'payment_pending') return 'bg-stone-100 text-stone-700';
         if (status === 'in_review') return 'bg-sky-100 text-sky-700';
         if (status === 'approved') return 'bg-green-100 text-green-700';
         if (status === 'rejected') return 'bg-red-100 text-red-700';

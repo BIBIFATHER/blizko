@@ -40,7 +40,7 @@ export interface ParentRiskProfile {
 export interface ParentRequest {
   id: string;
   type: 'parent';
-  status?: 'new' | 'in_review' | 'approved' | 'rejected';
+  status?: 'payment_pending' | 'new' | 'in_review' | 'approved' | 'rejected';
   city: string;
   district?: string;
   metro?: string;

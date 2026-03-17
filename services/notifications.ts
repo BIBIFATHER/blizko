@@ -31,6 +31,7 @@ export const notifyUserStatusChanged = async (req: ParentRequest) => {
   if (!req.requesterEmail) return;
 
   const statusMap: Record<string, string> = {
+    payment_pending: 'Ожидает оплаты',
     new: 'Новая',
     in_review: 'На проверке',
     resubmitted: 'Отправлена повторно',

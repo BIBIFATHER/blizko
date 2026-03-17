@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { Button, Checkbox } from './UI';
-import { X, FileText, Shield } from 'lucide-react';
+import { X, FileText } from 'lucide-react';
 import { Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 
-/** Fee charged for nanny matching service, in RUB */
-const MATCHING_FEE_RUB = 990;
-
 interface ParentOfferModalProps {
   onClose: () => void;
-  onAccept: () => void;
+  onAccept: () => Promise<void>;
   lang: Language;
-  parentRequestId?: string;
 }
 
-export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onAccept, lang, parentRequestId }) => {
+export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onAccept, lang }) => {
   const text = t[lang];
   const [activeTab, setActiveTab] = useState<'terms' | 'privacy'>('terms');
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -26,32 +22,9 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
   const handleAccept = async () => {
     setIsLoading(true);
     try {
-      // 1. First trigger the onAccept so the parent component can save the application to the DB if needed
       await onAccept();
-
-      // 2. Try to generate a payment link (Assuming a standard 990 RUB fee for matching for example)
-      const res = await fetch('/api/payments/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: MATCHING_FEE_RUB,
-          parentRequestId,
-          description: 'Оплата подбора няни Blizko'
-        })
-      });
-
-      const data = await res.json();
-
-      if (data.confirmation_url) {
-        window.location.href = data.confirmation_url; // Redirect to YooKassa
-        return;
-      }
-
-      // If no url returned (e.g. backend not fully configured yet), just close and let the main flow navigate to success screen
-      onClose();
-    } catch (e) {
-      console.error('Payment generation failed:', e);
-      onClose(); // Fallback to normal flow
+    } catch (error) {
+      console.error('Parent offer acceptance failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +33,6 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white/95 backdrop-blur-xl w-full max-w-md rounded-3xl card-cloud border border-stone-100/80 overflow-hidden animate-slide-up flex flex-col max-h-[85vh]">
-        {/* Header */}
         <div className="bg-white/50 border-b border-stone-100/50 p-4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2 text-stone-800 font-semibold">
@@ -72,7 +44,6 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
             </button>
           </div>
 
-          {/* Tabs */}
           <div className="flex bg-stone-200/50 p-1 rounded-lg">
             <button
               onClick={() => setActiveTab('terms')}
@@ -89,7 +60,6 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
           </div>
         </div>
 
-        {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-6 bg-transparent space-y-3">
           {displayedText.map((paragraph, index) => (
             <p
@@ -101,7 +71,6 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
           ))}
         </div>
 
-        {/* Footer with Checkboxes */}
         <div className="p-4 bg-white/50 border-t border-stone-100/50 space-y-3">
           <div className="bg-sky-50 border border-sky-100 rounded-xl p-3">
             <Checkbox

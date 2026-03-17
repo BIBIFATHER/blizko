@@ -46,6 +46,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     }, [parents, query, parentStatusFilter, onlyNeedsAction]);
 
     const parentStatusLabel = (status?: ParentRequest['status']) => {
+        if (status === 'payment_pending') return 'Ожидает оплаты';
         if (status === 'in_review') return 'На проверке';
         if (status === 'approved') return 'Одобрена';
         if (status === 'rejected') return 'Отклонена';
@@ -53,6 +54,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     };
 
     const parentStatusBadge = (status?: ParentRequest['status']) => {
+        if (status === 'payment_pending') return 'bg-stone-100 text-stone-700';
         if (status === 'in_review') return 'bg-amber-100 text-amber-700';
         if (status === 'approved') return 'bg-green-100 text-green-700';
         if (status === 'rejected') return 'bg-red-100 text-red-700';

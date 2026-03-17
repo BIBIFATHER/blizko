@@ -4,6 +4,7 @@ import { Button, Card, Badge, ProgressBar, StatusIndicator } from './UI';
 import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2, ArrowRight } from 'lucide-react';
 import { SubmissionResult, Language } from '../types';
 import { t } from '../src/core/i18n/translations';
+import { supabase } from '../services/supabase';
 
 interface SuccessScreenProps {
   lang: Language;
@@ -15,6 +16,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
   const text = t[lang];
   const result: SubmissionResult | undefined = location.state?.result;
   const isPaid = new URLSearchParams(location.search).get('paid') === 'true';
+  const paymentId = new URLSearchParams(location.search).get('payment_id');
 
   const onHome = () => navigate('/');
   const [step, setStep] = useState<'analyzing' | 'matching' | 'done'>(isPaid ? 'done' : 'analyzing');
@@ -32,6 +34,36 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
+
+  useEffect(() => {
+    if (!isPaid || !paymentId || !supabase) return;
+
+    let cancelled = false;
+
+    const finalizePayment = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token || cancelled) return;
+
+        await fetch('/api/payments/finalize', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ paymentId }),
+        });
+      } catch (error) {
+        console.warn('Payment finalization sync failed:', error);
+      }
+    };
+
+    void finalizePayment();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isPaid, paymentId]);
 
   if (!result && !isPaid) {
     return (

@@ -8,6 +8,7 @@ import { ParentOfferModal } from './ParentOfferModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { t } from '../src/core/i18n/translations';
 import { detectUserLocation } from '../services/geolocation';
+import { supabase } from '../services/supabase';
 import {
   trackCTA,
   trackDocumentUploaded,
@@ -22,6 +23,8 @@ interface ParentFormProps {
   lang: Language;
 }
 
+const MATCHING_FEE_RUB = 990;
+
 export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,6 +38,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   const [trackedMilestones, setTrackedMilestones] = useState<number[]>([]);
+  const [paymentDraftKey] = useState(() => crypto.randomUUID());
   const [advanced, setAdvanced] = useState({
     cameras: 'ok',
     travel: 'no',
@@ -106,37 +110,97 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (initialData?.id) {
+      void handleOfferAccept();
+      return;
+    }
     trackCTA('parent_offer_open', initialData ? 'parent_form_edit' : 'parent_form');
     setShowOffer(true);
   };
 
+  const buildParentRequestPayload = () => {
+    const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
+    const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
+    const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
+    const analysisNotes = formData.analysisNotes?.trim()
+      ? `\n\n[Для анализа]\n${formData.analysisNotes.trim()}`
+      : '';
+
+    return {
+      city: formData.city,
+      district: formData.district || undefined,
+      metro: formData.metro || undefined,
+      childAge: formData.childAge,
+      schedule: formData.schedule,
+      budget,
+      comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}${analysisNotes}`.trim(),
+      requirements,
+      documents,
+      riskProfile,
+      id: initialData?.id,
+      status: initialData?.status,
+    };
+  };
+
+  const getPaymentAuthHeaders = async () => {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (!supabase) return headers;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return headers;
+
+    headers.Authorization = `Bearer ${session.access_token}`;
+    return headers;
+  };
+
   const handleOfferAccept = async () => {
-    setShowOffer(false);
     setLoading(true);
     trackOfferAccepted('parent');
 
     try {
-      const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
-      const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
-      const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
-      const analysisNotes = formData.analysisNotes?.trim()
-        ? `\n\n[Для анализа]\n${formData.analysisNotes.trim()}`
-        : '';
+      const payload = buildParentRequestPayload();
 
-      await onSubmit({
-        city: formData.city,
-        district: formData.district || undefined,
-        metro: formData.metro || undefined,
-        childAge: formData.childAge,
-        schedule: formData.schedule,
-        budget,
-        comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}${analysisNotes}`.trim(),
-        requirements,
-        documents,
-        riskProfile,
-        id: initialData?.id,
-        status: initialData?.status,
+      if (initialData?.id) {
+        await onSubmit(payload);
+        return;
+      }
+
+      const headers = await getPaymentAuthHeaders();
+      if (!headers.Authorization) {
+        window.dispatchEvent(new CustomEvent('blizko:open-auth-modal', { detail: { source: 'parent_payment_required' } }));
+        alert(lang === 'ru' ? 'Перед оплатой войдите в аккаунт.' : 'Please sign in before paying.');
+        return;
+      }
+
+      const response = await fetch('/api/payments/create', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          amount: MATCHING_FEE_RUB,
+          description: 'Оплата подбора няни Blizko',
+          draftKey: paymentDraftKey,
+          parentRequest: payload,
+        }),
       });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message = typeof data?.error === 'string'
+          ? data.error
+          : lang === 'ru'
+            ? 'Не удалось создать ссылку на оплату.'
+            : 'Failed to create payment link.';
+        alert(message);
+        return;
+      }
+
+      if (!data.confirmation_url) {
+        alert(lang === 'ru' ? 'Платёжная ссылка не получена.' : 'Payment link was not returned.');
+        return;
+      }
+
+      setShowOffer(false);
+      window.location.href = data.confirmation_url;
     } catch (e) {
       console.error(e);
     } finally {

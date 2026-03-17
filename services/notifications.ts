@@ -3,25 +3,27 @@ import { sendToWebhook } from './api';
 
 export const notifyAdminNewRequest = async (req: ParentRequest) => {
   await sendToWebhook({
+    channel: 'telegram',
     event: 'admin.new_parent_request',
     subject: 'Новая заявка родителя',
     requestId: req.id,
     city: req.city,
     status: req.status || 'new',
     requesterEmail: req.requesterEmail || null,
-    text: `Новая заявка #${req.id.slice(0, 8)} (${req.city}).`,
+    text: `🆕 Новая заявка #${req.id.slice(0, 8)} (${req.city}).`,
   });
 };
 
 export const notifyAdminResubmitted = async (req: ParentRequest) => {
   await sendToWebhook({
+    channel: 'telegram',
     event: 'admin.parent_request_resubmitted',
     subject: 'Заявка отправлена повторно',
     requestId: req.id,
     city: req.city,
     status: req.status || 'in_review',
     requesterEmail: req.requesterEmail || null,
-    text: `Заявка #${req.id.slice(0, 8)} отправлена повторно на модерацию.`,
+    text: `🔁 Заявка #${req.id.slice(0, 8)} отправлена повторно на модерацию.`,
   });
 };
 

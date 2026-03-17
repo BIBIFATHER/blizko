@@ -2,7 +2,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
-import { envWithLocalFallback, verifyBearerUser } from './_auth.js';
+import { envWithLocalFallback, getServerEnv, verifyBearerUser } from './_auth.js';
 
 type NotifyPayload = {
   channel?: 'email' | 'telegram';
@@ -18,7 +18,12 @@ type NotifyPayload = {
   status?: string;
 };
 
-const CLIENT_TELEGRAM_EVENTS = new Set(['admin.contact_sharing_detected']);
+const CLIENT_TELEGRAM_EVENTS = new Set([
+  'admin.contact_sharing_detected',
+  'admin.new_parent_request',
+  'admin.parent_request_resubmitted',
+]);
+const CLIENT_ADMIN_EMAIL_EVENTS = new Set(['user.parent_request_status_changed']);
 
 async function sendResendEmail(to: string, subject: string, text: string) {
   const apiKey = envWithLocalFallback('RESEND_API_KEY');
@@ -100,6 +105,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const incoming = String(req.headers['x-notify-token'] || '').trim();
   const hasInternalToken = Boolean(requiredToken && incoming && incoming === requiredToken);
   const verifiedUser = hasInternalToken ? null : await verifyBearerUser(req);
+  const { adminEmails } = getServerEnv();
+  const verifiedAdmin = Boolean(verifiedUser?.email && adminEmails.includes(verifiedUser.email));
 
   const body = (req.body || {}) as NotifyPayload;
   const channel = String(body.channel || '').trim().toLowerCase();
@@ -108,21 +115,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const text = String(body.text || '');
 
   if (!hasInternalToken) {
-    // Client-initiated notifications are limited to authenticated in-app users
-    // and may only target internal admin inboxes.
-    if (!verifiedUser || !event.startsWith('admin.')) {
+    if (!verifiedUser) {
       return res.status(401).json({ ok: false, error: 'Unauthorized' });
     }
   }
 
   try {
     if (channel === 'telegram') {
-      const adminEmail = String(envWithLocalFallback('ADMIN_EMAIL') || '').trim().toLowerCase();
-      const isAdminUser = Boolean(verifiedUser?.email && verifiedUser.email === adminEmail);
       const isAllowedClientTelegramEvent = CLIENT_TELEGRAM_EVENTS.has(event);
 
-      if (!hasInternalToken && !isAdminUser && !isAllowedClientTelegramEvent) {
-        return res.status(403).json({ ok: false, error: 'Admin access required' });
+      if (!hasInternalToken && !isAllowedClientTelegramEvent) {
+        return res.status(403).json({ ok: false, error: 'Client telegram event is not allowed' });
       }
 
       const chatId = String(
@@ -142,11 +145,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ ok: true, message_id: result?.result?.message_id || null });
     }
 
+    if (!hasInternalToken && !CLIENT_ADMIN_EMAIL_EVENTS.has(event)) {
+      return res.status(403).json({ ok: false, error: 'Client email event is not allowed' });
+    }
+
+    if (!hasInternalToken && !verifiedAdmin) {
+      return res.status(403).json({ ok: false, error: 'Admin access required' });
+    }
+
     let to = hasInternalToken ? String(body.to || '').trim() : '';
 
-    if (!to && event.startsWith('admin.')) {
-      to = String(envWithLocalFallback('ADMIN_EMAIL') || '').trim();
-    }
+    if (!to && !hasInternalToken) to = String(body.to || '').trim();
 
     if (!to) {
       return res.status(200).json({ ok: false, skipped: true, reason: 'no-recipient' });

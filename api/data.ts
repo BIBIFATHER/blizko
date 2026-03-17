@@ -36,7 +36,6 @@ const ANALYTICS_ALLOWED_EVENTS = new Set([
   'nanny_offer_accepted',
   'admin_panel_opened',
 ]);
-let analyticsTableReady = false;
 
 function getResource(req: VercelRequest): 'parents' | 'nannies' | 'analytics' | null {
   const resource = String((req.query as any)?.resource || '').trim().toLowerCase();
@@ -120,28 +119,6 @@ function sanitizeAnalyticsRecord(input: any) {
   };
 }
 
-async function ensureAnalyticsTable() {
-  if (analyticsTableReady) return;
-
-  const pool = getDbPool();
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS analytics_events (
-      id TEXT PRIMARY KEY,
-      event TEXT NOT NULL,
-      properties JSONB NOT NULL DEFAULT '{}'::jsonb,
-      url TEXT,
-      session_id TEXT,
-      user_id TEXT,
-      occurred_at TIMESTAMPTZ NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-  `);
-  await pool.query(`CREATE INDEX IF NOT EXISTS idx_analytics_events_event ON analytics_events(event)`);
-  await pool.query(`CREATE INDEX IF NOT EXISTS idx_analytics_events_occurred_at ON analytics_events(occurred_at DESC)`);
-  await pool.query(`CREATE INDEX IF NOT EXISTS idx_analytics_events_session_id ON analytics_events(session_id)`);
-  analyticsTableReady = true;
-}
-
 function getAnalyticsRestConfig() {
   const { supabaseUrl, supabaseServiceRoleKey } = getServerEnv();
   return supabaseUrl && supabaseServiceRoleKey
@@ -210,7 +187,6 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
     const days = Number.isFinite(daysRaw) ? Math.max(1, Math.min(90, Math.round(daysRaw))) : 30;
 
     try {
-      await ensureAnalyticsTable();
       const pool = getDbPool();
       const result = await pool.query(
         `
@@ -238,7 +214,6 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
     const verifiedUser = await verifyBearerUser(req);
 
     try {
-      await ensureAnalyticsTable();
       const pool = getDbPool();
 
       await pool.query(

@@ -45,6 +45,7 @@ export function getDbPool() {
 
   pool = new Pool({
     ...poolConfig,
+    max: 1,
     ssl:
       process.env.PGSSLMODE === 'disable'
         ? false

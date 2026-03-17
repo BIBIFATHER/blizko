@@ -1,12 +1,12 @@
 export type AITextResponse = { text: string };
 
 type AIMessage = {
-  role: 'user' | 'system' | 'assistant';
+  role: 'user' | 'assistant';
   content: string;
 };
 
 export type AIRequestOptions = {
-  systemPrompt?: string;
+  instructionPreset?: 'assessment_structured_summary_v1';
   temperature?: number;
   responseMimeType?: string;
   responseSchema?: unknown;
@@ -22,6 +22,7 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
     body: JSON.stringify({
       prompt,
       messages,
+      instructionPreset: options?.instructionPreset,
       temperature: options?.temperature,
       responseMimeType: options?.responseMimeType,
       responseSchema: options?.responseSchema,
@@ -55,13 +56,7 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
 export async function aiText(prompt: string, options?: AIRequestOptions): Promise<string> {
   if (!prompt?.trim()) return '';
 
-  const messages: AIMessage[] = [];
-
-  if (options?.systemPrompt) {
-    messages.push({ role: 'system', content: options.systemPrompt });
-  }
-
-  messages.push({ role: 'user', content: prompt });
+  const messages: AIMessage[] = [{ role: 'user', content: prompt }];
   return callAi(messages, options);
 }
 
@@ -83,10 +78,6 @@ export async function aiImage(file: File, prompt: string, options?: AIRequestOpt
       content: `${prompt}\n\n[image_data_url]\n${imageDataUrl}`,
     },
   ];
-
-  if (options?.systemPrompt) {
-    messages.unshift({ role: 'system', content: options.systemPrompt });
-  }
 
   return callAi(messages, options);
 }

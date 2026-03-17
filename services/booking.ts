@@ -80,9 +80,14 @@ function sortBookings(items: Booking[]): Booking[] {
 function mergeRemoteWithPending(remoteItems: Booking[], localItems: Booking[], pendingIds: string[]): Booking[] {
     if (pendingIds.length === 0) return sortBookings(remoteItems);
 
-    const remoteIds = new Set(remoteItems.map((item) => item.id));
-    const pendingItems = localItems.filter((item) => pendingIds.includes(item.id) && !remoteIds.has(item.id));
-    return sortBookings([...pendingItems, ...remoteItems]);
+    const merged = new Map(remoteItems.map((item) => [item.id, item] as const));
+    const pendingItems = localItems.filter((item) => pendingIds.includes(item.id));
+
+    pendingItems.forEach((item) => {
+        merged.set(item.id, item);
+    });
+
+    return sortBookings(Array.from(merged.values()));
 }
 
 async function remoteSaveBooking(booking: Booking): Promise<Booking | null> {
@@ -192,11 +197,6 @@ export async function getBookingsForUser(userId: string): Promise<Booking[]> {
                 const remoteBookings = data as Booking[];
                 const merged = mergeRemoteWithPending(remoteBookings, localUserBookings, getPendingBookingIds());
                 upsertLocalBookings(merged);
-
-                const remoteIds = new Set(remoteBookings.map((booking) => booking.id));
-                setPendingBookingIds(
-                    getPendingBookingIds().filter((id) => !remoteIds.has(id))
-                );
                 return merged;
             }
         } catch (e) {
@@ -220,9 +220,6 @@ export async function getAllBookings(): Promise<Booking[]> {
                 const remoteBookings = data as Booking[];
                 const merged = mergeRemoteWithPending(remoteBookings, getLocalBookings(), getPendingBookingIds());
                 setLocalBookings(merged);
-                setPendingBookingIds(
-                    getPendingBookingIds().filter((id) => !remoteBookings.some((booking) => booking.id === id))
-                );
                 return merged;
             }
         } catch (e) {

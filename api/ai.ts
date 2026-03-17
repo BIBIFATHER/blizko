@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
-import { getGeminiApiKey, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
+import { getGeminiApiKey, getGeminiInstruction, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
 
 const REQUEST_TIMEOUT_MS = 20000;
 const MAX_RETRIES = 2;
@@ -12,6 +12,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 type BodyLike = {
   prompt?: string;
   messages?: Array<{ role?: string; content?: string }>;
+  instructionPreset?: string;
   temperature?: number;
   responseMimeType?: string;
   responseSchema?: unknown;
@@ -28,16 +29,6 @@ function extractUserContent(body: BodyLike): string {
 
   const directPrompt = typeof body?.prompt === 'string' ? body.prompt.trim() : '';
   return directPrompt;
-}
-
-function extractSystemInstruction(body: BodyLike): string {
-  const messages = Array.isArray(body?.messages) ? body.messages : [];
-  const systemMessage = messages
-    .slice()
-    .reverse()
-    .find((m) => m?.role === 'system' && typeof m?.content === 'string')?.content;
-
-  return systemMessage?.trim() || '';
 }
 
 function parseImagePayload(userContent: string): {
@@ -85,7 +76,7 @@ async function callGemini(apiKey: string, model: string, body: BodyLike): Promis
       contents: [{ role: 'user', parts: parts.length ? parts : [{ text: userContent }] }],
     };
 
-    const systemInstruction = extractSystemInstruction(body);
+    const systemInstruction = getGeminiInstruction(body.instructionPreset);
     if (systemInstruction) {
       payload.systemInstruction = { parts: [{ text: systemInstruction }] };
     }

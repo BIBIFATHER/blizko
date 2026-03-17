@@ -529,23 +529,7 @@ async function generateAiStructuredSummary(
 
   try {
     const raw = await aiText(prompt, {
-      systemPrompt:
-        `You are a moderation assistant for a childcare platform.
-Summarize only observable communication patterns from questionnaire answers.
-Never diagnose personality, mental health, or hidden traits.
-Return ONLY valid JSON with:
-{
-  "parentSafeSummary": string,
-  "moderationNotes": string,
-  "extractedSignals": string[],
-  "watchouts": string[]
-}
-
-Rules:
-- parentSafeSummary must be warm, practical, and safe for parents
-- moderationNotes should be concise and useful for an internal reviewer
-- extractedSignals must be plain-language signal names, not diagnoses
-- watchouts must be cautious and evidence-based`,
+      instructionPreset: 'assessment_structured_summary_v1',
       temperature: 0.2,
       responseMimeType: 'application/json',
       responseSchema: {

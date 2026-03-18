@@ -1,5 +1,9 @@
 # Blizko — Marketing Strategy & ASO
 
+> Deprecated. This document contains early-stage claims that no longer match current product reality.
+>
+> Use [2026-03-17_redesign_research_marketing_pr_brief.md](/Users/anton/Desktop/blizko%203/docs/2026-03-17_redesign_research_marketing_pr_brief.md) as the current source of truth for positioning, marketing, and PR.
+
 ## Позиционирование (April Dunford)
 
 ### Конкурентные альтернативы

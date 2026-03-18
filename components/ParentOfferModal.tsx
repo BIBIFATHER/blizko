@@ -100,7 +100,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
             isLoading={isLoading}
             className="w-full"
           >
-            {isLoading ? (lang === 'ru' ? 'Переход к оплате...' : 'Redirecting...') : text.parentOfferSubmit}
+            {isLoading ? (lang === 'ru' ? 'Отправляем...' : 'Submitting...') : text.parentOfferSubmit}
           </Button>
         </div>
       </div>

@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Input, Textarea, ChipGroup, ProgressBar, Badge } from './UI';
+import { Button, Input, Textarea, ChipGroup, Badge } from './UI';
 import { AvailabilityCalendar } from './AvailabilityCalendar';
 import { ParentRequest, Language } from '../types';
-import { ArrowLeft, Upload, MapPin, Sparkles } from 'lucide-react';
+import { ArrowLeft, Upload, MapPin, ChevronDown, ChevronUp, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { ParentOfferModal } from './ParentOfferModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
 import { t } from '../src/core/i18n/translations';
 import { detectUserLocation } from '../services/geolocation';
-import { supabase } from '../services/supabase';
 import {
   trackCTA,
   trackDocumentUploaded,
@@ -23,8 +22,6 @@ interface ParentFormProps {
   lang: Language;
 }
 
-const MATCHING_FEE_RUB = 990;
-
 export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,13 +29,15 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   const onBack = () => navigate(-1);
   const text = t[lang];
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'info' } | null>(null);
   const [showOffer, setShowOffer] = useState(false);
   const [showDocUpload, setShowDocUpload] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   const [trackedMilestones, setTrackedMilestones] = useState<number[]>([]);
-  const [paymentDraftKey] = useState(() => crypto.randomUUID());
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showPsychology, setShowPsychology] = useState(false);
   const [advanced, setAdvanced] = useState({
     cameras: 'ok',
     travel: 'no',
@@ -58,8 +57,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   };
 
   const parsedBudget = parseBudget(initialData?.budget);
-  const sectionLabel = "flex items-center gap-3 text-xs uppercase tracking-wider text-stone-400 font-semibold";
-  const selectClass = "w-full text-sm border border-stone-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-amber-200/50 focus:border-amber-300 transition-all";
+  const selectClass = "w-full text-sm border border-stone-200 rounded-xl px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-amber-200/50 focus:border-amber-300 transition-all";
 
   const [formData, setFormData] = useState({
     city: initialData?.city || '',
@@ -142,67 +140,16 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
     };
   };
 
-  const getPaymentAuthHeaders = async () => {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (!supabase) return headers;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) return headers;
-
-    headers.Authorization = `Bearer ${session.access_token}`;
-    return headers;
-  };
-
   const handleOfferAccept = async () => {
     setLoading(true);
     trackOfferAccepted('parent');
 
     try {
       const payload = buildParentRequestPayload();
-
-      if (initialData?.id) {
-        await onSubmit(payload);
-        return;
-      }
-
-      const headers = await getPaymentAuthHeaders();
-      if (!headers.Authorization) {
-        window.dispatchEvent(new CustomEvent('blizko:open-auth-modal', { detail: { source: 'parent_payment_required' } }));
-        alert(lang === 'ru' ? 'Перед оплатой войдите в аккаунт.' : 'Please sign in before paying.');
-        return;
-      }
-
-      const response = await fetch('/api/payments/create', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          amount: MATCHING_FEE_RUB,
-          description: 'Оплата подбора няни Blizko',
-          draftKey: paymentDraftKey,
-          parentRequest: payload,
-        }),
-      });
-
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const message = typeof data?.error === 'string'
-          ? data.error
-          : lang === 'ru'
-            ? 'Не удалось создать ссылку на оплату.'
-            : 'Failed to create payment link.';
-        alert(message);
-        return;
-      }
-
-      if (!data.confirmation_url) {
-        alert(lang === 'ru' ? 'Платёжная ссылка не получена.' : 'Payment link was not returned.');
-        return;
-      }
-
-      setShowOffer(false);
-      window.location.href = data.confirmation_url;
+      await onSubmit(payload);
     } catch (e) {
       console.error(e);
+      setToast({ message: lang === 'ru' ? 'Не удалось отправить заявку. Попробуйте ещё раз.' : 'Failed to submit. Please try again.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -219,10 +166,10 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
         trackLocationDetected('parent');
       }
       if (!value) {
-        alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
+        setToast({ message: lang === 'ru' ? 'Не удалось определить район автоматически. Введите вручную.' : 'Could not detect location. Please enter manually.', type: 'info' });
       }
     } else if (result.error) {
-      alert(result.error);
+      setToast({ message: result.error, type: 'error' });
     }
 
     setDetectingLocation(false);
@@ -253,21 +200,11 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
     return () => clearTimeout(tmr);
   }, [formData.city]);
 
-  // Goal-Gradient: calculate form completion %
-  const calcProgress = () => {
-    let filled = 0;
-    const total = 6;
-    if (formData.city.trim()) filled++;
-    if (formData.childAge) filled++;
-    if (formData.schedule) filled++;
-    if (formData.budgetHourly.trim()) filled++;
-    if (formData.budgetMonthly.trim()) filled++;
-    if (requirements.length > 0 || formData.comment.trim() || formData.analysisNotes.trim()) filled++;
-    // Endowed Progress: start at 10% to feel already started
-    return Math.max(10, Math.round((filled / total) * 100));
-  };
+  // Required fields check
+  const requiredFilled = formData.city.trim() && formData.childAge && formData.schedule && formData.budgetHourly.trim() && formData.budgetMonthly.trim();
 
-  const progress = calcProgress();
+  // Current act for progress dots
+  const currentAct = !formData.city.trim() || !formData.childAge || !formData.schedule ? 1 : !formData.budgetHourly.trim() || !formData.budgetMonthly.trim() ? 2 : 3;
 
   useEffect(() => {
     trackParentFormStarted();
@@ -275,331 +212,417 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
 
   useEffect(() => {
     const milestones = [
-      { threshold: 25, step: 1, label: 'parent_progress_25' },
-      { threshold: 50, step: 2, label: 'parent_progress_50' },
-      { threshold: 75, step: 3, label: 'parent_progress_75' },
+      { threshold: 1, step: 1, label: 'parent_act_1' },
+      { threshold: 2, step: 2, label: 'parent_act_2' },
+      { threshold: 3, step: 3, label: 'parent_act_3' },
     ];
 
     milestones.forEach((milestone) => {
-      if (progress >= milestone.threshold && !trackedMilestones.includes(milestone.threshold)) {
+      if (currentAct >= milestone.threshold && !trackedMilestones.includes(milestone.threshold)) {
         trackFormStep('parent', milestone.step, milestone.label);
         setTrackedMilestones((prev) => [...prev, milestone.threshold]);
       }
     });
-  }, [progress, trackedMilestones]);
+  }, [currentAct, trackedMilestones]);
+
+  const Eyebrow: React.FC<{ step: number; label: string; active: boolean }> = ({ step, label, active }) => (
+    <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-1.5">
+        {[1, 2, 3].map((n) => (
+          <div
+            key={n}
+            className={`w-2 h-2 rounded-full transition-colors ${n === step && active ? 'bg-stone-800' : n < step ? 'bg-stone-300' : 'bg-stone-200'}`}
+          />
+        ))}
+      </div>
+      <span className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400">
+        {label}
+      </span>
+    </div>
+  );
 
   return (
-    <div className="animate-slide-up">
-      <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-4 flex items-center gap-2 transition-colors">
+    <div className="app-shell animate-fade-in">
+      <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-5 flex items-center gap-2 transition-colors">
         <ArrowLeft size={18} /> {text.back}
       </button>
 
-      <div className="mb-5">
-        <h2 className="text-2xl font-semibold text-stone-800">{initialData ? 'Редактировать заявку' : text.pFormTitle}</h2>
-        <p className="text-sm text-stone-500 mt-1">{initialData ? 'Обновите данные вашей заявки' : text.pFormSubtitle}</p>
-        <ProgressBar value={progress} showPercent label={lang === 'ru' ? 'Заполнено' : 'Completed'} className="mt-3" />
+      <div className="mb-6">
+        <h2 className="text-2xl font-extrabold text-stone-900 tracking-[-0.03em]">
+          {initialData ? 'Редактировать заявку' : text.pFormTitle}
+        </h2>
+        <p className="text-sm text-stone-500 mt-1.5 leading-relaxed max-w-sm">
+          {initialData
+            ? 'Обновите данные вашей заявки'
+            : (lang === 'ru'
+              ? 'Расскажите о семье — мы подберём 2-3 кандидата с объяснениями, почему они подходят.'
+              : 'Tell us about your family — we\'ll find 2-3 candidates with clear reasons why they fit.'
+            )}
+        </p>
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-6">
-        <div className="section-label">{lang === 'ru' ? 'Обязательное' : 'Required'}</div>
-        <div className="relative">
-          <Input
-            label={`${text.cityLabel} *`}
-            placeholder={lang === 'ru' ? "Москва, Хамовники" : "New York, Brooklyn"}
-            value={formData.city}
-            onChange={e => {
-              setFormData({ ...formData, city: e.target.value });
-              setShowCitySuggestions(true);
-            }}
-            required
-          />
 
-          {showCitySuggestions && citySuggestions.length > 0 && (
-            <div className="mt-1 border border-stone-200 rounded-lg bg-white shadow-sm max-h-40 overflow-auto">
-              {citySuggestions.map((s, i) => (
-                <button
-                  key={`${s}-${i}`}
-                  type="button"
-                  onClick={() => {
-                    setFormData((prev) => ({ ...prev, city: s }));
-                    setShowCitySuggestions(false);
-                  }}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-stone-50"
-                >
-                  {s}
-                </button>
-              ))}
+        {/* Inline toast — Gentler Streak pattern */}
+        {toast && (
+          <div
+            className={`rounded-[16px] px-4 py-3 text-sm flex items-center justify-between animate-fade-in ${
+              toast.type === 'error'
+                ? 'bg-rose-50 border border-rose-200/60 text-rose-700'
+                : 'bg-amber-50 border border-amber-200/60 text-amber-700'
+            }`}
+          >
+            <span>{toast.message}</span>
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              className="ml-3 text-stone-400 hover:text-stone-600 shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* ===== Акт 1: О семье ===== */}
+        <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
+          <Eyebrow step={1} label={lang === 'ru' ? 'О семье' : 'About your family'} active={currentAct === 1} />
+
+          <div className="space-y-1">
+            <div className="relative">
+              <Input
+                label={`${text.cityLabel} *`}
+                placeholder={lang === 'ru' ? "Москва, Хамовники" : "New York, Brooklyn"}
+                value={formData.city}
+                onChange={e => {
+                  setFormData({ ...formData, city: e.target.value });
+                  setShowCitySuggestions(true);
+                }}
+                required
+              />
+
+              {showCitySuggestions && citySuggestions.length > 0 && (
+                <div className="mt-1 border border-stone-200 rounded-xl bg-white shadow-sm max-h-40 overflow-auto absolute z-10 left-0 right-0">
+                  {citySuggestions.map((s, i) => (
+                    <button
+                      key={`${s}-${i}`}
+                      type="button"
+                      onClick={() => {
+                        setFormData((prev) => ({ ...prev, city: s }));
+                        setShowCitySuggestions(false);
+                      }}
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-stone-50 first:rounded-t-xl last:rounded-b-xl"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={detectLocation}
+                disabled={detectingLocation}
+                className={`mt-1 mb-3 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 ${detectingLocation ? 'bg-stone-100 text-stone-400' : 'bg-sky-50 text-sky-700 hover:bg-sky-100'}`}
+              >
+                <MapPin size={13} />
+                {detectingLocation
+                  ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
+                  : (lang === 'ru' ? 'Определить автоматически' : 'Detect location')}
+              </button>
             </div>
-          )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input
+                label={lang === 'ru' ? 'Район' : 'District'}
+                placeholder={lang === 'ru' ? 'Хамовники, ЮАО, Бутово...' : 'Brooklyn, Soho...'}
+                value={formData.district}
+                onChange={e => setFormData({ ...formData, district: e.target.value })}
+              />
+              <Input
+                label={lang === 'ru' ? 'Ближайшее метро' : 'Nearest metro'}
+                placeholder={lang === 'ru' ? 'Парк Культуры' : 'Central Station'}
+                value={formData.metro}
+                onChange={e => setFormData({ ...formData, metro: e.target.value })}
+              />
+            </div>
+
+            <ChipGroup
+              label={`${text.childAgeLabel} *`}
+              options={text.ageOptions}
+              selected={formData.childAge ? [formData.childAge] : []}
+              onChange={(s) => setFormData({ ...formData, childAge: s[0] || '' })}
+              single
+            />
+
+            <ChipGroup
+              label={`${text.scheduleLabel} *`}
+              options={text.scheduleOptions}
+              selected={formData.schedule ? [formData.schedule] : []}
+              onChange={(s) => setFormData({ ...formData, schedule: s[0] || '' })}
+              single
+            />
+          </div>
+        </section>
+
+        {/* ===== Акт 2: Условия и бюджет ===== */}
+        <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
+          <Eyebrow step={2} label={lang === 'ru' ? 'Условия и бюджет' : 'Terms & budget'} active={currentAct === 2} />
+
+          <div className="space-y-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input
+                label={`${lang === 'ru' ? 'Цена за час' : 'Price per hour'} *`}
+                placeholder={lang === 'ru' ? '600 - 800 ₽/час' : '20 - 30 $/hour'}
+                value={formData.budgetHourly}
+                onChange={e => setFormData({ ...formData, budgetHourly: e.target.value })}
+                required
+              />
+              <Input
+                label={`${lang === 'ru' ? 'Цена за месяц' : 'Price per month'} *`}
+                placeholder={lang === 'ru' ? '120 000 - 180 000 ₽/мес' : '2500 - 4000 $/month'}
+                value={formData.budgetMonthly}
+                onChange={e => setFormData({ ...formData, budgetMonthly: e.target.value })}
+                required
+              />
+            </div>
+
+            {/* Additional params */}
+            <div className="rounded-[16px] bg-stone-50/90 border border-stone-200/70 p-4 space-y-2">
+              <div className="text-[12px] font-semibold text-stone-500 mb-1">
+                {lang === 'ru' ? 'Дополнительные условия' : 'Additional conditions'}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <select className={selectClass} value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
+                  <option value="ok">Камеры: допустимо</option>
+                  <option value="not_ok">Камеры: нежелательно</option>
+                </select>
+                <select className={selectClass} value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
+                  <option value="no">Поездки: не нужны</option>
+                  <option value="yes">Поездки: возможны</option>
+                </select>
+                <select className={selectClass} value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
+                  <option value="light">Дом: только легкая помощь</option>
+                  <option value="none">Дом: не требуется</option>
+                  <option value="extended">Дом: расширенная помощь</option>
+                </select>
+                <select className={selectClass} value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
+                  <option value="has_pets">Дома есть животные</option>
+                  <option value="no_pets">Животных нет</option>
+                </select>
+                <select className={selectClass} value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
+                  <option value="sometimes">Ночные смены: иногда</option>
+                  <option value="no">Ночные смены: не нужны</option>
+                  <option value="yes">Ночные смены: да</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Calendar — collapsed by default */}
+            <button
+              type="button"
+              onClick={() => setShowCalendar(!showCalendar)}
+              className="w-full flex items-center justify-between rounded-[16px] bg-stone-50/90 border border-stone-200/70 px-4 py-3 text-sm text-stone-600 font-medium hover:bg-stone-100/70 transition-colors"
+            >
+              <span>{lang === 'ru' ? '📅 Добавить расписание' : '📅 Add schedule'}</span>
+              {showCalendar ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+            {showCalendar && (
+              <div className="rounded-[16px] bg-white border border-stone-200/70 p-4 space-y-3 animate-fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Input
+                    label={lang === 'ru' ? 'Дата начала' : 'Start date'}
+                    type="date"
+                    value={formData.dateFrom}
+                    onChange={(e) => setFormData({ ...formData, dateFrom: e.target.value })}
+                  />
+                  <Input
+                    label={lang === 'ru' ? 'Дата окончания' : 'End date'}
+                    type="date"
+                    value={formData.dateTo}
+                    onChange={(e) => setFormData({ ...formData, dateTo: e.target.value })}
+                  />
+                </div>
+                <AvailabilityCalendar
+                  title={lang === 'ru' ? 'Выберите удобные окна' : 'Select preferred slots'}
+                  subtitle={lang === 'ru' ? 'Можно отметить несколько слотов в неделю' : 'Mark multiple slots across the week'}
+                  statusMap={Object.fromEntries(Object.entries(selectedSlots).map(([k, v]) => [k, v ? 'selected' : 'available']))}
+                  onToggle={toggleSlot}
+                  legend
+                />
+              </div>
+            )}
+
+            <Textarea
+              label={text.commentLabel}
+              placeholder={lang === 'ru' ? "Например: у нас есть кот, ребёнок засыпает с книгой..." : "Example: we have a cat, the child falls asleep with a book..."}
+              value={formData.comment}
+              onChange={e => setFormData({ ...formData, comment: e.target.value })}
+            />
+          </div>
+        </section>
+
+        {/* ===== Акт 3: Для точного подбора (optional) ===== */}
+        <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
+          <Eyebrow step={3} label={lang === 'ru' ? 'Для точного подбора' : 'For precise matching'} active={currentAct === 3} />
 
           <button
             type="button"
-            onClick={detectLocation}
-            disabled={detectingLocation}
-            className={`mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 ${detectingLocation ? 'bg-stone-100 text-stone-400' : 'bg-sky-100 text-sky-700 hover:bg-sky-200'}`}
+            onClick={() => setShowPsychology(!showPsychology)}
+            className="w-full flex items-center justify-between rounded-[16px] bg-violet-50/80 border border-violet-200/60 px-4 py-3 text-sm text-violet-700 font-medium hover:bg-violet-100/60 transition-colors mb-3"
           >
-            <MapPin size={14} />
-            {detectingLocation
-              ? (lang === 'ru' ? 'Определяем...' : 'Detecting...')
-              : (lang === 'ru' ? 'Определить местоположение' : 'Detect location')}
+            <span>{lang === 'ru' ? '🧠 Психологический профиль семьи' : '🧠 Family psychology profile'}</span>
+            {showPsychology ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
-            label={lang === 'ru' ? 'Район' : 'District'}
-            placeholder={lang === 'ru' ? 'Хамовники, ЮАО, Бутово...' : 'Brooklyn, Soho...'}
-            value={formData.district}
-            onChange={e => setFormData({ ...formData, district: e.target.value })}
-          />
-          <Input
-            label={lang === 'ru' ? 'Ближайшее метро' : 'Nearest metro'}
-            placeholder={lang === 'ru' ? 'Парк Культуры' : 'Central Station'}
-            value={formData.metro}
-            onChange={e => setFormData({ ...formData, metro: e.target.value })}
-          />
-        </div>
+          {showPsychology && (
+            <div className="rounded-[16px] bg-violet-50/50 border border-violet-200/40 p-4 space-y-3 animate-fade-in mb-3">
+              <div className="text-[11px] text-stone-500 mb-2">
+                {lang === 'ru' ? 'Помогает подобрать няню со совместимым стилем общения.' : 'Helps match a nanny with a compatible communication style.'}
+              </div>
 
-        <ChipGroup
-          label={`${text.childAgeLabel} *`}
-          options={text.ageOptions}
-          selected={formData.childAge ? [formData.childAge] : []}
-          onChange={(s) => setFormData({ ...formData, childAge: s[0] || '' })}
-          single
-        />
+              <label className="block text-xs text-stone-600">{lang === 'ru' ? 'Стиль семьи' : 'Family style'}</label>
+              <select
+                className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
+                value={riskProfile?.familyStyle || 'balanced'}
+                onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: e.target.value as any }))}
+              >
+                <option value="warm">Мягкий, эмпатичный</option>
+                <option value="structured">Структурный, с правилами</option>
+                <option value="balanced">Баланс</option>
+              </select>
 
-        <ChipGroup
-          label={`${text.scheduleLabel} *`}
-          options={text.scheduleOptions}
-          selected={formData.schedule ? [formData.schedule] : []}
-          onChange={(s) => setFormData({ ...formData, schedule: s[0] || '' })}
-          single
-        />
+              <label className="block text-xs text-stone-600">{lang === 'ru' ? 'Реакция ребёнка на стресс' : 'Child stress reaction'}</label>
+              <select
+                className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
+                value={riskProfile?.childStress || 'tantrum'}
+                onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: e.target.value as any }))}
+              >
+                <option value="cry">Плачет и ищет поддержку</option>
+                <option value="withdraw">Замыкается</option>
+                <option value="aggressive">Злится/агрессия</option>
+                <option value="tantrum">Истерики</option>
+              </select>
 
-        <div className={sectionLabel}>
-          <span className="h-px flex-1 bg-stone-200/70" />
-          Календарь
-          <span className="h-px flex-1 bg-stone-200/70" />
-        </div>
-        <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
-          <div className="text-sm font-semibold text-stone-700">Календарь бронирования</div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Input
-              label={lang === 'ru' ? 'Дата начала' : 'Start date'}
-              type="date"
-              value={formData.dateFrom}
-              onChange={(e) => setFormData({ ...formData, dateFrom: e.target.value })}
-            />
-            <Input
-              label={lang === 'ru' ? 'Дата окончания' : 'End date'}
-              type="date"
-              value={formData.dateTo}
-              onChange={(e) => setFormData({ ...formData, dateTo: e.target.value })}
-            />
-          </div>
-          <AvailabilityCalendar
-            title={lang === 'ru' ? 'Выберите удобные окна' : 'Select preferred slots'}
-            subtitle={lang === 'ru' ? 'Можно отметить несколько слотов в неделю' : 'Mark multiple slots across the week'}
-            statusMap={Object.fromEntries(Object.entries(selectedSlots).map(([k, v]) => [k, v ? 'selected' : 'available']))}
-            onToggle={toggleSlot}
-            legend
-          />
-        </div>
+              <ChipGroup
+                label={lang === 'ru' ? 'Триггеры ребёнка (1–3)' : 'Child triggers (1–3)'}
+                options={lang === 'ru' ? ['Шум', 'Смена режима', 'Новые люди', 'Запреты', 'Усталость'] : ['Noise', 'Routine changes', 'New people', 'Restrictions', 'Fatigue']}
+                selected={riskProfile?.triggers || []}
+                onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), triggers: list }))}
+              />
 
-        <div className={sectionLabel}>
-          <span className="h-px flex-1 bg-stone-200/70" />
-          Бюджет
-          <span className="h-px flex-1 bg-stone-200/70" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
-            label={`${lang === 'ru' ? 'Цена за час' : 'Price per hour'} *`}
-            placeholder={lang === 'ru' ? '600 - 800 ₽/час' : '20 - 30 $/hour'}
-            value={formData.budgetHourly}
-            onChange={e => setFormData({ ...formData, budgetHourly: e.target.value })}
-            required
-          />
-          <Input
-            label={`${lang === 'ru' ? 'Цена за месяц' : 'Price per month'} *`}
-            placeholder={lang === 'ru' ? '120 000 - 180 000 ₽/мес' : '2500 - 4000 $/month'}
-            value={formData.budgetMonthly}
-            onChange={e => setFormData({ ...formData, budgetMonthly: e.target.value })}
-            required
-          />
-        </div>
+              <label className="block text-xs text-stone-600">{lang === 'ru' ? 'Комфортный стиль няни' : 'Preferred nanny style'}</label>
+              <select
+                className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
+                value={riskProfile?.nannyStylePreference || 'gentle'}
+                onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: e.target.value as any }))}
+              >
+                <option value="gentle">Мягкая и спокойная</option>
+                <option value="strict">Структурная/строгая</option>
+                <option value="playful">Игровая и творческая</option>
+              </select>
 
-        <div className={sectionLabel}>
-          <span className="h-px flex-1 bg-stone-200/70" />
-          Дополнительно
-          <span className="h-px flex-1 bg-stone-200/70" />
-        </div>
-        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
-          <div className="text-xs font-semibold text-violet-700 mb-2">Дополнительные параметры</div>
-          <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <select className={`${selectClass} text-xs`} value={advanced.cameras} onChange={(e) => setAdvanced((p) => ({ ...p, cameras: e.target.value }))}>
-              <option value="ok">Камеры: допустимо</option>
-              <option value="not_ok">Камеры: нежелательно</option>
-            </select>
-            <select className={`${selectClass} text-xs`} value={advanced.travel} onChange={(e) => setAdvanced((p) => ({ ...p, travel: e.target.value }))}>
-              <option value="no">Поездки: не нужны</option>
-              <option value="yes">Поездки: возможны</option>
-            </select>
-            <select className={`${selectClass} text-xs`} value={advanced.household} onChange={(e) => setAdvanced((p) => ({ ...p, household: e.target.value }))}>
-              <option value="light">Дом: только легкая помощь</option>
-              <option value="none">Дом: не требуется</option>
-              <option value="extended">Дом: расширенная помощь</option>
-            </select>
-            <select className={`${selectClass} text-xs`} value={advanced.pets} onChange={(e) => setAdvanced((p) => ({ ...p, pets: e.target.value }))}>
-              <option value="has_pets">Дома есть животные</option>
-              <option value="no_pets">Животных нет</option>
-            </select>
-            <select className={`${selectClass} text-xs`} value={advanced.night} onChange={(e) => setAdvanced((p) => ({ ...p, night: e.target.value }))}>
-              <option value="sometimes">Ночные смены: иногда</option>
-              <option value="no">Ночные смены: не нужны</option>
-              <option value="yes">Ночные смены: да</option>
-            </select>
-          </div>
-        </div>
+              <label className="block text-xs text-stone-600">{lang === 'ru' ? 'Коммуникация от няни' : 'Communication preference'}</label>
+              <select
+                className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
+                value={riskProfile?.communicationPreference || 'regular'}
+                onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: e.target.value as any }))}
+              >
+                <option value="minimal">Минимум сообщений</option>
+                <option value="regular">Регулярно (2–3 апдейта)</option>
+                <option value="frequent">Часто в течение дня</option>
+              </select>
 
-        <div className={sectionLabel}>
-          <span className="h-px flex-1 bg-stone-200/70" />
-          Для точного подбора
-          <span className="h-px flex-1 bg-stone-200/70" />
-        </div>
-        <div className="bg-white border border-stone-200 rounded-xl p-3">
-          <div className="text-xs font-semibold text-stone-700 mb-2">Для точного анализа</div>
+              <ChipGroup
+                label={lang === 'ru' ? 'Потребности семьи' : 'Family needs'}
+                options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
+                selected={riskProfile?.needs || []}
+                onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), needs: list }))}
+              />
+
+              <label className="block text-xs text-stone-600">{lang === 'ru' ? 'Стиль общения (PCM)' : 'Communication style (PCM)'}</label>
+              <select
+                className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
+                value={riskProfile?.pcmType || 'harmonizer'}
+                onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
+              >
+                <option value="thinker">Мыслитель — логика, структура</option>
+                <option value="persister">Надёжный — ценности, ответственность</option>
+                <option value="harmonizer">Тёплый — эмпатия, забота</option>
+                <option value="rebel">Игривый — лёгкость, юмор</option>
+                <option value="imaginer">Спокойный — тишина, пространство</option>
+                <option value="promoter">Действенный — результат, скорость</option>
+              </select>
+            </div>
+          )}
+
           <Textarea
             label={lang === 'ru' ? 'Что важно знать о ребёнке и семье?' : 'What should we know about your family?'}
-            placeholder={lang === 'ru' ? 'Режим, привычки, триггеры, что недопустимо — всё, что поможет подобрать идеального человека.' : 'Routine, triggers, non-negotiables — anything that helps match the right person.'}
+            placeholder={lang === 'ru' ? 'Режим, привычки, что недопустимо — всё, что поможет подобрать подходящего кандидата.' : 'Routine, triggers, non-negotiables — anything helping match the right person.'}
             value={formData.analysisNotes}
             onChange={e => setFormData({ ...formData, analysisNotes: e.target.value })}
           />
-        </div>
 
-        <Textarea
-          label={text.commentLabel}
-          placeholder={lang === 'ru' ? "Например: у нас есть кот..." : "Example: we have a cat..."}
-          value={formData.comment}
-          onChange={e => setFormData({ ...formData, comment: e.target.value })}
-        />
-
-        <div className="bg-violet-50 border border-violet-200 rounded-xl p-3 space-y-3">
-          <div className="text-sm font-semibold text-violet-800">Психологический профиль семьи (для лучшего мэтчинга)</div>
-
-          <label className="block text-xs text-stone-600">Стиль семьи</label>
-          <select
-            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-            value={riskProfile?.familyStyle || 'balanced'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: e.target.value as any }))}
-          >
-            <option value="warm">Мягкий, эмпатичный</option>
-            <option value="structured">Структурный, с правилами</option>
-            <option value="balanced">Баланс</option>
-          </select>
-
-          <label className="block text-xs text-stone-600">Как ребёнок реагирует на стресс?</label>
-          <select
-            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-            value={riskProfile?.childStress || 'tantrum'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: e.target.value as any }))}
-          >
-            <option value="cry">Плачет и ищет поддержку</option>
-            <option value="withdraw">Замыкается</option>
-            <option value="aggressive">Злится/агрессия</option>
-            <option value="tantrum">Истерики</option>
-          </select>
-
-          <ChipGroup
-            label={lang === 'ru' ? 'Триггеры ребёнка (выберите 1–3)' : 'Child triggers (1–3)'}
-            options={lang === 'ru' ? ['Шум', 'Смена режима', 'Новые люди', 'Запреты', 'Усталость'] : ['Noise', 'Routine changes', 'New people', 'Restrictions', 'Fatigue']}
-            selected={riskProfile?.triggers || []}
-            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), triggers: list }))}
-          />
-
-          <label className="block text-xs text-stone-600">Комфортный стиль няни</label>
-          <select
-            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-            value={riskProfile?.nannyStylePreference || 'gentle'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: e.target.value as any }))}
-          >
-            <option value="gentle">Мягкая и спокойная</option>
-            <option value="strict">Структурная/строгая</option>
-            <option value="playful">Игровая и творческая</option>
-          </select>
-
-          <label className="block text-xs text-stone-600">Коммуникация от няни</label>
-          <select
-            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-            value={riskProfile?.communicationPreference || 'regular'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: e.target.value as any }))}
-          >
-            <option value="minimal">Минимум сообщений</option>
-            <option value="regular">Регулярно (2–3 апдейта)</option>
-            <option value="frequent">Часто в течение дня</option>
-          </select>
-
-          <ChipGroup
-            label={lang === 'ru' ? 'Потребности семьи' : 'Family needs'}
-            options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
-            selected={riskProfile?.needs || []}
-            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), needs: list }))}
-          />
-
-          <label className="block text-xs text-stone-600">Стиль общения (PCM)</label>
-          <select
-            className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
-            value={riskProfile?.pcmType || 'harmonizer'}
-            onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
-          >
-            <option value="thinker">Мыслитель — логика, структура</option>
-            <option value="persister">Надёжный — ценности, ответственность</option>
-            <option value="harmonizer">Тёплый — эмпатия, забота</option>
-            <option value="rebel">Игривый — лёгкость, юмор</option>
-            <option value="imaginer">Спокойный — тишина, пространство</option>
-            <option value="promoter">Действенный — результат, скорость</option>
-          </select>
-
-          <div className="text-[11px] text-stone-500">Подскажем няню со схожим стилем общения.</div>
-
-        </div>
-
-        <div className="bg-stone-50 border border-stone-200 rounded-xl p-3">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between rounded-[16px] bg-stone-50/90 border border-stone-200/70 px-4 py-3">
             <div className="text-sm text-stone-600">
               {lang === 'ru' ? `Документы: ${documents.length}` : `Documents: ${documents.length}`}
             </div>
             <button
               type="button"
               onClick={() => setShowDocUpload(true)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200 flex items-center gap-1"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 flex items-center gap-1"
             >
-              <Upload size={14} /> {lang === 'ru' ? 'Загрузить документ' : 'Upload document'}
+              <Upload size={13} /> {lang === 'ru' ? 'Загрузить' : 'Upload'}
             </button>
           </div>
+        </section>
+
+        {/* ===== What you get ===== */}
+        {!initialData && (
+          <section className="rounded-[24px] bg-stone-50/95 border border-stone-200/80 p-5 space-y-3">
+            <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-1">
+              {lang === 'ru' ? 'Что вы получите' : 'What you get'}
+            </div>
+            <div className="space-y-2">
+              {(lang === 'ru' ? [
+                'Shortlist 2-3 кандидата с объяснениями',
+                'Модерация профилей',
+                'Поддержка на следующем шаге',
+              ] : [
+                'Shortlist of 2-3 candidates with explanations',
+                'Moderated profiles',
+                'Support for the next step',
+              ]).map((item) => (
+                <div key={item} className="flex items-center gap-2.5 text-sm text-stone-600">
+                  <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="text-[11px] text-stone-500 pt-2 border-t border-stone-200/60">
+              {lang === 'ru' ? 'Бесплатно для родителей' : 'Free for parents'}
+            </div>
+          </section>
+        )}
+
+        {/* ===== Trust Footer ===== */}
+        <div className="flex items-center gap-2 px-1">
+          <Badge variant="trust"><ShieldCheck size={11} /> {lang === 'ru' ? 'Данные зашифрованы' : 'Data encrypted'}</Badge>
         </div>
 
-        {/* Trust footer — Commitment/Consistency */}
-        <div className="bg-white/80 backdrop-blur-sm border border-stone-100 rounded-2xl p-4 space-y-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="trust">{lang === 'ru' ? 'Данные зашифрованы' : 'Data encrypted'}</Badge>
-          </div>
-          <div className="text-sm text-stone-600">{text.parentEtaLine}</div>
-          <div className="text-xs text-stone-400">{text.parentSafetyLine}</div>
-        </div>
-
+        {/* ===== Submit CTA ===== */}
         <Button
           type="button"
           isLoading={loading}
-          pulse={progress >= 80}
-          className="mt-3"
+          pulse={!!requiredFilled && !loading}
           disabled={initialData?.status === 'approved'}
           onClick={() => setShowOffer(true)}
+          className="!bg-stone-900 !text-white !border-stone-900 hover:!bg-stone-800 shadow-[0_12px_30px_rgba(17,24,39,0.18)]"
         >
           {initialData?.status === 'approved'
             ? (lang === 'ru' ? 'Заявка одобрена' : 'Request approved')
             : loading
-              ? (lang === 'ru' ? 'AI подбирает няню...' : 'AI is searching...')
-              : (<><Sparkles size={16} /> {text.submitParent}</>)}
+              ? (lang === 'ru' ? 'Обрабатываем...' : 'Processing...')
+              : (lang === 'ru' ? 'Начать подбор' : 'Start matching')}
         </Button>
       </form>
 

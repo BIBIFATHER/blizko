@@ -32,6 +32,7 @@ const SupportChat = lazy(() => import('./components/SupportChat').then((module) 
 const AuthModal = lazy(() => import('./components/AuthModal').then((module) => ({ default: module.AuthModal })));
 const UserProfileModal = lazy(() => import('./components/UserProfileModal').then((module) => ({ default: module.UserProfileModal })));
 const ShareModal = lazy(() => import('./components/ShareModal').then((module) => ({ default: module.ShareModal })));
+const RoleDashboard = lazy(() => import('./components/dashboard/RoleDashboard').then((module) => ({ default: module.RoleDashboard })));
 
 function RouteFallback() {
   return <div className="flex items-center justify-center py-16 text-sm text-stone-500">Загружаем...</div>;
@@ -196,7 +197,7 @@ export default function App() {
               path="/nanny-dashboard"
               element={
                 <RequireRole role="nanny" user={user} isAdmin={isAdmin}>
-                  <div className="text-sm text-stone-500">Nanny dashboard</div>
+                  <RoleDashboard user={user!} lang={lang} />
                 </RequireRole>
               }
             />
@@ -204,7 +205,7 @@ export default function App() {
               path="/family-dashboard"
               element={
                 <RequireRole role="parent" user={user} isAdmin={isAdmin}>
-                  <div className="text-sm text-stone-500">Family dashboard</div>
+                  <RoleDashboard user={user!} lang={lang} />
                 </RequireRole>
               }
             />

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Card, Badge, ProgressBar, StatusIndicator } from './UI';
 import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2, ArrowRight } from 'lucide-react';
 import { SubmissionResult, Language } from '../types';
 import { t } from '../src/core/i18n/translations';
 import { supabase } from '../services/supabase';
+import { getMyParentRequests, getNannyProfiles } from '../services/storage';
 
 interface SuccessScreenProps {
   lang: Language;
@@ -17,10 +18,14 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
   const result: SubmissionResult | undefined = location.state?.result;
   const isPaid = new URLSearchParams(location.search).get('paid') === 'true';
   const paymentId = new URLSearchParams(location.search).get('payment_id');
+  const processedPaymentRef = useRef<string | null>(null);
 
   const onHome = () => navigate('/');
   const [step, setStep] = useState<'analyzing' | 'matching' | 'done'>(isPaid ? 'done' : 'analyzing');
   const [visible, setVisible] = useState(false);
+  const [paidFlowState, setPaidFlowState] = useState<'finalizing' | 'matching' | 'fallback'>(
+    isPaid && paymentId ? 'finalizing' : 'fallback',
+  );
 
   // Simulate AI Thinking Process
   useEffect(() => {
@@ -37,15 +42,23 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
   useEffect(() => {
     if (!isPaid || !paymentId || !supabase) return;
+    if (processedPaymentRef.current === paymentId) return;
+
+    processedPaymentRef.current = paymentId;
 
     let cancelled = false;
 
     const finalizePayment = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token || cancelled) return;
+        if (!session?.access_token || cancelled) {
+          if (!cancelled) setPaidFlowState('fallback');
+          return;
+        }
 
-        await fetch('/api/payments/finalize', {
+        setPaidFlowState('finalizing');
+
+        const finalizeResponse = await fetch('/api/payments/finalize', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -53,8 +66,55 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           },
           body: JSON.stringify({ paymentId }),
         });
+
+        const finalizePayload = await finalizeResponse.json().catch(() => null);
+        const parentRequestId = String(finalizePayload?.parentRequestId || '').trim();
+
+        if (
+          cancelled ||
+          !finalizeResponse.ok ||
+          !finalizePayload?.ok ||
+          finalizePayload?.status !== 'succeeded' ||
+          !parentRequestId
+        ) {
+          if (!cancelled) setPaidFlowState('fallback');
+          return;
+        }
+
+        setPaidFlowState('matching');
+
+        const requests = await getMyParentRequests();
+        const paidRequest = requests.find((item) => item.id === parentRequestId);
+
+        if (!paidRequest || cancelled) {
+          if (!cancelled) setPaidFlowState('fallback');
+          return;
+        }
+
+        const allNannies = await getNannyProfiles();
+        const { findBestMatch } = await import('../src/core/ai/matchingAi');
+        const { id, createdAt, type, ...requestInput } = paidRequest;
+        const aiMatchResult = await findBestMatch(requestInput, allNannies, lang, session.user.id);
+
+        if (cancelled) return;
+
+        if (aiMatchResult.matchResult?.candidates?.length) {
+          navigate('/match-results', {
+            replace: true,
+            state: {
+              matchResult: {
+                ...aiMatchResult.matchResult,
+                requestId: aiMatchResult.matchResult.requestId || paidRequest.id,
+              },
+            },
+          });
+          return;
+        }
+
+        setPaidFlowState('fallback');
       } catch (error) {
         console.warn('Payment finalization sync failed:', error);
+        if (!cancelled) setPaidFlowState('fallback');
       }
     };
 
@@ -63,7 +123,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
     return () => {
       cancelled = true;
     };
-  }, [isPaid, paymentId]);
+  }, [isPaid, paymentId, lang, navigate]);
 
   if (!result && !isPaid) {
     return (
@@ -91,6 +151,50 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
   }
 
   if (isPaid) {
+    if (paidFlowState !== 'fallback') {
+      const isMatching = paidFlowState === 'matching';
+
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 animate-fade-in">
+          <div className="relative">
+            <div className="w-24 h-24 bg-sky-100 rounded-full flex items-center justify-center animate-pulse-slow">
+              {isMatching ? (
+                <Search size={48} className="text-amber-600 animate-bounce" />
+              ) : (
+                <CheckCircle size={48} className="text-emerald-600 animate-pulse" />
+              )}
+            </div>
+            <div className="absolute -bottom-2 -right-2 bg-white p-2 rounded-full shadow-lg">
+              <Loader2 size={20} className="animate-spin text-stone-400" />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-xl font-bold text-stone-800">
+              {isMatching
+                ? (lang === 'ru' ? 'Собираем shortlist под вашу заявку' : 'Building your shortlist')
+                : (lang === 'ru' ? 'Подтверждаем оплату' : 'Confirming payment')}
+            </h3>
+            <p className="text-stone-400 text-sm max-w-sm">
+              {isMatching
+                ? (lang === 'ru'
+                  ? 'Сейчас пересчитываем подходящих нянь и подготовим следующий шаг.'
+                  : 'We are recalculating suitable nannies and preparing your next step.')
+                : (lang === 'ru'
+                  ? 'Проверяем статус платежа и готовим подбор без повторной отправки формы.'
+                  : 'We are verifying your payment and preparing the matching flow without asking you to resubmit.')}
+            </p>
+            <StatusIndicator
+              status="active"
+              label={isMatching
+                ? (lang === 'ru' ? 'Подбираем кандидатов...' : 'Matching candidates...')
+                : (lang === 'ru' ? 'Платёж подтверждается...' : 'Confirming payment...')}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={`text-center space-y-8 animate-slide-up pt-12`}>
         <div className="flex flex-col items-center justify-center space-y-4">
@@ -105,8 +209,8 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           </h2>
           <p className="text-stone-500 max-w-xs mx-auto">
             {lang === 'ru'
-              ? 'Мы начинаем подбор няни по вашей заявке. Ожидайте уведомлений!'
-              : 'We have started matching a nanny for your request. Expect notifications!'}
+              ? 'Платёж подтверждён. Если shortlist не открылся автоматически, мы всё равно сохранили заявку и продолжим подбор.'
+              : 'Your payment is confirmed. If the shortlist did not open automatically, your request is still saved and matching will continue.'}
           </p>
         </div>
         <div className="pt-6">

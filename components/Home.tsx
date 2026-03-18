@@ -67,16 +67,16 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
     return text.split('. ').filter(s => s.trim().length > 0).map(s => s.trim().endsWith('.') ? s : s + '.');
   };
 
-  // Social proof stats — Bandwagon Effect
+  // Trust signals — concrete service guarantees
   const socialProof = lang === 'ru'
     ? [
-      { icon: <Users size={14} />, label: '150+ семей' },
-      { icon: <Star size={14} />, label: '97% совпадений' },
+      { icon: <ShieldCheck size={14} />, label: 'Проверка профилей' },
+      { icon: <Star size={14} />, label: 'AI + человек' },
       { icon: <Clock size={14} />, label: '< 24ч ответ' },
     ]
     : [
-      { icon: <Users size={14} />, label: '150+ families' },
-      { icon: <Star size={14} />, label: '97% match rate' },
+      { icon: <ShieldCheck size={14} />, label: 'Profile checks' },
+      { icon: <Star size={14} />, label: 'AI + human' },
       { icon: <Clock size={14} />, label: '< 24h response' },
     ];
 
@@ -98,7 +98,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
             <p className="text-stone-500/90 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
               {lang === 'ru'
                 ? 'AI анализирует стиль воспитания, подход и совместимость. Подбор с первого дня.'
-                : 'AI analyzes parenting style, approach and compatibility. Match from day one.'}
+                : 'AI analyzes parenting style, approach and compatibility. Matching from day one.'}
             </p>
           </div>
 

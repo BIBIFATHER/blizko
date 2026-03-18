@@ -14,39 +14,39 @@ export const NannyLandingPage: React.FC = () => {
         {
             icon: <Users size={28} />,
             title: 'Стабильный поток заказов',
-            desc: 'AI подбирает вам семьи, которые идеально совпадают по стилю и графику. Не нужно искать самой.',
+            desc: 'Получайте более понятные запросы по графику, району и формату помощи. Не нужно вручную разбирать всё подряд.',
         },
         {
             icon: <ShieldCheck size={28} />,
-            title: 'Безопасные семьи',
-            desc: 'Все семьи проходят проверку. Вы знаете, к кому идёте, до первого выхода.',
+            title: 'Понятный контекст запроса',
+            desc: 'До первого шага видны график, район и формат помощи. Если нужен человек, команда Blizko помогает разобраться в деталях.',
         },
         {
             icon: <TrendingUp size={28} />,
-            title: `Честная комиссия ${SERVICE_COMMISSION_PERCENT}%`,
-            desc: 'Только после успешного выхода. Никаких предоплат, скрытых платежей и абонентской платы.',
+            title: 'Прозрачные деньги',
+            desc: `Комиссия ${SERVICE_COMMISSION_PERCENT}% списывается после выхода. Доступ к заказам открывается после единоразовой активации профиля 5 000 ₽.`,
         },
         {
             icon: <Clock size={28} />,
             title: 'Гибкий график',
-            desc: 'Вы сами выбираете когда и сколько работать. Полная свобода расписания.',
+            desc: 'Вы отмечаете доступность и сами выбираете, на какие запросы откликаться.',
         },
         {
             icon: <Heart size={28} />,
-            title: 'Поддержка 24/7',
-            desc: 'Оператор Blizko всегда на связи. Поможем решить любой вопрос с семьёй.',
+            title: 'Поддержка рядом',
+            desc: 'Помогаем по анкете, ожиданиям семьи и спорным моментам. Отвечаем быстро и без лишнего шума.',
         },
         {
             icon: <Star size={28} />,
             title: 'Рейтинг и отзывы',
-            desc: 'Накапливайте репутацию. Лучшие няни получают приоритет в подборе и больше заказов.',
+            desc: 'Заполненный профиль и отзывы помогают семьям быстрее понять ваш опыт и стиль работы.',
         },
     ];
 
     const steps = [
         { num: '1', title: 'Заполните анкету', desc: '5 минут — расскажите о себе, опыте и подходе к работе' },
-        { num: '2', title: 'Пройдите верификацию', desc: 'Загрузите документы — мы проверим за 24-48 часов' },
-        { num: '3', title: 'Получайте заказы', desc: 'AI подберёт вам подходящие семьи. Выбирайте и работайте!' },
+        { num: '2', title: 'Пройдите проверку', desc: 'Загрузите документы и дождитесь решения по анкете. Обычно это занимает 24-48 часов.' },
+        { num: '3', title: 'Активируйте профиль', desc: 'После единоразовой активации 5 000 ₽ вы сможете получать запросы от семей.' },
     ];
 
     return (
@@ -61,24 +61,24 @@ export const NannyLandingPage: React.FC = () => {
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-bold text-stone-900 mb-4 leading-tight">
-                        Работайте с семьями,<br />
-                        <span className="text-purple-600">которые вам подходят</span>
+                        Работайте спокойнее<br />
+                        <span className="text-purple-600">с семьями, которым подходит ваш формат</span>
                     </h1>
 
                     <p className="text-lg text-stone-600 mb-8 leading-relaxed">
-                        Blizko — AI-сервис подбора нянь. Мы находим семьи под ваш стиль работы,
-                        график и опыт. Никаких агентств, только честное сотрудничество.
+                        Blizko помогает пройти понятный путь: анкета, проверка, активация профиля
+                        и подходящие запросы без хаотичного поиска.
                     </p>
 
                     <Button
-                        onClick={() => navigate('/register?role=nanny')}
+                        onClick={() => navigate('/become-nanny')}
                         className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg shadow-xl shadow-purple-200 hover-lift"
                     >
-                        Стать няней в Blizko <ArrowRight size={20} />
+                        Заполнить анкету няни <ArrowRight size={20} />
                     </Button>
 
                     <p className="text-sm text-stone-500 mt-4">
-                        Бесплатная регистрация · Без абонентской платы
+                        Анкета бесплатно · Активация профиля 5 000 ₽ · Без ежемесячной подписки
                     </p>
                 </div>
             </section>
@@ -87,16 +87,16 @@ export const NannyLandingPage: React.FC = () => {
             <section className="py-8 bg-white border-y border-stone-100">
                 <div className="max-w-lg mx-auto px-4 flex justify-around text-center">
                     <div>
-                        <div className="text-2xl font-bold text-stone-800">Проверка</div>
-                        <div className="text-xs text-stone-500">анкеты семей проверяются вручную</div>
+                        <div className="text-2xl font-bold text-stone-800">Модерация</div>
+                        <div className="text-xs text-stone-500">анкета и документы смотрятся перед допуском</div>
                     </div>
                     <div>
                         <div className="text-2xl font-bold text-stone-800">{SERVICE_COMMISSION_PERCENT}%</div>
                         <div className="text-xs text-stone-500">комиссия только после выхода</div>
                     </div>
                     <div>
-                        <div className="text-2xl font-bold text-stone-800">0 ₽</div>
-                        <div className="text-xs text-stone-500">абонентская плата отсутствует</div>
+                        <div className="text-2xl font-bold text-stone-800">5 000 ₽</div>
+                        <div className="text-xs text-stone-500">единоразовая активация профиля</div>
                     </div>
                 </div>
             </section>
@@ -108,7 +108,7 @@ export const NannyLandingPage: React.FC = () => {
                         Почему няни выбирают Blizko
                     </h2>
                     <p className="text-stone-500 text-center mb-10">
-                        Мы создали сервис, где работать — удовольствие
+                        Меньше шума, больше понятного рабочего процесса.
                     </p>
 
                     <div className="space-y-4">
@@ -154,16 +154,16 @@ export const NannyLandingPage: React.FC = () => {
             <section className="py-16 px-4">
                 <div className="max-w-lg mx-auto bg-gradient-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white text-center shadow-2xl shadow-purple-200">
                     <CheckCircle size={40} className="mx-auto mb-4 opacity-90" />
-                    <h2 className="text-2xl font-bold mb-3">Верификация — ваша защита</h2>
+                    <h2 className="text-2xl font-bold mb-3">Проверка профиля усиливает доверие</h2>
                     <p className="text-purple-100 leading-relaxed mb-6">
-                        Мы проверяем документы: паспорт, медкнижку, справку о несудимости.
-                        Это защищает вас и повышает доверие семей к вашему профилю.
+                        Документы помогают подтвердить профиль и понятнее показать семье ваш уровень подготовки.
+                        Сначала — модерация анкеты и документов, потом решение по следующему шагу.
                     </p>
                     <div className="flex flex-wrap justify-center gap-3 text-sm">
                         <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Паспорт</span>
                         <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Медкнижка</span>
                         <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Справка</span>
-                        <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ AI-проверка</span>
+                        <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Ручная модерация</span>
                     </div>
                 </div>
             </section>
@@ -172,16 +172,16 @@ export const NannyLandingPage: React.FC = () => {
             <section className="py-16 px-4 text-center">
                 <div className="max-w-lg mx-auto">
                     <h2 className="text-3xl font-bold text-stone-800 mb-4">
-                        Начните зарабатывать<br />уже сегодня
+                        Начните с анкеты,<br />а не с хаотичного поиска
                     </h2>
                     <p className="text-stone-600 mb-8">
-                        Регистрация займёт 5 минут. Первый заказ — в течение 48 часов.
+                        Анкета займёт около 5 минут. После модерации вы решите, когда активировать профиль и выходить на заказы.
                     </p>
                     <Button
-                        onClick={() => navigate('/register?role=nanny')}
+                        onClick={() => navigate('/become-nanny')}
                         className="bg-purple-600 hover:bg-purple-700 text-white px-10 py-4 text-lg shadow-xl shadow-purple-200 hover-lift w-full max-w-sm"
                     >
-                        Зарегистрироваться <ArrowRight size={20} />
+                        Заполнить анкету няни <ArrowRight size={20} />
                     </Button>
 
                     <div className="mt-8 flex items-center justify-center gap-2 text-stone-500">
@@ -194,7 +194,7 @@ export const NannyLandingPage: React.FC = () => {
             {/* Footer */}
             <footer className="py-8 px-4 pb-24 bg-stone-50 border-t border-stone-100 text-center">
                 <p className="text-xs text-stone-400">
-                    © 2026 Blizko. Все данные зашифрованы. Безопасность — наш приоритет.
+                    © 2026 Blizko. Данные профиля обрабатываются бережно и только в рамках работы сервиса.
                 </p>
             </footer>
         </div>

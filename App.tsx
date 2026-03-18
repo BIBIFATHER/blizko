@@ -110,7 +110,7 @@ export default function App() {
     if (currentPath === '/find-nanny') {
       return {
         title: lang === 'ru' ? 'Найти няню в Москве | Заявка в Blizko' : 'Find a nanny in Moscow | Blizko request',
-        description: lang === 'ru' ? 'Оставьте заявку и получите 2-3 проверенных кандидата с объяснением совместимости.' : 'Submit your request and receive 2-3 vetted candidates with compatibility reasoning.',
+        description: lang === 'ru' ? 'Оставьте заявку и получите небольшой shortlist с модерацией профилей и понятными причинами выбора.' : 'Submit your request and receive a small shortlist with moderated profiles and clear reasons for each choice.',
         canonical: 'https://blizko.app/find-nanny',
         robots: 'noindex, nofollow',
       };
@@ -118,7 +118,7 @@ export default function App() {
     if (currentPath === '/become-nanny') {
       return {
         title: lang === 'ru' ? 'Стать няней в Blizko' : 'Become a nanny on Blizko',
-        description: lang === 'ru' ? 'Заполните профиль, пройдите проверку и получайте подходящие семьи рядом.' : 'Complete your profile, pass verification, and get matched with nearby families.',
+        description: lang === 'ru' ? 'Заполните анкету, пройдите проверку и решите, когда активировать профиль для получения заказов.' : 'Complete your profile, pass review, and decide when to activate it to receive requests.',
         canonical: 'https://blizko.app/become-nanny',
         robots: 'index, follow',
       };
@@ -126,7 +126,7 @@ export default function App() {
     if (currentPath === '/for-nannies') {
       return {
         title: lang === 'ru' ? 'Работа няней в Москве | Blizko' : 'Nanny jobs in Moscow | Blizko',
-        description: lang === 'ru' ? 'Blizko помогает няням находить подходящие семьи, проходить верификацию и работать спокойнее.' : 'Blizko helps nannies find compatible families, get verified, and work with less friction.',
+        description: lang === 'ru' ? 'Blizko помогает няням пройти путь от анкеты и проверки до более понятных запросов от семей.' : 'Blizko helps nannies move from profile review to clearer family requests.',
         canonical: 'https://blizko.app/for-nannies',
         robots: 'index, follow',
       };
@@ -140,8 +140,8 @@ export default function App() {
       };
     }
     return {
-      title: lang === 'ru' ? 'Blizko — Сервис по подбору нянь по совместимости' : 'Blizko — AI Nanny Matching Service',
-      description: lang === 'ru' ? 'Blizko использует технологию Humanity+ для подбора няни, идеально совместимой с вашим стилем воспитания. Быстро, безопасно и 100% верифицировано.' : 'Blizko uses Humanity+ AI to match you with a nanny perfectly compatible with your parenting style. Fast, safe, and 100% verified.',
+      title: lang === 'ru' ? 'Blizko — спокойный подбор няни для семьи' : 'Blizko — calmer nanny search for families',
+      description: lang === 'ru' ? 'Blizko помогает пройти путь от тревожного поиска к shortlist из 2-3 кандидатов с модерацией профилей и понятными причинами выбора.' : 'Blizko helps families move from anxious searching to a shortlist of 2-3 candidates with profile moderation and clear reasons for each choice.',
       canonical: 'https://blizko.app',
       robots: 'index, follow',
     };

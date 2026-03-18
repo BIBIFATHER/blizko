@@ -25,15 +25,15 @@ const SUPPORT_DATA = {
   ru: [
     {
       id: 's1',
-      title: "Поддержка 24/7.\nМы всегда на вашей стороне.",
-      text: "Наш сервис работает на базе новейшей самообучающейся AI-модели.\n\nЧат-бот не просто отвечает шаблонами — он понимает контекст, помнит историю вашей семьи и мгновенно решает 90% вопросов в любое время суток.",
+      title: "Поддержка рядом.\nБез лишней тревоги.",
+      text: "На старте часть простых вопросов закрывает продуктовый flow и support chat.\n\nКогда нужен человек, команда Blizko смотрит на контекст и помогает разобраться со следующим шагом.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Sparkles size={60} className="text-amber-500" />
     },
     {
       id: 's2',
-      title: "Личный менеджер заботы",
-      text: "Там, где нужен человеческий подход, подключается эксперт.\n\nЖивой менеджер помогает согласовать сложные графики, обсудить деликатные моменты воспитания или скорректировать условия договора.",
+      title: "Когда нужен человек",
+      text: "Подключаемся там, где нужно уточнить детали анкеты, ожидания семьи или спокойно разобраться в спорном моменте.",
       bg: "bg-gradient-to-b from-orange-50 to-yellow-50",
       icon: <Headset size={60} className="text-orange-400" />
     },
@@ -45,25 +45,25 @@ const SUPPORT_DATA = {
       steps: [
         {
           icon: <FileText size={20} className="text-stone-600" />,
-          title: "Юридическая защита",
-          desc: "Готовим индивидуальный договор, защищающий интересы семьи и ребенка."
+          title: "Юридическая ясность",
+          desc: "Помогаем понять, какие условия стоит зафиксировать заранее."
         },
         {
           icon: <RefreshCw size={20} className="text-emerald-600" />,
-          title: "Бесплатная замена",
-          desc: "Если няня заболела или ушла в отпуск, мы найдем проверенную замену за 2 часа."
+          title: "Следующий шаг",
+          desc: "Если ситуация не складывается, помогаем сориентироваться, что делать дальше."
         },
         {
           icon: <Zap size={20} className="text-amber-600" />,
-          title: "Медиация конфликтов",
-          desc: "Помогаем экологично решать споры, сохраняя комфортную атмосферу в доме."
+          title: "Спорные моменты",
+          desc: "Помогаем спокойно собрать контекст и договориться о следующем шаге."
         }
       ]
     },
     {
       id: 's4',
-      title: "Спокойствие как сервис",
-      text: "Мы берем на себя всю рутину и риски, чтобы ваше время с няней было наполнено только заботой о ребенке, а не организационными проблемами.",
+      title: "Спокойнее на старте",
+      text: "Мы не убираем всю неопределённость, но помогаем пройти первые шаги с меньшим хаосом и более понятной коммуникацией.",
       bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
       icon: <Heart size={60} className="text-emerald-500" />
     }
@@ -71,15 +71,15 @@ const SUPPORT_DATA = {
   en: [
     {
       id: 's1',
-      title: "24/7 Support.\nWe are always by your side.",
-      text: "Our service is powered by the newest self-learning AI model.\n\nThe chatbot doesn't just use templates — it understands context, remembers your family history, and instantly resolves 90% of issues around the clock.",
+      title: "Support nearby.\nWith less anxiety.",
+      text: "At the start, simple questions are handled by the product flow and support chat.\n\nWhen a human is needed, the Blizko team looks at the context and helps with the next step.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Sparkles size={60} className="text-amber-500" />
     },
     {
       id: 's2',
-      title: "Personal Care Manager",
-      text: "Where a human touch is needed, an expert steps in.\n\nA real manager helps coordinate complex schedules, discuss delicate parenting moments, or adjust contract terms.",
+      title: "When a human is needed",
+      text: "We step in when request details, family expectations, or a tricky moment need calm human help.",
       bg: "bg-gradient-to-b from-orange-50 to-yellow-50",
       icon: <Headset size={60} className="text-orange-400" />
     },
@@ -91,25 +91,25 @@ const SUPPORT_DATA = {
       steps: [
         {
           icon: <FileText size={20} className="text-stone-600" />,
-          title: "Legal Protection",
-          desc: "We prepare an individual contract protecting the interests of the family and child."
+          title: "Legal clarity",
+          desc: "We help you understand which terms are worth fixing in advance."
         },
         {
           icon: <RefreshCw size={20} className="text-emerald-600" />,
-          title: "Free Replacement",
-          desc: "If the nanny gets sick or goes on vacation, we find a vetted replacement in 2 hours."
+          title: "Next step",
+          desc: "If the situation does not work out, we help you understand what to do next."
         },
         {
           icon: <Zap size={20} className="text-amber-600" />,
-          title: "Conflict Mediation",
-          desc: "We help resolve disputes ecologically, maintaining a comfortable atmosphere at home."
+          title: "Tricky moments",
+          desc: "We help gather context and move the conversation toward the next step."
         }
       ]
     },
     {
       id: 's4',
-      title: "Peace of Mind as a Service",
-      text: "We take on all the routine and risks so that your time with the nanny is filled only with care for the child, not organizational problems.",
+      title: "A calmer start",
+      text: "We do not remove every uncertainty, but we help the first steps feel less chaotic and more understandable.",
       bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
       icon: <Heart size={60} className="text-emerald-500" />
     }
@@ -120,45 +120,45 @@ const VERIFICATION_DATA = {
   ru: [
     {
       id: 'v1',
-      title: "5 Уровней Защиты.\nБезопасность без компромиссов.",
-      text: "Мы не просто «смотрим документы». Мы создали многоступенчатую систему обороны, где технологии страхуют человеческую интуицию.",
+      title: "Проверка профиля.\nПомогаем снизить риск на старте.",
+      text: "Мы смотрим на профиль в несколько шагов: документы, описание опыта, видеовизитку и рекомендации, если они есть.",
       bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
       icon: <ShieldCheck size={60} className="text-emerald-500" />
     },
     {
       id: 'v2',
-      title: "AI-Верификация Документов",
-      text: "Человеческий глаз может ошибиться. Нейросеть — нет. Наш алгоритм сканирует документы в спектрах, недоступных человеку:\n\n• Анализ микро-шрифтов и защитных сеток\n• Сверка контрольных сумм в MRZ-зонах\n• Выявление следов графических редакторов",
+      title: "Документы и читаемость файлов",
+      text: "Сначала проверяем, что документы читаются, относятся к профилю и помогают семье понять уровень подготовки кандидата.",
       bg: "bg-gradient-to-b from-teal-50 to-cyan-50",
       icon: <FileSearch size={60} className="text-cyan-500" />
     },
     {
       id: 'v3',
-      title: "Глубинный OSINT-анализ",
+      title: "Что ещё смотрим",
       bg: "bg-gradient-to-b from-cyan-50 to-blue-50",
       type: "steps",
       steps: [
         {
           icon: <Search size={20} className="text-blue-600" />,
-          title: "Цифровой след",
-          desc: "Поиск упоминаний в соцсетях, форумах и черных списках нянь по всей стране."
+          title: "Профиль и анкета",
+          desc: "Сверяем опыт, график и описание с загруженными материалами."
         },
         {
           icon: <Lock size={20} className="text-indigo-600" />,
-          title: "Судебная история",
-          desc: "Автоматическая проверка по базам ФССП и судебным реестрам на предмет долгов и правонарушений."
+          title: "Рекомендации и отзывы",
+          desc: "Учитываем сторонние сигналы, если они есть."
         },
         {
           icon: <Activity size={20} className="text-rose-600" />,
-          title: "Риск-профиль",
-          desc: "AI оценивает благонадежность на основе 20+ факторов риска."
+          title: "Ручная модерация",
+          desc: "Оператор отмечает, что семье стоит обсудить заранее."
         },
       ]
     },
     {
       id: 'v4',
-      title: "Доверие под защитой",
-      text: "Только 8 из 100 кандидатов проходят этот фильтр.\n\nМы делаем эту работу, чтобы вы могли просто доверить самое дорогое, не думая о рисках.",
+      title: "Без ложных гарантий",
+      text: "Проверка снижает неопределённость, но не заменяет разговор, пробный выход и решение самой семьи.",
       bg: "bg-gradient-to-b from-blue-50 to-indigo-50",
       icon: <Fingerprint size={60} className="text-indigo-500" />
     }
@@ -166,45 +166,45 @@ const VERIFICATION_DATA = {
   en: [
     {
       id: 'v1',
-      title: "5 Levels of Defense.\nSafety without compromise.",
-      text: "We don't just 'check documents'. We created a multi-layered defense system where technology backs up human intuition.",
+      title: "Profile review.\nLowering risk at the start.",
+      text: "We look at a profile in several steps: documents, experience, short introductions, and references when they exist.",
       bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
       icon: <ShieldCheck size={60} className="text-emerald-500" />
     },
     {
       id: 'v2',
-      title: "AI Document Verification",
-      text: "The human eye can fail. Neural networks do not. Our algorithm scans documents in spectrums invisible to humans:\n\n• Analysis of micro-fonts and security meshes\n• Validation of MRZ checksums\n• Detection of graphic editing traces",
+      title: "Documents and file readability",
+      text: "We first check that documents are readable, relevant to the profile, and helpful for the family to understand the candidate's preparation.",
       bg: "bg-gradient-to-b from-teal-50 to-cyan-50",
       icon: <FileSearch size={60} className="text-cyan-500" />
     },
     {
       id: 'v3',
-      title: "Deep OSINT Analysis",
+      title: "What else we review",
       bg: "bg-gradient-to-b from-cyan-50 to-blue-50",
       type: "steps",
       steps: [
         {
           icon: <Search size={20} className="text-blue-600" />,
-          title: "Digital Footprint",
-          desc: "Search for mentions in social media, forums, and nanny blacklists nationwide."
+          title: "Profile and request fit",
+          desc: "We compare experience, schedule, and profile description with the uploaded materials."
         },
         {
           icon: <Lock size={20} className="text-indigo-600" />,
-          title: "Legal History",
-          desc: "Automatic check against bailiff databases and court registries for debts and offenses."
+          title: "References and reviews",
+          desc: "We include outside signals when they exist."
         },
         {
           icon: <Activity size={20} className="text-rose-600" />,
-          title: "Risk Profile",
-          desc: "AI evaluates trustworthiness based on 20+ risk factors."
+          title: "Human moderation",
+          desc: "An operator marks what the family should discuss before the first shift."
         },
       ]
     },
     {
       id: 'v4',
-      title: "Trust Protected",
-      text: "Only 8 out of 100 candidates pass this filter.\n\nWe do this work so you can simply entrust what is most precious without thinking about risks.",
+      title: "No false guarantees",
+      text: "Review lowers uncertainty, but it does not replace the conversation, trial shift, and the family's own decision.",
       bg: "bg-gradient-to-b from-blue-50 to-indigo-50",
       icon: <Fingerprint size={60} className="text-indigo-500" />
     }
@@ -215,15 +215,15 @@ const COMPATIBILITY_DATA = {
   ru: [
     {
       id: 1,
-      title: "Blizko+ — подбор, который объясним.",
-      text: "Няня = продолжение семьи + добавляет то, чего не хватает.\n\nМы подбираем по ценностям, стилю общения и поведенческому совпадению — с гарантией прихода и объяснимым выбором.",
+      title: "Подбор, который проще объяснить.",
+      text: "Мы собираем не только анкетные поля, но и наблюдаемые сигналы по графику, опыту и стилю общения — чтобы shortlist был понятнее.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },
     {
       id: 2,
-      title: "Что видит ИИ?",
-      text: "Пока обычный подбор смотрит на дипломы, наш алгоритм анализирует 50+ неочевидных параметров во время видеоинтервью:\n\n• Тон голоса и микро-выражения лица\n• Уровень скрытой агрессии или усталости\n• Искренность эмоций при ответах",
+      title: "Какие сигналы мы учитываем?",
+      text: "Смотрим на то, что реально видно семье до первого выхода:\n\n• возраст детей и релевантный опыт\n• график, район и формат помощи\n• стиль общения и ясность ответов",
       bg: "bg-gradient-to-b from-orange-50 to-rose-50",
       icon: <ScanFace size={60} className="text-rose-400" />
     },
@@ -235,25 +235,25 @@ const COMPATIBILITY_DATA = {
       steps: [
         {
           icon: <Video size={20} className="text-purple-600" />,
-          title: "Computer Vision",
-          desc: "Анализ невербальных сигналов: открытость позы, зрительный контакт, улыбка."
+          title: "Профиль",
+          desc: "Учитываем опыт, возраст детей, район и режим работы."
         },
         {
           icon: <BrainCircuit size={20} className="text-amber-600" />,
-          title: "NLP Анализ",
-          desc: "Оценка речи: словарный запас, педагогические установки и стиль общения."
+          title: "Коммуникация",
+          desc: "Смотрим на ясность ответов и то, как няня описывает свой подход."
         },
         {
           icon: <Fingerprint size={20} className="text-emerald-600" />,
-          title: "Предиктивный Мэтчинг",
-          desc: "Система прогнозирует, насколько комфортно конкретной няне будет именно в вашей семье."
+          title: "Shortlist",
+          desc: "Система помогает собрать сильные совпадения и объяснить, почему кандидат оказался в списке."
         },
       ]
     },
     {
       id: 4,
-      title: "Результат: Идеальная пара",
-      text: "Это не магия, а математика отношений.\n\nСемьи, подобранные через наш AI-алгоритм, меняют нянь в 3 раза реже. Потому что когда ценности совпадают, каждый день становится спокойным.",
+      title: "Результат: меньше хаоса",
+      text: "Это не обещание идеальной пары. Это способ быстрее увидеть сильные совпадения и вопросы, которые важно обсудить заранее.",
       bg: "bg-gradient-to-b from-indigo-50 to-sky-50",
       icon: <Sparkles size={60} className="text-sky-400" />
     }
@@ -261,8 +261,8 @@ const COMPATIBILITY_DATA = {
   en: [
     {
       id: 1,
-      title: "Blizko+ — explainable matching.",
-      text: "A nanny is an extension of the family + brings what’s missing.\n\nWe match by values, communication style, and behavioral fit — with arrival guarantee and explainable selection.",
+      title: "Matching that is easier to explain.",
+      text: "We collect not only form fields, but also observable signals around schedule, experience, and communication style so the shortlist feels clearer.",
       bg: "bg-gradient-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },
@@ -298,8 +298,8 @@ const COMPATIBILITY_DATA = {
     },
     {
       id: 4,
-      title: "Result: The Perfect Match",
-      text: "It's not magic, it's relationship mathematics.\n\nFamilies matched through our AI algorithm change nannies 3 times less often. Because when values align, every day becomes peaceful.",
+      title: "Result: less chaos",
+      text: "This is not a promise of a perfect pair. It is a way to see stronger fits and better discussion points sooner.",
       bg: "bg-gradient-to-b from-indigo-50 to-sky-50",
       icon: <Sparkles size={60} className="text-sky-400" />
     }

@@ -4,7 +4,7 @@ export const t = {
   ru: {
     // ... existing keys ...
     heroTitle: 'Подбор нянь, где главное — доверие и спокойствие семьи.',
-    heroSubtitle: 'Объяснимый подбор нянь: Humanity+ и проверка профиля.',
+    heroSubtitle: 'Объяснимый подбор нянь: модерация профилей и понятный shortlist.',
     homeSafetyLine: 'Бережно проверяем каждую няню: общаемся лично, изучаем отзывы и документы.',
     homeFlowTitle: 'Как это работает',
     homeFlowSteps: ['Запрос', 'Анализ', 'Подбор'],
@@ -12,24 +12,22 @@ export const t = {
     findNanny: 'Найти няню',
     becomeNanny: 'Стать няней',
     whyTrust: 'ПОЧЕМУ НАМ ДОВЕРЯЮТ',
-    trust1Title: 'Проверка и безопасность',
-    trust1Desc: 'Мы заботимся о самом ценном, поэтому тщательно знакомимся с каждым кандидатом.',
-    trust1Detail: `Каждая няня проходит заботливый, но очень внимательный процесс знакомства:
-1. Базовая надежность. Мы просим показать паспорт и профильные документы (например, медкнижку). Всё сверяется с официальными базами для вашего спокойствия.
-2. Тепло прошлых семей. Обязательный этап — разговор с предыдущими работодателями. Мы узнаем, насколько комфортно и радостно было детям с этой няней.
-3. Живое общение и AI. На коротком видеоинтервью мы оцениваем ясность речи, спокойствие подачи и стиль общения. Алгоритмы помогают структурировать наблюдаемые сигналы, но не заменяют человеческую модерацию.
-4. Психологический комфорт. Мы предлагаем разобрать простые жизненные ситуации (например, малыш не хочет спать), чтобы понять, как няня реагирует на усталость и эмоции ребенка.
-5. Закрытое комьюнити. Мы работаем только с теми, кто разделяет наши ценности бережного отношения к детям.
-Результат: К вам придет человек, которому действительно можно доверять.
-«Близко» берет на себя все заботы по проверке, чтобы вы могли просто выдохнуть.`,
+    trust1Title: 'Проверка профиля',
+    trust1Desc: 'Собираем документы, сигналы опыта и заметки модерации в одном месте.',
+    trust1Detail: `Мы смотрим на профиль в несколько шагов:
+1. Проверяем базовые документы и читаемость файлов.
+2. Смотрим на описание опыта, видеовизитку и то, как няня рассказывает о работе.
+3. Учитываем рекомендации и отзывы, если они есть.
+4. Сверяем наблюдаемые сигналы вручную и используем AI как вспомогательный инструмент, а не как финальный суд.
+Это не даёт абсолютных гарантий, но помогает семье быстрее понять, что стоит обсудить до первого выхода.`,
 
-    trust2Title: 'Humanity+ совместимость',
-    trust2Desc: 'Мы сопоставляем стиль семьи и няни — так меньше срывов и больше доверия.',
-    trust2Detail: 'Наша умная система берет на себя самую тонкую работу: она сопоставляет темперамент, привычки и взгляды на воспитание. Мы ищем не просто сотрудника, а человека, с которым вашей семье будет легко и тепло с первого дня.',
+    trust2Title: 'Почему кандидат в shortlist',
+    trust2Desc: 'Показываем график, опыт и сигналы совместимости без магии.',
+    trust2Detail: 'Система помогает собрать сигналы по графику, опыту, возрасту детей и стилю общения, а затем объясняет, почему кандидат попал в shortlist. Это не диагноз и не магическая оценка, а способ быстрее увидеть сильные совпадения и вопросы для разговора.',
 
-    trust3Title: 'Поддержка 24/7',
-    trust3Desc: 'Помогаем на каждом шаге — от подбора до первых встреч.',
-    trust3Detail: 'Ваш личный менеджер заботы всегда рядом. Мы деликатно поможем договориться об условиях, ответим на любые вопросы и бесплатно подберем замену, если ваша няня заболеет или соберется в отпуск. Вы никогда не останетесь одни.',
+    trust3Title: 'Поддержка рядом',
+    trust3Desc: 'Помогаем разобраться в следующем шаге и спорных моментах.',
+    trust3Detail: 'Команда Blizko помогает уточнить детали анкеты, понять следующий шаг и подключиться там, где нужен человек. Мы стараемся отвечать быстро и по делу, но не обещаем мгновенно решить любую ситуацию.',
 
     explainTitle: 'Почему именно эта няня?',
     explainText: 'Humanity+ показывает совпадение ценностей и стиля общения — это главный фактор стабильности.',
@@ -63,7 +61,7 @@ export const t = {
     nFormSubtitle: 'Расскажите о себе, чтобы найти семью',
     verificationTitle: 'Подтверждение личности',
     verifiedTitle: 'Личность подтверждена',
-    verificationDesc: 'Повысьте доверие родителей — подтвердите профиль через Госуслуги.',
+    verificationDesc: 'Когда этот шаг доступен, подтверждение личности добавляет профилю дополнительный trust-маркер.',
     verifiedDesc: 'Ваш профиль отмечен знаком доверия. Родители видят вашу анкету на 30% чаще.',
     loginGos: 'Войти через Госуслуги',
     verifiedBadge: 'Проверка пройдена',
@@ -336,7 +334,7 @@ export const t = {
   en: {
     // ... existing keys ...
     heroTitle: 'Blizko — trusted nanny matching built on stability.',
-    heroSubtitle: 'Explainable nanny matching: Humanity+ and profile vetting.',
+    heroSubtitle: 'Explainable nanny search with profile moderation and a clear shortlist.',
     homeSafetyLine: 'We verify nannies: documents, references, interviews.',
     homeFlowTitle: 'How it works',
     homeFlowSteps: ['Request', 'Analysis', 'Match'],
@@ -344,24 +342,22 @@ export const t = {
     findNanny: 'Find a Nanny',
     becomeNanny: 'Become a Nanny',
     whyTrust: 'WHY TRUST US',
-    trust1Title: 'Thorough Vetting',
-    trust1Desc: 'Documents, references, and verification.',
-    trust1Detail: `Every nanny passes 5 levels of verification before being admitted:
-1. Documents and Identity. We verify the passport, medical book, and police clearance certificate. Data is checked against official databases.
-2. References and Experience. Each profile contains at least two contacts from previous jobs. We contact families to verify the authenticity of reviews.
-3. Video Interview and AI Analysis. The nanny completes a short video interview. AI helps structure observable communication signals such as speech clarity, pacing, and interaction style. It does not make clinical or definitive judgments about character.
-4. Psychological Test. No clinical assessment — only practical situations to understand reactions in real conditions: tantrums, stress, fatigue.
-5. Trust System and Blacklist. Rule violations or lying lead to blocking and blacklisting.
-Result: Only reliable candidates. Every visit insured. 100% transparency.
-"Blizko" ensures only vetted and responsible people come to your child.`,
+    trust1Title: 'Profile review',
+    trust1Desc: 'Documents, experience signals, and moderation notes in one place.',
+    trust1Detail: `We review a profile in several steps:
+1. We check basic documents and file readability.
+2. We look at experience, short introductions, and how the nanny talks about the work.
+3. We include references and reviews when they exist.
+4. We use AI as a supporting tool, not as the final judge.
+This does not create absolute guarantees, but it helps the family see what should be discussed before the first shift.`,
 
-    trust2Title: 'Humanity+ Compatibility',
-    trust2Desc: 'Shared values reduce mismatch risk and improve stability.',
-    trust2Detail: 'Our neural network analyzes 45 parameters: from psychotype and temperament to pedagogical views. We search not just for a worker, but for a person who perfectly fits your family\'s lifestyle and will become a friend to your child.',
+    trust2Title: 'Why someone made the shortlist',
+    trust2Desc: 'Schedule, experience, and fit signals without magic.',
+    trust2Detail: 'The system helps structure signals around schedule, experience, child age, and communication style, then explains why a candidate appears in the shortlist. It is not a diagnosis or a magical score. It is a way to spot strong fits and good questions faster.',
 
-    trust3Title: '24/7 Support',
-    trust3Desc: 'We are here at every step.',
-    trust3Detail: 'Your personal care manager is always in touch. We help draft legally sound contracts, resolve any disputes, and organize urgent free replacements if the nanny gets sick or goes on vacation.',
+    trust3Title: 'Support nearby',
+    trust3Desc: 'Help with the next step and tricky moments.',
+    trust3Detail: 'The Blizko team helps clarify request details, understand the next step, and step in when a human is needed. We try to reply quickly and clearly, without pretending every issue can be solved instantly.',
 
     explainTitle: 'Why this nanny?',
     explainText: 'Humanity+ highlights shared values and communication style — the main factor of stability.',

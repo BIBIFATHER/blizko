@@ -9,13 +9,13 @@ const howWeVerifySchema = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
     name: 'Как мы проверяем нянь — 5 уровней верификации',
-    description: 'Пошаговый процесс проверки нянь в Blizko: документы, видеовизитка, рекомендации, модерация и AI-совместимость.',
+    description: 'Пошаговый процесс проверки профиля няни в Blizko: документы, видеовизитка, рекомендации, модерация и объяснимые сигналы совместимости.',
     step: [
         {
             '@type': 'HowToStep',
             position: 1,
             name: 'Проверка документов',
-            text: 'Паспорт, медицинская книжка, справка о несудимости — каждый документ проходит AI-анализ и ручную проверку оператором.',
+            text: 'Мы просим базовые документы и проверяем читаемость, полноту и соответствие профилю.',
         },
         {
             '@type': 'HowToStep',
@@ -33,13 +33,13 @@ const howWeVerifySchema = {
             '@type': 'HowToStep',
             position: 4,
             name: 'Ручная модерация',
-            text: 'Каждый профиль проверяется оператором Blizko. Только полностью верифицированные няни попадают в подбор.',
+            text: 'Профиль смотрит оператор Blizko и отмечает, что семье стоит обсудить заранее.',
         },
         {
             '@type': 'HowToStep',
             position: 5,
-            name: 'Humanity+ совместимость',
-            text: 'AI анализирует стиль воспитания, подход и совместимость — и объясняет, почему конкретная няня подходит вашей семье.',
+            name: 'Объяснимые сигналы совместимости',
+            text: 'Мы сопоставляем возраст детей, график, опыт и стиль коммуникации и показываем, почему кандидат попал в shortlist.',
         },
     ],
 };
@@ -51,7 +51,7 @@ export const HowWeVerifyPage: React.FC = () => {
         {
             icon: <FileCheck size={28} className="text-green-600" />,
             title: 'Проверка документов',
-            description: 'Паспорт, медицинская книжка, справка о несудимости — каждый документ проходит AI-анализ и ручную проверку оператором.',
+            description: 'Мы просим базовые документы и проверяем, что они читаемы, относятся к профилю и помогают семье понять уровень подготовки.',
         },
         {
             icon: <Video size={28} className="text-amber-600" />,
@@ -66,12 +66,12 @@ export const HowWeVerifyPage: React.FC = () => {
         {
             icon: <ShieldCheck size={28} className="text-purple-600" />,
             title: 'Ручная модерация',
-            description: 'Каждый профиль проверяется оператором Blizko. Только полностью верифицированные няни попадают в подбор.',
+            description: 'Профиль смотрит оператор Blizko и отмечает, что семье стоит перепроверить до первого выхода.',
         },
         {
             icon: <CheckCircle size={28} className="text-green-600" />,
-            title: 'Humanity+ совместимость',
-            description: 'AI анализирует стиль воспитания, подход и совместимость — и объясняет, почему конкретная няня подходит вашей семье.',
+            title: 'Объяснимые сигналы совместимости',
+            description: 'Мы сопоставляем возраст детей, график, опыт и стиль общения и показываем, почему кандидат попал в shortlist.',
         },
     ], []);
 
@@ -79,7 +79,7 @@ export const HowWeVerifyPage: React.FC = () => {
         <>
             <SeoHead
                 title="Как мы проверяем нянь — 5 уровней верификации | Blizko"
-                description="Проверка документов, видеовизитки, рекомендации, ручная модерация и AI-совместимость. Узнайте, как Blizko гарантирует безопасность вашей семьи."
+                description="Документы, видеовизитка, рекомендации, ручная модерация и объяснимые сигналы совместимости. Узнайте, как Blizko помогает семье снизить риск на старте."
                 canonical="https://blizko.app/how-we-verify"
                 schema={howWeVerifySchema}
             />
@@ -93,7 +93,7 @@ export const HowWeVerifyPage: React.FC = () => {
 
                 <header>
                     <h1 className="text-2xl font-bold text-stone-800 mb-2">Как мы проверяем нянь</h1>
-                    <p className="text-stone-500 mb-8">5 уровней проверки — от документов до AI-совместимости</p>
+                    <p className="text-stone-500 mb-8">5 уровней внимания — от документов до сигналов совместимости</p>
                 </header>
 
                 <section className="space-y-4" aria-label="Шаги верификации">
@@ -112,8 +112,8 @@ export const HowWeVerifyPage: React.FC = () => {
 
                 <section className="mt-8 bg-white/60 backdrop-blur rounded-2xl p-6 text-center">
                     <p className="text-stone-600 mb-4">
-                        <strong>97% нянь проходят проверку.</strong><br />
-                        Мы не гонимся за количеством — мы заботимся о качестве.
+                        <strong>Профили проходят модерацию, но окончательное решение всегда остаётся за семьёй.</strong><br />
+                        Мы помогаем быстрее понять, что важно обсудить до первого выхода.
                     </p>
                     <button
                         onClick={() => navigate('/find-nanny')}
@@ -125,7 +125,7 @@ export const HowWeVerifyPage: React.FC = () => {
 
                 <footer className="mt-6 text-center text-sm text-stone-400">
                     <Link to="/humanity-plus" className="text-amber-600 hover:text-amber-700 underline underline-offset-2 transition-colors">
-                        Узнайте, как работает AI-подбор по совместимости →
+                        Узнайте, как работает объяснимый подбор по совместимости →
                     </Link>
                 </footer>
             </article>

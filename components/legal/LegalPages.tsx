@@ -123,7 +123,7 @@ export const AboutPage: React.FC = () => {
         <>
             <SeoHead
                 title="О сервисе Blizko | Подбор нянь в Москве"
-                description="Blizko — сервис подбора проверенных нянь в Москве. Информация о компании, юридические реквизиты, контакты и адрес."
+                description="Blizko — сервис более спокойного подбора нянь в Москве. Информация о компании, юридические реквизиты, контакты и адрес."
                 canonical="https://blizko.app/about"
             />
             <article className="min-h-screen bg-gradient-warm px-4 py-8 max-w-2xl mx-auto">
@@ -145,10 +145,10 @@ export const AboutPage: React.FC = () => {
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5">
                         <h2 className="font-semibold text-stone-800 mb-3 text-base">Кто мы</h2>
                         <p className="text-sm text-stone-600 leading-relaxed">
-                            Blizko — платформа для подбора проверенных нянь в Москве. Мы используем AI-технологию Humanity+, чтобы подобрать няню, которая подойдёт именно вашей семье — по стилю воспитания, характеру и расписанию.
+                            Blizko — платформа для более спокойного подбора нянь в Москве. Мы используем цифровые инструменты и ручную модерацию, чтобы семье было легче пройти путь от поиска к shortlist и следующему шагу.
                         </p>
                         <p className="text-sm text-stone-600 leading-relaxed mt-2">
-                            Каждая няня проходит 5-ступенчатую проверку: документы, видеовизитка, рекомендации, ручная модерация и AI-анализ совместимости.
+                            Профиль няни может включать документы, видеовизитку, рекомендации, ручную модерацию и объяснимые сигналы совместимости. Окончательное решение о найме всегда остаётся за семьёй.
                         </p>
                     </div>
 
@@ -217,11 +217,11 @@ export const AboutPage: React.FC = () => {
                         <div className="text-sm text-stone-600 space-y-3">
                             <div>
                                 <p className="font-medium text-stone-700">Подбор няни (базовый)</p>
-                                <p>AI-подбор + 2-3 верифицированных кандидата. Разовая оплата.</p>
+                                <p>Shortlist из 2-3 кандидатов с модерацией профилей и объяснением выбора. Разовая оплата.</p>
                             </div>
                             <div>
                                 <p className="font-medium text-stone-700">Депозит (Безопасная сделка)</p>
-                                <p>Средства удерживаются до подтверждения начала работы. Стороны защищены от недобросовестных партнёров.</p>
+                                <p>Средства удерживаются до подтверждения начала работы. Порядок заморозки, возврата и выплаты описан в условиях сервиса.</p>
                             </div>
                         </div>
                         <p className="text-xs text-stone-400 mt-3">Актуальные цены: <Link to="/pricing" className="text-amber-600 underline">blizko.app/pricing</Link></p>
@@ -267,7 +267,7 @@ export const SafeDealPage: React.FC = () => {
                         <ShieldCheck size={24} className="text-green-600" />
                         <h1 className="text-2xl font-bold text-stone-800">Безопасная сделка</h1>
                     </div>
-                    <p className="text-stone-500">Ваши деньги защищены до подтверждения найма</p>
+                    <p className="text-stone-500">Порядок заморозки, возврата и выплаты средств до подтверждения найма</p>
                 </header>
 
                 <div className="space-y-4 text-sm text-stone-700 leading-relaxed">
@@ -326,7 +326,7 @@ export const SafeDealPage: React.FC = () => {
                             </div>
                             <div className="flex gap-3">
                                 <span className="text-green-500 mt-0.5">✓</span>
-                                <p><strong>Исполнитель защищён:</strong> после начала работы гарантирована выплата при положительном завершении</p>
+                                <p><strong>Исполнитель:</strong> после начала работы выплата проводится по правилам платёжного сценария и подтверждению завершения</p>
                             </div>
                             <div className="flex gap-3">
                                 <span className="text-amber-500 mt-0.5">!</span>
@@ -395,7 +395,7 @@ export const PrivacyPage: React.FC = () => {
                         <ul className="list-disc list-inside space-y-1 text-stone-600">
                             <li>Имя, номер телефона (при регистрации)</li>
                             <li>Данные профиля (район, расписание, предпочтения)</li>
-                            <li>Документы нянь (паспорт, справки) — только в зашифрованном виде</li>
+                            <li>Документы нянь (паспорт, справки) — в защищённом хранилище с ограниченным доступом</li>
                             <li>Переписка в чате поддержки</li>
                             <li>Аналитика использования (Яндекс.Метрика)</li>
                         </ul>
@@ -413,7 +413,7 @@ export const PrivacyPage: React.FC = () => {
 
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5">
                         <h2 className="font-semibold text-stone-800 mb-2 text-base">4. Хранение и защита</h2>
-                        <p>Данные хранятся на серверах Supabase (ЕС и Россия). Передача данных третьим лицам без согласия пользователя не производится, за исключением платёжного сервиса ЮKassa для обработки платежей.</p>
+                        <p>Данные хранятся на серверах Supabase (ЕС и Россия). Передача данных третьим лицам ограничена случаями, необходимыми для работы сервиса, включая платёжную обработку через ЮKassa.</p>
                     </div>
 
                     <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5">

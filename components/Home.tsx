@@ -94,50 +94,50 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
     return text.split('. ').filter(s => s.trim().length > 0).map(s => s.trim().endsWith('.') ? s : s + '.');
   };
 
-  // Trust signals — concrete service guarantees instead of inflated counters.
+  // Trust signals — calmer proof points instead of inflated promises.
   const socialProof = lang === 'ru'
     ? [
-      { icon: <ShieldCheck size={14} />, label: 'Проверка профилей включена' },
-      { icon: <Star size={14} />, label: 'Подбор: AI + человек' },
-      { icon: <Clock size={14} />, label: 'Поддержка отвечает < 24ч' },
+      { icon: <ShieldCheck size={14} />, label: 'Не каталог из десятков анкет' },
+      { icon: <Star size={14} />, label: 'Понятно, почему кандидат в shortlist' },
+      { icon: <Clock size={14} />, label: 'Один процесс: запрос, shortlist, следующий шаг' },
     ]
     : [
-      { icon: <ShieldCheck size={14} />, label: 'Profile checks are active' },
-      { icon: <Star size={14} />, label: 'Matching: AI + human' },
-      { icon: <Clock size={14} />, label: 'Support replies < 24h' },
+      { icon: <ShieldCheck size={14} />, label: 'Not a directory of endless profiles' },
+      { icon: <Star size={14} />, label: 'Clear reasons why someone made the shortlist' },
+      { icon: <Clock size={14} />, label: 'One process: request, shortlist, next step' },
     ];
 
   const serviceSignals = lang === 'ru'
     ? [
-      { label: 'Проверка профилей', value: 'Включена' },
+      { label: 'Модерация профилей', value: 'Включена' },
       { label: 'Ответ поддержки', value: '< 24ч' },
-      { label: 'Совместимость', value: 'AI + человек' },
+      { label: 'Shortlist', value: '2-3 кандидата' },
     ]
     : [
-      { label: 'Profile checks', value: 'Active' },
+      { label: 'Profile moderation', value: 'Active' },
       { label: 'Support reply', value: '< 24h' },
-      { label: 'Compatibility', value: 'AI + human' },
+      { label: 'Shortlist', value: '2-3 candidates' },
     ];
 
   const quickActions = [
     {
       id: 'find',
-      title: lang === 'ru' ? 'Быстрый старт' : 'Quick start',
-      subtitle: lang === 'ru' ? 'Запустить подбор' : 'Start matching',
+      title: lang === 'ru' ? 'Запустить подбор' : 'Start matching',
+      subtitle: lang === 'ru' ? 'Описать семью и график' : 'Describe your family and schedule',
       icon: <Search size={18} />,
       onClick: onFindNanny,
     },
     {
       id: 'trust',
-      title: lang === 'ru' ? 'Безопасность' : 'Safety',
-      subtitle: lang === 'ru' ? 'Проверка и верификация' : 'Checks and verification',
+      title: lang === 'ru' ? 'Как мы проверяем' : 'How we review profiles',
+      subtitle: lang === 'ru' ? 'Документы, модерация, сигналы' : 'Documents, moderation, signals',
       icon: <Shield size={18} />,
       onClick: () => setDeepDiveMode('verification'),
     },
     {
       id: 'help',
       title: lang === 'ru' ? 'Поддержка' : 'Support',
-      subtitle: lang === 'ru' ? 'Человек рядом' : 'Human help nearby',
+      subtitle: lang === 'ru' ? 'Когда нужен следующий шаг' : 'When you need the next step',
       icon: <MessageCircle size={18} />,
       onClick: () => setDeepDiveMode('support'),
     },
@@ -171,7 +171,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-white/90 border border-stone-200/80 text-[12px] font-semibold text-stone-600 shadow-sm">
               <Check size={13} className="text-emerald-600" />
-              {lang === 'ru' ? 'Trust on' : 'Trust on'}
+              {lang === 'ru' ? 'С модерацией' : 'Moderated'}
             </span>
             <button type="button" className="w-10 h-10 rounded-full bg-white/90 border border-stone-200/80 shadow-sm flex items-center justify-center text-stone-500">
               <Bell size={17} />
@@ -183,7 +183,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
           <div className="flex items-center justify-between gap-3">
             <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400">
               <Sparkles size={12} className="text-sky-500" />
-              {lang === 'ru' ? 'Главный экран' : 'Home'}
+              {lang === 'ru' ? 'Подбор няни' : 'Nanny search'}
             </div>
             <button
               type="button"
@@ -197,12 +197,12 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
 
           <div className="space-y-3">
             <h1 className="text-[2rem] sm:text-[2.35rem] leading-[1.02] font-semibold tracking-[-0.05em] text-stone-900 max-w-lg">
-                {lang === 'ru' ? 'Подберём 2–3 сильных кандидата.' : 'We will find 2–3 strong matches.'}
+                {lang === 'ru' ? 'Найти няню можно спокойнее' : 'Finding a nanny can feel calmer'}
             </h1>
             <p className="text-[15px] sm:text-base text-stone-500 max-w-md leading-relaxed">
               {lang === 'ru'
-                ? 'Спокойно, без десятков анкет. Сначала учитываем график, совместимость семьи и сигналы доверия.'
-                : 'Calmly, without dozens of profiles. We start with schedule, family compatibility, and trust signals.'}
+                ? 'Blizko помогает пройти путь от тревожного поиска к нескольким понятным вариантам — с модерацией, trust-сигналами и объяснением, почему именно они попали в shortlist.'
+                : 'Blizko helps you move from anxious searching to a small, understandable shortlist with moderation, trust signals, and clear reasons why each candidate is there.'}
             </p>
           </div>
 
@@ -210,7 +210,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
             <div className="rounded-[24px] bg-slate-50/95 border border-slate-200/80 p-4 space-y-3">
               <div className="flex items-center gap-2 text-sm font-semibold text-stone-700">
                 <ShieldCheck size={16} className="text-emerald-600" />
-                {lang === 'ru' ? 'Подбор с проверкой и поддержкой' : 'Matching with checks and support'}
+                {lang === 'ru' ? 'Не бесконечный каталог, а понятный процесс' : 'Not an endless catalog, but a clearer process'}
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {socialProof.map((item, i) => (
@@ -352,9 +352,9 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
               </div>
               <div className="space-y-2">
                 {[
-                  lang === 'ru' ? '1. Вы описываете семью и график.' : '1. You describe family needs and schedule.',
-                  lang === 'ru' ? '2. AI фильтрует и ранжирует совместимость.' : '2. AI filters and ranks compatibility.',
-                  lang === 'ru' ? '3. Вы общаетесь только с сильными кандидатами.' : '3. You talk only to strong candidates.',
+                  lang === 'ru' ? '1. Вы описываете семью, график и важные детали.' : '1. You describe your family, schedule, and the details that matter.',
+                  lang === 'ru' ? '2. Получаете небольшой shortlist с понятными причинами.' : '2. You get a small shortlist with clear reasons.',
+                  lang === 'ru' ? '3. Обсуждаете детали и переходите к следующему шагу без лишнего хаоса.' : '3. You discuss details and move to the next step without extra chaos.',
                 ].map((line) => (
                   <div key={line} className="flex items-center gap-2.5 text-sm text-stone-600">
                     <CheckCircle2 size={15} className="text-sky-600 shrink-0" />

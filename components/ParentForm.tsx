@@ -616,7 +616,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
           pulse={!!requiredFilled && !loading}
           disabled={initialData?.status === 'approved'}
           onClick={() => setShowOffer(true)}
-          className="!bg-stone-900 !text-white !border-stone-900 hover:!bg-stone-800 shadow-[0_12px_30px_rgba(17,24,39,0.18)]"
+          className="bg-stone-900! text-white! border-stone-900! hover:bg-stone-800! shadow-[0_12px_30px_rgba(17,24,39,0.18)]"
         >
           {initialData?.status === 'approved'
             ? (lang === 'ru' ? 'Заявка одобрена' : 'Request approved')

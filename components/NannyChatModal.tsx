@@ -94,7 +94,7 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nanny
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-0 sm:p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white w-full h-full sm:h-[600px] sm:max-w-md sm:rounded-2xl shadow-2xl overflow-hidden animate-slide-up flex flex-col relative">
         <div className="bg-white border-b border-stone-100 p-4 flex items-center gap-3 shadow-sm z-10">
           <button onClick={onClose} className="text-stone-500 hover:text-stone-800 p-1">

@@ -254,7 +254,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                 !readiness.readyForReview;
 
                             return (
-                                <Card key={n.id} className={`!p-4 ${n.isVerified ? 'bg-green-50 border-green-100' : 'bg-sky-50/50'}`}>
+                                <Card key={n.id} className={`p-4! ${n.isVerified ? 'bg-green-50 border-green-100' : 'bg-sky-50/50'}`}>
                                     <div className="flex justify-between text-xs text-stone-400 mb-1">
                                         <span>{new Date(n.createdAt).toLocaleString()}</span>
                                         <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                     </div>
 
                                     <div className="flex items-start gap-3 mt-2">
-                                        <div className="w-12 h-12 rounded-full overflow-hidden bg-white border border-stone-200 flex-shrink-0 flex items-center justify-center">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden bg-white border border-stone-200 shrink-0 flex items-center justify-center">
                                             {n.photo ? (
                                                 <img src={n.photo} alt={n.name} className="w-full h-full object-cover" />
                                             ) : (
@@ -458,7 +458,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
 
             {/* Document preview modal */}
             {previewDoc && (
-                <div className="fixed inset-0 z-[80] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-80 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
                         <div className="p-3 border-b border-stone-100 flex items-center justify-between">
                             <div className="text-sm font-semibold text-stone-800 truncate pr-4">{previewDoc.name || 'Документ'}</div>
@@ -484,7 +484,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
 
             {/* Calendar modal */}
             {calendarNanny && (
-                <div className="fixed inset-0 z-[80] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-80 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden">
                         <div className="p-4 border-b border-stone-100 flex items-center justify-between">
                             <div>
@@ -499,7 +499,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                             <div className="bg-amber-50 border border-amber-100 text-amber-700 text-[11px] rounded-lg p-2">
                                 Здесь больше нет синтетического календаря. Показываем только то, что няня реально указала в анкете.
                             </div>
-                            <Card className="!p-4 bg-stone-50 border-stone-100">
+                            <Card className="p-4! bg-stone-50 border-stone-100">
                                 <div className="text-xs font-semibold text-stone-500 uppercase mb-2">График из анкеты</div>
                                 <div className="text-sm text-stone-700">
                                     {calendarNanny.schedule || 'Няня ещё не указала структурированный график.'}

@@ -177,7 +177,7 @@ export default function App() {
         onOpenProfile={() => setProfileOpen(true)}
       />
 
-      <main className="flex-1 w-full max-w-screen-lg mx-auto px-4 md:px-8 pb-24 relative pt-safe">
+      <main className="flex-1 w-full max-w-(--breakpoint-lg) mx-auto px-4 md:px-8 pb-24 relative pt-safe">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home lang={lang} />} />

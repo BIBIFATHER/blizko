@@ -141,7 +141,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
           setIsOpen(true);
           trackChatOpen('launcher');
         }}
-        className="fixed bottom-20 right-4 z-[70] bg-stone-900 hover:bg-stone-800 text-white p-3.5 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
+        className="fixed bottom-20 right-4 z-70 bg-stone-900 hover:bg-stone-800 text-white p-3.5 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
         aria-label={lang === 'ru' ? 'Открыть чат поддержки' : 'Open support chat'}
       >
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse" />
@@ -155,7 +155,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
   // ============================================
   if (!user?.id) {
     return (
-      <div className="fixed bottom-4 right-4 z-[70] w-full max-w-[340px] flex flex-col items-end animate-slide-up">
+      <div className="fixed bottom-4 right-4 z-70 w-full max-w-[340px] flex flex-col items-end animate-slide-up">
         <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full flex flex-col p-5">
           <div className="flex justify-between items-start mb-3">
             <div className="text-sm font-medium text-stone-700">{lang === 'ru' ? 'Для чата нужна авторизация' : 'Please sign in to use chat'}</div>
@@ -183,22 +183,22 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
   const getSenderInfo = (msg: SupportMessage) => {
     switch (msg.sender_type) {
       case 'ai_concierge':
-        return { label: 'AI Concierge', icon: <Sparkles size={12} className="text-amber-500" />, bubbleClass: 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 text-stone-700 rounded-tl-sm' };
+        return { label: 'AI Concierge', icon: <Sparkles size={12} className="text-amber-500" />, bubbleClass: 'bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 text-stone-700 rounded-tl-sm' };
       case 'human_agent':
-        return { label: 'Антон', icon: <UserCheck size={12} className="text-green-500" />, bubbleClass: 'bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 text-stone-700 rounded-tl-sm' };
+        return { label: 'Антон', icon: <UserCheck size={12} className="text-green-500" />, bubbleClass: 'bg-linear-to-br from-green-50 to-emerald-50 border border-green-100 text-stone-700 rounded-tl-sm' };
       default:
         return { label: 'Вы', icon: null, bubbleClass: 'bg-amber-100 text-stone-900 rounded-tr-sm' };
     }
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-[70] w-full max-w-[360px] flex flex-col items-end animate-slide-up">
+    <div className="fixed bottom-4 right-4 z-70 w-full max-w-[360px] flex flex-col items-end animate-slide-up">
       <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full flex flex-col" style={{ height: 'min(520px, calc(100vh - 100px))' }}>
         {/* Header */}
         <div className="bg-stone-900 text-white p-4 flex justify-between items-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 blur-3xl rounded-full pointer-events-none" />
           <div className="flex items-center gap-3 z-10">
-            <div className="w-10 h-10 bg-gradient-to-br from-amber-200 to-amber-500 rounded-full flex items-center justify-center text-stone-900 font-bold text-sm shadow-inner">
+            <div className="w-10 h-10 bg-linear-to-br from-amber-200 to-amber-500 rounded-full flex items-center justify-center text-stone-900 font-bold text-sm shadow-inner">
               <Sparkles size={18} />
             </div>
             <div>
@@ -274,7 +274,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
                     {lang === 'ru' ? 'Думаю...' : 'Thinking...'}
                   </span>
                 </div>
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex gap-1.5 items-center">
+                <div className="bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex gap-1.5 items-center">
                   <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />

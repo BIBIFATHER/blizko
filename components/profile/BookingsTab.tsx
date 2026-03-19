@@ -146,7 +146,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
         <>
             <div className="animate-fade-in space-y-6">
                 {loading && (
-                    <Card className="!p-4 bg-white border border-stone-100 text-sm text-stone-500">
+                    <Card className="p-4! bg-white border border-stone-100 text-sm text-stone-500">
                         {lang === 'ru' ? 'Загружаем реальные бронирования…' : 'Loading real bookings…'}
                     </Card>
                 )}
@@ -157,14 +157,14 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                             {text.nannyRequests}
                         </h4>
                         {!loading && upcomingBookings.length === 0 && (
-                            <Card className="!p-5 border-stone-100 bg-white text-sm text-stone-500">
+                            <Card className="p-5! border-stone-100 bg-white text-sm text-stone-500">
                                 {lang === 'ru'
                                     ? 'Пока нет живых запросов. Когда бронирование появится, оно отобразится здесь.'
                                     : 'No live requests yet. New bookings will appear here.'}
                             </Card>
                         )}
                         {upcomingBookings.map((booking) => (
-                            <Card key={booking.id} className="!p-5 border-stone-200">
+                            <Card key={booking.id} className="p-5! border-stone-200">
                                 <div className="flex justify-between items-start mb-2">
                                     <div>
                                         <h4 className="font-bold text-stone-800">{getCounterpartyName(booking)}</h4>
@@ -216,7 +216,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                 ) : (
                     <>
                         {!loading && !activeBooking && historyBookings.length === 0 && (
-                            <Card className="!p-5 border-stone-100 bg-white text-sm text-stone-500">
+                            <Card className="p-5! border-stone-100 bg-white text-sm text-stone-500">
                                 {lang === 'ru'
                                     ? 'Пока нет бронирований. Когда подтвердите мэтч, он появится здесь.'
                                     : 'No bookings yet. Once a match is confirmed, it will appear here.'}
@@ -228,7 +228,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                                     <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                                     {text.activeBookingTitle}
                                 </h4>
-                                <Card className="!p-0 overflow-hidden border-amber-200 bg-amber-50/30">
+                                <Card className="p-0! overflow-hidden border-amber-200 bg-amber-50/30">
                                     <div className="p-4">
                                         <div className="flex justify-between items-start mb-3">
                                             <div className="flex items-center gap-3">
@@ -273,7 +273,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                             <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">{text.historyTitle}</h4>
                             <div className="space-y-3">
                                 {historyBookings.map((booking) => (
-                                    <Card key={booking.id} className="!p-4 flex flex-col gap-2 border-stone-100 bg-white">
+                                    <Card key={booking.id} className="p-4! flex flex-col gap-2 border-stone-100 bg-white">
                                         <div className="flex justify-between items-start">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(booking.id)}`}>

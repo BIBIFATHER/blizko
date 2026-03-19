@@ -150,7 +150,7 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
   const canClose = recordingState !== 'uploading';
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-stone-900/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/80 backdrop-blur-sm animate-fade-in">
       <div className="bg-white w-full max-w-sm rounded-3xl overflow-hidden animate-slide-up flex flex-col relative">
         <button
           onClick={() => canClose && onClose()}
@@ -160,7 +160,7 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
           <X size={24} />
         </button>
 
-        <div className="relative aspect-[3/4] bg-stone-800 flex items-center justify-center overflow-hidden">
+        <div className="relative aspect-3/4 bg-stone-800 flex items-center justify-center overflow-hidden">
           {permissionError ? (
             <div className="text-center p-6 text-stone-300">
               <Camera size={48} className="mx-auto mb-4 opacity-50" />

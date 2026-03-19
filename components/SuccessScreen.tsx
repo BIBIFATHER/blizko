@@ -200,7 +200,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
         <div className="flex flex-col items-center justify-center space-y-4">
           <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4 relative mx-auto">
             <div className="absolute inset-0 bg-amber-200/40 rounded-full blur-xl animate-pulse"></div>
-            <div className="relative w-20 h-20 bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200/50 rounded-full flex items-center justify-center text-amber-600 shadow-lg shadow-amber-200/30 animate-pop-in">
+            <div className="relative w-20 h-20 bg-linear-to-br from-amber-100 to-amber-50 border border-amber-200/50 rounded-full flex items-center justify-center text-amber-600 shadow-lg shadow-amber-200/30 animate-pop-in">
               <CheckCircle size={40} />
             </div>
           </div>
@@ -268,7 +268,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
       <div className="pt-8 flex flex-col items-center justify-center space-y-4">
         <div className="w-24 h-24 rounded-full flex items-center justify-center mb-4 relative mx-auto">
           <div className="absolute inset-0 bg-amber-200/40 rounded-full blur-xl animate-pulse-slow"></div>
-          <div className="relative w-20 h-20 bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200/50 rounded-full flex items-center justify-center text-amber-600 shadow-lg shadow-amber-200/30 animate-pop-in">
+          <div className="relative w-20 h-20 bg-linear-to-br from-amber-100 to-amber-50 border border-amber-200/50 rounded-full flex items-center justify-center text-amber-600 shadow-lg shadow-amber-200/30 animate-pop-in">
             <CheckCircle size={40} />
           </div>
         </div>
@@ -279,7 +279,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
       </div>
 
       {/* AI Match Result */}
-      <Card className="bg-gradient-to-br from-white to-sky-50 border-sky-100 relative overflow-hidden shadow-lg shadow-sky-100/50">
+      <Card className="bg-linear-to-br from-white to-sky-50 border-sky-100 relative overflow-hidden shadow-lg shadow-sky-100/50">
         <div className="absolute top-0 right-0 p-4 opacity-10 text-sky-500">
           <Sparkles size={100} />
         </div>
@@ -300,7 +300,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
             <p className="text-xs font-semibold text-stone-500">{text.recsTitle}</p>
             {result.recommendations.map((rec, idx) => (
               <div key={idx} className="flex items-start gap-3 text-sm text-stone-600 bg-white/80 p-3 rounded-xl border border-sky-50 shadow-sm animate-fade-in" style={{ animationDelay: `${idx * 150}ms` }}>
-                <Info size={16} className="mt-0.5 text-sky-400 flex-shrink-0" />
+                <Info size={16} className="mt-0.5 text-sky-400 shrink-0" />
                 <span>{rec}</span>
               </div>
             ))}

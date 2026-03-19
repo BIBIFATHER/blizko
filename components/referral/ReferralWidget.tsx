@@ -46,7 +46,7 @@ export const ReferralWidget: React.FC<ReferralWidgetProps> = ({ userId, userName
     };
 
     return (
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100/50">
+        <div className="bg-linear-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100/50">
             <div className="flex items-center gap-2 mb-3">
                 <Gift size={20} className="text-amber-600" />
                 <h3 className="font-semibold text-stone-800">Пригласите подругу</h3>

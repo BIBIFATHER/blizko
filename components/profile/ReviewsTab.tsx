@@ -25,7 +25,7 @@ export const ReviewsTab: React.FC<ReviewsTabProps> = ({ reviews, lang }) => {
                 </div>
             ) : (
                 reviews.map((review) => (
-                    <Card key={review.id} className="!p-4 border-stone-100 bg-white">
+                    <Card key={review.id} className="p-4! border-stone-100 bg-white">
                         <div className="flex justify-between items-start mb-2">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center font-bold text-xs">

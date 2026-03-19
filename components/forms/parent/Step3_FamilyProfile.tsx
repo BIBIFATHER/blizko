@@ -158,7 +158,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
             <Card className={`transition-all duration-300 ${documents.length > 0 ? 'bg-sky-50/50 border-sky-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full flex-shrink-0 ${documents.length > 0 ? 'bg-sky-200 text-sky-700' : 'bg-stone-100 text-stone-400'}`}>
+                    <div className={`p-3 rounded-full shrink-0 ${documents.length > 0 ? 'bg-sky-200 text-sky-700' : 'bg-stone-100 text-stone-400'}`}>
                         <FileText size={24} />
                     </div>
                     <div className="flex-1">

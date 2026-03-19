@@ -30,7 +30,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose, lang }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden animate-slide-up relative">
         <button 
           onClick={onClose} 
@@ -63,7 +63,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose, lang }) => {
           {/* Localhost Warning */}
           {isLocalhost && (
             <div className="mb-6 bg-amber-50 text-amber-800 p-3 rounded-xl text-xs flex items-start gap-2 text-left border border-amber-100">
-              <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
+              <AlertTriangle size={16} className="shrink-0 mt-0.5" />
               <span>
                 {lang === 'ru' 
                   ? 'Внимание: Ссылка "localhost" работает только на этом компьютере. Телефон ее не откроет.'

@@ -65,7 +65,7 @@ function TrendBars({ points }: { points: DashboardTrendPoint[] }) {
           <div key={point.label} className="flex h-full flex-col justify-end gap-2">
             <div className="text-center text-[11px] font-semibold text-stone-500">{point.value}</div>
             <div
-              className="rounded-t-[18px] bg-gradient-to-t from-stone-900 via-stone-700 to-amber-300 shadow-[0_10px_20px_rgba(120,113,108,0.12)]"
+              className="rounded-t-[18px] bg-linear-to-t from-stone-900 via-stone-700 to-amber-300 shadow-[0_10px_20px_rgba(120,113,108,0.12)]"
               style={{ height: `${height}%` }}
             />
             <div className="text-center text-[10px] uppercase tracking-[0.08em] text-stone-400">
@@ -164,7 +164,7 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
         </div>
       </div>
 
-      <Card className="!p-4 bg-white/90 border-stone-100">
+      <Card className="p-4! bg-white/90 border-stone-100">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
             <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
@@ -187,7 +187,7 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
       </Card>
 
       {error ? (
-        <Card className="!p-6 bg-white border-stone-100">
+        <Card className="p-6! bg-white border-stone-100">
           <ErrorState
             title={lang === 'ru' ? 'Не удалось загрузить дашборд' : 'Could not load the dashboard'}
             description={error}
@@ -201,13 +201,13 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
               const Icon = getKpiIcon(kpi.icon);
 
               return (
-                <Card key={kpi.label} className={`!p-5 ${toneClasses[kpi.tone]}`}>
+                <Card key={kpi.label} className={`p-5! ${toneClasses[kpi.tone]}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconWrapClasses[kpi.tone]}`}>
                       <Icon size={18} />
                     </div>
                     <div className="text-right">
-                      <div className="text-[11px] uppercase tracking-[0.1em] text-stone-400">{kpi.label}</div>
+                      <div className="text-[11px] uppercase tracking-widest text-stone-400">{kpi.label}</div>
                       <div className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-stone-900">{kpi.value}</div>
                     </div>
                   </div>
@@ -217,8 +217,8 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
             })}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr,1fr]">
-            <Card className="!p-5 bg-white border-stone-100">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
+            <Card className="p-5! bg-white border-stone-100">
               <div className="mb-5 space-y-1">
                 <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">{model.trend.title}</div>
                 <div className="text-sm text-stone-600">{model.trend.description}</div>
@@ -237,7 +237,7 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
               </div>
             </Card>
 
-            <Card className="!p-5 bg-white border-stone-100">
+            <Card className="p-5! bg-white border-stone-100">
               <div className="space-y-1">
                 <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
                   {lang === 'ru' ? 'Контекст' : 'Context'}
@@ -257,7 +257,7 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
             </Card>
           </div>
 
-          <Card className="!p-0 overflow-hidden bg-white border-stone-100">
+          <Card className="p-0! overflow-hidden bg-white border-stone-100">
             <div className="border-b border-stone-100 px-5 py-4">
               <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">{model.table.title}</div>
             </div>

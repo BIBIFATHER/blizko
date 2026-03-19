@@ -31,7 +31,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white/95 backdrop-blur-xl w-full max-w-md rounded-3xl card-cloud border border-stone-100/80 overflow-hidden animate-slide-up flex flex-col max-h-[85vh]">
         <div className="bg-white/50 border-b border-stone-100/50 p-4">
           <div className="flex justify-between items-center mb-4">

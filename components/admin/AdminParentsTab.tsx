@@ -192,7 +192,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                 ) : (
                     <div className="space-y-3">
                         {filteredParents.map((p) => (
-                            <Card key={p.id} className="!p-4 bg-amber-50/50">
+                            <Card key={p.id} className="p-4! bg-amber-50/50">
                                 <div className="flex justify-between text-xs text-stone-400 mb-1">
                                     <span>{new Date(p.createdAt).toLocaleString()}</span>
                                     <div className="flex items-center gap-2">
@@ -256,7 +256,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
 
             {/* Selected parent detail modal */}
             {selectedParent && (
-                <div className="fixed inset-0 z-[60] bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-60 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden">
                         <div className="p-4 border-b border-stone-100 flex items-center justify-between">
                             <h3 className="font-bold text-stone-800">Анкета родителя</h3>
@@ -357,7 +357,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
 
             {/* Document preview modal */}
             {previewDoc && (
-                <div className="fixed inset-0 z-[80] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-80 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
                         <div className="p-3 border-b border-stone-100 flex items-center justify-between">
                             <div className="text-sm font-semibold text-stone-800 truncate pr-4">{previewDoc.name || 'Документ'}</div>

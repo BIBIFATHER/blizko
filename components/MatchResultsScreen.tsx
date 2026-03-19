@@ -104,11 +104,11 @@ const CandidateCard: React.FC<{
 
     return (
         <div className="animate-pop-in" style={{ animationDelay: `${index * 140 + 200}ms` }}>
-            <Card className="!p-4 sm:!p-5">
+            <Card className="p-4! sm:p-5!">
                 <div className="space-y-4">
                     <div className="flex items-start gap-4">
                         {/* Avatar */}
-                        <div className={`w-[72px] h-[72px] rounded-[20px] bg-gradient-to-br ${avatarGradients[index % 3]} flex items-center justify-center flex-shrink-0 shadow-md overflow-hidden ring-2 ring-white/80`}>
+                        <div className={`w-[72px] h-[72px] rounded-[20px] bg-linear-to-br ${avatarGradients[index % 3]} flex items-center justify-center shrink-0 shadow-md overflow-hidden ring-2 ring-white/80`}>
                             {nanny.photo ? (
                                 <img src={nanny.photo} alt={nanny.name} className="w-full h-full object-cover" />
                             ) : (
@@ -213,8 +213,8 @@ const CandidateCard: React.FC<{
                                         }`}
                                     >
                                         {flag.level === 'critical'
-                                            ? <ShieldAlert size={14} className="text-red-500 flex-shrink-0 mt-px" />
-                                            : <AlertTriangle size={14} className="text-amber-500 flex-shrink-0 mt-px" />
+                                            ? <ShieldAlert size={14} className="text-red-500 shrink-0 mt-px" />
+                                            : <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-px" />
                                         }
                                         <div>
                                             <p className="font-semibold">{flag.message}</p>
@@ -234,7 +234,7 @@ const CandidateCard: React.FC<{
                         <Button
                             variant="primary"
                             onClick={handleOpenProfile}
-                            className="col-span-3 !py-3.5 !rounded-[20px] shadow-lg"
+                            className="col-span-3 py-3.5! rounded-[20px]! shadow-lg"
                         >
                             <MessageCircle size={16} />
                             {lang === 'ru' ? 'Написать' : 'Message'}
@@ -242,7 +242,7 @@ const CandidateCard: React.FC<{
                         <Button
                             variant="outline"
                             onClick={copyShareLink}
-                            className="col-span-2 !py-3.5 !rounded-[20px] border-stone-200 text-stone-600 hover:bg-stone-50 bg-white shadow-sm"
+                            className="col-span-2 py-3.5! rounded-[20px]! border-stone-200 text-stone-600 hover:bg-stone-50 bg-white shadow-sm"
                         >
                             <Share2 size={15} className="text-stone-400" />
                             {lang === 'ru' ? 'Обсудить' : 'Share'}

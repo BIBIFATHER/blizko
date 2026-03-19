@@ -70,7 +70,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                 </button>
 
                 <div className="mt-3 flex items-start gap-2 text-[11px] text-stone-500 leading-tight bg-stone-50 p-2.5 rounded-xl border border-stone-100">
-                    <Lock size={12} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                    <Lock size={12} className="text-amber-600 mt-0.5 shrink-0" />
                     <span>{lang === 'ru' ? 'Ваш точный адрес видим только менеджеру. Няня получит его только перед выездом.' : 'Your exact address is visible only to the manager. Nanny gets it before departure.'}</span>
                 </div>
             </div>
@@ -142,7 +142,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
             <div className="sticky bottom-0 z-10 pt-4 pb-6 -mx-2 px-2 sticky-footer-fade mt-4">
                 {showAhaMoment && !isFormValid && (
                     <div className="w-full bg-amber-50/70 backdrop-blur-md shadow-cloud-soft border border-amber-100/50 rounded-2xl p-3 animate-slide-up flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                             <Sparkles size={16} className="text-amber-600" />
                         </div>
                         <div className="text-[11px] text-stone-700 leading-tight">

@@ -303,7 +303,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
 
                 {/* Nanny key data */}
                 {isNanny && myNannyProfile && (
-                    <Card className="!p-4 bg-white border border-stone-100 text-left">
+                    <Card className="p-4! bg-white border border-stone-100 text-left">
                         <div className="text-xs font-semibold text-stone-500 uppercase mb-2">Ключевые данные</div>
                         <div className="space-y-1 text-sm text-stone-700">
                             <div>Город: {myNannyProfile.city || '—'}</div>
@@ -339,7 +339,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                         <Button onClick={() => setShowCalendar(true)} className="bg-sky-100 text-sky-800 hover:bg-sky-200">
                             <Calendar size={16} /> {lang === 'ru' ? 'Календарь занятости' : 'Availability Calendar'}
                         </Button>
-                        <Card className={`!p-5 text-white flex justify-between items-center shadow-lg transition-colors ${!isRegistrationPaid ? 'bg-stone-800 shadow-stone-200' : 'bg-[#6C2586] shadow-purple-200'}`}>
+                        <Card className={`p-5! text-white flex justify-between items-center shadow-lg transition-colors ${!isRegistrationPaid ? 'bg-stone-800 shadow-stone-200' : 'bg-[#6C2586] shadow-purple-200'}`}>
                             <div className="text-left">
                                 <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-1">
                                     {!isRegistrationPaid ? text.regFeeLabel : text.nannyWallet}
@@ -359,7 +359,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                             )}
                         </Card>
                         {!isRegistrationPaid && (
-                            <p className="text-xs text-stone-400 mt-[-1rem]">
+                            <p className="text-xs text-stone-400 -mt-4">
                                 {lang === 'ru' ? 'Для начала работы необходимо оплатить единоразовый взнос.' : 'To start working, you must pay a one-time fee.'}
                             </p>
                         )}
@@ -371,7 +371,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                     <div className="text-left space-y-4">
                         <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest">{text.myApplications}</h4>
                         {myParentRequests.length === 0 ? (
-                            <Card className="!p-4 bg-white border border-stone-100">
+                            <Card className="p-4! bg-white border border-stone-100">
                                 <div className="text-sm text-stone-500">У вас пока нет заявок</div>
                                 <div className="text-[11px] text-stone-400 mt-1">Создайте заявку, чтобы получить подбор и статус в кабинете.</div>
                             </Card>
@@ -386,9 +386,9 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                                 {myParentRequests.map((req) => {
                                     const lastAdminStatusEvent = [...(req.changeLog || [])].reverse().find((e) => e.type === 'status_changed' && e.by === 'admin');
                                     return (
-                                        <Card key={req.id} className="!p-4 bg-white border border-stone-100 space-y-3">
+                                        <Card key={req.id} className="p-4! bg-white border border-stone-100 space-y-3">
                                             <div className="flex items-start gap-3">
-                                                <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm flex-shrink-0"><Clock size={20} /></div>
+                                                <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm shrink-0"><Clock size={20} /></div>
                                                 <div className="min-w-0">
                                                     <div className="text-sm font-semibold text-stone-700 flex items-center gap-2 flex-wrap">
                                                         <Badge variant={req.status === 'approved' ? 'trust' : req.status === 'rejected' ? 'status' : 'info'}>
@@ -444,7 +444,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
 
             {/* Calendar modal */}
             {showCalendar && (
-                <div className="fixed inset-0 z-[60] bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-60 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
                         <div className="p-4 border-b border-stone-100 flex items-center justify-between">
                             <div>

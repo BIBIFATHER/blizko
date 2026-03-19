@@ -54,7 +54,7 @@ export const Button: React.FC<ButtonProps> = ({
   const variants = {
     primary: `btn-honey ${pulse && !props.disabled ? 'btn-honey-pulse' : ''}`,
     secondary: "surface-panel border border-white/70 text-stone-700 hover:bg-white/95 shadow-cloud-soft",
-    outline: "bg-transparent border border-[var(--cloud-border-strong)] text-stone-700 hover:border-amber-300 hover:bg-white/60",
+    outline: "bg-transparent border border-(--cloud-border-strong) text-stone-700 hover:border-amber-300 hover:bg-white/60",
     ghost: "text-stone-500 hover:text-stone-800 text-sm py-2 min-h-0",
     danger: "bg-red-50 border border-red-200/60 text-red-700 hover:bg-red-100/80 shadow-sm"
   };
@@ -127,7 +127,7 @@ interface CheckboxProps {
 
 export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onChange }) => (
   <label className="flex items-center gap-3 cursor-pointer py-3 px-1 rounded-xl transition-all -ml-1 select-none active:scale-[0.98] min-h-[44px]">
-    <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${checked
+    <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all shrink-0 ${checked
       ? 'chip-warm border border-amber-200/60'
       : 'border-2 border-stone-200 bg-white/60 hover:bg-white hover:border-stone-300'
       }`}>
@@ -290,7 +290,7 @@ export const RangeSlider: React.FC<RangeSliderProps> = ({ label, min, max, step,
         onPointerLeave={handlePointerUp}
       >
         <div
-          className="absolute h-full bg-gradient-to-r from-amber-300 to-amber-500 rounded-full"
+          className="absolute h-full bg-linear-to-r from-amber-300 to-amber-500 rounded-full"
           style={{ left: `${getPercent(value[0])}%`, right: `${100 - getPercent(value[1])}%` }}
         />
 

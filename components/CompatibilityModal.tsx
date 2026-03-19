@@ -27,20 +27,20 @@ const SUPPORT_DATA = {
       id: 's1',
       title: "Поддержка рядом.\nБез лишней тревоги.",
       text: "На старте часть простых вопросов закрывает продуктовый flow и support chat.\n\nКогда нужен человек, команда Blizko смотрит на контекст и помогает разобраться со следующим шагом.",
-      bg: "bg-gradient-to-b from-amber-50 to-orange-50",
+      bg: "bg-linear-to-b from-amber-50 to-orange-50",
       icon: <Sparkles size={60} className="text-amber-500" />
     },
     {
       id: 's2',
       title: "Когда нужен человек",
       text: "Подключаемся там, где нужно уточнить детали анкеты, ожидания семьи или спокойно разобраться в спорном моменте.",
-      bg: "bg-gradient-to-b from-orange-50 to-yellow-50",
+      bg: "bg-linear-to-b from-orange-50 to-yellow-50",
       icon: <Headset size={60} className="text-orange-400" />
     },
     {
       id: 's3',
       title: "Полный сервис",
-      bg: "bg-gradient-to-b from-yellow-50 to-emerald-50",
+      bg: "bg-linear-to-b from-yellow-50 to-emerald-50",
       type: "steps",
       steps: [
         {
@@ -64,7 +64,7 @@ const SUPPORT_DATA = {
       id: 's4',
       title: "Спокойнее на старте",
       text: "Мы не убираем всю неопределённость, но помогаем пройти первые шаги с меньшим хаосом и более понятной коммуникацией.",
-      bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
+      bg: "bg-linear-to-b from-emerald-50 to-teal-50",
       icon: <Heart size={60} className="text-emerald-500" />
     }
   ],
@@ -73,20 +73,20 @@ const SUPPORT_DATA = {
       id: 's1',
       title: "Support nearby.\nWith less anxiety.",
       text: "At the start, simple questions are handled by the product flow and support chat.\n\nWhen a human is needed, the Blizko team looks at the context and helps with the next step.",
-      bg: "bg-gradient-to-b from-amber-50 to-orange-50",
+      bg: "bg-linear-to-b from-amber-50 to-orange-50",
       icon: <Sparkles size={60} className="text-amber-500" />
     },
     {
       id: 's2',
       title: "When a human is needed",
       text: "We step in when request details, family expectations, or a tricky moment need calm human help.",
-      bg: "bg-gradient-to-b from-orange-50 to-yellow-50",
+      bg: "bg-linear-to-b from-orange-50 to-yellow-50",
       icon: <Headset size={60} className="text-orange-400" />
     },
     {
       id: 's3',
       title: "Full Service",
-      bg: "bg-gradient-to-b from-yellow-50 to-emerald-50",
+      bg: "bg-linear-to-b from-yellow-50 to-emerald-50",
       type: "steps",
       steps: [
         {
@@ -110,7 +110,7 @@ const SUPPORT_DATA = {
       id: 's4',
       title: "A calmer start",
       text: "We do not remove every uncertainty, but we help the first steps feel less chaotic and more understandable.",
-      bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
+      bg: "bg-linear-to-b from-emerald-50 to-teal-50",
       icon: <Heart size={60} className="text-emerald-500" />
     }
   ]
@@ -122,20 +122,20 @@ const VERIFICATION_DATA = {
       id: 'v1',
       title: "Проверка профиля.\nПомогаем снизить риск на старте.",
       text: "Мы смотрим на профиль в несколько шагов: документы, описание опыта, видеовизитку и рекомендации, если они есть.",
-      bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
+      bg: "bg-linear-to-b from-emerald-50 to-teal-50",
       icon: <ShieldCheck size={60} className="text-emerald-500" />
     },
     {
       id: 'v2',
       title: "Документы и читаемость файлов",
       text: "Сначала проверяем, что документы читаются, относятся к профилю и помогают семье понять уровень подготовки кандидата.",
-      bg: "bg-gradient-to-b from-teal-50 to-cyan-50",
+      bg: "bg-linear-to-b from-teal-50 to-cyan-50",
       icon: <FileSearch size={60} className="text-cyan-500" />
     },
     {
       id: 'v3',
       title: "Что ещё смотрим",
-      bg: "bg-gradient-to-b from-cyan-50 to-blue-50",
+      bg: "bg-linear-to-b from-cyan-50 to-blue-50",
       type: "steps",
       steps: [
         {
@@ -159,7 +159,7 @@ const VERIFICATION_DATA = {
       id: 'v4',
       title: "Без ложных гарантий",
       text: "Проверка снижает неопределённость, но не заменяет разговор, пробный выход и решение самой семьи.",
-      bg: "bg-gradient-to-b from-blue-50 to-indigo-50",
+      bg: "bg-linear-to-b from-blue-50 to-indigo-50",
       icon: <Fingerprint size={60} className="text-indigo-500" />
     }
   ],
@@ -168,20 +168,20 @@ const VERIFICATION_DATA = {
       id: 'v1',
       title: "Profile review.\nLowering risk at the start.",
       text: "We look at a profile in several steps: documents, experience, short introductions, and references when they exist.",
-      bg: "bg-gradient-to-b from-emerald-50 to-teal-50",
+      bg: "bg-linear-to-b from-emerald-50 to-teal-50",
       icon: <ShieldCheck size={60} className="text-emerald-500" />
     },
     {
       id: 'v2',
       title: "Documents and file readability",
       text: "We first check that documents are readable, relevant to the profile, and helpful for the family to understand the candidate's preparation.",
-      bg: "bg-gradient-to-b from-teal-50 to-cyan-50",
+      bg: "bg-linear-to-b from-teal-50 to-cyan-50",
       icon: <FileSearch size={60} className="text-cyan-500" />
     },
     {
       id: 'v3',
       title: "What else we review",
-      bg: "bg-gradient-to-b from-cyan-50 to-blue-50",
+      bg: "bg-linear-to-b from-cyan-50 to-blue-50",
       type: "steps",
       steps: [
         {
@@ -205,7 +205,7 @@ const VERIFICATION_DATA = {
       id: 'v4',
       title: "No false guarantees",
       text: "Review lowers uncertainty, but it does not replace the conversation, trial shift, and the family's own decision.",
-      bg: "bg-gradient-to-b from-blue-50 to-indigo-50",
+      bg: "bg-linear-to-b from-blue-50 to-indigo-50",
       icon: <Fingerprint size={60} className="text-indigo-500" />
     }
   ]
@@ -217,20 +217,20 @@ const COMPATIBILITY_DATA = {
       id: 1,
       title: "Подбор, который проще объяснить.",
       text: "Мы собираем не только анкетные поля, но и наблюдаемые сигналы по графику, опыту и стилю общения — чтобы shortlist был понятнее.",
-      bg: "bg-gradient-to-b from-amber-50 to-orange-50",
+      bg: "bg-linear-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },
     {
       id: 2,
       title: "Какие сигналы мы учитываем?",
       text: "Смотрим на то, что реально видно семье до первого выхода:\n\n• возраст детей и релевантный опыт\n• график, район и формат помощи\n• стиль общения и ясность ответов",
-      bg: "bg-gradient-to-b from-orange-50 to-rose-50",
+      bg: "bg-linear-to-b from-orange-50 to-rose-50",
       icon: <ScanFace size={60} className="text-rose-400" />
     },
     {
       id: 3,
       title: "Технология Совместимости",
-      bg: "bg-gradient-to-b from-rose-50 to-indigo-50",
+      bg: "bg-linear-to-b from-rose-50 to-indigo-50",
       type: "steps",
       steps: [
         {
@@ -254,7 +254,7 @@ const COMPATIBILITY_DATA = {
       id: 4,
       title: "Результат: меньше хаоса",
       text: "Это не обещание идеальной пары. Это способ быстрее увидеть сильные совпадения и вопросы, которые важно обсудить заранее.",
-      bg: "bg-gradient-to-b from-indigo-50 to-sky-50",
+      bg: "bg-linear-to-b from-indigo-50 to-sky-50",
       icon: <Sparkles size={60} className="text-sky-400" />
     }
   ],
@@ -263,20 +263,20 @@ const COMPATIBILITY_DATA = {
       id: 1,
       title: "Matching that is easier to explain.",
       text: "We collect not only form fields, but also observable signals around schedule, experience, and communication style so the shortlist feels clearer.",
-      bg: "bg-gradient-to-b from-amber-50 to-orange-50",
+      bg: "bg-linear-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },
     {
       id: 2,
       title: "What does AI see?",
       text: "While standard recruiting looks only at diplomas, our system structures observable communication signals during short introductions:\n\n• Speech clarity and pacing\n• Interaction style and composure\n• Consistency between answers and profile",
-      bg: "bg-gradient-to-b from-orange-50 to-rose-50",
+      bg: "bg-linear-to-b from-orange-50 to-rose-50",
       icon: <ScanFace size={60} className="text-rose-400" />
     },
     {
       id: 3,
       title: "Compatibility Technology",
-      bg: "bg-gradient-to-b from-rose-50 to-indigo-50",
+      bg: "bg-linear-to-b from-rose-50 to-indigo-50",
       type: "steps",
       steps: [
         {
@@ -300,7 +300,7 @@ const COMPATIBILITY_DATA = {
       id: 4,
       title: "Result: less chaos",
       text: "This is not a promise of a perfect pair. It is a way to see stronger fits and better discussion points sooner.",
-      bg: "bg-gradient-to-b from-indigo-50 to-sky-50",
+      bg: "bg-linear-to-b from-indigo-50 to-sky-50",
       icon: <Sparkles size={60} className="text-sky-400" />
     }
   ]

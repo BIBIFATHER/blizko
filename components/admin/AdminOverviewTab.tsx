@@ -57,7 +57,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                 </div>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                <Card className="!p-4">
+                <Card className="p-4!">
                     <div className="text-xs text-stone-500">Заявки родителей</div>
                     <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
                         <ListChecks size={18} /> {metrics.parentOps.total}
@@ -67,21 +67,21 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                     </div>
                 </Card>
 
-                <Card className="!p-4">
+                <Card className="p-4!">
                     <div className="text-xs text-stone-500">Анкеты нянь</div>
                     <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
                         <Users size={18} /> {metrics.supply.total}
                     </div>
                 </Card>
 
-                <Card className="!p-4 bg-indigo-50 border-indigo-100">
+                <Card className="p-4! bg-indigo-50 border-indigo-100">
                     <div className="text-xs text-stone-500">Готовы к ручной проверке</div>
                     <div className="text-2xl font-bold text-indigo-700 mt-1 flex items-center gap-2">
                         <CheckCircle size={18} /> {aReady}
                     </div>
                 </Card>
 
-                <Card className="!p-4 bg-emerald-50 border-emerald-100">
+                <Card className="p-4! bg-emerald-50 border-emerald-100">
                     <div className="text-xs text-stone-500">Quality-approved supply</div>
                     <div className="text-2xl font-bold text-emerald-700 mt-1 flex items-center gap-2">
                         <TrendingUp size={18} /> {qualityApproved}
@@ -91,21 +91,21 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                     </div>
                 </Card>
 
-                <Card className="!p-4 bg-sky-50 border-sky-100">
+                <Card className="p-4! bg-sky-50 border-sky-100">
                     <div className="text-xs text-stone-500">Документы загружены</div>
                     <div className="text-2xl font-bold text-sky-700 mt-1 flex items-center gap-2">
                         <FileCheck2 size={18} /> {withDocs}
                     </div>
                 </Card>
 
-                <Card className="!p-4 bg-green-50 border-green-100">
+                <Card className="p-4! bg-green-50 border-green-100">
                     <div className="text-xs text-stone-500">Верифицировано</div>
                     <div className="text-2xl font-bold text-green-700 mt-1 flex items-center gap-2">
                         <ShieldCheck size={18} /> {verified}
                     </div>
                 </Card>
 
-                <Card className="!p-4 bg-amber-50 border-amber-100">
+                <Card className="p-4! bg-amber-50 border-amber-100">
                     <div className="text-xs text-stone-500">Документы на проверке</div>
                     <div className="text-2xl font-bold text-amber-700 mt-1 flex items-center gap-2">
                         <ShieldAlert size={18} /> {pendingDocs}
@@ -114,7 +114,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-4">
-                <Card className="!p-4">
+                <Card className="p-4!">
                     <div className="text-xs uppercase tracking-wide text-stone-400 mb-2">Parent Conversion</div>
                     <div className="space-y-2 text-sm text-stone-600">
                         <div className="flex items-center justify-between">
@@ -135,7 +135,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                     </div>
                 </Card>
 
-                <Card className="!p-4">
+                <Card className="p-4!">
                     <div className="text-xs uppercase tracking-wide text-stone-400 mb-2">Nanny Quality Funnel</div>
                     <div className="space-y-2 text-sm text-stone-600">
                         <div className="flex items-center justify-between">
@@ -157,7 +157,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                     </div>
                 </Card>
 
-                <Card className="!p-4">
+                <Card className="p-4!">
                     <div className="text-xs uppercase tracking-wide text-stone-400 mb-2">Post-Match Retention</div>
                     <div className="space-y-2 text-sm text-stone-600">
                         <div className="flex items-center justify-between">

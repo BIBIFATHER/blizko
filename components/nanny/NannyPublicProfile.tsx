@@ -124,8 +124,8 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
       <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5 mb-4">
         <div className="flex items-start gap-4">
           {/* Avatar */}
-          <div className="relative flex-shrink-0">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center overflow-hidden shadow-sm">
+          <div className="relative shrink-0">
+            <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-amber-100 to-amber-200 flex items-center justify-center overflow-hidden shadow-sm">
               {nanny.photo ? (
                 <img src={nanny.photo} alt={nanny.name} className="w-full h-full object-cover" />
               ) : (

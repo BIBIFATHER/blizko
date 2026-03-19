@@ -256,7 +256,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-md sheet-modal card-cloud overflow-hidden animate-slide-up relative border-b-0 sm:border-b">
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-br from-amber-100/45 via-white/5 to-emerald-100/30 pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-linear-to-br from-amber-100/45 via-white/5 to-emerald-100/30 pointer-events-none" />
         <div className="sm:hidden flex justify-center pt-3">
           <div className="w-10 h-1.5 rounded-full bg-stone-300/80" />
         </div>
@@ -385,7 +385,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
           {step === 'otp' && (
             <form onSubmit={handleVerifyCode} className="space-y-6">
               <div className="flex justify-center">
-                <div className="w-[4rem] h-[4rem] surface-panel rounded-[20px] flex items-center justify-center text-stone-500 mb-2 p-3">
+                <div className="w-16 h-16 surface-panel rounded-[20px] flex items-center justify-center text-stone-500 mb-2 p-3">
                   <Lock size={32} />
                 </div>
               </div>

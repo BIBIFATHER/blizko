@@ -39,7 +39,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
 
   if (completed) {
     return (
-      <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+      <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
         <div className="bg-white w-full max-w-sm rounded-3xl p-8 text-center animate-slide-up shadow-2xl">
           <div className="w-16 h-16 bg-[#6C2586] rounded-full flex items-center justify-center text-white mx-auto mb-4 animate-pop-in">
             <CheckCircle size={32} />
@@ -52,7 +52,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
   }
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden animate-slide-up relative flex flex-col">
         {/* Tochka Branding Header */}
         <div className="bg-[#6C2586] p-5 flex justify-between items-center text-white relative overflow-hidden">
@@ -74,7 +74,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ amount, title, onClo
 
         <div className="p-6">
           <div className="mb-4 bg-stone-50 p-4 rounded-xl border border-stone-100 flex justify-between items-center relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-stone-100 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute top-0 right-0 w-16 h-full bg-linear-to-l from-stone-100 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div>
               <p className="text-stone-500 text-xs font-semibold">{title || text.payTitle}</p>
               <p className="text-2xl font-bold text-stone-800 mt-0.5 tracking-tight">{amount}</p>

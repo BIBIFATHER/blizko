@@ -41,7 +41,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   }, [days, slots, statusMap]);
 
   return (
-    <Card className="!p-4">
+    <Card className="p-4!">
       <div className="mb-3">
         <div className="text-sm font-semibold text-stone-800">{title}</div>
         {subtitle && <div className="text-xs text-stone-500">{subtitle}</div>}

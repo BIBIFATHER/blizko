@@ -36,7 +36,7 @@ export const InstallPwaModal: React.FC<InstallPwaModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center pointer-events-none">
+    <div className="fixed inset-0 z-100 flex items-end sm:items-center justify-center pointer-events-none">
       {/* Backdrop for click-away */}
       <div className="absolute inset-0 bg-black/20 pointer-events-auto transition-opacity opacity-100" onClick={onClose} />
 
@@ -49,7 +49,7 @@ export const InstallPwaModal: React.FC<InstallPwaModalProps> = ({
         </button>
 
         <div className="flex gap-4 items-start">
-          <div className="w-14 h-14 bg-amber-400 rounded-2xl flex items-center justify-center text-stone-900 font-bold text-2xl flex-shrink-0 shadow-lg">
+          <div className="w-14 h-14 bg-amber-400 rounded-2xl flex items-center justify-center text-stone-900 font-bold text-2xl shrink-0 shadow-lg">
             B
           </div>
           <div className="flex-1">
@@ -61,7 +61,7 @@ export const InstallPwaModal: React.FC<InstallPwaModalProps> = ({
             {/* In-App Browser Warning */}
             {isInApp && (
               <div className="bg-red-500/20 border border-red-500/50 p-3 rounded-xl mb-4 text-xs text-red-100 flex items-start gap-2">
-                 <Globe size={16} className="flex-shrink-0 mt-0.5" />
+                 <Globe size={16} className="shrink-0 mt-0.5" />
                  <div>
                    {lang === 'ru' 
                      ? 'Вы используете встроенный браузер. Чтобы установить приложение, сначала нажмите "Открыть в браузере" (Safari/Chrome).'

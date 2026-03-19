@@ -76,7 +76,7 @@ export const GosUslugiModal: React.FC<GosUslugiModalProps> = ({ onClose, onSucce
           </form>
 
           <div className="mt-6 flex items-start gap-3 p-3 bg-stone-50 rounded-lg text-xs text-stone-500">
-            <Shield size={16} className="text-[#0D4CD3] flex-shrink-0 mt-0.5" />
+            <Shield size={16} className="text-[#0D4CD3] shrink-0 mt-0.5" />
             <p>
               {text.gosSecure}
             </p>

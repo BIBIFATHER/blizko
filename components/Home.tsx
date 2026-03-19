@@ -84,7 +84,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
     <>
       <div className="flex flex-col min-h-full animate-fade-in space-y-8 pb-10">
         {/* Hero — Peak-End: memorable first impression */}
-        <div className="text-center space-y-5 pt-10 sm:pt-12 bg-gradient-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="text-center space-y-5 pt-10 sm:pt-12 bg-linear-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
           <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight font-display">
             Blizko
           </div>
@@ -202,7 +202,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
               <div className="space-y-5">
                 {getPoints(activeTrust.detail).map((point, index) => (
                   <div key={index} className="flex gap-4 items-start animate-fade-in" style={{ animationDelay: `${index * 50 + 100}ms` }}>
-                    <div className="mt-2 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-sm" />
+                    <div className="mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-sm" />
                     <p className="text-stone-600 text-[15px] leading-relaxed whitespace-pre-line">
                       {point}
                     </p>
@@ -211,7 +211,7 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
               </div>
             </div>
 
-            <div className="p-6 pt-2 bg-gradient-to-t from-white via-white to-transparent">
+            <div className="p-6 pt-2 bg-linear-to-t from-white via-white to-transparent">
               <Button onClick={() => setActiveTrust(null)} className="w-full rounded-2xl py-4 shadow-lg hover:shadow-xl bg-stone-900 text-white hover:bg-stone-800">
                 OK
               </Button>

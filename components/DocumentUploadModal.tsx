@@ -45,7 +45,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white w-full max-w-sm rounded-3xl overflow-hidden animate-slide-up relative min-h-[380px] flex flex-col">
         <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 z-10">
           <X size={24} />

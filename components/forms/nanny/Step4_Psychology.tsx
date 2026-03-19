@@ -37,7 +37,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
             <Card className={`transition-all duration-300 ${softSkills ? 'bg-amber-50/50 border-amber-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full flex-shrink-0 ${softSkills ? 'bg-amber-200 text-amber-700' : 'bg-stone-100 text-stone-400'}`}>
+                    <div className={`p-3 rounded-full shrink-0 ${softSkills ? 'bg-amber-200 text-amber-700' : 'bg-stone-100 text-stone-400'}`}>
                         <BrainCircuit size={24} />
                     </div>
                     <div className="flex-1">

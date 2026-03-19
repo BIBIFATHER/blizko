@@ -38,7 +38,7 @@ export const LeaveReviewModal: React.FC<LeaveReviewModalProps> = ({ bookingId, o
   };
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-90 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-slide-up relative">
         
         <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 z-10">

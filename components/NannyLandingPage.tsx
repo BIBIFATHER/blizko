@@ -50,10 +50,10 @@ export const NannyLandingPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white">
+        <div className="min-h-screen bg-linear-to-b from-stone-50 to-white">
             {/* Hero */}
             <section className="relative overflow-hidden px-4 pt-16 pb-20 text-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-stone-50 to-orange-50 opacity-80" />
+                <div className="absolute inset-0 bg-linear-to-br from-purple-50 via-stone-50 to-orange-50 opacity-80" />
                 <div className="relative z-10 max-w-lg mx-auto">
                     <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-100 mb-6 shadow-sm">
                         <Sparkles size={16} className="text-purple-600" />
@@ -114,7 +114,7 @@ export const NannyLandingPage: React.FC = () => {
                     <div className="space-y-4">
                         {benefits.map((b, i) => (
                             <Card key={i} className="p-5 flex gap-4 items-start hover-lift">
-                                <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 flex-shrink-0">
+                                <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 shrink-0">
                                     {b.icon}
                                 </div>
                                 <div>
@@ -137,7 +137,7 @@ export const NannyLandingPage: React.FC = () => {
                     <div className="space-y-6">
                         {steps.map((s) => (
                             <div key={s.num} className="flex gap-4 items-start">
-                                <div className="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0 shadow-lg shadow-purple-200">
+                                <div className="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-lg shrink-0 shadow-lg shadow-purple-200">
                                     {s.num}
                                 </div>
                                 <div>
@@ -152,7 +152,7 @@ export const NannyLandingPage: React.FC = () => {
 
             {/* Trust Section */}
             <section className="py-16 px-4">
-                <div className="max-w-lg mx-auto bg-gradient-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white text-center shadow-2xl shadow-purple-200">
+                <div className="max-w-lg mx-auto bg-linear-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white text-center shadow-2xl shadow-purple-200">
                     <CheckCircle size={40} className="mx-auto mb-4 opacity-90" />
                     <h2 className="text-2xl font-bold mb-3">Проверка профиля усиливает доверие</h2>
                     <p className="text-purple-100 leading-relaxed mb-6">

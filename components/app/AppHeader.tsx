@@ -28,7 +28,7 @@ export function AppHeader({
 
   return (
     <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 top-safe ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-4'}`}>
-      <div className="max-w-screen-lg mx-auto px-4 md:px-8 flex items-center justify-between">
+      <div className="max-w-(--breakpoint-lg) mx-auto px-4 md:px-8 flex items-center justify-between">
         <div
           className={`font-semibold text-stone-900 logo-serif text-xl transition-opacity duration-300 cursor-pointer ${isScrolled && location.pathname === '/' ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => { if (location.pathname !== '/') navigate('/'); }}

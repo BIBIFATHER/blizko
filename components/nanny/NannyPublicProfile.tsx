@@ -29,8 +29,68 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
   const [showDetails, setShowDetails] = useState(false);
 
   const nannyId = slug ? idFromSlug(slug) : null;
+  const isMockProfile = import.meta.env.DEV && new URLSearchParams(window.location.search).get('mock') === '1';
 
   useEffect(() => {
+    if (isMockProfile) {
+      setNanny({
+        id: 'demo1234-mock',
+        name: 'Анна Иванова',
+        city: 'Москва',
+        district: 'Пресня',
+        experience: '7 лет',
+        expectedRate: '900 ₽',
+        contact: '+7 999 123-45-67',
+        isVerified: true,
+        softSkills: {
+          method: 'rule_based_v1',
+          rawScore: 88,
+          dominantStyle: 'Empathetic',
+          summary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
+          familySummary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
+          moderationSummary: 'Высокая эмпатия, устойчивое поведение, без выраженных рисковых сигналов.',
+          completedAt: Date.now(),
+          coverage: 0.86,
+          confidenceReason: 'full_answers',
+          answeredItems: 12,
+          totalItems: 14,
+          traits: {
+            empathy: 92,
+            stability: 84,
+            responsibility: 87,
+            structure: 73,
+          },
+          signals: [
+            {
+              signal: 'empathy_first',
+              strength: 0.91,
+              direction: 'positive',
+              evidence: ['Поддерживает спокойный тон и сначала снижает стресс ребёнка.'],
+            },
+            {
+              signal: 'transparent_reporting',
+              strength: 0.78,
+              direction: 'positive',
+              evidence: ['Готова коротко и регулярно сообщать семье о состоянии ребёнка и режиме дня.'],
+            },
+          ],
+        },
+        about: 'Работаю с детьми 0–7 лет, внимательно отношусь к режиму и эмоциональному комфорту ребёнка.',
+        skills: ['Развивающие игры', 'Монтессори', 'Подготовка к школе'],
+        childAges: ['0-1', '1-3', '3-6'],
+        reviews: [
+          { id: 'r1', authorName: 'Мария', rating: 5, text: 'Очень спокойная и внимательная няня.', date: Date.now() },
+          { id: 'r2', authorName: 'Екатерина', rating: 5, text: 'Дочка быстро привыкла, всё прошло отлично.', date: Date.now() },
+        ],
+        photo: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
+        createdAt: Date.now(),
+        type: 'nanny',
+      });
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     if (!nannyId) {
       setError('Профиль не найден');
       setLoading(false);

@@ -53,6 +53,44 @@ export default function App() {
     handleLogin,
     handleLogout,
   } = useAuthSession();
+
+  const devMock = (() => {
+    if (!import.meta.env.DEV) return null;
+    const params = new URLSearchParams(location.search);
+    const mockRole = params.get('mockRole');
+    const mockAdmin = params.get('mockAdmin') === '1';
+    const mockName = params.get('mockName');
+    const mockEmail = params.get('mockEmail') || (mockAdmin ? adminEmails[0] || 'admin@local.dev' : undefined);
+
+    if (mockRole === 'parent' || mockRole === 'nanny') {
+      return {
+        user: {
+          id: 'mock-user',
+          role: mockRole,
+          name: mockName || (mockRole === 'parent' ? 'Тестовый родитель' : 'Тестовая няня'),
+          email: mockEmail || undefined,
+        },
+        isAdmin: mockAdmin,
+      } as const;
+    }
+
+    if (mockAdmin) {
+      return {
+        user: {
+          id: 'mock-admin',
+          role: 'parent',
+          name: mockName || 'Тестовый админ',
+          email: mockEmail || 'admin@local.dev',
+        },
+        isAdmin: true,
+      } as const;
+    }
+
+    return null;
+  })();
+
+  const effectiveUser = devMock?.user ?? user;
+
   const {
     isShareModalOpen,
     setShareModalOpen,
@@ -102,10 +140,10 @@ export default function App() {
     navigate('/find-nanny', { state: { editData: request } });
   };
 
-  const handleParentSubmit = useParentSubmit({ navigate, user, lang });
+  const handleParentSubmit = useParentSubmit({ navigate, user: effectiveUser, lang });
   const handleNannySubmit = useNannySubmit({ navigate, lang });
 
-  const isAdmin = !!(user?.email && adminEmails.includes(String(user.email).toLowerCase()));
+  const isAdmin = !!(effectiveUser?.email && adminEmails.includes(String(effectiveUser.email).toLowerCase())) || !!devMock?.isAdmin;
   const currentPath = location.pathname;
   const pageSeo = (() => {
     if (currentPath === '/find-nanny') {
@@ -166,7 +204,7 @@ export default function App() {
 
       <AppHeader
         lang={lang}
-        user={user}
+        user={effectiveUser}
         isScrolled={isScrolled}
         onToggleLanguage={toggleLanguage}
         onShare={handleShare}
@@ -196,23 +234,23 @@ export default function App() {
             <Route
               path="/nanny-dashboard"
               element={
-                <RequireRole role="nanny" user={user} isAdmin={isAdmin}>
-                  <RoleDashboard user={user!} lang={lang} />
+                <RequireRole role="nanny" user={effectiveUser} isAdmin={isAdmin}>
+                  <RoleDashboard user={effectiveUser!} lang={lang} />
                 </RequireRole>
               }
             />
             <Route
               path="/family-dashboard"
               element={
-                <RequireRole role="parent" user={user} isAdmin={isAdmin}>
-                  <RoleDashboard user={user!} lang={lang} />
+                <RequireRole role="parent" user={effectiveUser} isAdmin={isAdmin}>
+                  <RoleDashboard user={effectiveUser!} lang={lang} />
                 </RequireRole>
               }
             />
             <Route
               path="/admin"
               element={
-                <RequireRole role="admin" user={user} isAdmin={isAdmin}>
+                <RequireRole role="admin" user={effectiveUser} isAdmin={isAdmin}>
                   <AdminPanel onClose={() => navigate('/')} />
                 </RequireRole>
               }
@@ -225,7 +263,7 @@ export default function App() {
 
       <AppFooter
         lang={lang}
-        user={user}
+        user={effectiveUser}
         isAdmin={isAdmin}
         onBecomeNanny={() => navigate('/become-nanny')}
         onOpenAdmin={() => setAdminOpen(true)}
@@ -242,7 +280,7 @@ export default function App() {
       />
 
       {/* Overlays / Modals */}
-      {isAdminOpen && user?.email && adminEmails.includes(user.email.toLowerCase()) && (
+      {isAdminOpen && isAdmin && (
         <Suspense fallback={<RouteFallback />}>
           <AdminPanel onClose={() => setAdminOpen(false)} />
         </Suspense>
@@ -258,10 +296,10 @@ export default function App() {
         </Suspense>
       )}
 
-      {isProfileOpen && user && (
+      {isProfileOpen && effectiveUser && (
         <Suspense fallback={<RouteFallback />}>
           <UserProfileModal
-            user={user}
+            user={effectiveUser}
             onClose={() => setProfileOpen(false)}
             onLogout={handleLogout}
             lang={lang}
@@ -282,7 +320,7 @@ export default function App() {
 
       {/* Global Support Chat */}
       <Suspense fallback={null}>
-        <SupportChat lang={lang} user={user} hideLauncher={location.pathname === '/'} />
+        <SupportChat lang={lang} user={effectiveUser} hideLauncher={location.pathname === '/'} />
       </Suspense>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, Users, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
-import { NannyProfile, Language } from '../../types';
+import { NannyProfile, Language } from '@/core/types';
 import { idFromSlug } from '@/core/utils/slugify';
 import { t } from '@/core/i18n/translations';
 import { getAssessmentSignalLabel } from '@/services/assessment';
@@ -125,32 +125,36 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 animate-fade-in">
-        <div className="w-14 h-14 rounded-2xl bg-amber-100/80 animate-pulse mb-4" />
-        <p className="text-stone-400 text-sm">Загружаем профиль…</p>
+      <div className="page-frame animate-fade-in py-10">
+        <div className="hero-shell flex min-h-[50vh] flex-col items-center justify-center text-center">
+          <div className="mb-4 h-14 w-14 rounded-2xl bg-amber-100/80 animate-pulse" />
+          <p className="text-sm text-stone-400">Загружаем профиль…</p>
+        </div>
       </div>
     );
   }
 
   if (error || !nanny) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in px-6">
-        <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center mb-5">
-          <Heart size={24} className="text-amber-400" />
+      <div className="page-frame animate-fade-in py-10">
+        <div className="hero-shell flex min-h-[50vh] flex-col items-center justify-center px-6 text-center">
+          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-100 bg-amber-50">
+            <Heart size={24} className="text-amber-400" />
+          </div>
+          <h2 className="mb-2 text-2xl text-stone-900">Профиль не найден</h2>
+          <p className="mb-1 max-w-sm text-sm leading-7 text-stone-500">
+            Возможно, няня временно скрыла профиль или ссылка устарела.
+          </p>
+          <p className="mb-6 text-xs text-stone-400">
+            Это нормально — мы поможем найти подходящую няню.
+          </p>
+          <Link
+            to="/find-nanny"
+            className="inline-flex items-center gap-2 rounded-full bg-stone-900 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-stone-700 active:scale-[0.97]"
+          >
+            Начать подбор
+          </Link>
         </div>
-        <h2 className="text-lg font-semibold text-stone-800 mb-2">Профиль не найден</h2>
-        <p className="text-stone-500 text-sm mb-1 max-w-xs leading-relaxed">
-          Возможно, няня временно скрыла профиль или ссылка устарела.
-        </p>
-        <p className="text-stone-400 text-xs mb-6">
-          Это нормально — мы поможем найти подходящую няню.
-        </p>
-        <Link
-          to="/find-nanny"
-          className="inline-flex items-center gap-2 bg-stone-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-stone-700 active:scale-[0.97] transition-all"
-        >
-          Начать подбор
-        </Link>
       </div>
     );
   }
@@ -175,7 +179,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
   };
 
   return (
-    <article className="app-shell animate-fade-in" itemScope itemType="https://schema.org/Person">
+    <article className="page-frame animate-fade-in py-4 pb-16 md:py-8" itemScope itemType="https://schema.org/Person">
       <SeoHead
         title={seoTitle}
         description={seoDescription}
@@ -188,93 +192,101 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
       {/* Back */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-stone-400 hover:text-stone-700 text-sm font-medium transition-colors p-2 -ml-2 rounded-xl hover:bg-stone-50 active:bg-stone-100 mb-4"
+        className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800"
       >
         <ArrowLeft size={18} /> Назад
       </button>
 
       {/* ===== 1. Hero Card ===== */}
-      <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5 mb-4">
-        <div className="flex items-start gap-4">
+      <section className="hero-shell mb-4">
+        <div className="hero-grid">
           {/* Avatar */}
-          <div className="relative shrink-0">
-            <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-amber-100 to-amber-200 flex items-center justify-center overflow-hidden shadow-sm">
-              {nanny.photo ? (
-                <img src={nanny.photo} alt={nanny.name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-3xl font-bold text-amber-700">{nanny.name[0]}</span>
+          <div className="flex items-start gap-4">
+            <div className="relative shrink-0">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.4rem] bg-linear-to-br from-amber-100 to-amber-200 shadow-sm">
+                {nanny.photo ? (
+                  <img src={nanny.photo} alt={nanny.name} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-3xl font-bold text-amber-700">{nanny.name[0]}</span>
+                )}
+              </div>
+              {nanny.isVerified && (
+                <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 shadow-sm">
+                  <ShieldCheck size={14} className="text-white" />
+                </div>
               )}
             </div>
-            {nanny.isVerified && (
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm">
-                <ShieldCheck size={14} className="text-white" />
+
+            <div className="min-w-0 flex-1">
+              <div className="eyebrow mb-3">Профиль няни</div>
+              <h1 className="truncate text-3xl text-stone-950 md:text-4xl" itemProp="name">
+                {nanny.name}
+              </h1>
+              {avgRating && (
+                <div className="mt-2 flex items-center gap-1">
+                  <Star size={14} className="fill-amber-500 text-amber-500" />
+                  <span className="text-sm font-medium text-stone-700">{avgRating}</span>
+                  <span className="text-xs text-stone-400">({nanny.reviews!.length})</span>
+                </div>
+              )}
+              <div className="mt-3 flex flex-wrap gap-3 text-xs text-stone-500 md:text-sm">
+                {(nanny.district || nanny.city) && (
+                  <span className="flex items-center gap-1" itemProp="address">
+                    <MapPin size={12} /> {nanny.district ? `${nanny.district}, ${nanny.city}` : nanny.city}
+                  </span>
+                )}
+                {nanny.experience && (
+                  <span className="flex items-center gap-1">
+                    <Clock size={12} /> {nanny.experience}
+                  </span>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Name + meta */}
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-stone-900 truncate tracking-[-0.02em]" itemProp="name">
-              {nanny.name}
-            </h1>
-            {avgRating && (
-              <div className="flex items-center gap-1 mt-0.5">
-                <Star size={14} className="text-amber-500 fill-amber-500" />
-                <span className="text-sm font-medium text-stone-700">{avgRating}</span>
-                <span className="text-xs text-stone-400">({nanny.reviews!.length})</span>
+          <div className="grid gap-3">
+            {(nanny.isVerified || Boolean(nanny.softSkills) || Boolean(nanny.reviews?.length)) && (
+              <div className="hero-stat">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Сигналы доверия</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {nanny.isVerified && (
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${BADGE_CONFIG.verified_moderation.color}`}>
+                      <ShieldCheck size={11} /> {BADGE_CONFIG.verified_moderation.label}
+                    </span>
+                  )}
+                  {nanny.softSkills && (
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${BADGE_CONFIG.soft_skills.color}`}>
+                      <Heart size={11} /> {BADGE_CONFIG.soft_skills.label}
+                    </span>
+                  )}
+                  {nanny.reviews && nanny.reviews.length > 0 && (
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${BADGE_CONFIG.has_reviews.color}`}>
+                      <Users size={11} /> {BADGE_CONFIG.has_reviews.label}
+                    </span>
+                  )}
+                </div>
               </div>
             )}
-            <div className="flex flex-wrap gap-3 mt-2 text-xs text-stone-500">
-              {(nanny.district || nanny.city) && (
-                <span className="flex items-center gap-1" itemProp="address">
-                  <MapPin size={12} /> {nanny.district ? `${nanny.district}, ${nanny.city}` : nanny.city}
-                </span>
-              )}
-              {nanny.experience && (
-                <span className="flex items-center gap-1">
-                  <Clock size={12} /> {nanny.experience}
-                </span>
-              )}
-            </div>
+
+            {/* Rate */}
+            {nanny.expectedRate && (
+              <div className="hero-stat">
+                <div className="flex items-baseline justify-between gap-4">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{lang === 'ru' ? 'Ставка' : 'Rate'}</span>
+                  <div>
+                    <span className="text-2xl font-semibold text-stone-950">{nanny.expectedRate}</span>
+                    <span className="ml-1 text-xs text-stone-400">{lang === 'ru' ? '/ час' : '/ hour'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Trust badges */}
-        {(nanny.isVerified || Boolean(nanny.softSkills) || Boolean(nanny.reviews?.length)) && (
-          <div className="flex flex-wrap gap-1.5 mt-4">
-            {nanny.isVerified && (
-              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${BADGE_CONFIG.verified_moderation.color}`}>
-                <ShieldCheck size={11} /> {BADGE_CONFIG.verified_moderation.label}
-              </span>
-            )}
-            {nanny.softSkills && (
-              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${BADGE_CONFIG.soft_skills.color}`}>
-                <Heart size={11} /> {BADGE_CONFIG.soft_skills.label}
-              </span>
-            )}
-            {nanny.reviews && nanny.reviews.length > 0 && (
-              <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full border ${BADGE_CONFIG.has_reviews.color}`}>
-                <Users size={11} /> {BADGE_CONFIG.has_reviews.label}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Rate */}
-        {nanny.expectedRate && (
-          <div className="mt-4 pt-3 border-t border-stone-100 flex items-baseline justify-between">
-            <span className="text-xs text-stone-400">{lang === 'ru' ? 'Ставка' : 'Rate'}</span>
-            <div>
-              <span className="text-base font-bold text-stone-900">{nanny.expectedRate}</span>
-              <span className="text-xs text-stone-400 ml-1">{lang === 'ru' ? '/ час' : '/ hour'}</span>
-            </div>
-          </div>
-        )}
       </section>
 
       {/* ===== 2. Reviews (moved UP — strongest proof signal) ===== */}
       {nanny.reviews && nanny.reviews.length > 0 && (
-        <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5 mb-4">
+        <section className="section-shell mb-4 p-5">
           <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-3">
             {lang === 'ru' ? 'Отзывы' : 'Reviews'}
           </div>
@@ -302,7 +314,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
           <button
             type="button"
             onClick={() => setShowDetails(!showDetails)}
-            className="w-full flex items-center justify-center gap-2 rounded-[16px] bg-stone-50/90 border border-stone-200/70 px-4 py-3 text-sm text-stone-500 font-medium hover:bg-stone-100/70 transition-colors mb-4"
+            className="mb-4 flex w-full items-center justify-center gap-2 rounded-[18px] border border-[color:var(--cloud-border)] bg-white/75 px-4 py-3 text-sm font-medium text-stone-500 transition-colors hover:bg-white"
           >
             <span>{showDetails ? (lang === 'ru' ? 'Скрыть подробности' : 'Hide details') : (lang === 'ru' ? 'Подробнее о няне' : 'More about this nanny')}</span>
             {showDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -312,7 +324,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
             <div className="space-y-4 animate-fade-in mb-4">
               {/* About */}
               {nanny.about && (
-                <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
+                <section className="section-shell p-5">
                   <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
                     {lang === 'ru' ? 'О себе' : 'About'}
                   </div>
@@ -322,7 +334,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
               {/* Work Style */}
               {nanny.softSkills && (
-                <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
+                <section className="section-shell p-5">
                   <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
                     {lang === 'ru' ? 'Стиль работы с детьми' : 'Work style with children'}
                   </div>
@@ -349,7 +361,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
               {/* Skills + Child Ages */}
               {(nanny.skills?.length > 0 || nanny.childAges?.length > 0) && (
-                <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5 space-y-4">
+                <section className="section-shell space-y-4 p-5">
                   {nanny.skills?.length > 0 && (
                     <div>
                       <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
@@ -388,7 +400,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
       {/* ===== CTA — sticky on mobile ===== */}
       <div className="sticky bottom-4 md:static md:bottom-auto pb-safe">
-        <div className="rounded-[20px] bg-white/95 backdrop-blur-sm md:bg-transparent border border-stone-200/80 md:border-0 p-3 md:p-0 shadow-lg md:shadow-none space-y-2">
+        <div className="space-y-2 rounded-[22px] border border-[color:var(--cloud-border)] bg-white/92 p-3 shadow-lg backdrop-blur-sm md:border-0 md:bg-transparent md:p-0 md:shadow-none">
           <Link
             to="/find-nanny"
             className="flex items-center justify-center gap-2 bg-stone-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-stone-800 active:scale-[0.97] transition-all w-full"

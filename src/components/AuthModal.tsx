@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input } from './UI';
 import { X, Baby, Briefcase, Phone, Mail, ArrowRight, CheckCircle, Lock } from 'lucide-react';
-import { Language, User } from '../types';
+import { Language, User } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { supabase } from '@/services/supabase';
 import { getTmaHeaders } from '@/core/auth/tma-validate';
@@ -256,7 +256,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-md sheet-modal card-cloud overflow-hidden animate-slide-up relative border-b-0 sm:border-b">
-        <div className="absolute inset-x-0 top-0 h-28 bg-linear-to-br from-amber-100/45 via-white/5 to-emerald-100/30 pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-br from-amber-100/45 via-white/5 to-emerald-100/30 pointer-events-none" />
         <div className="sm:hidden flex justify-center pt-3">
           <div className="w-10 h-1.5 rounded-full bg-stone-300/80" />
         </div>
@@ -270,9 +270,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
         <div className="p-5 sm:p-8 pt-4 sm:pt-8 relative">
           <div className="mb-6">
             <div className="flex items-center justify-between gap-3 mb-4">
-              <div className="text-[11px] uppercase tracking-[0.18em] font-bold text-stone-400">
-                {lang === 'ru' ? 'Вход в Blizko' : 'Access Blizko'}
-              </div>
+              <div className="eyebrow">{lang === 'ru' ? 'Вход в Blizko' : 'Access Blizko'}</div>
               <div className="topbar-chip">
                 <Lock size={12} />
                 {lang === 'ru' ? 'Безопасно' : 'Secure'}
@@ -297,8 +295,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 <button
                   type="button"
                   onClick={() => setRole('parent')}
-                  className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'parent'
-                    ? 'bg-sky-50/90 border border-sky-200 text-sky-900 shadow-sm'
+                    className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'parent'
+                    ? 'bg-white border border-sky-200 text-sky-900 shadow-sm'
                     : 'bg-transparent text-stone-500'
                     }`}
                 >
@@ -308,8 +306,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 <button
                   type="button"
                   onClick={() => setRole('nanny')}
-                  className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'nanny'
-                    ? 'bg-amber-50/90 border border-amber-200 text-amber-900 shadow-sm'
+                    className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'nanny'
+                    ? 'bg-white border border-amber-200 text-amber-900 shadow-sm'
                     : 'bg-transparent text-stone-500'
                     }`}
                 >
@@ -371,7 +369,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 />
               </div>
 
-              {error && <p className="text-xs text-amber-700 bg-amber-50/90 p-3 rounded-2xl text-center font-medium border border-amber-100">{error}</p>}
+              {error && <p className="rounded-2xl border border-amber-100 bg-amber-50/90 p-3 text-center text-xs font-medium text-amber-700">{error}</p>}
 
               <Button type="submit" isLoading={loading} className="mt-1">
                 {method === 'email'
@@ -449,7 +447,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
           {step === 'email_wait' && (
             <div className="space-y-4">
-              <div className="surface-panel text-sky-800 text-sm rounded-[24px] p-5 border-sky-100/70">
+              <div className="surface-panel rounded-[24px] border-sky-100/70 p-5 text-sm text-sky-800">
                 {lang === 'ru'
                   ? 'Откройте письмо и нажмите ссылку подтверждения. После подтверждения вход выполнится автоматически.'
                   : 'Open your email and tap the confirmation link. You will be signed in automatically.'}
@@ -491,7 +489,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
           {step === 'success' && (
             <div className="flex flex-col items-center justify-center py-8 animate-pop-in">
-              <div className="w-20 h-20 bg-green-100/90 rounded-[28px] flex items-center justify-center text-green-600 mb-4 shadow-sm border border-green-200/60">
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-[28px] border border-green-200/60 bg-green-100/90 text-green-600 shadow-sm">
                 <CheckCircle size={48} />
               </div>
               <p className="font-bold text-stone-800 text-lg">

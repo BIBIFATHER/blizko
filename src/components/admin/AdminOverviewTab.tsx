@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '../UI';
-import { NannyProfile, ParentRequest } from '../../types';
+import { NannyProfile, ParentRequest } from '@/core/types';
 import {
     ListChecks,
     Users,

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Booking } from '@/services/booking';
 import { getNannyReadinessSnapshot } from '@/services/nannyReadiness';
 import type { NannyProfile, ParentRequest } from '@/core/types';
-import { buildFamilyDashboardModel, buildNannyDashboardModel } from './dashboardModel';
+import { buildFamilyDashboardModel, buildNannyDashboardModel } from '../dashboardModel';
 
 function makeParentRequest(id: string, status: ParentRequest['status']): ParentRequest {
   const createdAt = Date.now() - 2 * 24 * 60 * 60 * 1000;

@@ -28,9 +28,6 @@
     "noEmit": true
   },
   "include": [
-    "App.tsx",
-    "index.tsx",
-    "types.ts",
     "api/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",

@@ -1,4 +1,4 @@
-import { NannyProfile } from '../types';
+import { NannyProfile } from '@/core/types';
 
 /**
  * Blizko Quality Score — автоматический рейтинг надёжности и качества няни.

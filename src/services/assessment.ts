@@ -6,7 +6,7 @@ import {
   AssessmentSignal,
   AssessmentSignalName,
   AIStructuredSummary,
-} from '../types';
+} from '@/core/types';
 
 export type AssessmentItemType = 'likert' | 'scenario' | 'text';
 

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Card, Badge } from '../UI';
-import { NannyProfile, DocumentVerification } from '../../types';
+import { NannyProfile, DocumentVerification } from '@/core/types';
 import { adminUpdateNannyProfile } from '@/services/adminApi';
 import { getAssessmentSignalLabel } from '@/services/assessment';
 import {

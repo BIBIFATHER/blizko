@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/services/supabase';
-import { User } from '../../types';
+import { User } from '@/core/types';
 
 function toAppUser(
   source: {

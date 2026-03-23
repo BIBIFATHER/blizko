@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo, useRef } from 'react';
-import { NannyProfile, Language, SoftSkillsProfile, DocumentVerification, NormalizedResume } from '../../../types';
+import { NannyProfile, Language, SoftSkillsProfile, DocumentVerification, NormalizedResume } from '@/core/types';
 import { detectUserLocation } from '@/services/geolocation';
 import { trackLocationDetected, trackNannyReadyForMatch } from '@/services/analytics';
 import { getNannyReadinessSnapshot, NannyReadinessSnapshot } from '@/services/nannyReadiness';

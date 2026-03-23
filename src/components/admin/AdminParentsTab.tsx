@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Badge } from '../UI';
-import { ParentRequest, DocumentVerification } from '../../types';
+import { ParentRequest, DocumentVerification } from '@/core/types';
 import { X } from 'lucide-react';
 import { adminUpdateParentRequest } from '@/services/adminApi';
 import { notifyUserStatusChanged } from '@/services/notifications';

@@ -1,4 +1,4 @@
-import { DocumentVerification, Language, NannyProfile, NormalizedResume } from '../types';
+import { DocumentVerification, Language, NannyProfile, NormalizedResume } from '@/core/types';
 import { getQualityScore } from './qualityScore';
 
 export type NannyQualityStage =

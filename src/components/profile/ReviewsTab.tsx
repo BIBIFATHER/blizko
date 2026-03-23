@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '../UI';
 import { Star, MessageCircle } from 'lucide-react';
-import { Language, Review } from '../../types';
+import { Language, Review } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 
 interface ReviewsTabProps {

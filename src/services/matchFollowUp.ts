@@ -1,4 +1,4 @@
-import { MatchResult } from '../types';
+import { MatchResult } from '@/core/types';
 import { getItem, removeItem, setItem } from '@/core/platform/storage';
 
 const MATCH_FOLLOW_UP_KEY = 'blizko_match_follow_up';

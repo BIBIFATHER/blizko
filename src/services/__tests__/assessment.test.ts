@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildRuleBasedAssessment } from '@/services/assessment';
 import { calculateQualityScore } from '@/services/qualityScore';
-import type { NannyProfile } from '../types';
+import type { NannyProfile } from '@/core/types';
 
 describe('buildRuleBasedAssessment', () => {
   it('produces a rule-based profile with explainable signals', () => {

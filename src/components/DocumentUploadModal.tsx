@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Button } from './UI';
 import { X, UploadCloud, CheckCircle, FileText, ShieldCheck } from 'lucide-react';
-import { Language, DocumentVerification } from '../types';
+import { Language, DocumentVerification } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { analyzeDocument } from '@/core/ai/documentAi';
 

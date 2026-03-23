@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, Smartphone, AlertTriangle } from 'lucide-react';
 import QRCode from 'react-qr-code';
-import { Language } from '../types';
+import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 
 interface ShareModalProps {

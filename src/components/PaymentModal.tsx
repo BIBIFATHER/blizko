@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Input } from './UI';
 import { X, CreditCard, QrCode, CheckCircle, ShieldCheck, ArrowRight, ExternalLink } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 
 interface PaymentModalProps {

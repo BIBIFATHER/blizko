@@ -1,4 +1,4 @@
-import { ParentRequest, NannyProfile } from '../types';
+import { ParentRequest, NannyProfile } from '@/core/types';
 import { supabase } from './supabase';
 
 async function getAdminHeaders(): Promise<Record<string, string> | null> {

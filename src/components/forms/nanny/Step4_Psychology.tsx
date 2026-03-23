@@ -4,7 +4,7 @@ import { Button, Card, ChipGroup } from '../../UI';
 import { BrainCircuit, Check } from 'lucide-react';
 import { BehavioralTestModal } from '../../BehavioralTestModal';
 import { t } from '@/core/i18n/translations';
-import { Language, SoftSkillsProfile } from '../../../types';
+import { Language, SoftSkillsProfile } from '@/core/types';
 import { getAssessmentSignalLabel } from '@/services/assessment';
 
 interface Props {
@@ -158,7 +158,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                 </div>
             </div>
 
-            <div className="sticky bottom-0 z-10 flex gap-4 mt-8 pt-6 pb-6 -mx-2 px-2 sticky-footer-fade">
+            <div className="sticky-action-rail sticky-footer-fade flex gap-4">
                 <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>

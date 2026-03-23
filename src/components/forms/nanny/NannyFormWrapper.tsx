@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NannyProfile, Language } from '../../../types';
+import { NannyProfile, Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { ArrowLeft } from 'lucide-react';
 import { ProgressBar } from '../../UI';

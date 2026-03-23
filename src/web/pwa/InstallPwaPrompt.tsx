@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { X, Download, Share, PlusSquare, MoreHorizontal, Globe } from 'lucide-react';
 import { Button } from '@/components/UI';
 import { Language } from '@/core/types';
@@ -23,15 +23,10 @@ export const InstallPwaModal: React.FC<InstallPwaModalProps> = ({
   lang 
 }) => {
   const text = t[lang];
-  const [isInApp, setIsInApp] = useState(false);
-
-  useEffect(() => {
+  const [isInApp] = useState(() => {
     const ua = navigator.userAgent || '';
-    // Simple check for common in-app browsers
-    if (/Instagram|FBAN|FBAV|Telegram|Line/.test(ua)) {
-      setIsInApp(true);
-    }
-  }, []);
+    return /Instagram|FBAN|FBAV|Telegram|Line/.test(ua);
+  });
 
   if (!isOpen) return null;
 

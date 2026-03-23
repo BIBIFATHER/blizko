@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { Home } from '@/components/Home';
 import { InstallPwaModal } from '@/web/pwa/InstallPwaPrompt';
 import { SeoHead } from '@/components/seo/SeoHead';
-import { ViewState, ParentRequest, NannyProfile, Language } from './types';
+import { ParentRequest, NannyProfile, Language } from '@/core/types';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { usePwaInstall } from '@/hooks/usePwaInstall';
 import { useParentSubmit } from '@/hooks/useParentSubmit';
@@ -126,7 +126,7 @@ export default function App() {
 
   useEffect(() => {
     if (location.pathname !== '/') {
-      setShouldLoadSupportChat(true);
+      setShouldLoadSupportChat(true); // eslint-disable-line react-hooks/set-state-in-effect -- reacting to route change, not sync
     }
   }, [location.pathname]);
 
@@ -186,6 +186,7 @@ export default function App() {
 
   const isAdmin = !!(effectiveUser?.email && adminEmails.includes(String(effectiveUser.email).toLowerCase())) || !!devMock?.isAdmin;
   const currentPath = location.pathname;
+  const hideSupportLauncher = currentPath === '/' || currentPath === '/find-nanny' || currentPath === '/become-nanny';
   const pageSeo = (() => {
     if (currentPath === '/find-nanny') {
       return {
@@ -256,7 +257,7 @@ export default function App() {
         onOpenProfile={() => setProfileOpen(true)}
       />
 
-      <main className="flex-1 w-full max-w-(--breakpoint-lg) mx-auto px-4 md:px-8 pb-24 relative pt-safe">
+      <main className="app-main-frame flex-1 pb-24 relative">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home lang={lang} />} />
@@ -365,7 +366,7 @@ export default function App() {
           <SupportChat
             lang={lang}
             user={effectiveUser}
-            hideLauncher={location.pathname === '/'}
+            hideLauncher={hideSupportLauncher}
             openOnMount={shouldOpenSupportChat}
           />
         </Suspense>

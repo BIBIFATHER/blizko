@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildDashboardMetrics } from '@/services/dashboardMetrics';
-import type { ParentRequest, NannyProfile } from '../types';
+import type { ParentRequest, NannyProfile } from '@/core/types';
 import type { Booking } from '@/services/booking';
 import type { AnalyticsEventRecord } from '@/services/analytics';
 

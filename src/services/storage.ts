@@ -1,4 +1,4 @@
-import { ParentRequest, NannyProfile, Review, User } from '../types';
+import { ParentRequest, NannyProfile, Review, User } from '@/core/types';
 import { getItem, setItem, removeItem } from '@/core/platform/storage';
 import { supabase } from './supabase';
 import { findCurrentNannyProfile } from './currentNannyProfile';
@@ -115,7 +115,7 @@ async function getCurrentUserId(): Promise<string | null> {
   return data.user?.id || null;
 }
 
-async function getCurrentUserIdentity(): Promise<Pick<User, 'id' | 'name' | 'email' | 'phone'>> {
+async function getCurrentUserIdentity(): Promise<Partial<Pick<User, 'id' | 'name' | 'email' | 'phone'>>> {
   if (!supabase) return {};
   const { data } = await supabase.auth.getUser();
   const authUser = data.user;
@@ -424,7 +424,7 @@ export const getNannyProfiles = async (): Promise<NannyProfile[]> => {
 
 function filterLocalParentsForUser(
   items: ParentRequest[],
-  user: Pick<User, 'id' | 'email'>,
+  user: Partial<Pick<User, 'id' | 'email'>>,
 ): ParentRequest[] {
   const userId = String(user.id || '').trim();
   const userEmail = String(user.email || '').trim().toLowerCase();
@@ -437,7 +437,7 @@ function filterLocalParentsForUser(
 }
 
 export const getMyParentRequests = async (
-  user?: Pick<User, 'id' | 'email'>,
+  user?: Partial<Pick<User, 'id' | 'email'>>,
 ): Promise<ParentRequest[]> => {
   const identity = { ...(await getCurrentUserIdentity()), ...(user || {}) };
   const localItems = filterLocalParentsForUser(getLocalParents(), identity);
@@ -453,7 +453,7 @@ export const getMyParentRequests = async (
 };
 
 export const getMyNannyProfile = async (
-  user?: Pick<User, 'id' | 'name' | 'email' | 'phone'>,
+  user?: Partial<Pick<User, 'id' | 'name' | 'email' | 'phone'>>,
 ): Promise<NannyProfile | undefined> => {
   const identity = { ...(await getCurrentUserIdentity()), ...(user || {}) };
   const localItems = getLocalNannies();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Language, User } from '../../types';
+import { Language, User } from '@/core/types';
 
 type AppFooterProps = {
   lang: Language;

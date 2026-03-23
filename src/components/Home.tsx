@@ -1,8 +1,8 @@
 import React, { Suspense, lazy, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Badge } from './UI';
-import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles, Star, Clock } from 'lucide-react';
-import { Language } from '../types';
+import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles, Star, Clock, ArrowRight, BadgeCheck } from 'lucide-react';
+import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import type { ModalMode } from './CompatibilityModal';
 
@@ -86,87 +86,133 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
 
   return (
     <>
-      <div className="flex flex-col min-h-full animate-fade-in space-y-8 pb-10">
-        {/* Hero — Peak-End: memorable first impression */}
-        <div className="text-center space-y-5 pt-10 sm:pt-12 bg-linear-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
-          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight font-display">
-            Blizko
-          </div>
-          <div className="space-y-3">
-            <p className="text-base sm:text-lg font-semibold text-stone-800">
-              {lang === 'ru' ? 'Технология ' : 'Technology '}
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-700 font-semibold shadow-sm">
-                Humanity+
-              </span>
-            </p>
-            <p className="text-stone-500/90 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
-              {lang === 'ru'
-                ? 'AI анализирует стиль воспитания, подход и совместимость. Подбор с первого дня.'
-                : 'AI analyzes parenting style, approach and compatibility. Matching from day one.'}
-            </p>
-          </div>
+      <div className="page-frame section-stack animate-fade-in pb-10 pt-6 md:pt-10">
+        <section className="hero-shell">
+          <div className="hero-grid">
+            <div className="section-stack">
+              <div className="section-stack max-w-[40rem]">
+                <div className="eyebrow">
+                  <BadgeCheck size={14} />
+                  {lang === 'ru' ? 'Calm concierge matching' : 'Calm concierge matching'}
+                </div>
 
-          {/* Social Proof — Bandwagon Effect */}
-          <div className="flex items-center justify-center gap-3 pt-1">
-            {socialProof.map((item, i) => (
-              <div key={i} className="flex items-center gap-1 text-[11px] text-stone-400 font-medium">
-                <span className="text-amber-500">{item.icon}</span>
-                {item.label}
+                <div className="section-stack gap-4">
+                  <div className="max-w-[10ch] text-[2.05rem] leading-[0.95] text-stone-900 font-display sm:max-w-none sm:text-[4rem]">
+                    {lang === 'ru'
+                      ? 'Няня без хаоса, тревоги и бесконечного скролла.'
+                      : 'A nanny search without chaos, anxiety, or endless scrolling.'}
+                  </div>
+                  <p className="max-w-[34rem] text-[1.02rem] leading-7 text-stone-600 sm:text-[1.08rem]">
+                    {lang === 'ru'
+                      ? 'Blizko собирает короткий shortlist, объясняет совместимость и оставляет семье только ясные решения, а не шумный каталог.'
+                      : 'Blizko builds a short shortlist, explains compatibility, and leaves families with clear decisions instead of a noisy catalog.'}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {socialProof.map((item, i) => (
+                    <span key={i} className="topbar-chip">
+                      <span className="text-amber-600">{item.icon}</span>
+                      {item.label}
+                    </span>
+                  ))}
+                </div>
               </div>
-            ))}
+
+              <div className="cta-column max-w-[28rem]">
+                <Button onClick={onFindNanny} pulse className="justify-between px-5 text-left">
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={18} />
+                    {text.findNanny}
+                  </span>
+                  <ArrowRight size={18} />
+                </Button>
+                <Button variant="secondary" onClick={onBecomeNanny} className="justify-between px-5 text-left">
+                  <span>{lang === 'ru' ? 'Стать няней на Blizko' : 'Become a nanny on Blizko'}</span>
+                  <ArrowRight size={18} />
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-3 self-stretch">
+              <div className="hero-stat">
+                <div className="text-[0.72rem] uppercase tracking-[0.18em] text-stone-400">
+                  {lang === 'ru' ? 'Humanity+ engine' : 'Humanity+ engine'}
+                </div>
+                <div className="mt-3 text-2xl font-display text-stone-900">
+                  {lang === 'ru' ? 'AI объясняет выбор, человек подтверждает доверие.' : 'AI explains the match, humans confirm the trust layer.'}
+                </div>
+              </div>
+
+              <div className="hero-stat">
+                <div className="grid grid-cols-2 gap-3 text-left sm:grid-cols-3">
+                  <div>
+                    <div className="text-[0.72rem] uppercase tracking-[0.16em] text-stone-400">{lang === 'ru' ? 'Shortlist' : 'Shortlist'}</div>
+                    <div className="mt-2 text-2xl font-semibold text-stone-900">2-3</div>
+                  </div>
+                  <div>
+                    <div className="text-[0.72rem] uppercase tracking-[0.16em] text-stone-400">{lang === 'ru' ? 'Ответ' : 'Reply'}</div>
+                    <div className="mt-2 text-2xl font-semibold text-stone-900">&lt;24h</div>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <div className="text-[0.72rem] uppercase tracking-[0.16em] text-stone-400">{lang === 'ru' ? 'Подход' : 'Fit'}</div>
+                    <div className="mt-2 break-words text-2xl font-semibold text-stone-900">{lang === 'ru' ? 'объяснимый' : 'explainable'}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* Primary CTA — Foot-in-the-Door: low barrier entry */}
-        <div className="space-y-3">
-          <Button onClick={onFindNanny} pulse>
-            <Sparkles size={18} />
-            {text.findNanny}
-          </Button>
-          <Button variant="secondary" onClick={onBecomeNanny}>
-            {lang === 'ru' ? 'Стать няней на Blizko' : 'Become a nanny on Blizko'}
-          </Button>
-        </div>
+        <section className="section-stack">
+          <div className="flex items-end justify-between gap-4">
+            <div className="section-stack gap-2">
+              <div className="eyebrow">{text.whyTrust}</div>
+              <h2 className="text-3xl font-display text-stone-900 sm:text-[2.6rem]">
+                {lang === 'ru'
+                  ? 'Доверие не обещают. Его доказывают слоями.'
+                  : 'Trust should not be claimed. It should be layered and proven.'}
+              </h2>
+            </div>
+            <div className="hidden md:flex">
+              <Badge variant="trust">
+                {lang === 'ru' ? 'Все данные зашифрованы' : 'Data encrypted'}
+              </Badge>
+            </div>
+          </div>
 
-        {/* Trust Blocks — Authority Bias */}
-        <div className="space-y-5">
-          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
-            {text.whyTrust}
-          </h2>
-
-          <div className="grid gap-3">
+          <div className="proof-grid">
             {trustBlocks.map((block, index) => (
               <Card
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
-                className="animate-fade-up flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover-lift active:scale-[0.99] group border-transparent hover:border-stone-100/70"
+                className="proof-card animate-fade-up cursor-pointer group border-transparent hover:border-stone-200/80"
                 role="button"
                 tabIndex={0}
-                style={{ animationDelay: `${index * 100 + 200}ms` }}
+                style={{ animationDelay: `${index * 100 + 140}ms` }}
               >
-                <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
+                <div className={`proof-icon-wrap ${block.colorClass}`}>
                   {block.icon}
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-semibold text-stone-800 leading-snug">
+                <div className="min-w-0">
+                  <h3 className="text-[1.05rem] font-semibold leading-snug text-stone-900">
                     {block.title}
                   </h3>
-                  <p className="text-sm text-stone-500 leading-relaxed mt-0.5">
+                  <p className="mt-2 text-sm leading-6 text-stone-600">
                     {block.desc}
                   </p>
                 </div>
-                <ChevronRight size={18} className="text-stone-300 group-hover:text-stone-500 transition-colors mt-1" />
+                <ChevronRight size={18} className="mt-1 text-stone-300 transition-colors group-hover:text-stone-600" />
               </Card>
             ))}
           </div>
-        </div>
 
-        {/* Trust Badge — Anchoring */}
-        <div className="flex justify-center">
-          <Badge variant="trust">
-            {lang === 'ru' ? 'Все данные зашифрованы' : 'Data encrypted'}
-          </Badge>
-        </div>
+          <div className="flex md:hidden justify-center">
+            <Badge variant="trust">
+              {lang === 'ru' ? 'Все данные зашифрованы' : 'Data encrypted'}
+            </Badge>
+          </div>
+        </section>
       </div>
 
       {/* Deep Dive Modal */}

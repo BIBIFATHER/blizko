@@ -1,5 +1,5 @@
 import { NavigateFunction } from 'react-router-dom';
-import { Language, NannyProfile, SubmissionResult } from '../../types';
+import { Language, NannyProfile, SubmissionResult } from '@/core/types';
 import { saveNannyProfile } from '@/services/storage';
 import { sendToWebhook } from '@/services/api';
 import { trackFormSubmit, trackNannyReadyForMatch } from '@/services/analytics';

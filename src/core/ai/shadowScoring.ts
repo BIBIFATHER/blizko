@@ -9,7 +9,7 @@
  */
 
 import { supabase } from '@/services/supabase';
-import { NannyProfile, ParentRequest } from '../types';
+import { NannyProfile, ParentRequest } from '@/core/types';
 
 export interface ScoredCandidate {
   nanny: NannyProfile;

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, ArrowLeft, Loader2 } from 'lucide-react';
-import { Language, ChatMessage } from '../types';
+import { Language, ChatMessage } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { fetchMatchMessages, getOrCreateMatchThread, sendMatchMessage, subscribeToMatchMessages } from '@/services/matchChat';
 

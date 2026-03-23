@@ -5,7 +5,7 @@ import {
     User as UserIcon, LogOut, Calendar, CheckCircle, Wallet, Star,
     ShieldCheck, Briefcase, Edit, Lock, Phone, Mail, BadgeCheck, LifeBuoy, X, Clock,
 } from 'lucide-react';
-import { Language, User, NannyProfile, ParentRequest, Review } from '../../types';
+import { Language, User, NannyProfile, ParentRequest, Review } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { getMyNannyProfile, getMyParentRequests, resubmitParentRequest } from '@/services/storage';
 import { notifyAdminResubmitted } from '@/services/notifications';

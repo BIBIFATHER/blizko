@@ -1,4 +1,4 @@
-import { NannyProfile, User } from '../types';
+import { NannyProfile, User } from '@/core/types';
 
 const normalizeText = (value?: string) => String(value || '').trim().toLowerCase();
 const normalizeDigits = (value?: string) => String(value || '').replace(/\D+/g, '');
@@ -14,7 +14,7 @@ function normalizeContact(value?: string): string {
 
 export function findCurrentNannyProfile(
   profiles: NannyProfile[],
-  user: Pick<User, 'id' | 'name' | 'email' | 'phone'>,
+  user: Partial<Pick<User, 'id' | 'name' | 'email' | 'phone'>>,
 ): NannyProfile | undefined {
   if (user.id) {
     const byUserId = profiles.find((profile) => profile.userId === user.id);

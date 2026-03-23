@@ -3,7 +3,7 @@ import {
   clearAllData,
   clearTestData,
 } from '@/services/storage';
-import { ParentRequest, NannyProfile } from '../types';
+import { ParentRequest, NannyProfile } from '@/core/types';
 import { Button } from './UI';
 import { supabase } from '@/services/supabase';
 import { Trash2, X, Search } from 'lucide-react';

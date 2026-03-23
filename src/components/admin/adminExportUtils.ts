@@ -1,4 +1,4 @@
-import { NannyProfile, DocumentVerification } from '../../types';
+import { NannyProfile, DocumentVerification } from '@/core/types';
 
 export const escapeCsv = (value: unknown) => {
     const str = String(value ?? "");

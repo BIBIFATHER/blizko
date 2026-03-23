@@ -3,7 +3,7 @@ import { Camera, MapPin, ShieldCheck, Lock, Sparkles } from 'lucide-react';
 import { useNannyForm } from './NannyFormProvider';
 import { Button, Input, Checkbox } from '../../UI';
 import { t } from '@/core/i18n/translations';
-import { Language } from '../../../types';
+import { Language } from '@/core/types';
 
 interface Props {
     lang: Language;
@@ -164,7 +164,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 </p>
             </div>
 
-            <div className="sticky bottom-0 z-10 pt-4 pb-6 -mx-2 px-2 sticky-footer-fade mt-4">
+            <div className="sticky-action-rail sticky-footer-fade">
                 {showAhaMoment && !isFormValid && (
                     <div className="w-full bg-violet-50/70 backdrop-blur-md shadow-cloud-soft border border-violet-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3 mb-4">
                         <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">

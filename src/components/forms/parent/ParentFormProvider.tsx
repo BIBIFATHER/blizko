@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ParentRequest, Language } from '../../../types';
+import { ParentRequest, Language } from '@/core/types';
 import { detectUserLocation } from '@/services/geolocation';
 
 export interface ParentFormData {

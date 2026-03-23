@@ -1,5 +1,5 @@
 import { NavigateFunction } from 'react-router-dom';
-import { Language, ParentRequest, User } from '../../types';
+import { Language, ParentRequest, User } from '@/core/types';
 import { getNannyProfiles, saveParentRequest, updateParentRequest } from '@/services/storage';
 import { sendToWebhook } from '@/services/api';
 import { notifyAdminNewRequest } from '@/services/notifications';

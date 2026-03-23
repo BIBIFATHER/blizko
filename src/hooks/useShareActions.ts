@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Language } from '../../types';
+import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { trackShare } from '@/services/analytics';
 

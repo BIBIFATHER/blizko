@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Textarea } from './UI';
 import { Star, X } from 'lucide-react';
-import { Language, Review } from '../types';
+import { Language, Review } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 
 interface LeaveReviewModalProps {

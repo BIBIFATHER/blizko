@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ParentRequest, Language } from '../../../types';
+import { ParentRequest, Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { ArrowLeft } from 'lucide-react';
 import { ParentFormProvider, useParentForm } from './ParentFormProvider';

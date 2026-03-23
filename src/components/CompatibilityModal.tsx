@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Video, BrainCircuit, Heart, Sparkles, Smile, ChevronDown, ScanFace, Fingerprint, ShieldCheck, Search, FileSearch, Lock, Headset, FileText, RefreshCw, Zap, LifeBuoy } from 'lucide-react';
 import { Button } from './UI';
-import { Language } from '../types';
+import { Language } from '@/core/types';
 
 export type ModalMode = 'compatibility' | 'verification' | 'support';
 

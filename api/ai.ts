@@ -1,5 +1,6 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { verifyBearerUser } from './_auth.js';
 import { setCors } from './_cors.js';
 import { getGeminiApiKey, getGeminiInstruction, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
 
@@ -110,6 +111,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const verifiedUser = await verifyBearerUser(req);
+  if (!verifiedUser) return res.status(401).json({ error: 'Unauthorized' });
 
   const apiKey = getGeminiApiKey();
   if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY on server' });

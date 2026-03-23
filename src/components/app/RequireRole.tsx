@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Forbidden } from '../Forbidden';
-import { User } from '../../types';
+import { User } from '@/core/types';
 
 type RequireRoleProps = {
   role: 'parent' | 'nanny' | 'admin';

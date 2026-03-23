@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Checkbox } from './UI';
 import { X, FileText } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 
 interface ParentOfferModalProps {

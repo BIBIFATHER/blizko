@@ -4,7 +4,7 @@ import { Button, Card } from './UI';
 import { SERVICE_COMMISSION_PERCENT } from '@/core/config/pricing';
 import {
     ShieldCheck, Star, Clock, Users, TrendingUp, CheckCircle,
-    ArrowRight, Heart, Sparkles, Phone
+    ArrowRight, Heart, Sparkles, Phone, BadgeCheck, ChevronRight
 } from 'lucide-react';
 
 export const NannyLandingPage: React.FC = () => {
@@ -50,153 +50,208 @@ export const NannyLandingPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-stone-50 to-white">
-            {/* Hero */}
-            <section className="relative overflow-hidden px-4 pt-16 pb-20 text-center">
-                <div className="absolute inset-0 bg-linear-to-br from-purple-50 via-stone-50 to-orange-50 opacity-80" />
-                <div className="relative z-10 max-w-lg mx-auto">
-                    <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-100 mb-6 shadow-sm">
-                        <Sparkles size={16} className="text-purple-600" />
-                        <span className="text-sm font-semibold text-purple-700">Набираем нянь в Москве</span>
-                    </div>
+        <div className="page-frame animate-fade-in py-4 pb-20 pt-6 md:pt-10">
+            <div className="section-stack">
+                <section className="hero-shell">
+                    <div className="hero-grid">
+                        <div className="relative z-10 flex flex-col gap-6">
+                            <div className="eyebrow">
+                                <Sparkles size={14} />
+                                Набираем нянь в Москве
+                            </div>
 
-                    <h1 className="text-4xl md:text-5xl font-bold text-stone-900 mb-4 leading-tight">
-                        Работайте спокойнее<br />
-                        <span className="text-purple-600">с семьями, которым подходит ваш формат</span>
-                    </h1>
+                            <div className="space-y-4">
+                                <h1 className="max-w-[12ch] text-[2.35rem] leading-[0.96] text-stone-950 sm:max-w-none sm:text-4xl md:text-6xl">
+                                    Работайте с семьями,
+                                    <span className="block text-[color:var(--cloud-brand-soft)]">которым подходит ваш стиль и ритм</span>
+                                </h1>
+                                <p className="max-w-2xl text-base leading-8 text-stone-600 md:text-lg">
+                                    Blizko убирает хаос из поиска: сначала понятная анкета, затем ручная модерация,
+                                    после этого доступ к запросам с ясным графиком, районом и ожиданиями семьи.
+                                </p>
+                            </div>
 
-                    <p className="text-lg text-stone-600 mb-8 leading-relaxed">
-                        Blizko помогает пройти понятный путь: анкета, проверка, активация профиля
-                        и подходящие запросы без хаотичного поиска.
-                    </p>
+                            <div className="cta-column max-w-xl">
+                                <Button onClick={() => navigate('/become-nanny')} className="max-w-sm">
+                                    Заполнить анкету няни <ArrowRight size={18} />
+                                </Button>
+                                <a
+                                    href="mailto:nanny@blizko.app"
+                                    className="inline-flex min-h-[52px] max-w-sm items-center justify-center gap-2 rounded-full border border-[color:var(--cloud-border-strong)] bg-white/70 px-6 py-3.5 text-sm font-semibold text-stone-700 shadow-cloud-soft transition-all duration-300 hover:-translate-y-0.5 hover:bg-white"
+                                >
+                                    Задать вопрос команде <ChevronRight size={16} />
+                                </a>
+                                <p className="text-sm text-stone-500">
+                                    Анкета бесплатно. Активация профиля 5 000 ₽ только после одобрения. Без ежемесячной подписки.
+                                </p>
+                            </div>
+                        </div>
 
-                    <Button
-                        onClick={() => navigate('/become-nanny')}
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg shadow-xl shadow-purple-200 hover-lift"
-                    >
-                        Заполнить анкету няни <ArrowRight size={20} />
-                    </Button>
-
-                    <p className="text-sm text-stone-500 mt-4">
-                        Анкета бесплатно · Активация профиля 5 000 ₽ · Без ежемесячной подписки
-                    </p>
-                </div>
-            </section>
-
-            {/* Social Proof */}
-            <section className="py-8 bg-white border-y border-stone-100">
-                <div className="max-w-lg mx-auto px-4 flex justify-around text-center">
-                    <div>
-                        <div className="text-2xl font-bold text-stone-800">Модерация</div>
-                        <div className="text-xs text-stone-500">анкета и документы смотрятся перед допуском</div>
-                    </div>
-                    <div>
-                        <div className="text-2xl font-bold text-stone-800">{SERVICE_COMMISSION_PERCENT}%</div>
-                        <div className="text-xs text-stone-500">комиссия только после выхода</div>
-                    </div>
-                    <div>
-                        <div className="text-2xl font-bold text-stone-800">5 000 ₽</div>
-                        <div className="text-xs text-stone-500">единоразовая активация профиля</div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Benefits */}
-            <section className="py-16 px-4">
-                <div className="max-w-lg mx-auto">
-                    <h2 className="text-2xl font-bold text-stone-800 text-center mb-2">
-                        Почему няни выбирают Blizko
-                    </h2>
-                    <p className="text-stone-500 text-center mb-10">
-                        Меньше шума, больше понятного рабочего процесса.
-                    </p>
-
-                    <div className="space-y-4">
-                        {benefits.map((b, i) => (
-                            <Card key={i} className="p-5 flex gap-4 items-start hover-lift">
-                                <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 shrink-0">
-                                    {b.icon}
+                        <div className="relative z-10 grid gap-3">
+                            <div className="hero-stat">
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Входной порог</p>
+                                <div className="mt-3 flex items-start justify-between gap-4">
+                                    <div>
+                                        <p className="text-3xl font-semibold text-stone-950">24-48 ч</p>
+                                        <p className="mt-2 text-sm leading-6 text-stone-600">
+                                            Обычно столько занимает ручная проверка анкеты и документов перед допуском.
+                                        </p>
+                                    </div>
+                                    <div className="proof-icon-wrap bg-emerald-50 text-emerald-700">
+                                        <ShieldCheck size={20} />
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-stone-800 mb-1">{b.title}</h3>
-                                    <p className="text-sm text-stone-600 leading-relaxed">{b.desc}</p>
+                            </div>
+
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="hero-stat">
+                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Комиссия</p>
+                                    <p className="mt-3 text-2xl font-semibold text-stone-950">{SERVICE_COMMISSION_PERCENT}%</p>
+                                    <p className="mt-2 text-sm leading-6 text-stone-600">Списывается только после фактического выхода в семью.</p>
+                                </div>
+                                <div className="hero-stat">
+                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Активация</p>
+                                    <p className="mt-3 text-2xl font-semibold text-stone-950">5 000 ₽</p>
+                                    <p className="mt-2 text-sm leading-6 text-stone-600">Единоразово после одобрения анкеты, когда вы готовы брать заказы.</p>
+                                </div>
+                            </div>
+
+                            <Card className="p-5">
+                                <div className="flex items-start gap-3">
+                                    <div className="proof-icon-wrap bg-amber-100/80 text-amber-700">
+                                        <BadgeCheck size={18} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-sm font-semibold text-stone-900">Понятный вход без лишнего шума</p>
+                                        <p className="text-sm leading-6 text-stone-600">
+                                            До первого отклика вы уже понимаете район, график и формат помощи. Это экономит силы и снижает процент случайных диалогов.
+                                        </p>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="section-shell p-6 md:p-8">
+                    <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                        <div className="space-y-3">
+                            <div className="eyebrow">Почему Blizko</div>
+                            <h2 className="text-3xl text-stone-950 md:text-4xl">Меньше случайных откликов, больше нормального рабочего процесса</h2>
+                        </div>
+                        <p className="max-w-xl text-sm leading-7 text-stone-600 md:text-base">
+                            Мы не обещаем магию. Мы делаем путь более ясным: прозрачные условия, аккуратная модерация и поддержка там, где обычно всё разваливается в переписке.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        {benefits.map((b, i) => (
+                            <Card key={i} className="h-full p-5">
+                                <div className="flex h-full flex-col gap-4">
+                                    <div className="proof-icon-wrap bg-stone-100 text-stone-700">
+                                        {b.icon}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-lg font-semibold text-stone-900">{b.title}</h3>
+                                        <p className="text-sm leading-7 text-stone-600">{b.desc}</p>
+                                    </div>
                                 </div>
                             </Card>
                         ))}
                     </div>
-                </div>
-            </section>
+                </section>
 
-            {/* How it Works */}
-            <section className="py-16 px-4 bg-stone-50">
-                <div className="max-w-lg mx-auto">
-                    <h2 className="text-2xl font-bold text-stone-800 text-center mb-10">
-                        Как начать работать
-                    </h2>
+                <section className="section-shell p-6 md:p-8">
+                    <div className="mb-8 space-y-3">
+                        <div className="eyebrow">Как это работает</div>
+                        <h2 className="text-3xl text-stone-950 md:text-4xl">Три шага до доступа к запросам</h2>
+                        <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+                            Важный принцип Blizko: сначала прозрачность и проверка, потом уже активация и работа с семьями.
+                        </p>
+                    </div>
 
-                    <div className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-3">
                         {steps.map((s) => (
-                            <div key={s.num} className="flex gap-4 items-start">
-                                <div className="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-lg shrink-0 shadow-lg shadow-purple-200">
-                                    {s.num}
+                            <Card key={s.num} className="h-full p-5">
+                                <div className="flex h-full flex-col gap-5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--cloud-honey-solid)]/25 text-lg font-semibold text-stone-900">
+                                            {s.num}
+                                        </span>
+                                        <ArrowRight size={18} className="text-stone-300" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-lg font-semibold text-stone-900">{s.title}</h3>
+                                        <p className="text-sm leading-7 text-stone-600">{s.desc}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-stone-800">{s.title}</h3>
-                                    <p className="text-sm text-stone-600 mt-1">{s.desc}</p>
-                                </div>
-                            </div>
+                            </Card>
                         ))}
                     </div>
-                </div>
-            </section>
+                </section>
 
-            {/* Trust Section */}
-            <section className="py-16 px-4">
-                <div className="max-w-lg mx-auto bg-linear-to-br from-purple-600 to-purple-800 rounded-3xl p-8 text-white text-center shadow-2xl shadow-purple-200">
-                    <CheckCircle size={40} className="mx-auto mb-4 opacity-90" />
-                    <h2 className="text-2xl font-bold mb-3">Проверка профиля усиливает доверие</h2>
-                    <p className="text-purple-100 leading-relaxed mb-6">
-                        Документы помогают подтвердить профиль и понятнее показать семье ваш уровень подготовки.
-                        Сначала — модерация анкеты и документов, потом решение по следующему шагу.
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-3 text-sm">
-                        <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Паспорт</span>
-                        <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Медкнижка</span>
-                        <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Справка</span>
-                        <span className="bg-white/20 px-3 py-1.5 rounded-full">✓ Ручная модерация</span>
+                <section className="section-shell p-6 md:p-8">
+                    <div className="grid gap-5 md:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] md:items-start">
+                        <div className="space-y-4">
+                            <div className="eyebrow">Профиль и доверие</div>
+                            <h2 className="text-3xl text-stone-950 md:text-4xl">Проверка профиля усиливает доверие ещё до первого знакомства</h2>
+                            <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+                                Документы и ручная модерация нужны не ради бюрократии. Они помогают семье быстрее понять ваш уровень подготовки, а вам не тратить время на объяснение базовых вещей в каждом диалоге.
+                            </p>
+                        </div>
+
+                        <Card className="p-5">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="proof-icon-wrap bg-emerald-50 text-emerald-700">
+                                        <CheckCircle size={18} />
+                                    </div>
+                                    <p className="text-sm font-semibold text-stone-900">Что обычно подтверждаем на входе</p>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="trust-badge">Паспорт</span>
+                                    <span className="trust-badge trust-badge-blue">Медкнижка</span>
+                                    <span className="trust-badge trust-badge-warning">Справка</span>
+                                    <span className="trust-badge">Ручная модерация</span>
+                                </div>
+                                <p className="text-sm leading-7 text-stone-600">
+                                    Если по документам или анкете нужно уточнение, команда Blizko пишет аккуратно и по делу, без лишней бюрократии.
+                                </p>
+                            </div>
+                        </Card>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            {/* CTA */}
-            <section className="py-16 px-4 text-center">
-                <div className="max-w-lg mx-auto">
-                    <h2 className="text-3xl font-bold text-stone-800 mb-4">
-                        Начните с анкеты,<br />а не с хаотичного поиска
-                    </h2>
-                    <p className="text-stone-600 mb-8">
-                        Анкета займёт около 5 минут. После модерации вы решите, когда активировать профиль и выходить на заказы.
-                    </p>
-                    <Button
-                        onClick={() => navigate('/become-nanny')}
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-10 py-4 text-lg shadow-xl shadow-purple-200 hover-lift w-full max-w-sm"
-                    >
-                        Заполнить анкету няни <ArrowRight size={20} />
-                    </Button>
+                <section className="form-footer-rail p-6 md:p-8">
+                    <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-stone-700">
+                                <Phone size={16} />
+                                Вопросы по анкете или модерации
+                            </div>
+                            <h2 className="text-3xl text-stone-950 md:text-4xl">Начните с анкеты, а не с хаотичного поиска</h2>
+                            <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+                                Анкета занимает около 5 минут. После модерации вы сами решите, когда активировать профиль и выходить на запросы.
+                            </p>
+                            <a href="mailto:nanny@blizko.app" className="text-sm font-semibold text-stone-700 underline decoration-[color:var(--cloud-border-strong)] underline-offset-4">
+                                nanny@blizko.app
+                            </a>
+                        </div>
 
-                    <div className="mt-8 flex items-center justify-center gap-2 text-stone-500">
-                        <Phone size={16} />
-                        <span className="text-sm">Вопросы? Пишите: <a href="mailto:nanny@blizko.app" className="text-purple-600 font-semibold hover:underline">nanny@blizko.app</a></span>
+                        <div className="w-full md:w-[320px]">
+                            <Button onClick={() => navigate('/become-nanny')}>
+                                Заполнить анкету няни <ArrowRight size={18} />
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            {/* Footer */}
-            <footer className="py-8 px-4 pb-24 bg-stone-50 border-t border-stone-100 text-center">
-                <p className="text-xs text-stone-400">
-                    © 2026 Blizko. Данные профиля обрабатываются бережно и только в рамках работы сервиса.
-                </p>
-            </footer>
+                <footer className="pb-10 pt-2 text-center">
+                    <p className="text-xs text-stone-400">
+                        © 2026 Blizko. Данные профиля обрабатываются бережно и только в рамках работы сервиса.
+                    </p>
+                </footer>
+            </div>
         </div>
     );
 };

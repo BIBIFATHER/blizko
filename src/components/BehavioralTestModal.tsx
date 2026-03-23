@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './UI';
 import { X, BrainCircuit } from 'lucide-react';
-import { Language, SoftSkillsProfile } from '../types';
+import { Language, SoftSkillsProfile } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { assessmentItems, analyzeAssessment, type AssessmentCandidateInfo } from '@/services/assessment';
 

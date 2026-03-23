@@ -1,4 +1,4 @@
-import { NannyProfile, ParentRequest } from '../types';
+import { NannyProfile, ParentRequest } from '@/core/types';
 import { AnalyticsEventRecord, ANALYTICS_EVENTS, getAnalyticsEvents } from './analytics';
 import { Booking } from './booking';
 import { getNannyReadinessSnapshot } from './nannyReadiness';

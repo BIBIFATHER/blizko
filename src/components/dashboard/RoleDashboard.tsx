@@ -13,13 +13,13 @@ import type { Booking } from '@/services/booking';
 import { getBookingsForUser } from '@/services/booking';
 import { trackPageView } from '@/services/analytics';
 import { getMyNannyProfile, getMyParentRequests } from '@/services/storage';
-import type { Language, NannyProfile, ParentRequest, User } from '../../types';
+import type { Language, NannyProfile, ParentRequest, User } from '@/core/types';
 import {
   type DashboardKpi,
   type DashboardTrendPoint,
   buildFamilyDashboardModel,
   buildNannyDashboardModel,
-} from '../../src/dashboard/dashboardModel';
+} from '@/services/dashboardModel';
 import { Badge, Button, Card, ErrorState } from '../UI';
 
 interface RoleDashboardProps {
@@ -135,56 +135,71 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
     : (lang === 'ru' ? 'Открыть анкету семьи' : 'Open family request');
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-3">
-          <Badge variant="neutral">{model.eyebrow}</Badge>
-          <div className="space-y-2">
-            <h1 className="text-3xl font-semibold tracking-[-0.03em] text-stone-900">{model.title}</h1>
-            <p className="max-w-3xl text-sm leading-6 text-stone-600">{model.description}</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button
-            variant="secondary"
-            onClick={() => void loadData()}
-            isLoading={loading}
-            className="w-auto px-5"
-          >
-            <RefreshCw size={16} />
-            {lang === 'ru' ? 'Обновить' : 'Refresh'}
-          </Button>
-          <Button
-            onClick={() => navigate(isNanny ? '/become-nanny' : '/find-nanny')}
-            className="w-auto px-5"
-          >
-            {primaryActionLabel}
-          </Button>
-        </div>
-      </div>
-
-      <Card className="p-4! bg-white/90 border-stone-100">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-1">
-            <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
-              {lang === 'ru' ? 'Допущение' : 'Assumption'}
+    <div className="page-frame section-stack animate-fade-in">
+      <section className="hero-shell">
+        <div className="hero-grid">
+          <div className="relative z-10 space-y-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="eyebrow">{model.eyebrow}</div>
+              <div className="topbar-chip">
+                <ShieldCheck size={12} />
+                {lang === 'ru' ? 'Живые данные' : 'Live data'}
+              </div>
             </div>
-            <p className="text-sm leading-6 text-stone-600">{model.assumption}</p>
+
+            <div className="space-y-3">
+              <h1 className="max-w-[12ch] text-[2.2rem] leading-[0.96] text-stone-950 sm:max-w-3xl sm:text-4xl md:text-5xl">{model.title}</h1>
+              <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">{model.description}</p>
+            </div>
+
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button
+                variant="secondary"
+                onClick={() => void loadData()}
+                isLoading={loading}
+                className="w-full sm:w-auto px-5"
+              >
+                <RefreshCw size={16} />
+                {lang === 'ru' ? 'Обновить' : 'Refresh'}
+              </Button>
+              <Button
+                onClick={() => navigate(isNanny ? '/become-nanny' : '/find-nanny')}
+                className="w-full sm:w-auto px-5"
+              >
+                {primaryActionLabel}
+              </Button>
+            </div>
           </div>
-          <div className="text-xs text-stone-400">
-            {lang === 'ru' ? 'Последняя синхронизация' : 'Last synced'}:{' '}
-            <span className="font-medium text-stone-500">
-              {lastLoadedAt ? new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
-                day: '2-digit',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit',
-              }).format(lastLoadedAt) : '—'}
-            </span>
+
+          <div className="relative z-10 grid gap-3">
+            <div className="hero-stat">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                {lang === 'ru' ? 'Последняя синхронизация' : 'Last synced'}
+              </p>
+              <p className="mt-3 text-2xl font-semibold text-stone-950">
+                {lastLoadedAt ? new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
+                  day: '2-digit',
+                  month: 'short',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }).format(lastLoadedAt) : '—'}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-stone-600">
+                {lang === 'ru' ? 'Дашборд собирается из реальных заявок, бронирований и статусов профиля.' : 'The dashboard is assembled from real requests, bookings, and profile states.'}
+              </p>
+            </div>
+
+            <Card className="p-4">
+              <div className="space-y-2">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                  {lang === 'ru' ? 'Допущение' : 'Assumption'}
+                </div>
+                <p className="text-sm leading-6 text-stone-600">{model.assumption}</p>
+              </div>
+            </Card>
           </div>
         </div>
-      </Card>
+      </section>
 
       {error ? (
         <Card className="p-6! bg-white border-stone-100">
@@ -196,6 +211,18 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
         </Card>
       ) : (
         <>
+          <section className="section-shell p-4 md:p-6">
+            <div className="mb-5 flex items-end justify-between gap-3">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                  {lang === 'ru' ? 'Сводка' : 'Summary'}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-stone-600">
+                  {lang === 'ru' ? 'Быстрый срез по активности, качеству и следующему полезному действию.' : 'A fast snapshot of activity, quality, and the next useful move.'}
+                </p>
+              </div>
+            </div>
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             {model.kpis.map((kpi) => {
               const Icon = getKpiIcon(kpi.icon);
@@ -216,6 +243,7 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
               );
             })}
           </div>
+          </section>
 
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
             <Card className="p-5! bg-white border-stone-100">
@@ -301,6 +329,14 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
               </div>
             )}
           </Card>
+
+          <div className="form-footer-rail p-5 md:p-6">
+            <p className="text-sm leading-7 text-stone-500">
+              {lang === 'ru'
+                ? 'Дашборд нужен не ради отчёта, а ради следующего понятного действия: обновить профиль, ответить семье или проверить бронь.'
+                : 'The dashboard exists to clarify the next useful action: update a profile, reply to a family, or verify a booking.'}
+            </p>
+          </div>
         </>
       )}
     </div>

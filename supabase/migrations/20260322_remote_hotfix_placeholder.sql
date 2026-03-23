@@ -1,0 +1,3 @@
+-- Placeholder migration to align local migration history with the remote project.
+-- Version 20260322 already exists in remote supabase_migrations.schema_migrations.
+-- The actual SQL was applied remotely before migration normalization.

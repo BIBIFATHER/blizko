@@ -42,6 +42,23 @@ function getResource(req: VercelRequest): 'parents' | 'nannies' | 'analytics' | 
   return RESOURCES.has(resource) ? (resource as 'parents' | 'nannies' | 'analytics') : null;
 }
 
+function extractOwnedUserId(resource: 'parents' | 'nannies', item: any): string | null {
+  if (!item || typeof item !== 'object') return null;
+
+  const directUserId = typeof item.user_id === 'string' ? item.user_id.trim() : '';
+  if (directUserId) return directUserId;
+
+  const nestedUserId = typeof item.userId === 'string' ? item.userId.trim() : '';
+  if (nestedUserId) return nestedUserId;
+
+  if (resource === 'parents') {
+    const parentId = typeof item.parentId === 'string' ? item.parentId.trim() : '';
+    if (parentId) return parentId;
+  }
+
+  return null;
+}
+
 async function sb(path: string, init: RequestInit, url: string, key: string) {
   return fetch(`${url}/rest/v1/${path}`, {
     ...init,
@@ -327,7 +344,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const item = req.body?.item;
       if (!item?.id) return json(res, 400, { error: 'Missing item.id' });
 
-      const row = { id: item.id, payload: item };
+      const userId = extractOwnedUserId(resource, item);
+      if (!userId) {
+        return json(res, 400, { error: `Missing ${resource} owner user_id` });
+      }
+
+      const row = { id: item.id, user_id: userId, payload: item };
       const response = await sb(
         `${resource}?on_conflict=id`,
         {
@@ -408,6 +430,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'DELETE') {
       const testOnly = String((req.query as any)?.testOnly || '') === '1';
+      const confirmed = String((req.query as any)?.confirm || '').trim().toUpperCase() === 'DELETE';
+      if (!testOnly && !confirmed) {
+        return json(res, 400, {
+          error: 'Destructive delete requires explicit confirmation',
+          hint: 'Pass ?confirm=DELETE or use testOnly=1',
+        });
+      }
+
       const filter = testOnly ? 'id=like.test-%25' : 'id=neq.__none__';
       const response = await sb(`${resource}?${filter}`, { method: 'DELETE' }, supabaseUrl, supabaseServiceRoleKey);
       if (!response.ok) {

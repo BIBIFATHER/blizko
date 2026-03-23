@@ -1,4 +1,4 @@
-import { ParentRequest } from '../types';
+import { ParentRequest } from '@/core/types';
 import { sendToWebhook } from './api';
 
 export const notifyAdminNewRequest = async (req: ParentRequest) => {

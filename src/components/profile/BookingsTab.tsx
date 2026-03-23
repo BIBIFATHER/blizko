@@ -4,7 +4,7 @@ import {
     Calendar, MessageSquare, CheckCircle, Star,
     MapPin, Briefcase,
 } from 'lucide-react';
-import { Language, User, Review } from '../../types';
+import { Language, User, Review } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { NannyChatModal } from '../NannyChatModal';
 import { LeaveReviewModal } from '../LeaveReviewModal';

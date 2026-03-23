@@ -8,18 +8,20 @@ type DeferredPrompt = Event & {
 export function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<DeferredPrompt | null>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
-  const [platform, setPlatform] = useState<'ios' | 'android' | 'desktop'>('android');
-  const [isStandalone, setIsStandalone] = useState(false);
 
-  useEffect(() => {
-    const isStand = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as Navigator & { standalone?: boolean }).standalone;
-    setIsStandalone(Boolean(isStand));
-
+  const [platform] = useState<'ios' | 'android' | 'desktop'>(() => {
     const ua = window.navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(ua);
     const isDesktop = !/android/.test(ua) && !isIOS;
-    setPlatform(isIOS ? 'ios' : isDesktop ? 'desktop' : 'android');
+    return isIOS ? 'ios' : isDesktop ? 'desktop' : 'android';
+  });
 
+  const [isStandalone] = useState(() => {
+    const isStand = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as Navigator & { standalone?: boolean }).standalone;
+    return Boolean(isStand);
+  });
+
+  useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setDeferredPrompt(event as DeferredPrompt);

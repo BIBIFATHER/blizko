@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from './UI';
 import { X, StopCircle, Upload, Camera } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { supabase } from '@/services/supabase';
 

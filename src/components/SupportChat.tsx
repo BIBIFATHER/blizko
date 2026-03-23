@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageCircle, Send, Minimize2, Loader2, Sparkles, UserCheck, X } from 'lucide-react';
 import { ErrorBoundary } from './ErrorBoundary';
-import { Language, User } from '@/core/types';
+import { Language, User } from '../types';
 import { t } from '@/core/i18n/translations';
 import { trackChatOpen } from '@/services/analytics';
 import {
@@ -149,7 +149,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
           setIsOpen(true);
           trackChatOpen('launcher');
         }}
-        className="fixed bottom-20 right-4 z-70 flex items-center justify-center rounded-full bg-stone-900 p-3.5 text-white shadow-2xl transition-transform animate-fade-in group hover:scale-105 hover:bg-stone-800 active:scale-95"
+        className="fixed bottom-20 right-4 z-70 bg-stone-900 hover:bg-stone-800 text-white p-3.5 rounded-full shadow-2xl transition-transform hover:scale-105 active:scale-95 animate-fade-in flex items-center justify-center group"
         aria-label={lang === 'ru' ? 'Открыть чат поддержки' : 'Open support chat'}
       >
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white animate-pulse" />
@@ -164,7 +164,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
   if (!user?.id) {
     return (
       <div className="fixed bottom-4 right-4 z-70 w-full max-w-[340px] flex flex-col items-end animate-slide-up">
-        <div className="card-cloud w-full overflow-hidden rounded-[1.7rem] p-5 flex flex-col">
+        <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full flex flex-col p-5">
           <div className="flex justify-between items-start mb-3">
             <div className="text-sm font-medium text-stone-700">{lang === 'ru' ? 'Для чата нужна авторизация' : 'Please sign in to use chat'}</div>
             <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-stone-600 transition-colors p-1" aria-label="Close">
@@ -201,12 +201,12 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
 
   return (
     <div className="fixed bottom-4 right-4 z-70 w-full max-w-[360px] flex flex-col items-end animate-slide-up">
-      <div className="card-cloud w-full overflow-hidden rounded-[1.8rem] flex flex-col border border-white/70" style={{ height: 'min(520px, calc(100vh - 100px))' }}>
+      <div className="bg-white rounded-2xl shadow-2xl border border-stone-100 overflow-hidden w-full flex flex-col" style={{ height: 'min(520px, calc(100vh - 100px))' }}>
         {/* Header */}
-        <div className="relative flex items-center justify-between overflow-hidden border-b border-[color:var(--cloud-border)] bg-stone-950 p-4 text-white">
-          <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-500/20 blur-3xl pointer-events-none" />
+        <div className="bg-stone-900 text-white p-4 flex justify-between items-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 blur-3xl rounded-full pointer-events-none" />
           <div className="flex items-center gap-3 z-10">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-amber-200 to-amber-500 text-sm font-bold text-stone-900 shadow-inner">
+            <div className="w-10 h-10 bg-linear-to-br from-amber-200 to-amber-500 rounded-full flex items-center justify-center text-stone-900 font-bold text-sm shadow-inner">
               <Sparkles size={18} />
             </div>
             <div>
@@ -226,7 +226,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
 
         {/* Escalation Banner */}
         {isEscalated && (
-          <div className="flex items-center gap-2 border-b border-amber-100 bg-amber-50 px-4 py-2">
+          <div className="bg-amber-50 border-b border-amber-100 px-4 py-2 flex items-center gap-2">
             <UserCheck size={14} className="text-amber-600" />
             <span className="text-xs text-amber-700 font-medium">
               {lang === 'ru' ? 'Антон уже в курсе и скоро подключится лично' : 'Anton has been notified and will join shortly'}
@@ -235,7 +235,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
         )}
 
         {/* Messages */}
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-[rgba(252,248,241,0.78)] p-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-stone-50 min-h-0">
           {/* Skeleton loader */}
           {isLoading && (
             <div className="space-y-3 animate-pulse">
@@ -295,13 +295,13 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
         </div>
 
         {/* Input */}
-        <form onSubmit={handleSend} className="flex items-center gap-2 border-t border-[color:var(--cloud-border)] bg-white/92 p-3 backdrop-blur-sm">
+        <form onSubmit={handleSend} className="p-3 bg-white border-t border-stone-100 flex gap-2 items-center">
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={lang === 'ru' ? 'Напишите сообщение...' : 'Type a message...'}
-            className="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm transition-all focus:outline-none focus:ring-1 focus:ring-amber-300"
+            className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-300 transition-all"
             disabled={isAiThinking}
           />
           <button

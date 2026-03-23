@@ -7,7 +7,7 @@ import {
     AlertTriangle, ShieldAlert, Share2, CheckCheck,
     Heart, Clock, MapPin, Check
 } from 'lucide-react';
-import { MatchResult, MatchCandidate, TrustBadge, Language } from '@/core/types';
+import { MatchResult, MatchCandidate, TrustBadge, Language } from '../types';
 import {
     trackMatchingResults,
     trackMatchProfileOpen,
@@ -145,8 +145,8 @@ const CandidateCard: React.FC<{
                                         </div>
                                     )}
                                 </div>
-                                <div className="rounded-[18px] border border-[color:var(--cloud-border)] bg-white/80 px-3 py-2 flex min-w-[76px] shrink-0 flex-col items-center justify-center shadow-cloud-soft">
-                                    <span className="text-2xl font-black text-stone-900 leading-none">{score}</span>
+                                <div className="rounded-[18px] bg-stone-50 border border-stone-100 px-3 py-2 flex flex-col items-center justify-center shrink-0 min-w-[70px]">
+                                    <span className="text-xl font-black text-stone-800 leading-none">{score}</span>
                                     <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-stone-400 mt-1">
                                         {lang === 'ru' ? 'Match' : 'Match'}
                                     </span>
@@ -163,7 +163,7 @@ const CandidateCard: React.FC<{
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_0.9fr] gap-3">
-                        <div className="rounded-[22px] border border-[color:var(--cloud-border)] bg-white/78 p-3.5 shadow-cloud-soft">
+                        <div className="rounded-[22px] bg-stone-50/80 border border-stone-100 p-3.5">
                             <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] block mb-1.5">
                                 {lang === 'ru' ? 'Почему подходит' : 'Why it fits'}
                             </span>
@@ -172,7 +172,7 @@ const CandidateCard: React.FC<{
                             </p>
                         </div>
 
-                        <div className="rounded-[22px] border border-[color:var(--cloud-border)] bg-white/80 p-3.5 shadow-cloud-soft">
+                        <div className="rounded-[22px] bg-white/80 border border-stone-100 p-3.5">
                             <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] mb-2 flex items-center gap-1">
                                 <CheckCheck size={11} />
                                 {lang === 'ru' ? 'Доверие' : 'Trust'}
@@ -182,7 +182,7 @@ const CandidateCard: React.FC<{
                                     trustBadges.slice(0, 4).map(badge => (
                                         <span
                                             key={badge}
-                                            className="inline-flex items-center gap-1 rounded-full border border-[color:var(--cloud-border)] bg-white px-2 py-0.5 text-[10px] font-medium text-stone-600"
+                                            className="inline-flex items-center gap-1 text-[10px] font-medium text-stone-600 bg-stone-50 border border-stone-100 rounded-full px-2 py-0.5"
                                         >
                                             <span className="text-[10px]">{TRUST_BADGE_ICONS[badge]}</span>
                                             {TRUST_BADGE_LABELS[badge]?.[lang] || badge}
@@ -198,7 +198,7 @@ const CandidateCard: React.FC<{
                     </div>
 
                     {riskFlags && riskFlags.length > 0 && (
-                        <div className="rounded-[20px] border border-stone-200/60 bg-stone-50/80 p-3">
+                        <div className="rounded-[20px] bg-stone-50/80 border border-stone-200/60 p-3">
                             <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] block mb-2">
                                 {lang === 'ru' ? 'Обсудить заранее' : 'Discuss in advance'}
                             </span>
@@ -242,7 +242,7 @@ const CandidateCard: React.FC<{
                         <Button
                             variant="outline"
                             onClick={copyShareLink}
-                            className="col-span-2 py-3.5! rounded-[20px]! border-stone-200 bg-white text-stone-600 shadow-sm hover:bg-stone-50"
+                            className="col-span-2 py-3.5! rounded-[20px]! border-stone-200 text-stone-600 hover:bg-stone-50 bg-white shadow-sm"
                         >
                             <Share2 size={15} className="text-stone-400" />
                             {lang === 'ru' ? 'Обсудить' : 'Share'}
@@ -293,10 +293,10 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
 
     if (!matchResult || matchResult.candidates.length === 0) {
         return (
-            <div className="page-frame animate-fade-in py-6">
+            <div className="flex flex-col min-h-full animate-fade-in p-4">
                 <button
                     onClick={() => navigate('/')}
-                    className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800"
+                    className="flex items-center gap-1 text-stone-400 hover:text-stone-600 mb-6 transition-colors"
                 >
                     <ArrowLeft size={18} />
                     <span className="text-sm">{lang === 'ru' ? 'Назад' : 'Back'}</span>
@@ -316,127 +316,87 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
     }
 
     return (
-        <div className="page-frame animate-fade-in py-4 pb-14 md:py-8">
-            <div className="section-stack">
+        <div className="flex flex-col min-h-full animate-fade-in pb-12">
+            {/* Header */}
+            <div className="p-4 pb-0">
                 <button
                     onClick={() => navigate('/')}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800 group"
+                    className="flex items-center gap-1.5 text-stone-400 hover:text-stone-600 mb-5 transition-colors group"
                 >
                     <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                     <span className="text-sm font-medium">{lang === 'ru' ? 'На главную' : 'Home'}</span>
                 </button>
 
-                <section className="hero-shell">
-                    <div className="hero-grid">
-                        <div className="relative z-10 space-y-5">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <div className="eyebrow">
-                                    <Sparkles size={14} />
-                                    {lang === 'ru'
-                                        ? `Найдено ${matchResult.candidates.length} сильных совпадения`
-                                        : `${matchResult.candidates.length} strong matches found`}
-                                </div>
-                                <div className="topbar-chip">
-                                    <CheckCheck size={12} />
-                                    {lang === 'ru' ? 'Проверка включена' : 'Trust checked'}
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                <h1 className="max-w-3xl text-4xl text-stone-950 md:text-6xl">
-                                    {lang === 'ru' ? 'Кандидаты, с которыми можно спокойно идти дальше.' : 'Candidates you can calmly move forward with.'}
-                                </h1>
-                                <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
-                                    {lang === 'ru'
-                                        ? 'Мы оставили профили, где совпадают требования семьи, базовые сигналы доверия и общий стиль общения.'
-                                        : 'We kept the profiles where family needs, trust signals, and overall style align.'}
-                                </p>
-                            </div>
-
-                            {matchResult.overallAdvice && (
-                                <div className="rounded-[24px] border border-[color:var(--cloud-border)] bg-white/74 px-4 py-4 text-sm leading-7 text-stone-600 shadow-cloud-soft animate-pop-in" style={{ animationDelay: '100ms' }}>
-                                    {matchResult.overallAdvice}
-                                </div>
-                            )}
+                <div className="surface-panel space-y-4 mb-6 p-5 sm:p-6 rounded-[28px]">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold border border-emerald-100/60 animate-pop-in shadow-sm">
+                            <Sparkles size={15} className="text-emerald-500" />
+                            {lang === 'ru'
+                                ? `Найдено ${matchResult.candidates.length} сильных совпадения`
+                                : `${matchResult.candidates.length} strong matches found`}
                         </div>
-
-                        <div className="relative z-10 grid gap-3">
-                            <div className="hero-stat">
-                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                                    {lang === 'ru' ? 'Shortlist' : 'Shortlist'}
-                                </p>
-                                <p className="mt-3 text-3xl font-semibold text-stone-950">{matchResult.candidates.length}</p>
-                                <p className="mt-2 text-sm leading-6 text-stone-600">
-                                    {lang === 'ru' ? 'Оставили только профили, которые можно обсуждать без ощущения лотереи.' : 'Only profiles worth discussing without roulette-level uncertainty.'}
-                                </p>
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-2">
-                                {[
-                                    lang === 'ru' ? 'AI shortlist' : 'AI shortlist',
-                                    lang === 'ru' ? 'Верификация' : 'Verification',
-                                    lang === 'ru' ? 'Поддержка рядом' : 'Support nearby',
-                                ].map((item) => (
-                                    <div key={item} className="rounded-[18px] border border-[color:var(--cloud-border)] bg-white/78 px-3 py-3 text-center text-[11px] font-semibold text-stone-600 shadow-cloud-soft sm:text-xs">
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
-
-                            <Card className="p-4">
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2 text-sm font-semibold text-stone-800">
-                                        <Heart size={15} className="text-rose-500" />
-                                        {lang === 'ru' ? 'Решение без давления' : 'Decision without pressure'}
-                                    </div>
-                                    <p className="text-sm leading-6 text-stone-600">
-                                        {lang === 'ru'
-                                            ? 'Можно открыть профиль, обсудить детали с партнёром и вернуться к shortlist позже.'
-                                            : 'You can review a profile, discuss it with your partner, and return to the shortlist later.'}
-                                    </p>
-                                </div>
-                            </Card>
+                        <div className="topbar-chip">
+                            <CheckCheck size={12} />
+                            {lang === 'ru' ? 'Проверка включена' : 'Trust checked'}
                         </div>
                     </div>
-                </section>
 
-                <section className="section-shell p-4 md:p-6">
-                    <div className="mb-5 flex items-center justify-between gap-3">
-                        <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                                {lang === 'ru' ? 'Shortlist' : 'Shortlist'}
-                            </p>
-                            <p className="mt-2 text-sm leading-6 text-stone-600">
-                                {lang === 'ru' ? 'Сверху идут самые сильные совпадения по запросу, доверию и стилю общения.' : 'Top candidates combine request fit, trust signals, and communication style.'}
-                            </p>
-                        </div>
-                        <Badge variant="neutral" className="hidden md:inline-flex">{lang === 'ru' ? 'Открывайте профили по одному' : 'Open profiles one by one'}</Badge>
+                    <div className="space-y-2">
+                        <h1 className="text-[1.8rem] sm:text-[2.2rem] leading-[1.02] font-display font-semibold text-stone-900 max-w-lg">
+                            {lang === 'ru' ? 'Кандидаты, с которыми можно спокойно идти дальше.' : 'Candidates you can calmly move forward with.'}
+                        </h1>
+                        <p className="text-sm sm:text-base text-stone-500 max-w-xl leading-relaxed">
+                            {lang === 'ru'
+                                ? 'Мы оставили профили, где совпадают требования семьи, базовые сигналы доверия и общий стиль общения.'
+                                : 'We kept the profiles where family needs, trust signals, and overall style align.'}
+                        </p>
                     </div>
 
-                    <div className="space-y-6">
-                        {matchResult.candidates.map((candidate, index) => (
-                            <CandidateCard
-                                key={candidate.nanny.id}
-                                candidate={candidate}
-                                index={index}
-                                lang={lang}
-                                onOpenProfile={handleOpenProfile}
-                                onShareToast={handleShareToast}
-                            />
+                    <div className="grid grid-cols-3 gap-2">
+                        {[
+                            lang === 'ru' ? 'AI shortlist' : 'AI shortlist',
+                            lang === 'ru' ? 'Верификация' : 'Verification',
+                            lang === 'ru' ? 'Поддержка рядом' : 'Support nearby',
+                        ].map((item) => (
+                            <div key={item} className="rounded-[18px] bg-white/75 border border-stone-100 px-3 py-2.5 text-[11px] sm:text-xs font-semibold text-stone-600 text-center">
+                                {item}
+                            </div>
                         ))}
                     </div>
-                </section>
 
-                <div className="form-footer-rail p-5 text-center md:p-6">
-                    <p className="mx-auto max-w-2xl text-sm leading-7 text-stone-500">
-                        {lang === 'ru'
-                            ? 'Напишите няне, обсудите shortlist с партнёром или вернитесь позже. Решение всегда за вами, а не за интерфейсом.'
-                            : 'Message a nanny, discuss the shortlist with your partner, or come back later. The decision is yours, not the interface’s.'}
-                    </p>
+                    {matchResult.overallAdvice && (
+                        <p className="text-sm text-stone-500 leading-relaxed animate-pop-in" style={{ animationDelay: '100ms' }}>
+                            {matchResult.overallAdvice}
+                        </p>
+                    )}
                 </div>
-
-                <ShareToast show={showToast} lang={lang} />
             </div>
+
+            {/* Candidate Bento Cards */}
+            <div className="space-y-8 px-4">
+                {matchResult.candidates.map((candidate, index) => (
+                    <CandidateCard
+                        key={candidate.nanny.id}
+                        candidate={candidate}
+                        index={index}
+                        lang={lang}
+                        onOpenProfile={handleOpenProfile}
+                        onShareToast={handleShareToast}
+                    />
+                ))}
+            </div>
+
+            {/* Bottom reassurance */}
+            <div className="px-4 mt-8">
+                <p className="text-xs text-center text-stone-300 leading-relaxed">
+                    {lang === 'ru'
+                        ? 'Напишите няне — это ни к чему не обязывает. Решение всегда за вами.'
+                        : 'Message a nanny — no obligation. The decision is always yours.'}
+                </p>
+            </div>
+
+            {/* Toast */}
+            <ShareToast show={showToast} lang={lang} />
         </div>
     );
 };

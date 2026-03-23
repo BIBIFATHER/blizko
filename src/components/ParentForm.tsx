@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Input, Textarea, ChipGroup, Badge } from './UI';
 import { AvailabilityCalendar } from './AvailabilityCalendar';
-import { ParentRequest, Language } from '@/core/types';
+import { ParentRequest, Language } from '../types';
 import { ArrowLeft, Upload, MapPin, ChevronDown, ChevronUp, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { ParentOfferModal } from './ParentOfferModal';
 import { DocumentUploadModal } from './DocumentUploadModal';
@@ -242,44 +242,26 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
   );
 
   return (
-    <div className="form-shell animate-fade-in pb-8 pt-4 md:pt-8">
-      <div className="form-hero">
-        <div className="relative grid gap-4">
-          <button onClick={onBack} className="inline-flex w-fit items-center gap-2 rounded-full bg-white/72 px-3.5 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800">
-            <ArrowLeft size={16} /> {text.back}
-          </button>
+    <div className="app-shell animate-fade-in">
+      <button onClick={onBack} className="text-stone-400 hover:text-stone-800 mb-5 flex items-center gap-2 transition-colors">
+        <ArrowLeft size={18} /> {text.back}
+      </button>
 
-          <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-            <div className="space-y-2">
-              <div className="eyebrow">{initialData ? (lang === 'ru' ? 'Редактирование заявки' : 'Editing request') : (lang === 'ru' ? 'Family intake' : 'Family intake')}</div>
-              <h2 className="text-3xl font-display text-stone-900 sm:text-[2.7rem]">
-                {initialData ? 'Редактировать заявку' : text.pFormTitle}
-              </h2>
-              <p className="max-w-[38rem] text-sm leading-6 text-stone-600 sm:text-[1rem]">
-                {initialData
-                  ? 'Обновите детали семьи и условий. Мы сохраним структуру заявки и не потеряем контекст подбора.'
-                  : (lang === 'ru'
-                    ? 'Расскажите о семье, ритме и предпочтениях. Мы соберём shortlist из 2-3 кандидатов с объяснимой логикой подбора.'
-                    : 'Tell us about your family, rhythm, and preferences. We will prepare a shortlist of 2-3 candidates with explainable matching logic.'
-                  )}
-              </p>
-            </div>
-
-            <div className="grid gap-2 sm:grid-cols-2 md:w-[19rem]">
-              <div className="hero-stat">
-                <div className="text-[0.68rem] uppercase tracking-[0.16em] text-stone-400">{lang === 'ru' ? 'Ответ' : 'Reply'}</div>
-                <div className="mt-2 text-xl font-semibold text-stone-900">&lt;24h</div>
-              </div>
-              <div className="hero-stat">
-                <div className="text-[0.68rem] uppercase tracking-[0.16em] text-stone-400">{lang === 'ru' ? 'Результат' : 'Result'}</div>
-                <div className="mt-2 text-xl font-semibold text-stone-900">2-3</div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-extrabold text-stone-900 tracking-[-0.03em]">
+          {initialData ? 'Редактировать заявку' : text.pFormTitle}
+        </h2>
+        <p className="text-sm text-stone-500 mt-1.5 leading-relaxed max-w-sm">
+          {initialData
+            ? 'Обновите данные вашей заявки'
+            : (lang === 'ru'
+              ? 'Расскажите о семье — мы подберём 2-3 кандидата с объяснениями, почему они подходят.'
+              : 'Tell us about your family — we\'ll find 2-3 candidates with clear reasons why they fit.'
+            )}
+        </p>
       </div>
 
-      <form onSubmit={handleFormSubmit} className="section-stack">
+      <form onSubmit={handleFormSubmit} className="space-y-6">
 
         {/* Inline toast — Gentler Streak pattern */}
         {toast && (
@@ -302,7 +284,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
         )}
 
         {/* ===== Акт 1: О семье ===== */}
-        <section className="form-section">
+        <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
           <Eyebrow step={1} label={lang === 'ru' ? 'О семье' : 'About your family'} active={currentAct === 1} />
 
           <div className="space-y-1">
@@ -383,7 +365,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
         </section>
 
         {/* ===== Акт 2: Условия и бюджет ===== */}
-        <section className="form-section">
+        <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
           <Eyebrow step={2} label={lang === 'ru' ? 'Условия и бюджет' : 'Terms & budget'} active={currentAct === 2} />
 
           <div className="space-y-1">
@@ -405,7 +387,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
             </div>
 
             {/* Additional params */}
-            <div className="form-inline-panel space-y-2">
+            <div className="rounded-[16px] bg-stone-50/90 border border-stone-200/70 p-4 space-y-2">
               <div className="text-[12px] font-semibold text-stone-500 mb-1">
                 {lang === 'ru' ? 'Дополнительные условия' : 'Additional conditions'}
               </div>
@@ -439,13 +421,13 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
             <button
               type="button"
               onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full flex items-center justify-between rounded-[16px] bg-white/72 border border-stone-200/70 px-4 py-3 text-sm text-stone-600 font-medium hover:bg-white transition-colors"
+              className="w-full flex items-center justify-between rounded-[16px] bg-stone-50/90 border border-stone-200/70 px-4 py-3 text-sm text-stone-600 font-medium hover:bg-stone-100/70 transition-colors"
             >
               <span>{lang === 'ru' ? '📅 Добавить расписание' : '📅 Add schedule'}</span>
               {showCalendar ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
             {showCalendar && (
-              <div className="form-inline-panel space-y-3 animate-fade-in">
+              <div className="rounded-[16px] bg-white border border-stone-200/70 p-4 space-y-3 animate-fade-in">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input
                     label={lang === 'ru' ? 'Дата начала' : 'Start date'}
@@ -480,20 +462,20 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
         </section>
 
         {/* ===== Акт 3: Для точного подбора (optional) ===== */}
-        <section className="form-section form-section-accent">
+        <section className="rounded-[24px] bg-white/95 border border-stone-200/80 shadow-sm p-5">
           <Eyebrow step={3} label={lang === 'ru' ? 'Для точного подбора' : 'For precise matching'} active={currentAct === 3} />
 
           <button
             type="button"
             onClick={() => setShowPsychology(!showPsychology)}
-            className="w-full flex items-center justify-between rounded-[16px] bg-white/60 border border-violet-200/60 px-4 py-3 text-sm text-violet-700 font-medium hover:bg-white/80 transition-colors mb-3"
+            className="w-full flex items-center justify-between rounded-[16px] bg-violet-50/80 border border-violet-200/60 px-4 py-3 text-sm text-violet-700 font-medium hover:bg-violet-100/60 transition-colors mb-3"
           >
             <span>{lang === 'ru' ? '🧠 Психологический профиль семьи' : '🧠 Family psychology profile'}</span>
             {showPsychology ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
 
           {showPsychology && (
-            <div className="form-inline-panel space-y-3 animate-fade-in mb-3">
+            <div className="rounded-[16px] bg-violet-50/50 border border-violet-200/40 p-4 space-y-3 animate-fade-in mb-3">
               <div className="text-[11px] text-stone-500 mb-2">
                 {lang === 'ru' ? 'Помогает подобрать няню со совместимым стилем общения.' : 'Helps match a nanny with a compatible communication style.'}
               </div>
@@ -580,7 +562,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
             onChange={e => setFormData({ ...formData, analysisNotes: e.target.value })}
           />
 
-          <div className="form-inline-panel flex items-center justify-between">
+          <div className="flex items-center justify-between rounded-[16px] bg-stone-50/90 border border-stone-200/70 px-4 py-3">
             <div className="text-sm text-stone-600">
               {lang === 'ru' ? `Документы: ${documents.length}` : `Documents: ${documents.length}`}
             </div>
@@ -596,7 +578,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
 
         {/* ===== What you get ===== */}
         {!initialData && (
-          <section className="form-section form-section-muted space-y-3">
+          <section className="rounded-[24px] bg-stone-50/95 border border-stone-200/80 p-5 space-y-3">
             <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-1">
               {lang === 'ru' ? 'Что вы получите' : 'What you get'}
             </div>
@@ -623,31 +605,25 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
         )}
 
         {/* ===== Trust Footer ===== */}
-        <div className="form-footer-rail">
-          <div className="flex items-center justify-between gap-3 rounded-[18px] bg-white/72 px-4 py-3 border border-stone-200/70">
-            <Badge variant="trust"><ShieldCheck size={11} /> {lang === 'ru' ? 'Данные зашифрованы' : 'Data encrypted'}</Badge>
-            <div className="text-right text-[11px] leading-5 text-stone-500">
-              {lang === 'ru'
-                ? 'Shortlist с понятной логикой выбора'
-                : 'Shortlist with explainable match logic'}
-            </div>
-          </div>
-
-          <Button
-            type="button"
-            isLoading={loading}
-            pulse={!!requiredFilled && !loading}
-            disabled={initialData?.status === 'approved'}
-            onClick={() => setShowOffer(true)}
-            className="bg-stone-900! text-white! border-stone-900! hover:bg-stone-800! shadow-[0_12px_30px_rgba(17,24,39,0.18)]"
-          >
-            {initialData?.status === 'approved'
-              ? (lang === 'ru' ? 'Заявка одобрена' : 'Request approved')
-              : loading
-                ? (lang === 'ru' ? 'Обрабатываем...' : 'Processing...')
-                : (lang === 'ru' ? 'Начать подбор' : 'Start matching')}
-          </Button>
+        <div className="flex items-center gap-2 px-1">
+          <Badge variant="trust"><ShieldCheck size={11} /> {lang === 'ru' ? 'Данные зашифрованы' : 'Data encrypted'}</Badge>
         </div>
+
+        {/* ===== Submit CTA ===== */}
+        <Button
+          type="button"
+          isLoading={loading}
+          pulse={!!requiredFilled && !loading}
+          disabled={initialData?.status === 'approved'}
+          onClick={() => setShowOffer(true)}
+          className="bg-stone-900! text-white! border-stone-900! hover:bg-stone-800! shadow-[0_12px_30px_rgba(17,24,39,0.18)]"
+        >
+          {initialData?.status === 'approved'
+            ? (lang === 'ru' ? 'Заявка одобрена' : 'Request approved')
+            : loading
+              ? (lang === 'ru' ? 'Обрабатываем...' : 'Processing...')
+              : (lang === 'ru' ? 'Начать подбор' : 'Start matching')}
+        </Button>
       </form>
 
       {showOffer && (

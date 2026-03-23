@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { Home } from '@/components/Home';
 import { InstallPwaModal } from '@/web/pwa/InstallPwaPrompt';
 import { SeoHead } from '@/components/seo/SeoHead';
-import { ParentRequest, NannyProfile, Language } from '@/core/types';
+import { ViewState, ParentRequest, NannyProfile, Language } from './types';
 import { useAuthSession } from '@/hooks/useAuthSession';
 import { usePwaInstall } from '@/hooks/usePwaInstall';
 import { useParentSubmit } from '@/hooks/useParentSubmit';
@@ -126,7 +126,7 @@ export default function App() {
 
   useEffect(() => {
     if (location.pathname !== '/') {
-      setShouldLoadSupportChat(true); // eslint-disable-line react-hooks/set-state-in-effect -- reacting to route change, not sync
+      setShouldLoadSupportChat(true);
     }
   }, [location.pathname]);
 
@@ -256,7 +256,7 @@ export default function App() {
         onOpenProfile={() => setProfileOpen(true)}
       />
 
-      <main className="app-main-frame flex-1 pb-24 relative pt-safe">
+      <main className="flex-1 w-full max-w-(--breakpoint-lg) mx-auto px-4 md:px-8 pb-24 relative pt-safe">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home lang={lang} />} />

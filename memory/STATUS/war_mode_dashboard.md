@@ -1,7 +1,7 @@
 # WAR MODE DASHBOARD — Nanny Funnel (TEMP baseline)
 
 Last updated: 2026-02-26
-SQL: tech/tracking/temp_baseline.sql
+SQL: archive/tech/tracking/temp_baseline.sql
 
 Baseline (TEMP from nannies payload):
 - apply_submit today / 7d: 0 / 0

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { buildDashboardMetrics } from '../services/dashboardMetrics';
+import { buildDashboardMetrics } from '@/services/dashboardMetrics';
 import type { ParentRequest, NannyProfile } from '../types';
-import type { Booking } from '../services/booking';
-import type { AnalyticsEventRecord } from '../services/analytics';
+import type { Booking } from '@/services/booking';
+import type { AnalyticsEventRecord } from '@/services/analytics';
 
 function makeParent(id: string, status: ParentRequest['status'] = 'new'): ParentRequest {
   return {

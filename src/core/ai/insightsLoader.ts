@@ -7,7 +7,7 @@
  * Returns empty string if no insights exist → zero impact on matching.
  */
 
-import { supabase } from '../../../services/supabase';
+import { supabase } from '@/services/supabase';
 
 interface MatchingInsight {
   insight_text: string;

@@ -41,4 +41,4 @@ npm run test (если есть)
 
 ## 8) Recovery notes
 - .env.local хранить в password manager / secure vault
-- критичные документы: openclaw/ + ops/ + tech/ + recruiting/ + SQL/ должны быть в git
+- критичные документы: openclaw/ + ops/ + archive/tech/ + archive/recruiting/ + SQL/ должны быть в git

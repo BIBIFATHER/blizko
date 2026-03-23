@@ -433,9 +433,9 @@ Parent form — не просто форма. Это guided checkout в trust wo
 
 ### Завтра
 
-1. редизайн [Home](/Users/anton/Desktop/blizko%203/components/Home.tsx)
-2. редизайн [ParentForm](/Users/anton/Desktop/blizko%203/components/ParentForm.tsx)
-3. редизайн [NannyPublicProfile](/Users/anton/Desktop/blizko%203/components/nanny/NannyPublicProfile.tsx)
+1. редизайн [Home](/Users/anton/Desktop/blizko%203/src/components/Home.tsx)
+2. редизайн [ParentForm](/Users/anton/Desktop/blizko%203/src/components/ParentForm.tsx)
+3. редизайн [NannyPublicProfile](/Users/anton/Desktop/blizko%203/src/components/nanny/NannyPublicProfile.tsx)
 
 ### Сразу после редизайна
 

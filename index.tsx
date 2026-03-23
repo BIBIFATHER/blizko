@@ -4,8 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import './index.css';
 import App from './App';
-import { setStorageAdapter } from "./src/core/platform/storage";
-import { webStorageAdapter } from "./src/web/platform/storage.web";
+import { setStorageAdapter } from "@/core/platform/storage";
+import { webStorageAdapter } from "@/web/platform/storage.web";
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({

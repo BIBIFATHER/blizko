@@ -54,7 +54,7 @@ SupportChat — чатовый помощник/агент, который:
 - учитывает system prompt (инструкция для тона/политики)
 - настраиваемая температура
 
-Реализация: `components/SupportChat.tsx` (вызов `aiText`).
+Реализация: `src/components/SupportChat.tsx` (вызов `aiText`).
 
 ## 4) Архитектура проекта (что где лежит)
 
@@ -83,7 +83,7 @@ SupportChat — чатовый помощник/агент, который:
 - `aiImage(prompt: string, image: string, options?: { systemPrompt?: string; temperature?: number; model?: string }): Promise<string>`
 
 `aiText` вызывается с options минимум в:
-- `components/SupportChat.tsx`
+- `src/components/SupportChat.tsx`
 - `src/core/ai/matchingAi.ts`
 
 `aiImage` импортируется и нужен в:

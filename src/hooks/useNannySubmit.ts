@@ -1,9 +1,9 @@
 import { NavigateFunction } from 'react-router-dom';
 import { Language, NannyProfile, SubmissionResult } from '../../types';
-import { saveNannyProfile } from '../../services/storage';
-import { sendToWebhook } from '../../services/api';
-import { trackFormSubmit, trackNannyReadyForMatch } from '../../services/analytics';
-import { getNannyReadinessSnapshot, getNannySuccessRecommendations } from '../../services/nannyReadiness';
+import { saveNannyProfile } from '@/services/storage';
+import { sendToWebhook } from '@/services/api';
+import { trackFormSubmit, trackNannyReadyForMatch } from '@/services/analytics';
+import { getNannyReadinessSnapshot, getNannySuccessRecommendations } from '@/services/nannyReadiness';
 
 function generateNannyRegistrationResult(language: Language, data: Partial<NannyProfile>): SubmissionResult {
   const readiness = getNannyReadinessSnapshot(data);

@@ -23,7 +23,7 @@
 
 ### 1. 🔴 Telegram BOT_TOKEN на клиенте
 
-**Файл:** `services/telegram.ts`
+**Файл:** `src/services/telegram.ts`
 **Проблема:** `VITE_TELEGRAM_BOT_TOKEN` — переменные с `VITE_` попадают в клиентский бандл.
 **Риск:** Любой может извлечь токен из JS и отправлять сообщения от имени бота.
 **Решение:** Перенести отправку в Edge Function / API route.

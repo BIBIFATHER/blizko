@@ -1,6 +1,6 @@
-import type { Booking } from '../../services/booking';
-import { getNannyReadinessLabel, getNannyReadinessSnapshot } from '../../services/nannyReadiness';
-import type { Language, NannyProfile, ParentRequest } from '../core/types';
+import type { Booking } from '@/services/booking';
+import { getNannyReadinessLabel, getNannyReadinessSnapshot } from '@/services/nannyReadiness';
+import type { Language, NannyProfile, ParentRequest } from '@/core/types';
 
 export type DashboardBadgeVariant = 'trust' | 'warning' | 'info' | 'neutral' | 'success' | 'danger';
 export type DashboardKpiTone = 'stone' | 'amber' | 'sky' | 'emerald' | 'indigo';

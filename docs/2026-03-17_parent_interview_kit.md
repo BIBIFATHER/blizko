@@ -130,10 +130,10 @@ _Prepared on March 17, 2026._
 
 ## 10. Related Product Surfaces
 
-- [Home.tsx](/Users/anton/Desktop/blizko%203/components/Home.tsx)
-- [ParentForm.tsx](/Users/anton/Desktop/blizko%203/components/ParentForm.tsx)
-- [MatchResultsScreen.tsx](/Users/anton/Desktop/blizko%203/components/MatchResultsScreen.tsx)
-- [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/components/nanny/NannyPublicProfile.tsx)
+- [Home.tsx](/Users/anton/Desktop/blizko%203/src/components/Home.tsx)
+- [ParentForm.tsx](/Users/anton/Desktop/blizko%203/src/components/ParentForm.tsx)
+- [MatchResultsScreen.tsx](/Users/anton/Desktop/blizko%203/src/components/MatchResultsScreen.tsx)
+- [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/src/components/nanny/NannyPublicProfile.tsx)
 - [create.ts](/Users/anton/Desktop/blizko%203/api/payments/create.ts)
-- [SuccessScreen.tsx](/Users/anton/Desktop/blizko%203/components/SuccessScreen.tsx)
+- [SuccessScreen.tsx](/Users/anton/Desktop/blizko%203/src/components/SuccessScreen.tsx)
 

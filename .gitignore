@@ -23,9 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+.cleanup_quarantine/
+archive/.quarantine/
 
 # Backups
 backups/*.tar.gz
+archive/backups/*.tar.gz
 
 # Env (local)
 .env.local
@@ -37,9 +40,13 @@ figma-mcp/node_modules/
 # Local secrets / backups
 .env.local
 backups/secrets/
+archive/backups/secrets/
 *.tgz
 *.zip
 .env
 .env*.local
 awesome-llm-apps
 claude-code-templates
+
+# Supabase CLI local state
+supabase/.temp/

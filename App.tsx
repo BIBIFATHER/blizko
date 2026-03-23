@@ -1,38 +1,38 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Home } from './components/Home';
-import { InstallPwaModal } from './src/web/pwa/InstallPwaPrompt';
-import { SeoHead } from './components/seo/SeoHead';
+import { Home } from '@/components/Home';
+import { InstallPwaModal } from '@/web/pwa/InstallPwaPrompt';
+import { SeoHead } from '@/components/seo/SeoHead';
 import { ViewState, ParentRequest, NannyProfile, Language } from './types';
-import { useAuthSession } from './src/hooks/useAuthSession';
-import { usePwaInstall } from './src/hooks/usePwaInstall';
-import { useParentSubmit } from './src/hooks/useParentSubmit';
-import { useNannySubmit } from './src/hooks/useNannySubmit';
-import { useShareActions } from './src/hooks/useShareActions';
-import { AppHeader } from './components/app/AppHeader';
-import { AppFooter } from './components/app/AppFooter';
-import { RequireRole } from './components/app/RequireRole';
-import { trackAuthModalOpen, trackLanguageSwitch } from './services/analytics';
+import { useAuthSession } from '@/hooks/useAuthSession';
+import { usePwaInstall } from '@/hooks/usePwaInstall';
+import { useParentSubmit } from '@/hooks/useParentSubmit';
+import { useNannySubmit } from '@/hooks/useNannySubmit';
+import { useShareActions } from '@/hooks/useShareActions';
+import { AppHeader } from '@/components/app/AppHeader';
+import { AppFooter } from '@/components/app/AppFooter';
+import { RequireRole } from '@/components/app/RequireRole';
+import { trackAuthModalOpen, trackLanguageSwitch } from '@/services/analytics';
 
-const ParentForm = lazy(() => import('./components/ParentForm').then((module) => ({ default: module.ParentForm })));
-const NannyForm = lazy(() => import('./components/NannyForm').then((module) => ({ default: module.NannyForm })));
-const SuccessScreen = lazy(() => import('./components/SuccessScreen').then((module) => ({ default: module.SuccessScreen })));
-const MatchResultsScreen = lazy(() => import('./components/MatchResultsScreen').then((module) => ({ default: module.MatchResultsScreen })));
-const AdminPanel = lazy(() => import('./components/AdminPanel').then((module) => ({ default: module.AdminPanel })));
-const LoginPage = lazy(() => import('./components/LoginPage').then((module) => ({ default: module.LoginPage })));
-const NannyLandingPage = lazy(() => import('./components/NannyLandingPage').then((module) => ({ default: module.NannyLandingPage })));
-const NannyPublicProfile = lazy(() => import('./components/nanny/NannyPublicProfile').then((module) => ({ default: module.NannyPublicProfile })));
-const HowWeVerifyPage = lazy(() => import('./components/seo/SeoPages').then((module) => ({ default: module.HowWeVerifyPage })));
-const HumanityPlusPage = lazy(() => import('./components/seo/SeoPages').then((module) => ({ default: module.HumanityPlusPage })));
-const OfertaPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.OfertaPage })));
-const AboutPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.AboutPage })));
-const SafeDealPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.SafeDealPage })));
-const PrivacyPage = lazy(() => import('./components/legal/LegalPages').then((module) => ({ default: module.PrivacyPage })));
-const SupportChat = lazy(() => import('./components/SupportChat').then((module) => ({ default: module.SupportChat })));
-const AuthModal = lazy(() => import('./components/AuthModal').then((module) => ({ default: module.AuthModal })));
-const UserProfileModal = lazy(() => import('./components/UserProfileModal').then((module) => ({ default: module.UserProfileModal })));
-const ShareModal = lazy(() => import('./components/ShareModal').then((module) => ({ default: module.ShareModal })));
-const RoleDashboard = lazy(() => import('./components/dashboard/RoleDashboard').then((module) => ({ default: module.RoleDashboard })));
+const ParentForm = lazy(() => import('@/components/ParentForm').then((module) => ({ default: module.ParentForm })));
+const NannyForm = lazy(() => import('@/components/NannyForm').then((module) => ({ default: module.NannyForm })));
+const SuccessScreen = lazy(() => import('@/components/SuccessScreen').then((module) => ({ default: module.SuccessScreen })));
+const MatchResultsScreen = lazy(() => import('@/components/MatchResultsScreen').then((module) => ({ default: module.MatchResultsScreen })));
+const AdminPanel = lazy(() => import('@/components/AdminPanel').then((module) => ({ default: module.AdminPanel })));
+const LoginPage = lazy(() => import('@/components/LoginPage').then((module) => ({ default: module.LoginPage })));
+const NannyLandingPage = lazy(() => import('@/components/NannyLandingPage').then((module) => ({ default: module.NannyLandingPage })));
+const NannyPublicProfile = lazy(() => import('@/components/nanny/NannyPublicProfile').then((module) => ({ default: module.NannyPublicProfile })));
+const HowWeVerifyPage = lazy(() => import('@/components/seo/SeoPages').then((module) => ({ default: module.HowWeVerifyPage })));
+const HumanityPlusPage = lazy(() => import('@/components/seo/SeoPages').then((module) => ({ default: module.HumanityPlusPage })));
+const OfertaPage = lazy(() => import('@/components/legal/LegalPages').then((module) => ({ default: module.OfertaPage })));
+const AboutPage = lazy(() => import('@/components/legal/LegalPages').then((module) => ({ default: module.AboutPage })));
+const SafeDealPage = lazy(() => import('@/components/legal/LegalPages').then((module) => ({ default: module.SafeDealPage })));
+const PrivacyPage = lazy(() => import('@/components/legal/LegalPages').then((module) => ({ default: module.PrivacyPage })));
+const SupportChat = lazy(() => import('@/components/SupportChat').then((module) => ({ default: module.SupportChat })));
+const AuthModal = lazy(() => import('@/components/AuthModal').then((module) => ({ default: module.AuthModal })));
+const UserProfileModal = lazy(() => import('@/components/UserProfileModal').then((module) => ({ default: module.UserProfileModal })));
+const ShareModal = lazy(() => import('@/components/ShareModal').then((module) => ({ default: module.ShareModal })));
+const RoleDashboard = lazy(() => import('@/components/dashboard/RoleDashboard').then((module) => ({ default: module.RoleDashboard })));
 
 function RouteFallback() {
   return <div className="flex items-center justify-center py-16 text-sm text-stone-500">Загружаем...</div>;
@@ -104,6 +104,8 @@ export default function App() {
     handleInstallClick,
   } = usePwaInstall();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [shouldLoadSupportChat, setShouldLoadSupportChat] = useState(() => location.pathname !== '/');
+  const [shouldOpenSupportChat, setShouldOpenSupportChat] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
@@ -121,6 +123,45 @@ export default function App() {
     window.addEventListener('blizko:open-auth-modal', openAuthFromEvent);
     return () => window.removeEventListener('blizko:open-auth-modal', openAuthFromEvent);
   }, [setAuthOpen]);
+
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      setShouldLoadSupportChat(true);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (shouldLoadSupportChat) return;
+
+    const enableSupportChat = () => setShouldLoadSupportChat(true);
+    const timeoutId = window.setTimeout(enableSupportChat, 4000);
+
+    window.addEventListener('pointerdown', enableSupportChat, { once: true, passive: true });
+    window.addEventListener('keydown', enableSupportChat, { once: true });
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener('pointerdown', enableSupportChat);
+      window.removeEventListener('keydown', enableSupportChat);
+    };
+  }, [shouldLoadSupportChat]);
+
+  useEffect(() => {
+    const openSupportChat = () => {
+      setShouldLoadSupportChat(true);
+      setShouldOpenSupportChat(true);
+    };
+
+    window.addEventListener('blizko:open-support-chat', openSupportChat);
+    return () => window.removeEventListener('blizko:open-support-chat', openSupportChat);
+  }, []);
+
+  useEffect(() => {
+    if (!shouldOpenSupportChat || !shouldLoadSupportChat) return;
+
+    const timeoutId = window.setTimeout(() => setShouldOpenSupportChat(false), 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [shouldLoadSupportChat, shouldOpenSupportChat]);
 
   const toggleLanguage = () => {
     setLang(prev => {
@@ -319,9 +360,16 @@ export default function App() {
       )}
 
       {/* Global Support Chat */}
-      <Suspense fallback={null}>
-        <SupportChat lang={lang} user={effectiveUser} hideLauncher={location.pathname === '/'} />
-      </Suspense>
+      {shouldLoadSupportChat && (
+        <Suspense fallback={null}>
+          <SupportChat
+            lang={lang}
+            user={effectiveUser}
+            hideLauncher={location.pathname === '/'}
+            openOnMount={shouldOpenSupportChat}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

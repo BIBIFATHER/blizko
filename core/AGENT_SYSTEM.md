@@ -10,9 +10,9 @@
 ### Профильные агенты (пишут в свои зоны)
 - blizko-product → product/
 - blizko-ops → ops/
-- blizko-tech → tech/
-- blizko-recruiting → recruiting/
-- aura-analyst → analytics/
+- blizko-tech → archive/tech/
+- blizko-recruiting → archive/recruiting/
+- aura-analyst → archive/analytics/
 - joe → product/ (пока)
 
 ### blizko-orchestrator (единственная точка правды)
@@ -39,9 +39,9 @@ flowchart TB
 
     B -->|assign by zone| P[blizko-product\nwrites product/]
     B --> O[blizko-ops\nwrites ops/]
-    B --> T[blizko-tech\nwrites tech/]
-    B --> R[blizko-recruiting\nwrites recruiting/]
-    B --> AN[aura-analyst\nwrites analytics/]
+    B --> T[blizko-tech\nwrites archive/tech/]
+    B --> R[blizko-recruiting\nwrites archive/recruiting/]
+    B --> AN[aura-analyst\nwrites archive/analytics/]
     B --> J[joe\nwrites product/ (for now)]
 
     P --> H[HANDOFF → blizko-orchestrator\nwhat to fix / file / risks / metric]

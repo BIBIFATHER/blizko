@@ -8,7 +8,7 @@ import {
   Language,
 } from "../types";
 import { aiText } from "./aiGateway";
-import { getQualityScore } from "../../../services/qualityScore";
+import { getQualityScore } from "@/services/qualityScore";
 import { geoScore, budgetScore } from "./geoAndBudget";
 import { detectRiskFlags, RiskFlag } from "./riskEngine";
 import { getWeights, type MatchingWeights } from "./matchingWeights";

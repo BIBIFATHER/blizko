@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildRuleBasedAssessment } from '../services/assessment';
-import { calculateQualityScore } from '../services/qualityScore';
+import { buildRuleBasedAssessment } from '@/services/assessment';
+import { calculateQualityScore } from '@/services/qualityScore';
 import type { NannyProfile } from '../types';
 
 describe('buildRuleBasedAssessment', () => {

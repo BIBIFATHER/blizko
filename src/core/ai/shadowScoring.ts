@@ -8,7 +8,7 @@
  * Prevents filter bubble. Tracks explore_flag for measurement.
  */
 
-import { supabase } from '../../../services/supabase';
+import { supabase } from '@/services/supabase';
 import { NannyProfile, ParentRequest } from '../types';
 
 export interface ScoredCandidate {

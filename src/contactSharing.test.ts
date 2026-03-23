@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { detectContactSharing } from '../services/contactSharing';
+import { detectContactSharing } from '@/services/contactSharing';
 
 describe('detectContactSharing', () => {
   it('detects russian phone numbers', () => {

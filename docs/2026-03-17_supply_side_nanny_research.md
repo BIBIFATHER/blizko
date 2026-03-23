@@ -115,7 +115,7 @@ _Prepared on March 17, 2026._
 
 ### 4.1 Хорошее
 
-В [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/components/NannyLandingPage.tsx) уже есть правильные мотиваторы:
+В [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/src/components/NannyLandingPage.tsx) уже есть правильные мотиваторы:
 
 - стабильный поток заказов
 - честная комиссия
@@ -150,12 +150,12 @@ _Prepared on March 17, 2026._
 
 ### 5.1 Entry
 
-- `/for-nannies` — отдельный landing page: [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/components/NannyLandingPage.tsx)
+- `/for-nannies` — отдельный landing page: [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/src/components/NannyLandingPage.tsx)
 - `/become-nanny` — форма регистрации/профиля: [App.tsx](/Users/anton/Desktop/blizko%203/App.tsx)
 
 ### 5.2 Form flow
 
-Из [NannyFormProvider.tsx](/Users/anton/Desktop/blizko%203/components/forms/nanny/NannyFormProvider.tsx):
+Из [NannyFormProvider.tsx](/Users/anton/Desktop/blizko%203/src/components/forms/nanny/NannyFormProvider.tsx):
 
 - 4 steps
 - личные данные + локация
@@ -265,9 +265,9 @@ _Prepared on March 17, 2026._
 - UrbanSitter trust / caregiver environment  
   <https://www.urbansitter.com/trust/>
 - Repo references:
-  - [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/components/NannyLandingPage.tsx)
-  - [NannyFormProvider.tsx](/Users/anton/Desktop/blizko%203/components/forms/nanny/NannyFormProvider.tsx)
+  - [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/src/components/NannyLandingPage.tsx)
+  - [NannyFormProvider.tsx](/Users/anton/Desktop/blizko%203/src/components/forms/nanny/NannyFormProvider.tsx)
   - [App.tsx](/Users/anton/Desktop/blizko%203/App.tsx)
-  - [ProfileTab.tsx](/Users/anton/Desktop/blizko%203/components/profile/ProfileTab.tsx)
-  - [SuccessScreen.tsx](/Users/anton/Desktop/blizko%203/components/SuccessScreen.tsx)
+  - [ProfileTab.tsx](/Users/anton/Desktop/blizko%203/src/components/profile/ProfileTab.tsx)
+  - [SuccessScreen.tsx](/Users/anton/Desktop/blizko%203/src/components/SuccessScreen.tsx)
   - [translations.ts](/Users/anton/Desktop/blizko%203/src/core/i18n/translations.ts)

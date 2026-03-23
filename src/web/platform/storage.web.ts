@@ -1,4 +1,4 @@
-import type { StorageAdapter } from "../../core/platform/storage";
+import type { StorageAdapter } from "@/core/platform/storage";
 
 export const webStorageAdapter: StorageAdapter = {
   getItem(key) {

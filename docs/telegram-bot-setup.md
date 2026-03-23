@@ -42,7 +42,7 @@ TELEGRAM_ADMIN_CHAT_ID=ваш_chat_id
 
 ## Шаг 4: Уведомления
 
-Сервис `services/telegram.ts` содержит готовые шаблоны:
+Сервис `src/services/telegram.ts` содержит готовые шаблоны:
 
 | Функция | Когда отправляется |
 |---|---|
@@ -60,7 +60,7 @@ TELEGRAM_ADMIN_CHAT_ID=ваш_chat_id
 
 ```typescript
 // В matchingAi.ts после успешного матча:
-import { notifyNewMatch } from '../services/telegram';
+import { notifyNewMatch } from '@/services/telegram';
 await notifyNewMatch(parentChatId, {
   parentName: 'Мария',
   nannyName: 'Анна',
@@ -68,7 +68,7 @@ await notifyNewMatch(parentChatId, {
 });
 
 // В booking.ts после подтверждения:
-import { notifyBookingConfirmed } from '../services/telegram';
+import { notifyBookingConfirmed } from '@/services/telegram';
 await notifyBookingConfirmed(parentChatId, {
   nannyName: 'Анна',
   date: '15 марта, 09:00',

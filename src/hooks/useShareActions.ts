@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Language } from '../../types';
-import { t } from '../core/i18n/translations';
-import { trackShare } from '../../services/analytics';
+import { t } from '@/core/i18n/translations';
+import { trackShare } from '@/services/analytics';
 
 type ShareActionDeps = {
   lang: Language;

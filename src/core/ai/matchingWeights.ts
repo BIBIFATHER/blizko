@@ -9,7 +9,7 @@
  * After RLHF data accumulates: weights auto-adjust.
  */
 
-import { supabase } from '../../../services/supabase';
+import { supabase } from '@/services/supabase';
 
 export interface MatchingWeights {
   base: number;

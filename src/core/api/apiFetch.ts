@@ -8,7 +8,7 @@
  * - Type-safe responses
  *
  * Usage:
- *   import { apiFetch } from '../core/api/apiFetch';
+ *   import { apiFetch } from '@/core/api/apiFetch';
  *   const data = await apiFetch('/api/ai-support', { method: 'POST', body: ... });
  */
 import { getTmaHeaders } from '../auth/tma-validate';

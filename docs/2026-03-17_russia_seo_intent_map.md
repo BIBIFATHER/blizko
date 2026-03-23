@@ -90,11 +90,11 @@ _Prepared on March 17, 2026._
 
 Публичные acquisition-facing surfaces:
 
-- `/` — главная: [Home.tsx](/Users/anton/Desktop/blizko%203/components/Home.tsx)
-- `/how-we-verify` — trust explainer: [SeoPages.tsx](/Users/anton/Desktop/blizko%203/components/seo/SeoPages.tsx)
-- `/humanity-plus` — AI/compatibility explainer: [SeoPages.tsx](/Users/anton/Desktop/blizko%203/components/seo/SeoPages.tsx)
-- `/nanny/:slug` — public profile: [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/components/nanny/NannyPublicProfile.tsx)
-- `/about`, `/safe-deal`, `/privacy`, `/oferta` — legal/public trust pages: [LegalPages.tsx](/Users/anton/Desktop/blizko%203/components/legal/LegalPages.tsx)
+- `/` — главная: [Home.tsx](/Users/anton/Desktop/blizko%203/src/components/Home.tsx)
+- `/how-we-verify` — trust explainer: [SeoPages.tsx](/Users/anton/Desktop/blizko%203/src/components/seo/SeoPages.tsx)
+- `/humanity-plus` — AI/compatibility explainer: [SeoPages.tsx](/Users/anton/Desktop/blizko%203/src/components/seo/SeoPages.tsx)
+- `/nanny/:slug` — public profile: [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/src/components/nanny/NannyPublicProfile.tsx)
+- `/about`, `/safe-deal`, `/privacy`, `/oferta` — legal/public trust pages: [LegalPages.tsx](/Users/anton/Desktop/blizko%203/src/components/legal/LegalPages.tsx)
 
 ### 3.2 Главные проблемы
 
@@ -102,16 +102,16 @@ _Prepared on March 17, 2026._
    Смотри [App.tsx](/Users/anton/Desktop/blizko%203/App.tsx) и [sitemap.xml](/Users/anton/Desktop/blizko%203/public/sitemap.xml).
 
 2. Главная не бьёт в search intent достаточно прямо.  
-   H1 и hero сильнее как app/brand, чем как search landing: [Home.tsx](/Users/anton/Desktop/blizko%203/components/Home.tsx).
+   H1 и hero сильнее как app/brand, чем как search landing: [Home.tsx](/Users/anton/Desktop/blizko%203/src/components/Home.tsx).
 
 3. SEO-архитектура слишком узкая.  
    Сейчас есть только 2 explainer-style SEO pages, но нет city/use-case/locality/comparison templates.
 
 4. Sitemap и legal routing несогласованы.  
-   Есть смесь SPA routes и static pages: [AppFooter.tsx](/Users/anton/Desktop/blizko%203/components/app/AppFooter.tsx), [offer.html](/Users/anton/Desktop/blizko%203/public/offer.html), [privacy/index.html](/Users/anton/Desktop/blizko%203/public/privacy/index.html).
+   Есть смесь SPA routes и static pages: [AppFooter.tsx](/Users/anton/Desktop/blizko%203/src/components/app/AppFooter.tsx), [offer.html](/Users/anton/Desktop/blizko%203/public/offer.html), [privacy/index.html](/Users/anton/Desktop/blizko%203/public/privacy/index.html).
 
 5. Meta/OG plumbing не доведён.  
-   `og-image` по умолчанию бьётся в `/og-image.png`, которого нет: [SeoHead.tsx](/Users/anton/Desktop/blizko%203/components/seo/SeoHead.tsx), [index.html](/Users/anton/Desktop/blizko%203/index.html).
+   `og-image` по умолчанию бьётся в `/og-image.png`, которого нет: [SeoHead.tsx](/Users/anton/Desktop/blizko%203/src/components/seo/SeoHead.tsx), [index.html](/Users/anton/Desktop/blizko%203/index.html).
 
 ## 4. Какие page templates нужны
 
@@ -203,10 +203,10 @@ _Prepared on March 17, 2026._
 
 - Current repo SEO/routing audit via:
   - [App.tsx](/Users/anton/Desktop/blizko%203/App.tsx)
-  - [Home.tsx](/Users/anton/Desktop/blizko%203/components/Home.tsx)
-  - [SeoPages.tsx](/Users/anton/Desktop/blizko%203/components/seo/SeoPages.tsx)
-  - [SeoHead.tsx](/Users/anton/Desktop/blizko%203/components/seo/SeoHead.tsx)
-  - [LegalPages.tsx](/Users/anton/Desktop/blizko%203/components/legal/LegalPages.tsx)
+  - [Home.tsx](/Users/anton/Desktop/blizko%203/src/components/Home.tsx)
+  - [SeoPages.tsx](/Users/anton/Desktop/blizko%203/src/components/seo/SeoPages.tsx)
+  - [SeoHead.tsx](/Users/anton/Desktop/blizko%203/src/components/seo/SeoHead.tsx)
+  - [LegalPages.tsx](/Users/anton/Desktop/blizko%203/src/components/legal/LegalPages.tsx)
   - [sitemap.xml](/Users/anton/Desktop/blizko%203/public/sitemap.xml)
   - [index.html](/Users/anton/Desktop/blizko%203/index.html)
 - Earlier keyword direction in old internal strategy doc: [marketing-strategy.md](/Users/anton/Desktop/blizko%203/docs/marketing-strategy.md)

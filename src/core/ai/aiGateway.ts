@@ -1,3 +1,5 @@
+import { supabase } from '@/services/supabase';
+
 export type AITextResponse = { text: string };
 
 type AIMessage = {
@@ -16,9 +18,18 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
   const prompt = [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
   if (!prompt.trim()) return '';
 
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  const session = (await supabase?.auth.getSession())?.data?.session;
+  if (session?.access_token) {
+    headers.Authorization = `Bearer ${session.access_token}`;
+  }
+
   const res = await fetch('/api/ai', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({
       prompt,
       messages,

@@ -95,7 +95,7 @@ _Prepared on March 17, 2026._
 
 Код:
 
-- [Home.tsx](/Users/anton/Desktop/blizko%203/components/Home.tsx)
+- [Home.tsx](/Users/anton/Desktop/blizko%203/src/components/Home.tsx)
 
 ### 3.2 Parent form
 
@@ -112,7 +112,7 @@ _Prepared on March 17, 2026._
 
 Код:
 
-- [ParentForm.tsx](/Users/anton/Desktop/blizko%203/components/ParentForm.tsx)
+- [ParentForm.tsx](/Users/anton/Desktop/blizko%203/src/components/ParentForm.tsx)
 
 ### 3.2.1 Критический parent-flow разрыв
 
@@ -143,7 +143,7 @@ _Prepared on March 17, 2026._
 
 Код:
 
-- [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/components/nanny/NannyPublicProfile.tsx)
+- [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/src/components/nanny/NannyPublicProfile.tsx)
 
 ### 3.3.1 CTA mismatch
 
@@ -208,7 +208,7 @@ _Prepared on March 17, 2026._
 
 Код:
 
-- [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/components/NannyLandingPage.tsx)
+- [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/src/components/NannyLandingPage.tsx)
 
 ### 4.5 Support as concierge
 
@@ -246,7 +246,7 @@ _Prepared on March 17, 2026._
   <https://kidsout.ru/>  
   <https://kidsout.ru/babysitter>
 - Repo references:
-  - [Home.tsx](/Users/anton/Desktop/blizko%203/components/Home.tsx)
-  - [ParentForm.tsx](/Users/anton/Desktop/blizko%203/components/ParentForm.tsx)
-  - [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/components/nanny/NannyPublicProfile.tsx)
-  - [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/components/NannyLandingPage.tsx)
+  - [Home.tsx](/Users/anton/Desktop/blizko%203/src/components/Home.tsx)
+  - [ParentForm.tsx](/Users/anton/Desktop/blizko%203/src/components/ParentForm.tsx)
+  - [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/src/components/nanny/NannyPublicProfile.tsx)
+  - [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/src/components/NannyLandingPage.tsx)

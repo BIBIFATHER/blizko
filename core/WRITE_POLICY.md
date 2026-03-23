@@ -4,10 +4,10 @@
 - core/*, memory/* — пишет только orchestrator (agent: main / Big Claw)
 - product/* — пишет blizko-product
 - ops/* — пишет blizko-ops
-- recruiting/* — пишет blizko-recruiting
-- tech/* — пишет blizko-tech
-- analytics/* — пишет aura-analyst
-- design/* (если появится) — пишет joe
+- archive/recruiting/* — пишет blizko-recruiting
+- archive/tech/* — пишет blizko-tech
+- archive/analytics/* — пишет aura-analyst
+- archive/design/* (если появится) — пишет joe
 
 ## Процесс сохранения
 Любой агент сохраняет результат в своей зоне и заканчивает блоком:

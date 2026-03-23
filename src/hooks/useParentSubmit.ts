@@ -1,9 +1,9 @@
 import { NavigateFunction } from 'react-router-dom';
 import { Language, ParentRequest, User } from '../../types';
-import { getNannyProfiles, saveParentRequest, updateParentRequest } from '../../services/storage';
-import { sendToWebhook } from '../../services/api';
-import { notifyAdminNewRequest } from '../../services/notifications';
-import { trackFormSubmit } from '../../services/analytics';
+import { getNannyProfiles, saveParentRequest, updateParentRequest } from '@/services/storage';
+import { sendToWebhook } from '@/services/api';
+import { notifyAdminNewRequest } from '@/services/notifications';
+import { trackFormSubmit } from '@/services/analytics';
 
 type ParentSubmitInput = Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & {
   id?: string;
@@ -45,7 +45,7 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
     trackFormSubmit('parent');
 
     const allNannies = await getNannyProfiles();
-    const { findBestMatch } = await import('../core/ai/matchingAi');
+    const { findBestMatch } = await import('@/core/ai/matchingAi');
     const aiMatchResult = await findBestMatch(data, allNannies, lang, user?.id);
 
     if (aiMatchResult.matchResult && aiMatchResult.matchResult.candidates.length > 0) {

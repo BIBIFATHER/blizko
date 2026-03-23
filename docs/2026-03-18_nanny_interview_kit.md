@@ -114,9 +114,9 @@ _Prepared on March 18, 2026._
 
 ## 9. Related Product Surfaces
 
-- [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/components/NannyLandingPage.tsx)
-- [NannyFormProvider.tsx](/Users/anton/Desktop/blizko%203/components/forms/nanny/NannyFormProvider.tsx)
-- [ProfileTab.tsx](/Users/anton/Desktop/blizko%203/components/profile/ProfileTab.tsx)
-- [SuccessScreen.tsx](/Users/anton/Desktop/blizko%203/components/SuccessScreen.tsx)
+- [NannyLandingPage.tsx](/Users/anton/Desktop/blizko%203/src/components/NannyLandingPage.tsx)
+- [NannyFormProvider.tsx](/Users/anton/Desktop/blizko%203/src/components/forms/nanny/NannyFormProvider.tsx)
+- [ProfileTab.tsx](/Users/anton/Desktop/blizko%203/src/components/profile/ProfileTab.tsx)
+- [SuccessScreen.tsx](/Users/anton/Desktop/blizko%203/src/components/SuccessScreen.tsx)
 - [Supply Research](/Users/anton/Desktop/blizko%203/docs/2026-03-17_supply_side_nanny_research.md)
 

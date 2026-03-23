@@ -166,9 +166,9 @@ Blizko
 
 ## 6. How to Use This Tomorrow
 
-- hero copy — в [Home.tsx](/Users/anton/Desktop/blizko%203/components/Home.tsx)
-- supporting narrative — в [ParentForm.tsx](/Users/anton/Desktop/blizko%203/components/ParentForm.tsx)
-- proof-first messaging — в [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/components/nanny/NannyPublicProfile.tsx)
+- hero copy — в [Home.tsx](/Users/anton/Desktop/blizko%203/src/components/Home.tsx)
+- supporting narrative — в [ParentForm.tsx](/Users/anton/Desktop/blizko%203/src/components/ParentForm.tsx)
+- proof-first messaging — в [NannyPublicProfile.tsx](/Users/anton/Desktop/blizko%203/src/components/nanny/NannyPublicProfile.tsx)
 - article list — как основа для SEO backlog
 - founder pitch — как короткий PR opener
 

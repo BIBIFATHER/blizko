@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MessageCircle, Send, Minimize2, Loader2, Sparkles, UserCheck, X } from 'lucide-react';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Language, User } from '@/core/types';
-import { t } from '@/core/i18n/translations';
 import { trackChatOpen } from '@/services/analytics';
 import {
   getOrCreateTicket,
@@ -21,8 +20,9 @@ interface SupportChatProps {
   openOnMount?: boolean;
 }
 
+const getNowTs = () => Date.now();
+
 const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher = false, openOnMount = false }) => {
-  const text = t[lang];
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -125,7 +125,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
 
     // 4. Add AI response to local state (will also arrive via Realtime)
     setMessages(prev => [...prev, {
-      id: `ai-${Date.now()}`,
+      id: `ai-${getNowTs()}`,
       ticket_id: ticket.id,
       sender_type: 'ai_concierge',
       text: result.reply,

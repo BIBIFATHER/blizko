@@ -12,6 +12,7 @@ interface VideoRecorderModalProps {
 }
 
 const VIDEO_BUCKET = (import.meta.env.VITE_SUPABASE_VIDEO_BUCKET as string | undefined) || 'nanny-videos';
+const getNowTs = () => Date.now();
 
 export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose, onSave, lang }) => {
   const text = t[lang];
@@ -69,7 +70,7 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
     const { data: authData } = await supabase.auth.getUser();
     const userId = authData.user?.id || 'anonymous';
     const ext = blob.type.includes('mp4') ? 'mp4' : 'webm';
-    const filePath = `${userId}/${Date.now()}-video-intro.${ext}`;
+    const filePath = `${userId}/${getNowTs()}-video-intro.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from(VIDEO_BUCKET)

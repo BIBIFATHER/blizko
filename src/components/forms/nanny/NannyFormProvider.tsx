@@ -76,6 +76,10 @@ export interface NannyFormContextType {
     detectingLocation: boolean;
     detectLocation: (lang: Language) => Promise<void>;
 
+    // Global in-form toast
+    toast: { message: string; type: 'error' | 'info' } | null;
+    setToast: React.Dispatch<React.SetStateAction<{ message: string; type: 'error' | 'info' } | null>>;
+
     // Computed / Actions
     isEditing: boolean;
     initialDataId?: string;
@@ -131,6 +135,7 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
     const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
     const [showCitySuggestions, setShowCitySuggestions] = useState(false);
     const [detectingLocation, setDetectingLocation] = useState(false);
+    const [toast, setToast] = useState<{ message: string; type: 'error' | 'info' } | null>(null);
     const trackedReadyRef = useRef(false);
     const skillsRef = useRef<string[]>(initialData?.skills || []);
 
@@ -169,12 +174,8 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
         });
 
         if (Array.isArray(resume.skills) && resume.skills.length > 0) {
-            const currentSkills = skillsRef.current || [];
-            const nextSkills = Array.from(new Set([...currentSkills, ...resume.skills]));
-            if (nextSkills.length !== currentSkills.length) {
-                appliedCount += 1;
-                setSkills(nextSkills);
-            }
+            appliedCount += 1;
+            setSkills(prev => Array.from(new Set([...prev, ...(resume.skills as string[])])));
         }
 
         return appliedCount;
@@ -218,10 +219,10 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
                 trackLocationDetected('nanny');
             }
             if (!value) {
-                alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
+                setToast({ message: lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically', type: 'info' });
             }
         } else if (result.error) {
-            alert(result.error);
+            setToast({ message: result.error, type: 'error' });
         }
 
         setDetectingLocation(false);
@@ -281,10 +282,29 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
             citySuggestions, setCitySuggestions,
             showCitySuggestions, setShowCitySuggestions,
             detectingLocation, detectLocation,
+            toast, setToast,
             isEditing: !!initialData,
             initialDataId: initialData?.id
         }}>
             {children}
+            {toast && (
+                <div
+                    className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] max-w-[90vw] sm:max-w-md w-max rounded-[16px] px-4 py-3 border text-sm flex items-center justify-between shadow-2xl animate-fade-in ${
+                        toast.type === 'error'
+                            ? 'bg-rose-50/95 backdrop-blur-md border-rose-200 text-rose-800'
+                            : 'bg-amber-50/95 backdrop-blur-md border-amber-200 text-amber-800'
+                    }`}
+                >
+                    <span>{toast.message}</span>
+                    <button
+                        type="button"
+                        onClick={() => setToast(null)}
+                        className="ml-4 text-stone-400 hover:text-stone-700 shrink-0 px-2 -mr-2"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
         </NannyFormContext.Provider>
     );
 };

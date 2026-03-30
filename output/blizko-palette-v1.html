@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blizko Palette v1</title>
+    <style>
+      :root {
+        --bg-page: #f7f3ee;
+        --bg-soft: #efe7dc;
+        --surface-primary: #fbfaf8;
+        --surface-secondary: #f3ede4;
+        --border-soft: #ddd2c4;
+        --border-strong: #cbbeae;
+        --text-primary: #2f261f;
+        --text-secondary: #5c5146;
+        --text-muted: #8a7d70;
+        --text-on-accent: #fdfbf8;
+        --accent-trust: #5e8b83;
+        --accent-trust-hover: #4f7871;
+        --accent-support: #6f8596;
+        --accent-sage: #7a8f6a;
+        --success: #6f8a57;
+        --warning: #c89a4b;
+        --error: #a65a4d;
+        --info: #6f8596;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fcfaf7 0%, var(--bg-page) 100%);
+        color: var(--text-primary);
+        font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 20px;
+        margin-bottom: 32px;
+      }
+
+      .eyebrow {
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(36px, 5vw, 64px);
+        line-height: 0.95;
+        font-family: "Georgia", "Times New Roman", serif;
+        font-weight: 600;
+      }
+
+      .sub {
+        max-width: 720px;
+        font-size: 17px;
+        line-height: 1.7;
+        color: var(--text-secondary);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+      }
+
+      .swatch {
+        border: 1px solid var(--border-soft);
+        border-radius: 24px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 12px 40px rgba(67, 47, 28, 0.06);
+      }
+
+      .tone {
+        height: 126px;
+      }
+
+      .meta {
+        padding: 16px;
+        display: grid;
+        gap: 4px;
+      }
+
+      .name {
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .code,
+      .role {
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+
+      .section {
+        margin-top: 36px;
+      }
+
+      .section h2 {
+        margin: 0 0 14px;
+        font-size: 24px;
+        font-family: "Georgia", "Times New Roman", serif;
+        font-weight: 600;
+      }
+
+      .ui-demo {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--surface-primary);
+        border: 1px solid var(--border-soft);
+        border-radius: 28px;
+        padding: 22px;
+        box-shadow: 0 18px 50px rgba(74, 52, 31, 0.08);
+      }
+
+      .chip-row,
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .chip {
+        border-radius: 999px;
+        padding: 9px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid transparent;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .trust {
+        background: var(--accent-trust);
+        color: var(--text-on-accent);
+      }
+
+      .support {
+        background: var(--surface-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-soft);
+      }
+
+      .success {
+        background: rgba(111, 138, 87, 0.14);
+        color: #566c42;
+        border-color: rgba(111, 138, 87, 0.2);
+      }
+
+      .warn {
+        background: rgba(200, 154, 75, 0.16);
+        color: #9f6c21;
+        border-color: rgba(200, 154, 75, 0.24);
+      }
+
+      .risk {
+        background: rgba(166, 90, 77, 0.12);
+        color: #8f463c;
+        border-color: rgba(166, 90, 77, 0.22);
+      }
+
+      .muted {
+        color: var(--text-muted);
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--border-soft);
+        margin: 16px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <div class="eyebrow">Blizko Palette v1</div>
+        <h1>Calm trust, warm clarity, premium restraint.</h1>
+        <div class="sub">
+          Палитра для Blizko строится не вокруг “милости” и не вокруг клинического trust. Логика:
+          теплые нейтрали как база, muted trust-акценты для уверенности, мягкие статусные цвета без
+          визуальной агрессии.
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Foundation</h2>
+        <div class="grid">
+          <article class="swatch">
+            <div class="tone" style="background: var(--bg-page)"></div>
+            <div class="meta">
+              <div class="name">Page Background</div>
+              <div class="code">#F7F3EE</div>
+              <div class="role">Главный теплый фон</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--bg-soft)"></div>
+            <div class="meta">
+              <div class="name">Soft Background</div>
+              <div class="code">#EFE7DC</div>
+              <div class="role">Мягкие подложки и секции</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--surface-primary)"></div>
+            <div class="meta">
+              <div class="name">Primary Surface</div>
+              <div class="code">#FBFAF8</div>
+              <div class="role">Карточки и основные панели</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--surface-secondary)"></div>
+            <div class="meta">
+              <div class="name">Secondary Surface</div>
+              <div class="code">#F3EDE4</div>
+              <div class="role">Внутренние блоки, chips, quiet cards</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Borders & Text</h2>
+        <div class="grid">
+          <article class="swatch">
+            <div class="tone" style="background: var(--border-soft)"></div>
+            <div class="meta">
+              <div class="name">Soft Border</div>
+              <div class="code">#DDD2C4</div>
+              <div class="role">Default separators</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--border-strong)"></div>
+            <div class="meta">
+              <div class="name">Strong Border</div>
+              <div class="code">#CBBEAE</div>
+              <div class="role">Selected / emphasized outlines</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--text-primary)"></div>
+            <div class="meta">
+              <div class="name">Primary Text</div>
+              <div class="code">#2F261F</div>
+              <div class="role">Основной текст</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--text-secondary)"></div>
+            <div class="meta">
+              <div class="name">Secondary Text</div>
+              <div class="code">#5C5146</div>
+              <div class="role">Вторичный текст</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Trust & Status</h2>
+        <div class="grid">
+          <article class="swatch">
+            <div class="tone" style="background: var(--accent-trust)"></div>
+            <div class="meta">
+              <div class="name">Trust Accent</div>
+              <div class="code">#5E8B83</div>
+              <div class="role">Primary CTA and trust emphasis</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--accent-support)"></div>
+            <div class="meta">
+              <div class="name">Support Accent</div>
+              <div class="code">#6F8596</div>
+              <div class="role">Info, support, secondary accent</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--accent-sage)"></div>
+            <div class="meta">
+              <div class="name">Sage Accent</div>
+              <div class="code">#7A8F6A</div>
+              <div class="role">Verification and calm success</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--warning)"></div>
+            <div class="meta">
+              <div class="name">Warning</div>
+              <div class="code">#C89A4B</div>
+              <div class="role">Warnings and discuss-in-advance</div>
+            </div>
+          </article>
+          <article class="swatch">
+            <div class="tone" style="background: var(--error)"></div>
+            <div class="meta">
+              <div class="name">Error</div>
+              <div class="code">#A65A4D</div>
+              <div class="role">Errors and high-risk signals</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>UI Preview</h2>
+        <div class="ui-demo">
+          <article class="card">
+            <div class="eyebrow">Profile Trust Card</div>
+            <h2 style="margin: 6px 0 10px">Анна Иванова</h2>
+            <div class="muted">7 лет опыта • Москва • Спокойная, внимательная, бережная</div>
+            <div class="divider"></div>
+            <div class="chip-row">
+              <span class="chip success">Профиль проверен</span>
+              <span class="chip support">Есть отзывы</span>
+              <span class="chip warn">Лучше обсудить график</span>
+            </div>
+            <div class="divider"></div>
+            <div class="btn-row">
+              <button class="btn trust">Открыть профиль</button>
+              <button class="btn support">Сохранить в shortlist</button>
+            </div>
+          </article>
+
+          <article class="card" style="background: var(--bg-page)">
+            <div class="eyebrow">Status Language</div>
+            <h2 style="margin: 6px 0 10px">Тон спокойный, не стерильный</h2>
+            <div class="chip-row">
+              <span class="chip success">Verified identity</span>
+              <span class="chip support">Support available</span>
+              <span class="chip warn">Discuss in advance</span>
+              <span class="chip risk">Missing details</span>
+            </div>
+            <div class="divider"></div>
+            <p class="muted" style="line-height: 1.7; margin: 0">
+              Эта палитра держит trust через структуру и зрелость, а warmth через нейтрали и мягкую
+              температуру цвета. Она не выглядит ни “детской”, ни “медицинской”.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

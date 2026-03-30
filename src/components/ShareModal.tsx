@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Copy, Check, Smartphone, AlertTriangle } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { Language } from '@/core/types';
@@ -14,14 +14,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose, lang }) => {
   const text = t[lang];
   const url = window.location.href;
   const [copied, setCopied] = useState(false);
-  const [isLocalhost, setIsLocalhost] = useState(false);
-
-  useEffect(() => {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      setIsLocalhost(true);
-    }
-  }, []);
+  const hostname = window.location.hostname;
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(url);

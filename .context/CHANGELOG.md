@@ -2,6 +2,50 @@
 
 ---
 
+## 2026-03-28 (Fri)
+
+### Done
+
+- ✅ Added a durable proactive plugin-prompting rule to `.context/WORKING_CONTRACT.md`
+- ✅ Defined default trigger cases for `Linear`, `Notion`, `Figma`, `GitHub`, `Sentry`, `Vercel`, `Google Calendar`, and `Gmail`
+- ✅ Updated `HEARTBEAT.md` so periodic checks can suggest one exact plugin shortcut when it removes real friction
+
+### Effect
+
+- Codex should now nudge toward the right external system of record at the right moment instead of listing plugins generically
+- Plugin suggestions are now constrained to one concrete tool and one concrete reason
+## 2026-03-26 (Thu)
+
+### Done
+
+- ✅ Workspace bootstrap pass completed for operating-system hygiene
+- ✅ `TOOLS.md` upgraded from template to structured local environment sheet
+- ✅ `TOOLS.md` enriched with real machine facts: browsers, host machine, shortcuts, and SSH status
+- ✅ `MEMORY.md` created as curated long-term memory for this main-session workspace
+- ✅ Added `.context/AI_STACK.md` for model routing and AI operating rules
+- ✅ Added `.context/MCP_STACK.md` for integration priorities and policy
+- ✅ Added `.context/BOOTSTRAP_CHECKLIST.md` with current-state audit and next actions
+- ✅ `HEARTBEAT.md` upgraded from empty placeholder to useful periodic checklist
+- ✅ `WORKING_CONTRACT.md` extended with routing and context-maintenance rules
+- ✅ Daily memory file for `2026-03-26` created to record this bootstrap session
+- ✅ Audited global Codex MCP config: `figma`, `notion`, `linear` already present
+- ✅ Added `github` remote MCP to global Codex config
+- ✅ Added `supabase` remote MCP to global Codex config in read-only limited mode
+- ✅ Upgraded global `codex` CLI and re-audited MCP auth modes
+- ✅ Verified product contour: `npm test` passes, `npm run build` passes
+- ✅ Reduced lint from `37 errors / 97 warnings` to `0 errors / 101 warnings`
+- ✅ Added GitHub Actions CI workflow for `lint`, `test`, and `build`
+- ✅ Added `.context/CODEX_OPERATING_PROTOCOL.md` to mirror the Antigravity operating layer for Codex
+- ✅ Added strict Codex review protocol, release gate, and decision logging docs
+- ✅ Strengthened zero-exception research escalation rule for current-information work
+- ✅ Hardened Antigravity routing for `full codebase analysis` requests: these now map to review mode instead of generic analytics/static-analysis summaries
+
+### Found
+
+- ⚠️ `npm run lint` is now non-blocking but still has 101 warnings
+- ⚠️ GitHub Actions now exist, but still need first run validation in GitHub
+- ⚠️ Sentry is only partially active: build-time integration exists, but runtime DSN is missing from current `.env.local`
+
 ## 2026-03-22 (Sun)
 
 ### Done

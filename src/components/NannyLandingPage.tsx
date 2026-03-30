@@ -60,12 +60,12 @@ export const NannyLandingPage: React.FC = () => {
                                 Набираем нянь в Москве
                             </div>
 
-                            <div className="space-y-4">
-                                <h1 className="max-w-[12ch] text-[2.35rem] leading-[0.96] text-stone-950 sm:max-w-none sm:text-4xl md:text-6xl">
+                            <div className="hero-copy space-y-0">
+                                <h1 className="hero-title hero-title-wide">
                                     Работайте с семьями,
                                     <span className="block text-[color:var(--cloud-brand-soft)]">которым подходит ваш стиль и ритм</span>
                                 </h1>
-                                <p className="max-w-2xl text-base leading-8 text-stone-600 md:text-lg">
+                                <p className="hero-body max-w-2xl md:text-lg">
                                     Blizko убирает хаос из поиска: сначала понятная анкета, затем ручная модерация,
                                     после этого доступ к запросам с ясным графиком, районом и ожиданиями семьи.
                                 </p>
@@ -77,7 +77,7 @@ export const NannyLandingPage: React.FC = () => {
                                 </Button>
                                 <a
                                     href="mailto:nanny@blizko.app"
-                                    className="inline-flex min-h-[52px] max-w-sm items-center justify-center gap-2 rounded-full border border-[color:var(--cloud-border-strong)] bg-white/70 px-6 py-3.5 text-sm font-semibold text-stone-700 shadow-cloud-soft transition-all duration-300 hover:-translate-y-0.5 hover:bg-white"
+                                    className="cta-secondary inline-flex max-w-sm items-center justify-center gap-2 px-6 py-3.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:bg-white"
                                 >
                                     Задать вопрос команде <ChevronRight size={16} />
                                 </a>
@@ -137,9 +137,9 @@ export const NannyLandingPage: React.FC = () => {
                     <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                         <div className="space-y-3">
                             <div className="eyebrow">Почему Blizko</div>
-                            <h2 className="text-3xl text-stone-950 md:text-4xl">Меньше случайных откликов, больше нормального рабочего процесса</h2>
+                            <h2 className="section-heading">Меньше случайных откликов, больше нормального рабочего процесса</h2>
                         </div>
-                        <p className="max-w-xl text-sm leading-7 text-stone-600 md:text-base">
+                        <p className="section-body max-w-xl">
                             Мы не обещаем магию. Мы делаем путь более ясным: прозрачные условия, аккуратная модерация и поддержка там, где обычно всё разваливается в переписке.
                         </p>
                     </div>
@@ -164,8 +164,8 @@ export const NannyLandingPage: React.FC = () => {
                 <section className="section-shell p-6 md:p-8">
                     <div className="mb-8 space-y-3">
                         <div className="eyebrow">Как это работает</div>
-                        <h2 className="text-3xl text-stone-950 md:text-4xl">Три шага до доступа к запросам</h2>
-                        <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+                        <h2 className="section-heading">Три шага до доступа к запросам</h2>
+                        <p className="section-body max-w-2xl">
                             Важный принцип Blizko: сначала прозрачность и проверка, потом уже активация и работа с семьями.
                         </p>
                     </div>
@@ -194,8 +194,8 @@ export const NannyLandingPage: React.FC = () => {
                     <div className="grid gap-5 md:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] md:items-start">
                         <div className="space-y-4">
                             <div className="eyebrow">Профиль и доверие</div>
-                            <h2 className="text-3xl text-stone-950 md:text-4xl">Проверка профиля усиливает доверие ещё до первого знакомства</h2>
-                            <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+                            <h2 className="section-heading">Проверка профиля усиливает доверие ещё до первого знакомства</h2>
+                            <p className="section-body max-w-2xl">
                                 Документы и ручная модерация нужны не ради бюрократии. Они помогают семье быстрее понять ваш уровень подготовки, а вам не тратить время на объяснение базовых вещей в каждом диалоге.
                             </p>
                         </div>
@@ -229,8 +229,8 @@ export const NannyLandingPage: React.FC = () => {
                                 <Phone size={16} />
                                 Вопросы по анкете или модерации
                             </div>
-                            <h2 className="text-3xl text-stone-950 md:text-4xl">Начните с анкеты, а не с хаотичного поиска</h2>
-                            <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
+                            <h2 className="section-heading">Начните с анкеты, а не с хаотичного поиска</h2>
+                            <p className="section-body max-w-2xl">
                                 Анкета занимает около 5 минут. После модерации вы сами решите, когда активировать профиль и выходить на запросы.
                             </p>
                             <a href="mailto:nanny@blizko.app" className="text-sm font-semibold text-stone-700 underline decoration-[color:var(--cloud-border-strong)] underline-offset-4">

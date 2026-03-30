@@ -22,6 +22,10 @@ interface MatchResultsScreenProps {
     lang: Language;
 }
 
+interface MatchResultsLocationState {
+    matchResult?: MatchResult;
+}
+
 const TRUST_BADGE_LABELS: Record<TrustBadge, Record<Language, string>> = {
     verified_docs: { ru: 'Документы ✓', en: 'Docs verified' },
     verified_moderation: { ru: 'Модерация ✓', en: 'Reviewed' },
@@ -163,7 +167,7 @@ const CandidateCard: React.FC<{
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_0.9fr] gap-3">
-                        <div className="rounded-[22px] border border-[color:var(--cloud-border)] bg-white/78 p-3.5 shadow-cloud-soft">
+                        <div className="secondary-card p-3.5">
                             <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] block mb-1.5">
                                 {lang === 'ru' ? 'Почему подходит' : 'Why it fits'}
                             </span>
@@ -172,7 +176,7 @@ const CandidateCard: React.FC<{
                             </p>
                         </div>
 
-                        <div className="rounded-[22px] border border-[color:var(--cloud-border)] bg-white/80 p-3.5 shadow-cloud-soft">
+                        <div className="secondary-card p-3.5">
                             <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] mb-2 flex items-center gap-1">
                                 <CheckCheck size={11} />
                                 {lang === 'ru' ? 'Доверие' : 'Trust'}
@@ -198,7 +202,7 @@ const CandidateCard: React.FC<{
                     </div>
 
                     {riskFlags && riskFlags.length > 0 && (
-                        <div className="rounded-[20px] border border-stone-200/60 bg-stone-50/80 p-3">
+                        <div className="secondary-card bg-stone-50/80 p-3">
                             <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] block mb-2">
                                 {lang === 'ru' ? 'Обсудить заранее' : 'Discuss in advance'}
                             </span>
@@ -256,9 +260,9 @@ const CandidateCard: React.FC<{
 
 /* ─── Main Screen ─── */
 export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) => {
-    const location = useLocation();
+    const location = useLocation() as ReturnType<typeof useLocation> & { state: MatchResultsLocationState | null };
     const navigate = useNavigate();
-    const matchResult = (location.state as any)?.matchResult as MatchResult | undefined;
+    const matchResult = location.state?.matchResult;
     const [showToast, setShowToast] = useState(false);
 
     const handleShareToast = useCallback(() => {
@@ -377,7 +381,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                     lang === 'ru' ? 'Верификация' : 'Verification',
                                     lang === 'ru' ? 'Поддержка рядом' : 'Support nearby',
                                 ].map((item) => (
-                                    <div key={item} className="rounded-[18px] border border-[color:var(--cloud-border)] bg-white/78 px-3 py-3 text-center text-[11px] font-semibold text-stone-600 shadow-cloud-soft sm:text-xs">
+                            <div key={item} className="secondary-card px-3 py-3 text-center text-[11px] font-semibold text-stone-600 sm:text-xs">
                                         {item}
                                     </div>
                                 ))}

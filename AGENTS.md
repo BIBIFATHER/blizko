@@ -14,6 +14,9 @@ Before doing anything else:
 2. Read `USER.md` — this is who you're helping
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+5. Read `.context/CODEX_OPERATING_PROTOCOL.md`
+6. If reviewing code, read `.context/CODEX_REVIEW_PROTOCOL.md`
+7. If assessing release readiness, read `.context/CODEX_RELEASE_PROTOCOL.md`
 
 Don't ask permission. Just do it.
 
@@ -210,3 +213,14 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
+
+## Codex Mirror
+
+For Codex sessions in this workspace:
+
+- follow `.context/CODEX_OPERATING_PROTOCOL.md`
+- use `.context/CODEX_REVIEW_PROTOCOL.md` for review requests
+- use `.context/CODEX_RELEASE_PROTOCOL.md` before release-readiness claims
+- use `.context/CODEX_DECISION_LOGGING.md` to write down changes that must survive the session
+- mirror the same memory / model / agent / skill discipline configured for Antigravity
+- treat file-backed context as source of truth, not session memory

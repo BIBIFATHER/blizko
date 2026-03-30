@@ -1,156 +1,185 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover"
+    />
+    <title>Blizko — подбор няни через понятный и спокойный процесс</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover" />
-  <title>Blizko — подбор няни через понятный и спокойный процесс</title>
+    <!-- Fonts: Manrope (body) + Newsreader (headlines) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Fonts: Inter (body) + Manrope (headlines) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&display=swap" rel="stylesheet" />
+    <!-- SEO Meta -->
+    <meta
+      name="description"
+      content="Blizko помогает родителям найти няню через более спокойный и понятный процесс — с модерацией профилей, trust-сигналами и объяснимым shortlist."
+    />
+    <meta
+      name="keywords"
+      content="няня Москва, подбор няни, найти няню, бебиситтер, проверенные няни, няня для ребенка, няня с проверкой, AI подбор няни"
+    />
+    <meta name="author" content="Blizko" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://blizko.app/" />
 
-  <!-- SEO Meta -->
-  <meta name="description"
-    content="Blizko помогает родителям найти няню через более спокойный и понятный процесс — с модерацией профилей, trust-сигналами и объяснимым shortlist." />
-  <meta name="keywords"
-    content="няня Москва, подбор няни, найти няню, бебиситтер, проверенные няни, няня для ребенка, няня с проверкой, AI подбор няни" />
-  <meta name="author" content="Blizko" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://blizko.app/" />
+    <!-- Яндекс.Вебмастер верификация (заменить на реальный код после регистрации в webmaster.yandex.ru) -->
+    <meta name="yandex-verification" content="e694c0ccb2169dfe" />
 
-  <!-- Яндекс.Вебмастер верификация (заменить на реальный код после регистрации в webmaster.yandex.ru) -->
-  <meta name="yandex-verification" content="e694c0ccb2169dfe" />
+    <!-- Яндекс: разрешить индексацию SPA-контента -->
+    <meta name="fragment" content="!" />
 
-  <!-- Яндекс: разрешить индексацию SPA-контента -->
-  <meta name="fragment" content="!" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Blizko — подбор няни через понятный и спокойный процесс" />
+    <meta
+      property="og:description"
+      content="Не бесконечный каталог, а понятный shortlist с модерацией и объяснениями. Blizko помогает найти няню спокойнее."
+    />
+    <meta property="og:image" content="https://blizko.app/og-image.png" />
+    <meta property="og:url" content="https://blizko.app" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="Blizko" />
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Blizko — подбор няни через понятный и спокойный процесс" />
-  <meta property="og:description"
-    content="Не бесконечный каталог, а понятный shortlist с модерацией и объяснениями. Blizko помогает найти няню спокойнее." />
-  <meta property="og:image" content="https://blizko.app/og-image.png" />
-  <meta property="og:url" content="https://blizko.app" />
-  <meta property="og:locale" content="ru_RU" />
-  <meta property="og:site_name" content="Blizko" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Blizko — подбор няни через понятный и спокойный процесс" />
+    <meta
+      name="twitter:description"
+      content="Не бесконечный каталог, а понятный shortlist с модерацией и объяснениями. Blizko помогает найти няню спокойнее."
+    />
+    <meta name="twitter:image" content="https://blizko.app/og-image.png" />
+    <meta name="twitter:site" content="@blizkoapp" />
+    <meta name="twitter:creator" content="@blizkoapp" />
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Blizko — подбор няни через понятный и спокойный процесс" />
-  <meta name="twitter:description"
-    content="Не бесконечный каталог, а понятный shortlist с модерацией и объяснениями. Blizko помогает найти няню спокойнее." />
-  <meta name="twitter:image" content="https://blizko.app/og-image.png" />
-  <meta name="twitter:site" content="@blizkoapp" />
-  <meta name="twitter:creator" content="@blizkoapp" />
-
-  <!-- JSON-LD: Organization (Яндекс + Google) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Blizko",
-    "alternateName": "Близко",
-    "url": "https://blizko.app",
-    "logo": "https://blizko.app/icons/icon-512.png",
-    "description": "AI-сервис безопасного подбора нянь. Алгоритм Humanity+ анализирует совместимость по психотипу.",
-    "areaServed": {
-      "@type": "City",
-      "name": "Москва"
-    },
-    "sameAs": [
-      "https://t.me/blizko_app"
-    ]
-  }
-  </script>
-
-  <!-- JSON-LD: SoftwareApplication (для Яндекс + Google App Rich Results) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Blizko — AI-подбор нянь",
-    "operatingSystem": "Web, Android, iOS",
-    "applicationCategory": "LifestyleApplication",
-    "description": "Найдите проверенную няню за 5 минут. AI Humanity+ анализирует совместимость по психотипу и объясняет, почему конкретная няня подходит вашей семье.",
-    "url": "https://blizko.app",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "RUB"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "ratingCount": "47"
-    }
-  }
-  </script>
-
-  <!-- iOS support -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Blizko" />
-  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#6C2586" />
-
-
-
-  <!-- Yandex.Metrika counter (107260431) -->
-  <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-    m[i].l=1*new Date();
-    for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
-    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-    ym(107260431, "init", {
-      clickmap: true,
-      trackLinks: true,
-      accurateTrackBounce: true,
-      webvisor: true,
-      ecommerce: "dataLayer"
-    });
-  </script>
-  <!-- /Yandex.Metrika counter -->
-</head>
-
-<body>
-  <!-- Yandex.Metrika noscript (moved from head — div not allowed in head/noscript per HTML5) -->
-  <noscript><div><img src="https://mc.yandex.ru/watch/107260431" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
-  <div id="root"></div>
-
-  <!-- Service Worker: only in PROD -->
-  <script>
-    (function () {
-      if (!('serviceWorker' in navigator)) return;
-
-      const isLocalhost =
-        location.hostname === 'localhost' ||
-        location.hostname === '127.0.0.1' ||
-        location.hostname === '[::1]';
-
-      if (isLocalhost) {
-        // DEV — гарантированно убираем SW, если он когда-то был установлен
-        navigator.serviceWorker.getRegistrations()
-          .then((regs) => Promise.all(regs.map((r) => r.unregister())))
-          .then(() => console.log('[SW] disabled in dev (localhost)'))
-          .catch(() => { });
-        return;
+    <!-- JSON-LD: Organization (Яндекс + Google) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Blizko",
+        "alternateName": "Близко",
+        "url": "https://blizko.app",
+        "logo": "https://blizko.app/icons/icon-512.png",
+        "description": "AI-сервис безопасного подбора нянь. Алгоритм Humanity+ анализирует совместимость по психотипу.",
+        "areaServed": {
+          "@type": "City",
+          "name": "Москва"
+        },
+        "sameAs": ["https://t.me/blizko_app"]
       }
+    </script>
 
-      // PROD — регистрируем SW
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log('[SW] registered'))
-          .catch((err) => console.log('[SW] failed', err));
+    <!-- JSON-LD: SoftwareApplication (для Яндекс + Google App Rich Results) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Blizko — AI-подбор нянь",
+        "operatingSystem": "Web, Android, iOS",
+        "applicationCategory": "LifestyleApplication",
+        "description": "Найдите проверенную няню за 5 минут. AI Humanity+ анализирует совместимость по психотипу и объясняет, почему конкретная няня подходит вашей семье.",
+        "url": "https://blizko.app",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "RUB"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "ratingCount": "47"
+        }
+      }
+    </script>
+
+    <!-- iOS support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Blizko" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#6C2586" />
+
+    <!-- Yandex.Metrika counter (107260431) -->
+    <script type="text/javascript">
+      (function (m, e, t, r, i, k, a) {
+        m[i] =
+          m[i] ||
+          function () {
+            (m[i].a = m[i].a || []).push(arguments);
+          };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) {
+          if (document.scripts[j].src === r) {
+            return;
+          }
+        }
+        ((k = e.createElement(t)),
+          (a = e.getElementsByTagName(t)[0]),
+          (k.async = 1),
+          (k.src = r),
+          a.parentNode.insertBefore(k, a));
+      })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+      ym(107260431, 'init', {
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+        webvisor: true,
+        ecommerce: 'dataLayer',
       });
-    })();
-  </script>
+    </script>
+    <!-- /Yandex.Metrika counter -->
+  </head>
 
-  <script type="module" src="/src/main.tsx"></script>
-</body>
+  <body>
+    <!-- Yandex.Metrika noscript (moved from head — div not allowed in head/noscript per HTML5) -->
+    <noscript
+      ><div>
+        <img
+          src="https://mc.yandex.ru/watch/107260431"
+          style="position: absolute; left: -9999px"
+          alt=""
+        /></div
+    ></noscript>
+    <div id="root"></div>
 
+    <!-- Service Worker: only in PROD -->
+    <script>
+      (function () {
+        if (!('serviceWorker' in navigator)) return;
+
+        const isLocalhost =
+          location.hostname === 'localhost' ||
+          location.hostname === '127.0.0.1' ||
+          location.hostname === '[::1]';
+
+        if (isLocalhost) {
+          // DEV — гарантированно убираем SW, если он когда-то был установлен
+          navigator.serviceWorker
+            .getRegistrations()
+            .then((regs) => Promise.all(regs.map((r) => r.unregister())))
+            .then(() => console.log('[SW] disabled in dev (localhost)'))
+            .catch(() => {});
+          return;
+        }
+
+        // PROD — регистрируем SW
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then(() => console.log('[SW] registered'))
+            .catch((err) => console.log('[SW] failed', err));
+        });
+      })();
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary": "#171512",
+                        "surface-container-highest": "#e5e2dd",
+                        "surface": "#fcf9f4",
+                        "primary-fixed": "#e9e1dc",
+                        "inverse-primary": "#cdc5c0",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#1e1b18",
+                        "primary-container": "#2d2926",
+                        "surface-container-high": "#ebe8e3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e5e2dd",
+                        "on-tertiary-container": "#95908c",
+                        "secondary": "#6b5d35",
+                        "on-secondary-fixed": "#231b00",
+                        "outline": "#7e756f",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#4b4642",
+                        "background": "#fcf9f4",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e8e1dd",
+                        "surface-dim": "#dcdad5",
+                        "surface-container": "#f0ede9",
+                        "primary": "#181512",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#2c2926",
+                        "on-background": "#1c1c19",
+                        "primary-fixed-dim": "#cdc5c0",
+                        "on-tertiary-fixed-variant": "#4a4643",
+                        "on-secondary-container": "#71633a",
+                        "on-tertiary-fixed": "#1e1b19",
+                        "secondary-container": "#f5e1ae",
+                        "inverse-surface": "#31302d",
+                        "surface-bright": "#fcf9f4",
+                        "tertiary-fixed-dim": "#ccc5c1",
+                        "outline-variant": "#cfc4bd",
+                        "inverse-on-surface": "#f3f0eb",
+                        "on-primary-container": "#96908b",
+                        "surface-container-low": "#f6f3ee",
+                        "on-secondary-fixed-variant": "#524620",
+                        "surface-tint": "#635d5a",
+                        "secondary-fixed": "#f5e1ae",
+                        "on-surface-variant": "#4d4540",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "on-surface": "#1c1c19",
+                        "secondary-fixed-dim": "#d8c594"
+                    },
+                    fontFamily: {
+                        "headline": ["Cormorant Garamond", "serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                    boxShadow: {
+                        "cloud": "0 12px 40px rgba(45, 41, 38, 0.05)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #fcf9f4;
+            color: #1c1c19;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .serif-italic { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-xl transition-transform duration-200">
+<div class="flex items-center gap-4">
+<button class="text-stone-900 dark:text-stone-50 active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="text-2xl serif-italic font-semibold text-stone-900 dark:text-stone-50">Blizko</span>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8">
+<a class="text-stone-500 dark:text-stone-400 font-sans tracking-wider text-sm hover:text-amber-200 transition-colors" href="#">Discover</a>
+<a class="text-stone-900 dark:text-stone-50 font-semibold font-sans tracking-wider text-sm" href="#">Nannies</a>
+<a class="text-stone-500 dark:text-stone-400 font-sans tracking-wider text-sm hover:text-amber-200 transition-colors" href="#">Messages</a>
+</nav>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-highest shadow-sm">
+<img alt="User profile" data-alt="Close-up portrait of a professional woman with a friendly smile, soft natural lighting, minimal studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8q2q8hBw457WySGgozqEqyy74C2lBi014ogZtb-8O_TxlQ6QPK-3vLi48BSwTwHfzev6cR-6Og0A9JQ_xfhUB8-htoKNI35P5W-NPBDDzgEvCUxBBC0rr6gaMDa6iDQndIzD1W0vMRUWJl-WULza440BxGPZfkEjWFeWQNsrZoMHCPrVJjXOJ1WR-XMKDGLxdicx5IhotZoQ0LcojlVUYtdCU8X0gIZLd4BFnT3JJW5GqEmiJNgRShnWj-ejmSCdd7INk0AyW16Q"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto">
+<!-- Hero Section -->
+<section class="flex flex-col md:flex-row gap-12 items-end mb-20">
+<div class="w-full md:w-5/12 aspect-[4/5] rounded-xl overflow-hidden shadow-cloud relative">
+<img alt="Maria Petrova" class="w-full h-full object-cover" data-alt="Professional portrait of Maria Petrova, a warm and kind nanny, soft golden hour sunlight, ethereal aesthetic, high-end editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD86RwtLK-Vdj38zkt6YzkNlbUECPcVnN7bhqCimwn2xpwWQCQWH_r73UIb2SUiXm8_xPmhSao8pSrByML7pBQZMCUAsthLFEGZeqqqFPTemXZZB41B_-u4-TbtIzKW6t9Xtr45VKMJH-hqvvT2XjxK_cCCHhocL6hlmU_ubJIuqJLAM42qI7y9bECIXb1vWMRBh7A4MAmmaGEhC13tAElfKh01cvJHPPcjnnOkjWVLdTd3pqTE_m5UHcr83-RtismrwTTUA4bssyE"/>
+<div class="absolute bottom-6 left-6 bg-stone-50/70 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[10px] font-label uppercase tracking-widest text-primary font-semibold">Лично проверена Blizko</span>
+</div>
+</div>
+<div class="flex-1 pb-4">
+<h1 class="text-6xl md:text-8xl font-headline font-medium leading-[0.9] text-primary mb-6">Мария Петрова</h1>
+<div class="flex flex-wrap gap-3 mb-8">
+<span class="bg-surface-container-low text-primary px-4 py-1.5 rounded-full text-sm font-label font-medium">8 лет опыта</span>
+<span class="bg-surface-container-low text-primary px-4 py-1.5 rounded-full text-sm font-label font-medium">Дошкольное образование</span>
+<span class="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-sm font-label font-semibold">Топ-выбор месяца</span>
+</div>
+<p class="text-xl font-body text-on-surface-variant leading-relaxed max-w-xl">
+                    Создаю безопасное и вдохновляющее пространство для развития вашего ребенка через игру и творчество. Специализируюсь на методике Монтессори и раннем развитии.
+                </p>
+</div>
+</section>
+<!-- Bento Grid Section -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-20">
+<!-- Education -->
+<div class="md:col-span-4 bg-surface-container-low rounded-lg p-8 flex flex-col justify-between">
+<div>
+<span class="text-[10px] uppercase tracking-[0.2em] font-label font-semibold text-on-tertiary-container mb-4 block">Образование</span>
+<h3 class="text-3xl font-headline font-medium text-primary mb-6 leading-tight">МГПУ, Факультет дошкольной педагогики</h3>
+</div>
+<div class="space-y-4">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="school">school</span>
+<p class="text-sm font-body text-on-surface-variant">Магистр педагогических наук, 2016</p>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="certificate">badge</span>
+<p class="text-sm font-body text-on-surface-variant">Курс первой помощи Red Cross</p>
+</div>
+</div>
+</div>
+<!-- Experience / Languages Split -->
+<div class="md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Languages -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 rounded-lg p-8">
+<span class="text-[10px] uppercase tracking-[0.2em] font-label font-semibold text-on-tertiary-container mb-6 block">Языки</span>
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<span class="font-body font-medium">Русский</span>
+<span class="text-[10px] font-label font-bold uppercase tracking-wider bg-surface-container text-primary px-2 py-1 rounded">Родной</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body font-medium">English</span>
+<span class="text-[10px] font-label font-bold uppercase tracking-wider bg-secondary-container text-on-secondary-container px-2 py-1 rounded">Advanced (C1)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body font-medium">Français</span>
+<span class="text-[10px] font-label font-bold uppercase tracking-wider bg-surface-container text-primary px-2 py-1 rounded">B2</span>
+</div>
+</div>
+</div>
+<!-- Experience Summary -->
+<div class="bg-primary text-on-primary rounded-lg p-8 flex flex-col justify-center items-center text-center">
+<span class="text-[10px] uppercase tracking-[0.2em] font-label font-semibold text-on-primary-container mb-4 block">Опыт работы</span>
+<div class="text-7xl font-headline font-medium mb-2">12+</div>
+<p class="font-label text-[10px] font-semibold opacity-80 uppercase tracking-[0.2em]">счастливых семей</p>
+<div class="mt-8 pt-8 border-t border-white/10 w-full">
+<p class="text-xs font-body italic opacity-70 leading-relaxed">«Мария стала частью нашей семьи на 4 года. Её подход к дисциплине через любовь — уникален.»</p>
+</div>
+</div>
+</div>
+<!-- Long Review / Portfolio -->
+<div class="md:col-span-12 bg-surface-container-low rounded-lg p-10 flex flex-col md:flex-row gap-12 items-center">
+<div class="md:w-1/3 text-center md:text-left">
+<span class="text-[10px] uppercase tracking-[0.2em] font-label font-semibold text-on-tertiary-container mb-4 block">Отзывы</span>
+<div class="flex items-center justify-center md:justify-start gap-1 text-secondary mb-2">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-5xl font-headline font-medium text-primary">5.0 <span class="text-lg font-body text-on-surface-variant font-normal">из 48 отзывов</span></p>
+</div>
+<div class="flex-1 space-y-8 w-full">
+<div class="bg-surface-container-lowest p-8 rounded-lg shadow-sm border border-stone-200/40">
+<p class="text-lg font-body text-on-surface-variant leading-relaxed italic mb-6">
+                            "Мария — невероятный профессионал. Она не просто присматривает за детьми, она обучает их английскому в процессе игры и всегда находит подход даже в самые капризные моменты."
+                        </p>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-stone-200"></div>
+<div>
+<span class="text-sm font-label font-semibold block">Елена В.</span>
+<span class="text-[10px] font-label uppercase tracking-wider text-on-surface-variant opacity-70">мама двоих детей</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Layer & Philosophy -->
+<section class="mb-20 grid grid-cols-1 md:grid-cols-2 gap-16 items-center border-t border-outline-variant/10 pt-20">
+<div>
+<h2 class="text-5xl font-headline font-medium text-primary mb-8">Философия воспитания</h2>
+<p class="text-lg font-body text-on-surface-variant leading-relaxed mb-8">
+                    Я верю в концепцию «следуй за ребенком». Моя задача — предоставить инструменты и безопасную среду, где любопытство ведет к познанию мира. Я против авторитарного стиля и всегда выбираю диалог.
+                </p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle">check_circle</span>
+<span class="text-sm font-label font-medium">Бесконфликтное общение</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle">check_circle</span>
+<span class="text-sm font-label font-medium">Развитие эмоционального интеллекта</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle">check_circle</span>
+<span class="text-sm font-label font-medium">Соблюдение режима дня</span>
+</li>
+</ul>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-10 border border-outline-variant/20 relative overflow-hidden">
+<div class="absolute -right-8 -top-8 text-surface-container opacity-50">
+<span class="material-symbols-outlined text-[120px]" data-icon="verified_user">verified_user</span>
+</div>
+<h4 class="text-2xl font-headline font-medium text-primary mb-6 relative z-10">Проверка Blizko</h4>
+<div class="space-y-4 relative z-10">
+<div class="flex items-center gap-4 text-sm font-body text-on-surface-variant">
+<span class="material-symbols-outlined text-green-600" data-icon="task_alt">task_alt</span>
+                        Личность подтверждена по паспорту
+                    </div>
+<div class="flex items-center gap-4 text-sm font-body text-on-surface-variant">
+<span class="material-symbols-outlined text-green-600" data-icon="task_alt">task_alt</span>
+                        Справка об отсутствии судимости
+                    </div>
+<div class="flex items-center gap-4 text-sm font-body text-on-surface-variant">
+<span class="material-symbols-outlined text-green-600" data-icon="task_alt">task_alt</span>
+                        Медицинская книжка актуальна
+                    </div>
+<div class="flex items-center gap-4 text-sm font-body text-on-surface-variant">
+<span class="material-symbols-outlined text-green-600" data-icon="task_alt">task_alt</span>
+                        Проверено 3 рекомендации от семей
+                    </div>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom CTA -->
+<div class="fixed bottom-0 left-0 right-0 p-6 md:p-8 flex justify-center pointer-events-none z-50">
+<div class="bg-primary-container text-white px-8 py-4 rounded-full shadow-cloud flex items-center justify-between gap-12 max-w-2xl w-full pointer-events-auto backdrop-blur-xl">
+<div class="hidden sm:block">
+<span class="text-[10px] uppercase tracking-widest font-label font-bold opacity-60 block mb-0.5">Стоимость</span>
+<span class="text-2xl font-headline font-medium">950 ₽ / час</span>
+</div>
+<button class="bg-surface-container-lowest text-primary px-10 py-3 rounded-full font-label font-bold text-[10px] uppercase tracking-widest hover:bg-secondary-container transition-colors active:scale-95 duration-200">
+                Забронировать встречу
+            </button>
+</div>
+</div>
+<!-- BottomNavBar (Mobile Only Fallback) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-safe pointer-events-none">
+<div class="rounded-full mx-6 mb-8 w-auto bg-stone-50/70 dark:bg-stone-900/70 backdrop-blur-2xl shadow-cloud flex gap-1 p-2 pointer-events-auto">
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:bg-stone-200/50 rounded-full">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="text-[9px] uppercase tracking-widest font-label font-bold">Discover</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-stone-900 dark:bg-stone-100 text-stone-50 dark:text-stone-900 rounded-full px-5 py-2 scale-90">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+<span class="text-[9px] uppercase tracking-widest font-label font-bold">Nannies</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:bg-stone-200/50 rounded-full">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[9px] uppercase tracking-widest font-label font-bold">Messages</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:bg-stone-200/50 rounded-full">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[9px] uppercase tracking-widest font-label font-bold">Profile</span>
+</div>
+</div>
+</nav>
+</body></html>

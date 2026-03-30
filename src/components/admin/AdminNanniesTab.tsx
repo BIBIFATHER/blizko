@@ -22,6 +22,7 @@ import {
 } from './adminExportUtils';
 
 type NannyIssueFilter = 'all' | 'noDocs' | 'rejected' | 'pending' | 'unverified';
+const getNowTs = () => Date.now();
 
 interface AdminNanniesTabProps {
     nannies: NannyProfile[];
@@ -121,7 +122,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
             ...docs[idx],
             status,
             aiNotes: adminNote,
-            verifiedAt: Date.now(),
+            verifiedAt: getNowTs(),
         };
 
         const updated = await adminUpdateNannyProfile(nanny.id, { documents: docs });
@@ -159,7 +160,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                             : status === 'rejected'
                                 ? 'Отклонено администратором'
                                 : 'Ожидает ручной проверки',
-                    verifiedAt: Date.now(),
+                    verifiedAt: getNowTs(),
                 }));
                 if (docs.length > 0) {
                     await adminUpdateNannyProfile(n.id, { documents: docs });

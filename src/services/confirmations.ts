@@ -29,7 +29,9 @@ export async function createT24hConfirmation(
     bookingId: string,
     bookingDate: string
 ): Promise<BookingConfirmation> {
-    const dueAt = new Date(new Date(bookingDate).getTime() - 24 * 60 * 60 * 1000);
+    // ISO 8601 strict parsing to avoid locale shift on raw YYYY-MM-DD strings
+    const parsedDate = bookingDate.includes('T') ? new Date(bookingDate) : new Date(`${bookingDate}T00:00:00Z`);
+    const dueAt = new Date(parsedDate.getTime() - 24 * 60 * 60 * 1000);
 
     const confirmation: BookingConfirmation = {
         id: crypto.randomUUID(),

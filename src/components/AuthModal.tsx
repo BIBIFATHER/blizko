@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input } from './UI';
+import { Button, Input, ModalShell } from './UI';
 import { X, Baby, Briefcase, Phone, Mail, ArrowRight, CheckCircle, Lock } from 'lucide-react';
 import { Language, User } from '@/core/types';
 import { t } from '@/core/i18n/translations';
@@ -11,6 +11,14 @@ interface AuthModalProps {
   onLogin: (user: User) => void;
   lang: Language;
 }
+
+const getErrorMessage = (err: unknown) => {
+  if (err instanceof Error) {
+    return err.message;
+  }
+
+  return String(err || '');
+};
 
 const normalizePhone = (raw: string) => {
   const trimmed = raw.trim();
@@ -26,8 +34,8 @@ const normalizePhone = (raw: string) => {
 export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) => {
   const text = t[lang];
 
-  const mapAuthError = (err: any) => {
-    const raw = String(err?.message || err || '');
+  const mapAuthError = (err: unknown) => {
+    const raw = getErrorMessage(err);
     const lower = raw.toLowerCase();
 
     if (lang !== 'ru') return raw;
@@ -197,7 +205,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
         setStep('email_wait');
       }
       setTimer(30);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(mapAuthError(err));
     } finally {
       setLoading(false);
@@ -229,7 +237,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
         onLogin(user);
         onClose();
       }, 1200);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setOtp('');
       setError(mapAuthError(err));
     } finally {
@@ -246,7 +254,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     try {
       await sendOtp();
       setTimer(30);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(mapAuthError(err));
     } finally {
       setLoading(false);
@@ -254,59 +262,58 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md sheet-modal card-cloud overflow-hidden animate-slide-up relative border-b-0 sm:border-b">
-        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-br from-amber-100/45 via-white/5 to-emerald-100/30 pointer-events-none" />
-        <div className="sm:hidden flex justify-center pt-3">
-          <div className="w-10 h-1.5 rounded-full bg-stone-300/80" />
-        </div>
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 text-stone-400 hover:text-stone-800 transition-colors z-10 bg-white/80 rounded-full p-2 border border-white/70 shadow-sm"
-        >
-          <X size={20} />
-        </button>
+    <ModalShell variant="sheet">
+      <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-br from-amber-100/45 via-white/5 to-emerald-100/30 pointer-events-none" />
+      <div className="sm:hidden flex justify-center pt-3">
+        <div className="w-10 h-1.5 rounded-full bg-stone-300/80" />
+      </div>
+      <button
+        onClick={onClose}
+        className="absolute top-5 right-5 text-stone-400 hover:text-stone-800 transition-colors z-10 bg-white/80 rounded-full p-2 border border-white/70 shadow-sm"
+      >
+        <X size={20} />
+      </button>
 
-        <div className="p-5 sm:p-8 pt-4 sm:pt-8 relative">
-          <div className="mb-6">
-            <div className="flex items-center justify-between gap-3 mb-4">
-              <div className="eyebrow">{lang === 'ru' ? 'Вход в Blizko' : 'Access Blizko'}</div>
-              <div className="topbar-chip">
-                <Lock size={12} />
-                {lang === 'ru' ? 'Безопасно' : 'Secure'}
-              </div>
+      <div className="p-5 sm:p-8 pt-4 sm:pt-8 relative">
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="eyebrow">{lang === 'ru' ? 'Вход в Blizko' : 'Access Blizko'}</div>
+            <div className="topbar-chip">
+              <Lock size={12} />
+              {lang === 'ru' ? 'Безопасно' : 'Secure'}
             </div>
-            <h3 className="text-[1.8rem] sm:text-[2.25rem] leading-[0.98] font-display font-semibold text-stone-900 pr-12">
-              {step === 'success' ? (lang === 'ru' ? 'Успешно!' : 'Success!') : text.authTitle}
-            </h3>
-            <p className="text-stone-500 text-sm mt-2 leading-relaxed max-w-sm">
-              {step === 'method' && (lang === 'ru' ? 'Выберите роль и удобный способ входа.' : 'Choose your role and preferred sign-in method.')}
-              {step === 'otp' &&
-                (lang === 'ru' ? `Код отправлен на ${contactValue}` : `Code sent to ${contactValue}`)}
-              {step === 'email_wait' &&
-                (lang === 'ru' ? `Мы отправили ссылку на ${contactValue}. Подтвердите вход в письме.` : `We sent a sign-in link to ${contactValue}. Confirm it from your email.`)}
-              {step === 'success' && (lang === 'ru' ? 'Переходим в профиль...' : 'Redirecting to profile...')}
-            </p>
           </div>
+          <h3 className="text-[1.8rem] sm:text-[2.25rem] leading-[0.98] font-display font-semibold text-stone-900 pr-12">
+            {step === 'success' ? (lang === 'ru' ? 'Успешно!' : 'Success!') : text.authTitle}
+          </h3>
+          <p className="text-stone-500 text-sm mt-2 leading-relaxed max-w-sm">
+            {step === 'method' && (lang === 'ru' ? 'Выберите роль и удобный способ входа.' : 'Choose your role and preferred sign-in method.')}
+            {step === 'otp' &&
+              (lang === 'ru' ? `Код отправлен на ${contactValue}` : `Code sent to ${contactValue}`)}
+            {step === 'email_wait' &&
+              (lang === 'ru' ? `Мы отправили ссылку на ${contactValue}. Подтвердите вход в письме.` : `We sent a sign-in link to ${contactValue}. Confirm it from your email.`)}
+            {step === 'success' && (lang === 'ru' ? 'Переходим в профиль...' : 'Redirecting to profile...')}
+          </p>
+        </div>
 
-          {step === 'method' && (
-            <form onSubmit={handleSendCode} className="space-y-4">
-              <div className="surface-panel rounded-[24px] p-2 grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setRole('parent')}
-                    className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'parent'
-                    ? 'bg-white border border-sky-200 text-sky-900 shadow-sm'
-                    : 'bg-transparent text-stone-500'
-                    }`}
-                >
-                  <Baby size={20} />
-                  <span className="text-xs font-semibold">{text.roleParent}</span>
-                </button>
+        {step === 'method' && (
+          <form onSubmit={handleSendCode} className="space-y-4">
+            <div className="surface-panel rounded-[24px] p-2 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setRole('parent')}
+                className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'parent'
+                  ? 'bg-white border border-sky-200 text-sky-900 shadow-sm'
+                  : 'bg-transparent text-stone-500'
+                  }`}
+              >
+                <Baby size={20} />
+                <span className="text-xs font-semibold">{text.roleParent}</span>
+              </button>
                 <button
                   type="button"
                   onClick={() => setRole('nanny')}
-                    className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'nanny'
+                  className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'nanny'
                     ? 'bg-white border border-amber-200 text-amber-900 shadow-sm'
                     : 'bg-transparent text-stone-500'
                     }`}
@@ -314,191 +321,190 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                   <Briefcase size={20} />
                   <span className="text-xs font-semibold">{text.roleNanny}</span>
                 </button>
-              </div>
+            </div>
 
-              <div className="surface-panel rounded-[22px] p-1 flex border-white/70 shadow-none">
-                {phoneAuthEnabled && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMethod('phone');
-                      setContactValue('');
-                      setError('');
-                    }}
-                    className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                      }`}
-                  >
-                    <Phone size={14} /> Phone
-                  </button>
-                )}
+            <div className="surface-panel rounded-[22px] p-1 flex border-white/70 shadow-none">
+              {phoneAuthEnabled && (
                 <button
                   type="button"
                   onClick={() => {
-                    setMethod('email');
+                    setMethod('phone');
                     setContactValue('');
                     setError('');
                   }}
-                  className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                  className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
                     }`}
                 >
-                  <Mail size={14} /> Email
+                  <Phone size={14} /> Phone
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setMethod('email');
+                  setContactValue('');
+                  setError('');
+                }}
+                className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                  }`}
+              >
+                <Mail size={14} /> Email
+              </button>
+            </div>
+
+            {!phoneAuthEnabled && (
+              <p className="text-[11px] text-stone-500 -mt-2">{lang === 'ru' ? 'Вход по телефону скоро будет доступен.' : 'Phone auth will be available soon.'}</p>
+            )}
+
+            <div className="surface-panel rounded-[28px] p-4 sm:p-5">
+              <Input
+                label={method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'}
+                type={method === 'phone' ? 'tel' : 'email'}
+                placeholder={method === 'phone' ? '+7 999 000-00-00' : 'hello@example.com'}
+                value={contactValue}
+                onChange={(e) => setContactValue(e.target.value)}
+                required
+                autoFocus
+              />
+
+              <Input
+                label={text.nameLabelSimple}
+                placeholder={lang === 'ru' ? 'Как к вам обращаться?' : 'Your Name'}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mb-0"
+              />
+            </div>
+
+            {error && <p className="rounded-2xl border border-amber-100 bg-amber-50/90 p-3 text-center text-xs font-medium text-amber-700">{error}</p>}
+
+            <Button type="submit" isLoading={loading} className="mt-1">
+              {method === 'email'
+                ? (lang === 'ru' ? 'Получить ссылку' : 'Get login link')
+                : (lang === 'ru' ? 'Получить код' : 'Get Code')}
+              <ArrowRight size={18} />
+            </Button>
+          </form>
+        )}
+
+        {step === 'otp' && (
+          <form onSubmit={handleVerifyCode} className="space-y-6">
+            <div className="flex justify-center">
+              <div className="w-16 h-16 surface-panel rounded-[20px] flex items-center justify-center text-stone-500 mb-2 p-3">
+                <Lock size={32} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-center text-[13px] uppercase tracking-[0.15em] font-bold text-stone-500">
+                {lang === 'ru' ? 'Введите код из сообщения' : 'Enter code from message'}
+              </label>
+              <input
+                type="text"
+                maxLength={6}
+                className={`w-full text-center text-3xl font-mono tracking-[0.35em] py-4 input-glass ${error ? 'border-amber-300 ring-2 ring-amber-100' : ''} rounded-[20px]`}
+                placeholder="000000"
+                value={otp}
+                onChange={(e) => {
+                  setOtp(e.target.value.replace(/\D/g, ''));
+                  if (error) setError(''); // Clear error on new input
+                }}
+                autoFocus
+              />
+            </div>
+
+            {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
+
+            <Button type="submit" isLoading={loading} disabled={otp.length < 4}>
+              {lang === 'ru' ? 'Подтвердить' : 'Verify'}
+            </Button>
+
+            <div className="text-center">
+              {timer > 0 ? (
+                <span className="text-xs text-stone-400 font-mono">
+                  {lang === 'ru'
+                    ? `Отправить повторно через 00:${timer.toString().padStart(2, '0')}`
+                    : `Resend in 00:${timer.toString().padStart(2, '0')}`}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  className="text-xs text-amber-600 font-bold hover:underline"
+                >
+                  {lang === 'ru' ? 'Отправить код повторно' : 'Resend Code'}
+                </button>
+              )}
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep('method');
+                    setOtp('');
+                    setError('');
+                  }}
+                  className="text-xs text-stone-400 hover:text-stone-600"
+                >
+                  {lang === 'ru' ? 'Изменить номер/почту' : 'Change number/email'}
                 </button>
               </div>
+            </div>
+          </form>
+        )}
 
-              {!phoneAuthEnabled && (
-                <p className="text-[11px] text-stone-500 -mt-2">{lang === 'ru' ? 'Вход по телефону скоро будет доступен.' : 'Phone auth will be available soon.'}</p>
+        {step === 'email_wait' && (
+          <div className="space-y-4">
+            <div className="surface-panel rounded-[24px] border-sky-100/70 p-5 text-sm text-sky-800">
+              {lang === 'ru'
+                ? 'Откройте письмо и нажмите ссылку подтверждения. После подтверждения вход выполнится автоматически.'
+                : 'Open your email and tap the confirmation link. You will be signed in automatically.'}
+            </div>
+
+            {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
+
+            <div className="text-center">
+              {timer > 0 ? (
+                <span className="text-xs text-stone-400 font-mono">
+                  {lang === 'ru'
+                    ? `Отправить повторно через 00:${timer.toString().padStart(2, '0')}`
+                    : `Resend in 00:${timer.toString().padStart(2, '0')}`}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  className="text-xs text-amber-600 font-bold hover:underline"
+                >
+                  {lang === 'ru' ? 'Отправить ссылку повторно' : 'Resend link'}
+                </button>
               )}
-
-              <div className="surface-panel rounded-[28px] p-4 sm:p-5">
-                <Input
-                  label={method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'}
-                  type={method === 'phone' ? 'tel' : 'email'}
-                  placeholder={method === 'phone' ? '+7 999 000-00-00' : 'hello@example.com'}
-                  value={contactValue}
-                  onChange={(e) => setContactValue(e.target.value)}
-                  required
-                  autoFocus
-                />
-
-                <Input
-                  label={text.nameLabelSimple}
-                  placeholder={lang === 'ru' ? 'Как к вам обращаться?' : 'Your Name'}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mb-0"
-                />
-              </div>
-
-              {error && <p className="rounded-2xl border border-amber-100 bg-amber-50/90 p-3 text-center text-xs font-medium text-amber-700">{error}</p>}
-
-              <Button type="submit" isLoading={loading} className="mt-1">
-                {method === 'email'
-                  ? (lang === 'ru' ? 'Получить ссылку' : 'Get login link')
-                  : (lang === 'ru' ? 'Получить код' : 'Get Code')}
-                <ArrowRight size={18} />
-              </Button>
-            </form>
-          )}
-
-          {step === 'otp' && (
-            <form onSubmit={handleVerifyCode} className="space-y-6">
-              <div className="flex justify-center">
-                <div className="w-16 h-16 surface-panel rounded-[20px] flex items-center justify-center text-stone-500 mb-2 p-3">
-                  <Lock size={32} />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-center text-[13px] uppercase tracking-[0.15em] font-bold text-stone-500">
-                  {lang === 'ru' ? 'Введите код из сообщения' : 'Enter code from message'}
-                </label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  className={`w-full text-center text-3xl font-mono tracking-[0.35em] py-4 input-glass ${error ? 'border-amber-300 ring-2 ring-amber-100' : ''} rounded-[20px]`}
-                  placeholder="000000"
-                  value={otp}
-                  onChange={(e) => {
-                    setOtp(e.target.value.replace(/\D/g, ''));
-                    if (error) setError(''); // Clear error on new input
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep('method');
+                    setError('');
                   }}
-                  autoFocus
-                />
-              </div>
-
-              {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
-
-              <Button type="submit" isLoading={loading} disabled={otp.length < 4}>
-                {lang === 'ru' ? 'Подтвердить' : 'Verify'}
-              </Button>
-
-              <div className="text-center">
-                {timer > 0 ? (
-                  <span className="text-xs text-stone-400 font-mono">
-                    {lang === 'ru'
-                      ? `Отправить повторно через 00:${timer.toString().padStart(2, '0')}`
-                      : `Resend in 00:${timer.toString().padStart(2, '0')}`}
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    className="text-xs text-amber-600 font-bold hover:underline"
-                  >
-                    {lang === 'ru' ? 'Отправить код повторно' : 'Resend Code'}
-                  </button>
-                )}
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('method');
-                      setOtp('');
-                      setError('');
-                    }}
-                    className="text-xs text-stone-400 hover:text-stone-600"
-                  >
-                    {lang === 'ru' ? 'Изменить номер/почту' : 'Change number/email'}
-                  </button>
-                </div>
-              </div>
-            </form>
-          )}
-
-          {step === 'email_wait' && (
-            <div className="space-y-4">
-              <div className="surface-panel rounded-[24px] border-sky-100/70 p-5 text-sm text-sky-800">
-                {lang === 'ru'
-                  ? 'Откройте письмо и нажмите ссылку подтверждения. После подтверждения вход выполнится автоматически.'
-                  : 'Open your email and tap the confirmation link. You will be signed in automatically.'}
-              </div>
-
-              {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
-
-              <div className="text-center">
-                {timer > 0 ? (
-                  <span className="text-xs text-stone-400 font-mono">
-                    {lang === 'ru'
-                      ? `Отправить повторно через 00:${timer.toString().padStart(2, '0')}`
-                      : `Resend in 00:${timer.toString().padStart(2, '0')}`}
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    className="text-xs text-amber-600 font-bold hover:underline"
-                  >
-                    {lang === 'ru' ? 'Отправить ссылку повторно' : 'Resend link'}
-                  </button>
-                )}
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('method');
-                      setError('');
-                    }}
-                    className="text-xs text-stone-400 hover:text-stone-600"
-                  >
-                    {lang === 'ru' ? 'Изменить email' : 'Change email'}
-                  </button>
-                </div>
+                  className="text-xs text-stone-400 hover:text-stone-600"
+                >
+                  {lang === 'ru' ? 'Изменить email' : 'Change email'}
+                </button>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {step === 'success' && (
-            <div className="flex flex-col items-center justify-center py-8 animate-pop-in">
-              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-[28px] border border-green-200/60 bg-green-100/90 text-green-600 shadow-sm">
-                <CheckCircle size={48} />
-              </div>
-              <p className="font-bold text-stone-800 text-lg">
-                {lang === 'ru' ? 'Вы успешно вошли' : 'Logged in successfully'}
-              </p>
+        {step === 'success' && (
+          <div className="flex flex-col items-center justify-center py-8 animate-pop-in">
+            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-[28px] border border-green-200/60 bg-green-100/90 text-green-600 shadow-sm">
+              <CheckCircle size={48} />
             </div>
-          )}
-        </div>
+            <p className="font-bold text-stone-800 text-lg">
+              {lang === 'ru' ? 'Вы успешно вошли' : 'Logged in successfully'}
+            </p>
+          </div>
+        )}
       </div>
-    </div>
+    </ModalShell>
   );
 };

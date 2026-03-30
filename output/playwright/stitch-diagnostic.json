@@ -1,0 +1,3330 @@
+{
+  "gotoError": null,
+  "data": {
+    "title": "Stitch - Preview",
+    "readyState": "complete",
+    "location": "https://stitch.withgoogle.com/preview/4760189100996710010?node-id=69d07fbf63844fbe88e9290e11785e66",
+    "htmlLang": "en-US",
+    "bodyText": "",
+    "bodyHTMLLength": 1462,
+    "iframes": [
+      {
+        "index": 0,
+        "src": "https://app-companion-430619.appspot.com/preview/4760189100996710010?node-id=69d07fbf63844fbe88e9290e11785e66&usegapi=1&jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.PJsh2cctCQI.O%2Fd%3D1%2Frs%3DAHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw%2Fm%3D__features__#id=I0_1774296689412&_gfid=I0_1774296689412&parent=https%3A%2F%2Fstitch.withgoogle.com&pfname=&rpctoken=39803472",
+        "id": "I0_1774296689412",
+        "name": "I0_1774296689412",
+        "width": "100%",
+        "height": null
+      }
+    ],
+    "scripts": [
+      {
+        "index": 0,
+        "src": "https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.PJsh2cctCQI.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw/cb=gapi.loaded_0?le=scs,fedcm_migration_mod",
+        "type": null
+      },
+      {
+        "index": 1,
+        "src": null,
+        "type": null
+      },
+      {
+        "index": 2,
+        "src": null,
+        "type": null
+      },
+      {
+        "index": 3,
+        "src": null,
+        "type": null
+      },
+      {
+        "index": 4,
+        "src": null,
+        "type": null
+      },
+      {
+        "index": 5,
+        "src": null,
+        "type": null
+      },
+      {
+        "index": 6,
+        "src": "https://www.googletagmanager.com/gtag/js?id=G-1CD1CPGEYF",
+        "type": null
+      },
+      {
+        "index": 7,
+        "src": null,
+        "type": null
+      },
+      {
+        "index": 8,
+        "src": "https://apis.google.com/js/api.js",
+        "type": null
+      },
+      {
+        "index": 9,
+        "src": "https://www.gstatic.com/_/mss/boq-pitchfork/_/js/k=boq-pitchfork.Nemo.en_US.EbqM-Jk_wMM.2018.O/d=1/excm=_b/ed=1/dg=0/br=1/wt=2/ujg=1/rs=AFTLRidqh-n5UngRO0wSeeGRijWkA6dAQw/ee=Pjplud:PoEs9b;QGR0gd:Mlhmy;ScI3Yc:e7Hzgb;YIZmRd:A1yn5d;cEt90b:ws9Tlc;dowIGb:ebZ3mb/dti=1/m=_b",
+        "type": null
+      }
+    ],
+    "noscript": [],
+    "rootNodes": [
+      {
+        "index": 0,
+        "tag": "APPCOMPANION-ROOT",
+        "id": null,
+        "className": null,
+        "text": "",
+        "childCount": 2
+      },
+      {
+        "index": 1,
+        "tag": "SCRIPT",
+        "id": "base-js",
+        "className": null,
+        "text": "",
+        "childCount": 0
+      }
+    ],
+    "localStorageKeys": [],
+    "sessionStorageKeys": []
+  },
+  "cookies": [
+    {
+      "name": "_ga",
+      "value": "GA1.1.1018322201.1774296689",
+      "domain": ".stitch.withgoogle.com",
+      "path": "/",
+      "expires": 1808856688.968668,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga_1CD1CPGEYF",
+      "value": "GS2.1.s1774296688$o1$g1$t1774296694$j54$l0$h0",
+      "domain": ".stitch.withgoogle.com",
+      "path": "/",
+      "expires": 1808856694.05866,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "events": {
+    "console": [
+      {
+        "type": "warning",
+        "text": "No `HydrateFallback` element provided to render during initial hydration"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      }
+    ],
+    "pageErrors": [],
+    "requests": [
+      {
+        "url": "https://stitch.withgoogle.com/preview/4760189100996710010?node-id=69d07fbf63844fbe88e9290e11785e66",
+        "method": "GET",
+        "resourceType": "document"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Google+Sans+Text:wght@400;500;700",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://www.gstatic.com/_/mss/boq-pitchfork/_/js/k=boq-pitchfork.Nemo.en_US.EbqM-Jk_wMM.2018.O/d=1/excm=_b/ed=1/dg=0/br=1/wt=2/ujg=1/rs=AFTLRidqh-n5UngRO0wSeeGRijWkA6dAQw/ee=Pjplud:PoEs9b;QGR0gd:Mlhmy;ScI3Yc:e7Hzgb;YIZmRd:A1yn5d;cEt90b:ws9Tlc;dowIGb:ebZ3mb/dti=1/m=_b",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.gstatic.com/_/mss/boq-pitchfork/_/js/k=boq-pitchfork.Nemo.en_US.EbqM-Jk_wMM.2018.O/ck=boq-pitchfork.Nemo.qft_ONqxWgg.L.B1.O/d=1/exm=_b/excm=_b/ed=1/br=1/wt=2/ujg=1/rs=AFTLRiegwx5a55UgNpkyvUA7lI-GrT0zLg/ee=Pjplud:PoEs9b;QGR0gd:Mlhmy;ScI3Yc:e7Hzgb;YIZmRd:A1yn5d;cEt90b:ws9Tlc;dowIGb:ebZ3mb/dti=1/m=oxe1Cc",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.googletagmanager.com/gtag/js?id=G-1CD1CPGEYF",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/googlesans/v58/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrwEIJllpynAFyo4R4o.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://apis.google.com/js/api.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.PJsh2cctCQI.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw/cb=gapi.loaded_0?le=scs,fedcm_migration_mod",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63j1v9218910579za200zd9218910579&_p=1774296687578&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=1018322201.1774296689&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AEA&_s=1&tag_exp=103116026~103200004~115616986~115938466~115938468~116024733~117484252&sid=1774296688&sct=1&seg=0&dl=https%3A%2F%2Fstitch.withgoogle.com%2Fpreview%2F4760189100996710010%3Fnode-id%3D69d07fbf63844fbe88e9290e11785e66&dt=Stitch%20-%20Preview&en=scroll&_fv=1&_nsi=1&_ss=1&epn.percent_scrolled=90&tfd=6259",
+        "method": "POST",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/preview/4760189100996710010?node-id=69d07fbf63844fbe88e9290e11785e66&usegapi=1&jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.PJsh2cctCQI.O%2Fd%3D1%2Frs%3DAHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw%2Fm%3D__features__",
+        "method": "GET",
+        "resourceType": "document"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Google+Sans+Display:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Domine:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600;700&family=Epilogue:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&family=Libre+Caslon+Text:wght@400;700&family=Literata:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Newsreader:wght@400;500;600;700&family=Noto+Serif:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/index-BcU9Yq8d.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/rolldown-runtime-Bhmf7a9N.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/preload-helper-Dw5lDXEV.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-react-CA4CQ0ED.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-ui-BiYklnb_.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/editor-tiptap-CP9HHHOn.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-utils-BQncNM-X.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/editor-xyflow-DTy4ikYT.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/chunk-UIGDSWPH-DtvKQIIy.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/dist-C-mrj2Sn.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/PostMessageClient-CUW7ShMe.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/util-cm9hwHdF.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-query-C6MB3OEV.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-carousel-I5GSPNhw.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-marked-DP4NHApQ.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/UserNav-B9-nWa0z.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/Markdown-BzHowJwS.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/editor-xyflow-CHpVij2M.css",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/util-B1nRQaAa.css",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/index-DtyLJZLS.css",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://apis.google.com/js/api.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.PJsh2cctCQI.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw/cb=gapi.loaded_0?le=scs,fedcm_migration_mod",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=eW2RYb&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=83494&rt=c",
+        "method": "POST",
+        "resourceType": "xhr"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/design_system_presets-hvTF9wMB.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/Preview-CcLTuJZW.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/UgcTrustBanner-zvEQXc-h.js",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=183494&rt=c",
+        "method": "POST",
+        "resourceType": "xhr"
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=283494&rt=c",
+        "method": "POST",
+        "resourceType": "xhr"
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=dNS8Mc&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=383494&rt=c",
+        "method": "POST",
+        "resourceType": "xhr"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/googlesans/v67/4UaRrENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iq2vgCIhM907w.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=ErneX&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=483494&rt=c",
+        "method": "POST",
+        "resourceType": "xhr"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/static/stitch-word.svg",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/static/stitch-word-dark.svg",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzYzODRjNzljMWM0ODRhMWE4OTg3ODVkYzEzZjkzY2Q1EgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2U0MmFiNjFhZWFlZjQwMzQ5ZWJlMmYxZjg1ZmRjZmVhEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2ViNmJjNjNiZjU5YzRiMGQ4M2FjMzIxOWIzYWYxMjM3EgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzQxMTVlNWZlNmI0YzQ4Y2I4N2EyNGNkYmY5ZGU0ZGIyEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzBkMjRhZDk0OWNlODQ2MTRiOWU2ZTM3YWZhNTRkYjI4EgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzM0NzIzYjQzZDQ4ZDRiNTU4ZjgzYjVmZTU0MDA4MDJlEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2VkNTIyODJmMDU4MjQ1MDY5MzNiNjZkYjMyNTM4MWJlEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzJkN2U1NTU0MzhhMDQ1OTY4YWY5YWRjNTA0MjczYTlmEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "method": "GET",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=583494&rt=c",
+        "method": "POST",
+        "resourceType": "xhr"
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=683494&rt=c",
+        "method": "POST",
+        "resourceType": "xhr"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCzLBlO0gpCW87ZLoVmBsVQyErmmPPG5801mWNZcCh0r2J6FQ3j-hOikrGf9m1-gWeqevYDdXLRIoc9NGbhPDRvXiB-UHFpdEzVtp0x8a9cBkJTla6NqA9ScgxGz61uqHXjcTa0y0LnsUhQDc9s62TyQKvtT0ubJkMF3U-XUrgWvC-kJdfhY5_b8Wq19-y60KE7CGT7CHE4BAXLSpLbN7rRdarF_eS8QjVk1L7LAlBxB6y5qgE_igeZjFi2xH9ZqoQSeuxddswer6U",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCCiJNg5YD6UjwJo_6SsYZInrwZ1ociWhrJYF6yPJM_zpoFezXX44pX8of4_pepVxVyAFXMN-UIGOsUncA2Xxo6iun5-E4XTBNnXzaWQizwIbI9tKqtdW6Fud6jw8uQkZ6hzX2VnfpCrtVBbp3DU6zqc4wPgWT12mVGSqDoCJycPwLrfqhguVholUF7WeJGzKNEIWAQCnOocYc06BQ5NNGkyHDPLNJT2S9gPFIFtQXU3r-C7sGdaDcORGjuGSeorVajErp6vO33r-8",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAHAjGge5UW99p7BM3WukQlKLzdolK9HlOcT8F65ea2a64nqoyK-kAqt_xtkPTY_0rPoyLT2a31JM6N3Eec3tbzcI1vUxRNWfuEOrYxPxSIHvqUzJ11JGuty8v62KoWjvscLu9qpdKigMWaQrhsS3TQkXEE5XAEH4QHCzKm_MTiz5xj8xynlmVQNmZwlS_nD3SY5fofGGD_dAsLBzq5vsjgoPdX9BDoajCsLW_OUPx-lp2wuSqLSXeBFC3jjuFtSS4BVAUIDFamhGo",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDh7fvfOLg_Fq4xnlU97HUSkVQypcXiUBYRGcAyjy4sEBSsBm_yvZa82AshrTIzeUX2n4BeHxozSVBoLGOX8tpnSUjt7xtZ5fD5vP-grmisqtnO8nq3dcRKCWlysT88yEYAnLOc9BSR1RABZDVjW9C5PKd1yw3hSIc-0r7ZVU_rDEUI_mq7nHE7WlGfj0IpoAzGa_1ShfVVqm3XczkBv3n7qjbDbu1X8yWmUOXC65ORisSUu1zs3rYRBYLLTRpp9RwPIpI_hjnHfAE",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAq_LfRKX8vF9DWUOw2KZ2etVCkHHc7PvYhI0Q3zZXc8RYfmYRE6M1dbqTL-rUiLPJi8ytCqTkW-0509vuV1aj-jH5CrQUmtIY10B9Excyt5DKbbJ5HOmkFP7bbBG5G-2VGEj6KoSfqG5Mhe44_yRRDfbyiPv2-THPVVcqy_WszPdqRBlk5VpLoEQWNJbh_vEzdjxItZOHee97jgdblQzDo0iw-1KTgPUCpvO65HrB_fDSobJUKxaLlJIm-X3EInCJHMr0YVG8-OSY",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDy74VqyUF8IZqVrimM76mBrSy0zYBaGwJwBGp4VAPsPbgZzvfSE1Xt9krz2TIj8HkrSeudimTKJcB9dPnOqnW3phH27qERmm95hQcJeDIqKNYEVHsAio4RTwqHilUE12aVP2zguR9_1NmMa5oMSUA9Ifn0IEJYeIyNUoK2F-slx2ohtvkUWpfaHKb-pxFUZY03AySxvrzA9xKnw0cjsdq775-hnePfa1uP_6H0pxMDtoWXoUdHVCNofenr58FlLBNKO94z22gzCQQ",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuB1uScHPChJMKxeHkpDaH-3V7l50Jysh2I-_wXCATF5DakY4cLqT9XivZz5hnm0qHXW5_tOkoJYNIsyJhB_cnjHyPOYrYoy-uUjX9xjfhs_SUZPa__pbPkFyNPS_k6LBAh7C39ZAx6CjQATnsmzkHu4gU7hw2vh5lyAKDKaBao8s30_gXySQCRsBZcJEskM_DWcEKvpIoDQtOkrsb0GqpdySPrgB7eI67O67uoY5JJ7nRT2v8URning34XbkKinSNm99nxRCyu5zvA",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDTl3zJiiB5oKoO8jXCZtVomp7BINh4uIoC6k80mdOaffhT5klF35E5RlDuB1tFdWgHAbwnmL-VgQOFN2DQ5bRPOQFnWMqb_R9Rvs1iEjLMsYVbwFd36OsK0550SdSwrjGNOc1eOrMA7dc6mvkVvzJ5Y6jPCe2d8FLS0WMrFbEk7MeCg_SjuzhDayKYUb9ujxLDynHR2kTQ_IaBeOEJup_M-KRFKHWoXcMr5RR_tcHBsitxuVi1G2Qvmg9JxgzSME2f_EYhVxPdKGE",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBHurLLVbD9RjDUO7hG4CI7QEkernd8Q-P7JMzvKj3EA0IClSB4ONM4Vk8JjaDyfWR24Vjr0NSw6LzDGcK80lUXBq7nDq3B-8ixu-Eogk7Gf932XywLxyEzkoYPVKtBPICIFsqssM1wS1EY2eFGIixdmbtm5P5UucC6iGTVsEpeNQRXAChjh0Lbheciece3JspUogf9hvHss7HkUkKRx3StA0OfCEwoo0oWAs5_GbXDWzWYsDJAi1MCRggDswXBM0oy2Z-F6BqBDX4",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLsiv7QhUhudn_xkVimyXWx9gTBVgIZhrJIPiCRdX-Zfw3JvC1A7rNBTq0U3Dplx1BqMpwwvD5wFLcry9oeJWwrlh2EjKvrg5RosZawXoC9Y7369FjksogUkLZ0R26iuZi5NMuLqJEVZszeUKqWbgMQM0BheRbJEWHyIK6p6Nvq2dsZtg9txlclxJbYu8UbzXmXMn7LcSRsDFij-CcifZAZwLi3i_dnU7lCHWrMd6iQ3P2g59PeB6A96PwwmMjvCCChBTVORmLGQ",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,600;1,400;1,600&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAS4efMUmU-NPG0t9Bk-kU4dtsdrgp7lrHkL0Z4bmQfrpCt_6PUkoojA3Sgp1UVokK_j84erPO5R-x0w0h3izhym0N9XW1ttiQ7n_tDwFahDjF1-VSqllKEkG0ZCYMpjPBjfXBgNJ6zUavppcKISyJuRQkF-yOgdhmUFkteny8HMF5ctNKFx036ifCNkaCL6E5OKK_Jqw6Ac_7-nK1GtJRH7qjpU9DgcLPBvkwuCh6Vt-IWWyBSDxH47vv2tgFxNrwuIwhwubG1QDA",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCI54_XXwUfrNGzFmP0REVgoAmNWk3sk3IZpVoeJ3Q7Q-Oyxo99vLUiBkAhiFpVaMnll1gy_20G_joGrIxiKio1YC6PjPWF5SZTzOtrDn7EF1R7ONgiszhyx3Tqc0ovOEim8GqzrVRlVRalZv-Lo_5HYly0erzrnlBDMRFAcXh87PHRT7ETxnjeRB7X0eKU6UYS_S87YA-N83IKqBqFAP2DchLkrnO55-RgNiN_euT0HVQm7cgHLsDUvyIT-JbDFE6KSCBzLoRAhRg",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAohmr3_cknYkGw_pNXJdBjdR1wY4C_pT7WcWalhVMXts20bjwDN2Eu-zfWFSDNlUGmESPQPbe8uI-zhTzSF1x5xlfq7uEtFMO9spNi0dePZwVQEIUP1rRRhgxyLnsumnRsNZyosvhpRjMntcyvXnm4DKvRybihRh8eb1gJp0cHik4c9Nm_3BjdsflrV8MioN70UiSwz2vfC8P2CEQl-qsUP6Ysgu8efsVHhTF6Q8EdpKeOviU0d_uBpRuJ53BhchPFjQqa-IwMCx4",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAgY7JJlgXX98ETjMBmluvblCSsuadxUKW4aFULy8Irh62tiS0Quz1lBZrpH_Zr_Hs7TLac3rUYbeb_eH9R9ssEUy-8iWrgIsrinxQyxfhAAOVMSPbBWGSdThtHSWC5xflgo3daHFa3wkDG5HDGWkPDoi6HXyqrUxyhzaC609haM66RpSzh_tx2ntOKjSF5oyndf7y9l4Bq9YttUy3Hhcs96bQNQasUKabq5SavGMxuFIanjMaYHipu9PoQSxxhQU0vEzLjZfMhMt8",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAxzv6fjsGGwLb6hJKVwHbaX_7KT5JfkyEVKYDVndIlal2C-MWEv4crS1H4Yn5qyPnaLBhvEa9l6iHHQLzcSOfaBLFFICesM7jl97e0KBFj_KDTmiiNOrkHY3BSHA-cJ0qy6lpw1AU34G1uL3zZnjvHmI01Y4aMZXOxuaQ3ODqESyJq6pVIYKoGudo6OZqPB-n4kCS9ku0NjIii1Jkkpgx1XaOiDV7FHuER7Sgcg8n_5raLWrck_Q8Kud_lUD0VvXxWjtlDg7qOglE",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuD8q2q8hBw457WySGgozqEqyy74C2lBi014ogZtb-8O_TxlQ6QPK-3vLi48BSwTwHfzev6cR-6Og0A9JQ_xfhUB8-htoKNI35P5W-NPBDDzgEvCUxBBC0rr6gaMDa6iDQndIzD1W0vMRUWJl-WULza440BxGPZfkEjWFeWQNsrZoMHCPrVJjXOJ1WR-XMKDGLxdicx5IhotZoQ0LcojlVUYtdCU8X0gIZLd4BFnT3JJW5GqEmiJNgRShnWj-ejmSCdd7INk0AyW16Q",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuD86RwtLK-Vdj38zkt6YzkNlbUECPcVnN7bhqCimwn2xpwWQCQWH_r73UIb2SUiXm8_xPmhSao8pSrByML7pBQZMCUAsthLFEGZeqqqFPTemXZZB41B_-u4-TbtIzKW6t9Xtr45VKMJH-hqvvT2XjxK_cCCHhocL6hlmU_ubJIuqJLAM42qI7y9bECIXb1vWMRBh7A4MAmmaGEhC13tAElfKh01cvJHPPcjnnOkjWVLdTd3pqTE_m5UHcr83-RtismrwTTUA4bssyE",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDJB60ahzHfN8QYCarpMtER--Ec_-UoM2UnEKs_YY8WmnENxlZUc0gJSgl33jmmkqQxVTrhbzzk6h7dG6FeYM_EVodi1ByayMMtrrXlcRZigbhSTCJOBffAf-CtvT8Vvr3xIAhg7_tJvND4dYvu63yLYsLx9mTkiQWFlXJ81og8jHEF6wF143qBrEeZ8rUiPn5_0JewrWHiWSpY3d-OKcOefovxDKB6CxuNmJjbc_LQRV5TWT5qbhL3rfaGSSBaP5TDSjnGwo6X2ts",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAWNcJ1-dqDuEmGDIVlr0iNQAjjBMYeyp0FeI0OeWZ7kqSawgaY5EUZZev4r2SgDkWjxRCMyolwx9LpFeRYlwhaAg7U1NBNb3qPayiAqkcbmace1iBb8v5sGtIhOigGeuCB9G_0-26iSwGb0mlDK3u97JGnGyN2qNYT4NfJuI90MJ3koNDgEy1TxMhyt1yaixOrTqq6HjYlbH-v1hLDpiqsjmlfnUCGbygzgUFVZVLLk3tol4emCE2l2fLCahfZojWpuVR_V4D1rNM",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAzvJ8sEMpiEpUKddtZYmRzYS4_RNAczyvox3t0fAM8kz6RTJE-3foJAfsy37xMGUYFaLfav28R8ZE0U6f-oMYyhr_ZsUtXeU5ZbPWjYGvk55Ip69O9btRBjxtkqvNSQ4hCKXfG-_CWI11PeViasaLFVJceR4IT5PMoOLcYgf18wQVyrDBXKbx1ySLw07J6sSiAUnoApPKp3SNJb_MVjVcRLFF8tFbAYnm-BQ-ibOAgbPAL-COCtjL979kfYZ-QvX-PAXF_2tH9T1k",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAvdtsjcTdcr6FZN-9cSEZTGPqkw8KVz_miFto5hjNk9PtKWvUwfYTQ2uDzwXJvfFbfXL2D-wu-7jLy1opooLNl8K60h9Cb32fd7ydFt94jsa7cdoZI60aQv-DvVkwhAbHXdSebFbL4rq4NxdBQ2amL794iQzHdkssQmHhfFtMuXAinJkB9QQKiywhKxknnYG1hpxMrvWY8WJM9GOW0nOjXWFY6mS_60YyG5vqlAd1XX1LjqaKQU0m0-qWTKtcmOd7SXWhRsF8RXMg",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,700&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCUaw3P1ksZEosN0kuy6HW8Khh-7-qPKLG7QN3n9AyDjXfBmwDispeXBwsmc04CQEEwJdJJi96a63_s6ib9oIe14eu5KruZyMegRHcAmBXQdlYsO261w-c_T4RgGQWSkipwFuEQ2waz3QzL4iKuaTdSLFEZpMWt0wTZIiSHxO3wxZWi58juvJfvSS9nbIDeIhWNMTsd0o0agDQhTnI-pTaFq2EfnuQo_ENROmcplILH1r4KfhTRpupXJzHEn-_NHbKT4Ko0UjhTEWk",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDH4vkYYN6-DmXEQMtbawpAU041lLO17JXdZUqZiaTyq0Y7bCheWywkfSTToyFq9Snj930ep1DzHamBcsdsixNwvpoDjJCwezn4tQfMOJwnNm4JF4dP63IZpqTZJzM-V9rQGfElVwZmiuJboGYHTTIoobqMsWKsymc6EJbuCyNLht18MZGLX3NCnNqJQ7TSPxlYfE28LKWWTXSL6i8LyNz2xtWc9MyJbAg7dwQnhMrCabNSLUmKvExjlhPDM6xUiSdBLmo3l9Ehj0U",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuD_wecCHkZKXUHu54xTwBGEoyMHOCQX8tdyI6ZnlwICf0tm9XEO2bywT87ZG7LOTUdqM1Vf8bhsDP8yn7kiuMzRgi1fl6yQYU8gRaNsIYoSlrI0x0McQvyCd0vCN06tF2logZX1kyBa-VvDrlPDaApnQaUAdYNFV5rEpriYOL76RoOyFQaq_9OTh_Eje3CMdBQHfjN50dDmkfWv_8jS7rq5TDihwvlZAvDQcZvAWHoUxmSa_1hQVQio83LmVY80wEXzw9w6W5S_ulg",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuChtD4hBn3sYQxGfK-LKa4A6F20kP0E7sfPgNKMoW_37056MFCXFVZj3xBYWvfupnYmmGKyo0hCanmisO1DxY33OKzuDL7asVR8tf2-Bk5JW_g_ipYGv6NxaqQYS4FY9Y4n16Il0r5M-xmZ9oGsrN64kOBAsf5l--9A0Kq1KO1cgHP38Zj0GhEsR0zYBe0x_hUp_0CyDxIVjZGBj4A8pZnCwat1Sny5WG79PEN_tv4Yw57X3akIRu9V0IN69viuD8r-aK4ke-WXkTQ",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCzfFcsVcwMtYCpeBnbQIlrcKZp78zaTM3Qd258-m6c2PbeowT1vB-ES8ZE74kDRW93SroI6xo-ulKuYOqXe0pW9p1P05weto91QAcu-S1Lp_6_w8q1DI8NBkbnKqB6pLU2L-XJ7glq7wkHtp_9pAtyPzUVWh0q9FIm13pEn6atJCrELSHz70oVxgD2LmvMLZ7-_Qu606KchktwXSYN5NiRwxETTGno-4laSm4EmFSCmK-fBBU_zC4jgUhcDh858zpstHgd3xwFXsY",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuA27T4m9yHhB5n6OdQKWj0Y8uQ7UrLpT7CLeAm7kuhB9IxEvai0ZvvYs24Z2AZw_STRMg2t7vksA-wzTVjseUIwGGNDpy1X6XD_GOhWhD7EHfHUzUhB0qnsC1jXFL2Bta_iqOXaahtpRpau9r5wqv0mEMYJCpN3kncaINziuZBGMFsVXVpqFpy7bf-zZ6wStqmQ9VsAXEBBecwhn1x7lsV8wtavQI2dR6uECx1xZux9r5I7j2gi_6XwTkxCfOOtJWeC385YfwWO87A",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBtc5A7QzffKE8xcJqAk6YserfYebST1SvlU1qRXymwdm5-x75x9LcgkgwfXUs97o178uUEoNs5B1a7Lbs5U8uCa-LrxPAou6iJUmzAZ1kr7AVb6GubSq1WTX6onaoGeZVHfasj_YnN_9ZHtg4VtgeBZ5VIXo3zGti3yzag2ufU-h6txJgB895Nf2-6uUdhn1h86Mhuy0sHpvJfluy0SuFZs2oM2-wC_07VfF4ALclxo_nxDj9y2GasJUS29FmBQtIsfnVMPgtPobQ",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBwryyfzC0uJ8ZgIIsQ0lHJA4j8gaBos7wxeHYf7XiFJXwA0e0DfYvv16Af0efKe7bJms3xTEHmYfcL0VjplXbHuwlrFsLrFxs8fgrWQpZ8OYk2-QnZui91k1K0VMpKD3AbbqG-TxlYXlaCVeY5bzmhjkhflXzoIvI1gs_C_TBSGATEmjo4KIPDJYjZ5XzKAzRYRV8iSON4aV820yTCdhtKkIzI12gw5gpwiKo8Cio6ixSSungf__JVSIsR6YMqtbahlINyJ9Bow4k",
+        "method": "GET",
+        "resourceType": "image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "method": "GET",
+        "resourceType": "script"
+      },
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63j1v9218910579za200zd9218910579&_p=1774296687578&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=1018322201.1774296689&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&tag_exp=103116026~103200004~115616986~115938466~115938468~116024733~117484252&dl=%2Fpreview%2F4760189100996710010&sid=1774296688&sct=1&seg=1&dt=Stitch%20-%20Preview&_s=2&tfd=15977",
+        "method": "POST",
+        "resourceType": "fetch"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/materialsymbolsoutlined/v321/kJEPBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzBwG-RpA6RzaxHMPdY40KH8nGzv3fzfVJO1USv9ls.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/newsreader/v26/cY9CfjOCX1hbuyalUrK439vCjohCBJWxZA.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/newsreader/v26/cY9AfjOCX1hbuyalUrK4397yjIJFJpc.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7W0Q5n-wU.woff2",
+        "method": "GET",
+        "resourceType": "font"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "method": "GET",
+        "resourceType": "stylesheet"
+      }
+    ],
+    "responses": [
+      {
+        "url": "https://stitch.withgoogle.com/preview/4760189100996710010?node-id=69d07fbf63844fbe88e9290e11785e66",
+        "status": 200,
+        "resourceType": "document",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-encoding": "gzip",
+          "content-security-policy": "script-src 'report-sample' 'nonce-ARyl1jcCmLJxy_1irhsT2g' 'unsafe-inline';object-src 'none';base-uri 'self';report-uri /_/Nemo/cspreport;worker-src 'self', script-src 'unsafe-inline' 'unsafe-eval' blob: data: 'self' https://apis.google.com https://ssl.gstatic.com https://www.google.com https://www.googletagmanager.com https://www.gstatic.com https://www.google-analytics.com https://www.google.com/tools/feedback/ https://www.gstatic.com/feedback/js/ https://www.gstatic.com/inproduct_help/ https://www.gstatic.com/support/content/ https://www.gstatic.com/uservoice/feedback/client/web/live/ https://www.gstatic.com/uservoice/surveys/resources/prod/js/survey/ https://support.google.com/inapp/;report-uri /_/Nemo/cspreport/allowlist, require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "text/html; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:25 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "reporting-endpoints": "default=\"/_/Nemo/web-reports?context=eJzjCtHikmLw05BiKJK4wtoCxN-Kfdk4SnzZWN76s6kdDWCzAOI4n0C2BCC-0xPIdg-Ie54GsvUB8cxfgWyzgTiUK4gtHIjPzgxiOw_EQtwcb_e0nWMTmLD7R6qSSlJ-YXxBZklyRlp-UbZuXmpuvm5pZryRgZGZgbGRgZ6hYXyBAQAQji5J\"",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-ua-compatible": "IE=edge",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Google+Sans+Text:wght@400;500;700",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:26 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:26 GMT",
+          "last-modified": "Mon, 23 Mar 2026 18:54:07 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://www.gstatic.com/_/mss/boq-pitchfork/_/js/k=boq-pitchfork.Nemo.en_US.EbqM-Jk_wMM.2018.O/d=1/excm=_b/ed=1/dg=0/br=1/wt=2/ujg=1/rs=AFTLRidqh-n5UngRO0wSeeGRijWkA6dAQw/ee=Pjplud:PoEs9b;QGR0gd:Mlhmy;ScI3Yc:e7Hzgb;YIZmRd:A1yn5d;cEt90b:ws9Tlc;dowIGb:ebZ3mb/dti=1/m=_b",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "accept-ranges": "bytes",
+          "age": "17756",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, immutable, max-age=31536000",
+          "content-encoding": "br",
+          "content-length": "107352",
+          "content-security-policy": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/boq-infra/pitchfork-boq-js-css-signers",
+          "content-type": "text/javascript; charset=UTF-8",
+          "cross-origin-opener-policy": "same-origin; report-to=\"boq-infra/pitchfork-boq-js-css-signers\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 15:15:30 GMT",
+          "expires": "Tue, 23 Mar 2027 15:15:30 GMT",
+          "last-modified": "Fri, 20 Mar 2026 23:06:20 GMT",
+          "report-to": "{\"group\":\"boq-infra/pitchfork-boq-js-css-signers\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/boq-infra/pitchfork-boq-js-css-signers\"}]}",
+          "server": "sffe",
+          "vary": "Accept-Encoding, Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://www.gstatic.com/_/mss/boq-pitchfork/_/js/k=boq-pitchfork.Nemo.en_US.EbqM-Jk_wMM.2018.O/ck=boq-pitchfork.Nemo.qft_ONqxWgg.L.B1.O/d=1/exm=_b/excm=_b/ed=1/br=1/wt=2/ujg=1/rs=AFTLRiegwx5a55UgNpkyvUA7lI-GrT0zLg/ee=Pjplud:PoEs9b;QGR0gd:Mlhmy;ScI3Yc:e7Hzgb;YIZmRd:A1yn5d;cEt90b:ws9Tlc;dowIGb:ebZ3mb/dti=1/m=oxe1Cc",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "accept-ranges": "bytes",
+          "age": "17755",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, immutable, max-age=31536000",
+          "content-encoding": "br",
+          "content-length": "76130",
+          "content-security-policy": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/boq-infra/pitchfork-boq-js-css-signers",
+          "content-type": "text/javascript; charset=UTF-8",
+          "cross-origin-opener-policy": "same-origin; report-to=\"boq-infra/pitchfork-boq-js-css-signers\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 15:15:31 GMT",
+          "expires": "Tue, 23 Mar 2027 15:15:31 GMT",
+          "last-modified": "Fri, 20 Mar 2026 00:05:05 GMT",
+          "report-to": "{\"group\":\"boq-infra/pitchfork-boq-js-css-signers\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/boq-infra/pitchfork-boq-js-css-signers\"}]}",
+          "server": "sffe",
+          "vary": "Accept-Encoding, Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/googlesans/v58/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrwEIJllpynAFyo4R4o.woff2",
+        "status": 200,
+        "resourceType": "font",
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "122502",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=31536000",
+          "content-length": "21304",
+          "content-security-policy-report-only": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/apps-themes",
+          "content-type": "font/woff2",
+          "cross-origin-opener-policy": "same-origin; report-to=\"apps-themes\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Sun, 22 Mar 2026 10:09:46 GMT",
+          "expires": "Mon, 22 Mar 2027 10:09:46 GMT",
+          "last-modified": "Tue, 23 May 2023 16:41:52 GMT",
+          "report-to": "{\"group\":\"apps-themes\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/apps-themes\"}]}",
+          "server": "sffe",
+          "timing-allow-origin": "*",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://apis.google.com/js/api.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=1800, stale-while-revalidate=1800",
+          "content-encoding": "gzip",
+          "content-length": "5805",
+          "content-security-policy": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/gapi-team",
+          "content-type": "text/javascript",
+          "cross-origin-opener-policy": "same-origin; report-to=\"gapi-team\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:28 GMT",
+          "etag": "\"9b879c55ef7b376e\"",
+          "expires": "Mon, 23 Mar 2026 20:11:28 GMT",
+          "report-to": "{\"group\":\"gapi-team\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/gapi-team\"}]}",
+          "server": "sffe",
+          "timing-allow-origin": "*",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://www.googletagmanager.com/gtag/js?id=G-1CD1CPGEYF",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-headers": "Cache-Control",
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=900",
+          "content-encoding": "zstd",
+          "content-length": "158497",
+          "content-type": "application/javascript; charset=UTF-8",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:28 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:28 GMT",
+          "server": "Google Tag Manager",
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "vary": "Accept-Encoding",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.PJsh2cctCQI.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw/cb=gapi.loaded_0?le=scs,fedcm_migration_mod",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "552818",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=31536000",
+          "content-encoding": "gzip",
+          "content-length": "34785",
+          "content-security-policy-report-only": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/social-frontend-mpm-access",
+          "content-type": "text/javascript; charset=UTF-8",
+          "cross-origin-opener-policy": "same-origin; report-to=\"social-frontend-mpm-access\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Tue, 17 Mar 2026 10:37:51 GMT",
+          "expires": "Wed, 17 Mar 2027 10:37:51 GMT",
+          "last-modified": "Mon, 09 Mar 2026 15:36:02 GMT",
+          "report-to": "{\"group\":\"social-frontend-mpm-access\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/social-frontend-mpm-access\"}]}",
+          "server": "sffe",
+          "vary": "Accept-Encoding",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63j1v9218910579za200zd9218910579&_p=1774296687578&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=1018322201.1774296689&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AEA&_s=1&tag_exp=103116026~103200004~115616986~115938466~115938468~116024733~117484252&sid=1774296688&sct=1&seg=0&dl=https%3A%2F%2Fstitch.withgoogle.com%2Fpreview%2F4760189100996710010%3Fnode-id%3D69d07fbf63844fbe88e9290e11785e66&dt=Stitch%20-%20Preview&en=scroll&_fv=1&_nsi=1&_ss=1&epn.percent_scrolled=90&tfd=6259",
+        "status": 204,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://stitch.withgoogle.com",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "content-length": "0",
+          "content-security-policy-report-only": "script-src 'none'; form-action 'none'; frame-src 'none'; report-uri https://csp.withgoogle.com/csp/scaffolding/ascnsrsggc:120:0",
+          "content-type": "text/plain",
+          "cross-origin-opener-policy-report-only": "same-origin; report-to=ascnsrsggc:120:0",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:30 GMT",
+          "expires": "Fri, 01 Jan 1990 00:00:00 GMT",
+          "pragma": "no-cache",
+          "report-to": "{\"group\":\"ascnsrsggc:120:0\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/scaffolding/ascnsrsggc:120:0\"}],}",
+          "server": "Golfe2"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/preview/4760189100996710010?node-id=69d07fbf63844fbe88e9290e11785e66&usegapi=1&jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.PJsh2cctCQI.O%2Fd%3D1%2Frs%3DAHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw%2Fm%3D__features__",
+        "status": 200,
+        "resourceType": "document",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "1189",
+          "content-type": "text/html",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "52f25ba5883ee997a864766fbaf97fb5"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Google+Sans+Display:wght@400;500;700&family=Google+Sans+Text:wght@400;500;700&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Domine:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600;700&family=Epilogue:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&family=Libre+Caslon+Text:wght@400;700&family=Literata:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Newsreader:wght@400;500;600;700&family=Noto+Serif:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "last-modified": "Mon, 23 Mar 2026 19:37:21 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/index-DtyLJZLS.css",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "age": "41",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "35460",
+          "content-type": "text/css",
+          "date": "Mon, 23 Mar 2026 20:10:50 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:11:50 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "6ec099b7f6ef71ccc25369e93d982e36"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/rolldown-runtime-Bhmf7a9N.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "13",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "686",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:18 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:18 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "a5b61eb4d0bc659d1e30d8c3ee7df3d1"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/index-BcU9Yq8d.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "41",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "46686",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:10:50 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:11:50 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "f14bf9e598b63bab4e905e61abca89b2"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-carousel-I5GSPNhw.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "41",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "8481",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:10:50 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:11:50 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "1cb5b23d01431cd70ed2620b24301b89"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/editor-xyflow-DTy4ikYT.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "41",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "65065",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:10:50 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:11:50 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "611405986438a2f503cde7d78853e644"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/UserNav-B9-nWa0z.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "41",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "72289",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:10:50 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:11:50 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "201f6189eb815a386a82dbcfe7143071"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-react-CA4CQ0ED.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "20",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "69270",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:11 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:11 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "2c44e3fd028a81b40454f0687ee9a8ae"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/PostMessageClient-CUW7ShMe.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "41",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "315665",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:10:50 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:11:50 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "4a3be4ceda0ac5227b996f01904e43a8"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/Markdown-BzHowJwS.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "21",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "1062",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:10 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:10 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "6f003480b810e36b1c6720361d8cb417"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/editor-xyflow-CHpVij2M.css",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "3130",
+          "content-type": "text/css",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "87ecb4fb9ca30e7c88d930af82eb673d"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/chunk-UIGDSWPH-DtvKQIIy.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "32781",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "2e604c27f4ecd5c6955006faa2b1b8bd"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/dist-C-mrj2Sn.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "27710",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "bf083be50effebf1a864766fbaf977e7"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/util-cm9hwHdF.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "41",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "957628",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:10:50 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:11:50 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "c9995f5fe1a26bba7b996f01904e4425"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/editor-tiptap-CP9HHHOn.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "194622",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "a4b494185f88d4821d4b635a05d9f0b1"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/util-B1nRQaAa.css",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "3730",
+          "content-type": "text/css",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "0be5b8fc56046009642e35afa718a44a"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-query-C6MB3OEV.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "9649",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "176f7408747e2f8a5fbcba78a4ab2744"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/preload-helper-Dw5lDXEV.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "758",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "e5096867a531fd591a07bf2a6905afdd"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-ui-BiYklnb_.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "91598",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "362fa09288272331a6d448fa0d69ca82"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-marked-DP4NHApQ.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "13044",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "a73fded39445af1fc7826f3921bc8a50"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/vendor-utils-BQncNM-X.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "47008",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:31 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:31 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "a3fef023d160533b70c5c558c4fa8f75"
+        }
+      },
+      {
+        "url": "https://apis.google.com/js/api.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "content-encoding": "gzip",
+          "etag": "\"9b879c55ef7b376e\"",
+          "report-to": "{\"group\":\"gapi-team\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/gapi-team\"}]}",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:28 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:28 GMT",
+          "content-type": "text/javascript",
+          "vary": "Accept-Encoding",
+          "content-security-policy": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/gapi-team",
+          "cache-control": "private, max-age=1800, stale-while-revalidate=1800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin; report-to=\"gapi-team\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "content-length": "5805",
+          "x-xss-protection": "0",
+          "server": "sffe"
+        }
+      },
+      {
+        "url": "https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.PJsh2cctCQI.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo_QlMhY2cycn60Rs8eI1WInRwuahw/cb=gapi.loaded_0?le=scs,fedcm_migration_mod",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "content-encoding": "gzip",
+          "age": "552818",
+          "report-to": "{\"group\":\"social-frontend-mpm-access\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/social-frontend-mpm-access\"}]}",
+          "x-content-type-options": "nosniff",
+          "expires": "Wed, 17 Mar 2027 10:37:51 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Tue, 17 Mar 2026 10:37:51 GMT",
+          "last-modified": "Mon, 09 Mar 2026 15:36:02 GMT",
+          "content-type": "text/javascript; charset=UTF-8",
+          "vary": "Accept-Encoding",
+          "cache-control": "public, max-age=31536000",
+          "cross-origin-opener-policy": "same-origin; report-to=\"social-frontend-mpm-access\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "content-security-policy-report-only": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/social-frontend-mpm-access",
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "content-length": "34785",
+          "x-xss-protection": "0",
+          "server": "sffe"
+        }
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=eW2RYb&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=83494&rt=c",
+        "status": 200,
+        "resourceType": "xhr",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-disposition": "attachment; filename=\"response.bin\"; filename*=UTF-8''response.bin",
+          "content-encoding": "gzip",
+          "content-security-policy": "require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:33 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/Preview-CcLTuJZW.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "14",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "4075",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:20 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:20 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "67079952b8a6977f6e6d60c6775eb419"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/UgcTrustBanner-zvEQXc-h.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "21",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "16535",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:13 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:13 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "d47c15aeea1427737b996f01904e447e"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/assets/design_system_presets-hvTF9wMB.js",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "0",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "12021",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:34 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:34 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "6e6a8a2a70c064f17b996f01904e4f74"
+        }
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/googlesans/v67/4UaRrENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iq2vgCIhM907w.woff2",
+        "status": 200,
+        "resourceType": "font",
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "122280",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=31536000",
+          "content-length": "55224",
+          "content-security-policy-report-only": "require-trusted-types-for 'script'; report-uri https://csp.withgoogle.com/csp/apps-themes",
+          "content-type": "font/woff2",
+          "cross-origin-opener-policy": "same-origin; report-to=\"apps-themes\"",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Sun, 22 Mar 2026 10:13:34 GMT",
+          "expires": "Mon, 22 Mar 2027 10:13:34 GMT",
+          "last-modified": "Wed, 10 Dec 2025 17:16:30 GMT",
+          "report-to": "{\"group\":\"apps-themes\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/apps-themes\"}]}",
+          "server": "sffe",
+          "timing-allow-origin": "*",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=283494&rt=c",
+        "status": 200,
+        "resourceType": "xhr",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-disposition": "attachment; filename=\"response.bin\"; filename*=UTF-8''response.bin",
+          "content-encoding": "gzip",
+          "content-security-policy": "require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:35 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=183494&rt=c",
+        "status": 200,
+        "resourceType": "xhr",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-disposition": "attachment; filename=\"response.bin\"; filename*=UTF-8''response.bin",
+          "content-encoding": "gzip",
+          "content-security-policy": "require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:35 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=ErneX&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=483494&rt=c",
+        "status": 200,
+        "resourceType": "xhr",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-disposition": "attachment; filename=\"response.bin\"; filename*=UTF-8''response.bin",
+          "content-encoding": "gzip",
+          "content-security-policy": "require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:35 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=dNS8Mc&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=383494&rt=c",
+        "status": 200,
+        "resourceType": "xhr",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-disposition": "attachment; filename=\"response.bin\"; filename*=UTF-8''response.bin",
+          "content-encoding": "gzip",
+          "content-security-policy": "require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:35 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/static/stitch-word.svg",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "age": "23",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "1970",
+          "content-type": "image/svg+xml",
+          "date": "Mon, 23 Mar 2026 20:11:12 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:12 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "176f16b0f2931dd462170da1127a0a78"
+        }
+      },
+      {
+        "url": "https://app-companion-430619.appspot.com/static/stitch-word-dark.svg",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "age": "14",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=60",
+          "content-encoding": "gzip",
+          "content-length": "1972",
+          "content-type": "image/svg+xml",
+          "date": "Mon, 23 Mar 2026 20:11:21 GMT",
+          "etag": "\"JX-5iw\"",
+          "expires": "Mon, 23 Mar 2026 20:12:21 GMT",
+          "server": "Google Frontend",
+          "x-cloud-trace-context": "d0d7db4a7d54377975537b915eeb3635"
+        }
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=583494&rt=c",
+        "status": 200,
+        "resourceType": "xhr",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-disposition": "attachment; filename=\"response.bin\"; filename*=UTF-8''response.bin",
+          "content-encoding": "gzip",
+          "content-security-policy": "require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:35 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://stitch.withgoogle.com/_/Nemo/data/batchexecute?rpcids=UiiVCf&source-path=%2Fpreview%2F4760189100996710010&bl=boq_pitchfork-nemo-ui_20260320.11_p0&f.sid=-382771906197761008&hl=en-US&_reqid=683494&rt=c",
+        "status": 200,
+        "resourceType": "xhr",
+        "headers": {
+          "accept-ch": "Sec-CH-UA-Arch, Sec-CH-UA-Bitness, Sec-CH-UA-Full-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Model, Sec-CH-UA-WoW64, Sec-CH-UA-Form-Factors, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+          "content-disposition": "attachment; filename=\"response.bin\"; filename*=UTF-8''response.bin",
+          "content-encoding": "gzip",
+          "content-security-policy": "require-trusted-types-for 'script';report-uri /_/Nemo/cspreport",
+          "content-type": "application/json; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:36 GMT",
+          "expires": "Mon, 01 Jan 1990 00:00:00 GMT",
+          "permissions-policy": "ch-ua-arch=*, ch-ua-bitness=*, ch-ua-full-version=*, ch-ua-full-version-list=*, ch-ua-model=*, ch-ua-wow64=*, ch-ua-form-factors=*, ch-ua-platform=*, ch-ua-platform-version=*",
+          "pragma": "no-cache",
+          "server": "ESF",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzYzODRjNzljMWM0ODRhMWE4OTg3ODVkYzEzZjkzY2Q1EgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "22720",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=/qinkw==",
+          "x-guploader-uploadid": "AGQBYWxyNwVshc208Rf7nTVM8Uw8wLDtxHquS5oFcv5wT8E2rbc0tWCeK8QHQj86O8fLjLSf8dxZJw"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzM0NzIzYjQzZDQ4ZDRiNTU4ZjgzYjVmZTU0MDA4MDJlEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "7725",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=V27roA==",
+          "x-guploader-uploadid": "AGQBYWx9lPeeWCngcV2s65z9QQWXSN2YJd-I2o6MWHn4jHQmh2k_wkt4OTAyvBrrcEPH1u4w-n-U-g"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzQxMTVlNWZlNmI0YzQ4Y2I4N2EyNGNkYmY5ZGU0ZGIyEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "17443",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=OePJtQ==",
+          "x-guploader-uploadid": "AGQBYWwdTcWg7C-yh1I2D6KNrH3rf3vDM4wPDhN3975pbBTGUVAOrgO9PwZpqSEz2vC290RHsGCmNg"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzJkN2U1NTU0MzhhMDQ1OTY4YWY5YWRjNTA0MjczYTlmEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "18127",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=qTIr8g==",
+          "x-guploader-uploadid": "AGQBYWxh6gQg6AfMdxiNGCp2Ffl9SAhYgkI0G1p46o1qEMS7s0RvWe2fYNOHEYzZUPnxvAgjZUYs7Q"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2U0MmFiNjFhZWFlZjQwMzQ5ZWJlMmYxZjg1ZmRjZmVhEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "17215",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=G+cNEQ==",
+          "x-guploader-uploadid": "AGQBYWxhhZMq-y9MnZqKB4pKNlU5djSryDzIvi9TcXRXn3HPW0iCnScCc7hdG2nW6TqYHh38JdLnLA"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,600;1,400;1,600&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzBkMjRhZDk0OWNlODQ2MTRiOWU2ZTM3YWZhNTRkYjI4EgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "15247",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=LulitA==",
+          "x-guploader-uploadid": "AGQBYWxixupzRG8w6Ph_1sqWWsPT4yhdJ5zSxF3RKlyGCz1xEx0DtUSC3Q7qLPJZtXKCG5PcYt7wAw"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2ViNmJjNjNiZjU5YzRiMGQ4M2FjMzIxOWIzYWYxMjM3EgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "15877",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=kFHVVg==",
+          "x-guploader-uploadid": "AGQBYWzF8rz_tbW63zKmbIk8NvGvj7TTH5I5_sce9uVNT6I5Wnm8PhO39M1ZofZHuYfh82E5dCB7qg"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@600;700&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2VkNTIyODJmMDU4MjQ1MDY5MzNiNjZkYjMyNTM4MWJlEgsSBxDanI7H8AUYAZIBIwoKcHJvamVjdF9pZBIVQhM0NzYwMTg5MTAwOTk2NzEwMDEw&filename=&opi=89354086",
+        "status": 200,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://app-companion-430619.appspot.com",
+          "access-control-expose-headers": "Cache-Control, Content-Length, Date, Expires, Server, Transfer-Encoding, X-GUploader-UploadID, X-Google-Trace",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=0",
+          "content-disposition": "attachment; filename=\"\"",
+          "content-length": "10799",
+          "content-security-policy": "sandbox, default-src 'none', frame-ancestors 'none', sandbox allow-scripts",
+          "content-type": "text/html",
+          "cross-origin-embedder-policy": "require-corp",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-site",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "server": "UploadServer",
+          "vary": "Origin",
+          "x-content-security-policy": "sandbox",
+          "x-content-type-options": "nosniff",
+          "x-goog-hash": "crc32c=GyfiKw==",
+          "x-guploader-uploadid": "AGQBYWxjzM59UnAYcv-fqiBtMWKxVKiUbhoMOh_PT_m9I9kuDBVauZg7YS9bFM1FsNWHV1vt9JzgJQ"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "last-modified": "Mon, 23 Mar 2026 19:49:55 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,700&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "content-encoding": "gzip",
+          "content-type": "text/css; charset=utf-8",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "expires": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "last-modified": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "server": "ESF",
+          "strict-transport-security": "max-age=31536000",
+          "timing-allow-origin": "*",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "age": "769",
+          "cache-control": "max-age=14400",
+          "cf-cache-status": "HIT",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "server": "cloudflare",
+          "strict-transport-security": "max-age=63072000",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=14400",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "x-vercel-cache": "MISS",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "cf-cache-status": "HIT",
+          "age": "769",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=14400",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "x-vercel-cache": "MISS",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "cf-cache-status": "HIT",
+          "age": "769",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuD8q2q8hBw457WySGgozqEqyy74C2lBi014ogZtb-8O_TxlQ6QPK-3vLi48BSwTwHfzev6cR-6Og0A9JQ_xfhUB8-htoKNI35P5W-NPBDDzgEvCUxBBC0rr6gaMDa6iDQndIzD1W0vMRUWJl-WULza440BxGPZfkEjWFeWQNsrZoMHCPrVJjXOJ1WR-XMKDGLxdicx5IhotZoQ0LcojlVUYtdCU8X0gIZLd4BFnT3JJW5GqEmiJNgRShnWj-ejmSCdd7INk0AyW16Q",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "217919",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=14400",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "x-vercel-cache": "MISS",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "cf-cache-status": "HIT",
+          "age": "769",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=14400",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "x-vercel-cache": "MISS",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "cf-cache-status": "HIT",
+          "age": "769",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=14400",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "x-vercel-cache": "MISS",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "cf-cache-status": "HIT",
+          "age": "769",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=14400",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "x-vercel-cache": "MISS",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "cf-cache-status": "HIT",
+          "age": "769",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/?plugins=forms,container-queries",
+        "status": 302,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=14400",
+          "location": "/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+          "x-vercel-cache": "MISS",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "cf-cache-status": "HIT",
+          "age": "769",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=sueRQ1knNSF7gmUei%2F%2BVzQ6AtVtmU1XI5dneEDK3OIEWpjo6lo2rSl3TqZ5%2FfXEtbE0qpXjmI1I4rSzxppE0Aj%2FFnSIBqlbYfkAxUOXPmTI%3D\"}]}",
+          "cf-ray": "9e10161e98095777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::rrcgc-1774295928811-02e1e5650e19"
+        }
+      },
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63j1v9218910579za200zd9218910579&_p=1774296687578&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=1018322201.1774296689&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&tag_exp=103116026~103200004~115616986~115938466~115938468~116024733~117484252&dl=%2Fpreview%2F4760189100996710010&sid=1774296688&sct=1&seg=1&dt=Stitch%20-%20Preview&_s=2&tfd=15977",
+        "status": 204,
+        "resourceType": "fetch",
+        "headers": {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-origin": "https://stitch.withgoogle.com",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "no-cache, no-store, must-revalidate",
+          "content-length": "0",
+          "content-security-policy-report-only": "script-src 'none'; form-action 'none'; frame-src 'none'; report-uri https://csp.withgoogle.com/csp/scaffolding/ascnsrsggc:120:0",
+          "content-type": "text/plain",
+          "cross-origin-opener-policy-report-only": "same-origin; report-to=ascnsrsggc:120:0",
+          "cross-origin-resource-policy": "cross-origin",
+          "date": "Mon, 23 Mar 2026 20:11:39 GMT",
+          "expires": "Fri, 01 Jan 1990 00:00:00 GMT",
+          "pragma": "no-cache",
+          "report-to": "{\"group\":\"ascnsrsggc:120:0\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://csp.withgoogle.com/csp/report-to/scaffolding/ascnsrsggc:120:0\"}],}",
+          "server": "Golfe2"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCzfFcsVcwMtYCpeBnbQIlrcKZp78zaTM3Qd258-m6c2PbeowT1vB-ES8ZE74kDRW93SroI6xo-ulKuYOqXe0pW9p1P05weto91QAcu-S1Lp_6_w8q1DI8NBkbnKqB6pLU2L-XJ7glq7wkHtp_9pAtyPzUVWh0q9FIm13pEn6atJCrELSHz70oVxgD2LmvMLZ7-_Qu606KchktwXSYN5NiRwxETTGno-4laSm4EmFSCmK-fBBU_zC4jgUhcDh858zpstHgd3xwFXsY",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "238919",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCCiJNg5YD6UjwJo_6SsYZInrwZ1ociWhrJYF6yPJM_zpoFezXX44pX8of4_pepVxVyAFXMN-UIGOsUncA2Xxo6iun5-E4XTBNnXzaWQizwIbI9tKqtdW6Fud6jw8uQkZ6hzX2VnfpCrtVBbp3DU6zqc4wPgWT12mVGSqDoCJycPwLrfqhguVholUF7WeJGzKNEIWAQCnOocYc06BQ5NNGkyHDPLNJT2S9gPFIFtQXU3r-C7sGdaDcORGjuGSeorVajErp6vO33r-8",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "353080",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDH4vkYYN6-DmXEQMtbawpAU041lLO17JXdZUqZiaTyq0Y7bCheWywkfSTToyFq9Snj930ep1DzHamBcsdsixNwvpoDjJCwezn4tQfMOJwnNm4JF4dP63IZpqTZJzM-V9rQGfElVwZmiuJboGYHTTIoobqMsWKsymc6EJbuCyNLht18MZGLX3NCnNqJQ7TSPxlYfE28LKWWTXSL6i8LyNz2xtWc9MyJbAg7dwQnhMrCabNSLUmKvExjlhPDM6xUiSdBLmo3l9Ehj0U",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "312764",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=31536000",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "content-encoding": "br",
+          "x-vercel-cache": "MISS",
+          "cf-cache-status": "HIT",
+          "age": "2637511",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "cf-ray": "9e10162078635777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe",
+          "vary": "accept-encoding"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=31536000",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "content-encoding": "br",
+          "x-vercel-cache": "MISS",
+          "cf-cache-status": "HIT",
+          "age": "2637511",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "cf-ray": "9e10162078635777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe",
+          "vary": "accept-encoding"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "age": "2637511",
+          "cache-control": "max-age=31536000",
+          "cf-cache-status": "HIT",
+          "cf-ray": "9e10162078635777-EZE",
+          "content-encoding": "br",
+          "content-type": "text/javascript",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "server": "cloudflare",
+          "strict-transport-security": "max-age=63072000",
+          "vary": "accept-encoding",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=31536000",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "content-encoding": "br",
+          "x-vercel-cache": "MISS",
+          "cf-cache-status": "HIT",
+          "age": "2637511",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "cf-ray": "9e10162078635777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe",
+          "vary": "accept-encoding"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=31536000",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "content-encoding": "br",
+          "x-vercel-cache": "MISS",
+          "cf-cache-status": "HIT",
+          "age": "2637511",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "cf-ray": "9e10162078635777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe",
+          "vary": "accept-encoding"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=31536000",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "content-encoding": "br",
+          "x-vercel-cache": "MISS",
+          "cf-cache-status": "HIT",
+          "age": "2637511",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "cf-ray": "9e10162078635777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe",
+          "vary": "accept-encoding"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=31536000",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "content-encoding": "br",
+          "x-vercel-cache": "MISS",
+          "cf-cache-status": "HIT",
+          "age": "2637511",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "cf-ray": "9e10162078635777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe",
+          "vary": "accept-encoding"
+        }
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17?plugins=forms@0.5.10,container-queries@0.1.1",
+        "status": 200,
+        "resourceType": "script",
+        "headers": {
+          "cache-control": "max-age=31536000",
+          "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+          "content-encoding": "br",
+          "x-vercel-cache": "MISS",
+          "cf-cache-status": "HIT",
+          "age": "2637511",
+          "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=BFQxKNa6zIHQ%2Fg4j1AXKtTIYoSWSB45lgOK0Ve%2FY5ZLIBYU4yZd%2BoJp3lN%2FcwjdeRb9FL1hurNgPkLz%2F7fN4U8clfRdFJh%2Fd6pJzqnn1ujE%3D\"}]}",
+          "cf-ray": "9e10162078635777-EZE",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "content-type": "text/javascript",
+          "last-modified": "Sat, 21 Feb 2026 07:33:07 GMT",
+          "server": "cloudflare",
+          "x-vercel-id": "gru1::iad1::hx7gb-1771659186688-890b4d11efbe",
+          "vary": "accept-encoding"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "status": 200,
+        "resourceType": "stylesheet",
+        "headers": {
+          "content-encoding": "gzip",
+          "x-content-type-options": "nosniff",
+          "expires": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "date": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "content-type": "text/css; charset=utf-8",
+          "vary": "Sec-Fetch-Dest, Sec-Fetch-Mode, Sec-Fetch-Site",
+          "last-modified": "Mon, 23 Mar 2026 20:11:37 GMT",
+          "x-frame-options": "SAMEORIGIN",
+          "link": "<https://fonts.gstatic.com>; rel=preconnect; crossorigin",
+          "cache-control": "private, max-age=86400, stale-while-revalidate=604800",
+          "timing-allow-origin": "*",
+          "cross-origin-opener-policy": "same-origin-allow-popups",
+          "cross-origin-resource-policy": "cross-origin",
+          "access-control-allow-origin": "*",
+          "x-xss-protection": "0",
+          "server": "ESF"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAohmr3_cknYkGw_pNXJdBjdR1wY4C_pT7WcWalhVMXts20bjwDN2Eu-zfWFSDNlUGmESPQPbe8uI-zhTzSF1x5xlfq7uEtFMO9spNi0dePZwVQEIUP1rRRhgxyLnsumnRsNZyosvhpRjMntcyvXnm4DKvRybihRh8eb1gJp0cHik4c9Nm_3BjdsflrV8MioN70UiSwz2vfC8P2CEQl-qsUP6Ysgu8efsVHhTF6Q8EdpKeOviU0d_uBpRuJ53BhchPFjQqa-IwMCx4",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "413504",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAS4efMUmU-NPG0t9Bk-kU4dtsdrgp7lrHkL0Z4bmQfrpCt_6PUkoojA3Sgp1UVokK_j84erPO5R-x0w0h3izhym0N9XW1ttiQ7n_tDwFahDjF1-VSqllKEkG0ZCYMpjPBjfXBgNJ6zUavppcKISyJuRQkF-yOgdhmUFkteny8HMF5ctNKFx036ifCNkaCL6E5OKK_Jqw6Ac_7-nK1GtJRH7qjpU9DgcLPBvkwuCh6Vt-IWWyBSDxH47vv2tgFxNrwuIwhwubG1QDA",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "274455",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBtc5A7QzffKE8xcJqAk6YserfYebST1SvlU1qRXymwdm5-x75x9LcgkgwfXUs97o178uUEoNs5B1a7Lbs5U8uCa-LrxPAou6iJUmzAZ1kr7AVb6GubSq1WTX6onaoGeZVHfasj_YnN_9ZHtg4VtgeBZ5VIXo3zGti3yzag2ufU-h6txJgB895Nf2-6uUdhn1h86Mhuy0sHpvJfluy0SuFZs2oM2-wC_07VfF4ALclxo_nxDj9y2GasJUS29FmBQtIsfnVMPgtPobQ",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1648",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "324541",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:12 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:12 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuAWNcJ1-dqDuEmGDIVlr0iNQAjjBMYeyp0FeI0OeWZ7kqSawgaY5EUZZev4r2SgDkWjxRCMyolwx9LpFeRYlwhaAg7U1NBNb3qPayiAqkcbmace1iBb8v5sGtIhOigGeuCB9G_0-26iSwGb0mlDK3u97JGnGyN2qNYT4NfJuI90MJ3koNDgEy1TxMhyt1yaixOrTqq6HjYlbH-v1hLDpiqsjmlfnUCGbygzgUFVZVLLk3tol4emCE2l2fLCahfZojWpuVR_V4D1rNM",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "333752",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCI54_XXwUfrNGzFmP0REVgoAmNWk3sk3IZpVoeJ3Q7Q-Oyxo99vLUiBkAhiFpVaMnll1gy_20G_joGrIxiKio1YC6PjPWF5SZTzOtrDn7EF1R7ONgiszhyx3Tqc0ovOEim8GqzrVRlVRalZv-Lo_5HYly0erzrnlBDMRFAcXh87PHRT7ETxnjeRB7X0eKU6UYS_S87YA-N83IKqBqFAP2DchLkrnO55-RgNiN_euT0HVQm7cgHLsDUvyIT-JbDFE6KSCBzLoRAhRg",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "221688",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCUaw3P1ksZEosN0kuy6HW8Khh-7-qPKLG7QN3n9AyDjXfBmwDispeXBwsmc04CQEEwJdJJi96a63_s6ib9oIe14eu5KruZyMegRHcAmBXQdlYsO261w-c_T4RgGQWSkipwFuEQ2waz3QzL4iKuaTdSLFEZpMWt0wTZIiSHxO3wxZWi58juvJfvSS9nbIDeIhWNMTsd0o0agDQhTnI-pTaFq2EfnuQo_ENROmcplILH1r4KfhTRpupXJzHEn-_NHbKT4Ko0UjhTEWk",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "234294",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuD_wecCHkZKXUHu54xTwBGEoyMHOCQX8tdyI6ZnlwICf0tm9XEO2bywT87ZG7LOTUdqM1Vf8bhsDP8yn7kiuMzRgi1fl6yQYU8gRaNsIYoSlrI0x0McQvyCd0vCN06tF2logZX1kyBa-VvDrlPDaApnQaUAdYNFV5rEpriYOL76RoOyFQaq_9OTh_Eje3CMdBQHfjN50dDmkfWv_8jS7rq5TDihwvlZAvDQcZvAWHoUxmSa_1hQVQio83LmVY80wEXzw9w6W5S_ulg",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1649",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "292107",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:11 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:11 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuDJB60ahzHfN8QYCarpMtER--Ec_-UoM2UnEKs_YY8WmnENxlZUc0gJSgl33jmmkqQxVTrhbzzk6h7dG6FeYM_EVodi1ByayMMtrrXlcRZigbhSTCJOBffAf-CtvT8Vvr3xIAhg7_tJvND4dYvu63yLYsLx9mTkiQWFlXJ81og8jHEF6wF143qBrEeZ8rUiPn5_0JewrWHiWSpY3d-OKcOefovxDKB6CxuNmJjbc_LQRV5TWT5qbhL3rfaGSSBaP5TDSjnGwo6X2ts",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "258206",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuCzLBlO0gpCW87ZLoVmBsVQyErmmPPG5801mWNZcCh0r2J6FQ3j-hOikrGf9m1-gWeqevYDdXLRIoc9NGbhPDRvXiB-UHFpdEzVtp0x8a9cBkJTla6NqA9ScgxGz61uqHXjcTa0y0LnsUhQDc9s62TyQKvtT0ubJkMF3U-XUrgWvC-kJdfhY5_b8Wq19-y60KE7CGT7CHE4BAXLSpLbN7rRdarF_eS8QjVk1L7LAlBxB6y5qgE_igeZjFi2xH9ZqoQSeuxddswer6U",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "430440",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuBwryyfzC0uJ8ZgIIsQ0lHJA4j8gaBos7wxeHYf7XiFJXwA0e0DfYvv16Af0efKe7bJms3xTEHmYfcL0VjplXbHuwlrFsLrFxs8fgrWQpZ8OYk2-QnZui91k1K0VMpKD3AbbqG-TxlYXlaCVeY5bzmhjkhflXzoIvI1gs_C_TBSGATEmjo4KIPDJYjZ5XzKAzRYRV8iSON4aV820yTCdhtKkIzI12gw5gpwiKo8Cio6ixSSungf__JVSIsR6YMqtbahlINyJ9Bow4k",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1649",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "386038",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:09 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:09 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuA27T4m9yHhB5n6OdQKWj0Y8uQ7UrLpT7CLeAm7kuhB9IxEvai0ZvvYs24Z2AZw_STRMg2t7vksA-wzTVjseUIwGGNDpy1X6XD_GOhWhD7EHfHUzUhB0qnsC1jXFL2Bta_iqOXaahtpRpau9r5wqv0mEMYJCpN3kncaINziuZBGMFsVXVpqFpy7bf-zZ6wStqmQ9VsAXEBBecwhn1x7lsV8wtavQI2dR6uECx1xZux9r5I7j2gi_6XwTkxCfOOtJWeC385YfwWO87A",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "age": "1650",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "312280",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 19:44:08 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 19:44:08 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      },
+      {
+        "url": "https://lh3.googleusercontent.com/aida-public/AB6AXuD86RwtLK-Vdj38zkt6YzkNlbUECPcVnN7bhqCimwn2xpwWQCQWH_r73UIb2SUiXm8_xPmhSao8pSrByML7pBQZMCUAsthLFEGZeqqqFPTemXZZB41B_-u4-TbtIzKW6t9Xtr45VKMJH-hqvvT2XjxK_cCCHhocL6hlmU_ubJIuqJLAM42qI7y9bECIXb1vWMRBh7A4MAmmaGEhC13tAElfKh01cvJHPPcjnnOkjWVLdTd3pqTE_m5UHcr83-RtismrwTTUA4bssyE",
+        "status": 200,
+        "resourceType": "image",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-expose-headers": "Content-Length",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "cache-control": "public, max-age=86400, no-transform",
+          "content-disposition": "inline;filename=\"unnamed.png\"",
+          "content-length": "363433",
+          "content-type": "image/png",
+          "date": "Mon, 23 Mar 2026 20:11:38 GMT",
+          "etag": "\"v0\"",
+          "expires": "Tue, 24 Mar 2026 20:11:38 GMT",
+          "server": "fife",
+          "timing-allow-origin": "*",
+          "vary": "Origin",
+          "x-content-type-options": "nosniff",
+          "x-xss-protection": "0"
+        }
+      }
+    ],
+    "failures": [
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63j1v9218910579za200zd9218910579&_p=1774296687578&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=1018322201.1774296689&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AEA&_s=1&tag_exp=103116026~103200004~115616986~115938466~115938468~116024733~117484252&sid=1774296688&sct=1&seg=0&dl=https%3A%2F%2Fstitch.withgoogle.com%2Fpreview%2F4760189100996710010%3Fnode-id%3D69d07fbf63844fbe88e9290e11785e66&dt=Stitch%20-%20Preview&en=scroll&_fv=1&_nsi=1&_ss=1&epn.percent_scrolled=90&tfd=6259",
+        "method": "POST",
+        "resourceType": "fetch",
+        "errorText": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63j1v9218910579za200zd9218910579&_p=1774296687578&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=1018322201.1774296689&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&tag_exp=103116026~103200004~115616986~115938466~115938468~116024733~117484252&dl=%2Fpreview%2F4760189100996710010&sid=1774296688&sct=1&seg=1&dt=Stitch%20-%20Preview&_s=2&tfd=15977",
+        "method": "POST",
+        "resourceType": "fetch",
+        "errorText": "net::ERR_ABORTED"
+      }
+    ]
+  }
+}

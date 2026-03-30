@@ -21,6 +21,7 @@
       const wsUrl = "ws://127.0.0.1:8787";
       document.getElementById("wsUrl").textContent = wsUrl;
       const st = document.getElementById("st");
+
       let ws;
 
       function setStatus(ok, text){
@@ -31,9 +32,11 @@
       function connect(){
         try { if (ws) ws.close(); } catch {}
         ws = new WebSocket(wsUrl);
+
         ws.onopen = () => setStatus(true, "connected");
         ws.onclose = () => setStatus(false, "disconnected");
         ws.onerror = () => setStatus(false, "error");
+
         ws.onmessage = (ev) => {
           parent.postMessage({ pluginMessage: { type: "autobot_cmd", payload: ev.data } }, "*");
         };

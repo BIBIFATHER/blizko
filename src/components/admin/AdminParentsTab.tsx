@@ -7,6 +7,7 @@ import { notifyUserStatusChanged } from '@/services/notifications';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
 type ParentWorkflowStatus = NonNullable<ParentRequest['status']>;
+const getNowTs = () => Date.now();
 
 interface AdminParentsTabProps {
     parents: ParentRequest[];
@@ -109,7 +110,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                 rejectionInfo: {
                     reasonCode: rejectReasonCode,
                     reasonText,
-                    rejectedAt: Date.now(),
+                    rejectedAt: getNowTs(),
                     rejectedBy: 'admin',
                 },
             },

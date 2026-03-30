@@ -1,0 +1,178 @@
+[
+  {
+    "id": "nafNPuElCtY",
+    "url": "https://www.youtube.com/watch?v=nafNPuElCtY",
+    "title": "I Built My Entire Design System in 4 Hours With AI. Full Tutorial (Claude + Cursor + Figma)",
+    "channel": "The Design Project",
+    "duration": 520,
+    "description": "I built a complete design system—from Figma to production code—in 4 hours using AI. Here's the exact workflow I use.\n\nYour team takes 2 weeks to ship a dashboard feature. Teams with design systems ship the same feature in 2 hours. The problem? Building a design system used to require months of dedicated engineering time. After working with 50+ B2B SaaS product teams, I've refined a one-afternoon workflow using Claude Code and Cursor that gets you from Figma design system to shipping features the same day.\n\nThis isn't just about generating components—this is the complete strategic workflow: style guide extraction, component library building, and shipping real features.\n\nWhat You'll Learn: \n• The exact prompts I use to generate production-ready components \n• Why you should build your style guide BEFORE components \n• The notes.md workflow that documents everything automatically \n• Real examples of 2-3x development speed increases\n\nThe Results: \nTeams with design systems report 38% improvement in product development efficiency, 40% faster time-to-market, and 34% faster task completion. This tutorial shows you how to achieve those numbers in one afternoon, not three months.\n\nNeed help i",
+    "upload_date": "20251128",
+    "view_count": 183097,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "ZfYvv-0l9NA",
+    "url": "https://www.youtube.com/watch?v=ZfYvv-0l9NA",
+    "title": "Claude Code + Nano Banana 2 + Kling =  $15K Animated Sites",
+    "channel": "Nick Saraev",
+    "duration": 838,
+    "description": "🔥 Link to Kling 3.0 for the visuals: https://bit.ly/higgsfield_ai_kling3\n📚 Watch my NEW 2026 Claude Code course: https://www.youtube.com/watch?v=QoQBzR1NIqI\n🎙️ Get the free prompts/Higgsfield flow here: https://nick-saraev.kit.com/c12813ef9c\n\n💼 Work with my team: https://dub.sh/work-with-me-rfj\n\n📚 Free multi-hour courses\n→ Claude Code (4hr full course): https://www.youtube.com/watch?v=QoQBzR1NIqI\n→ Vibe Coding w/ Antigravity (6hr full course): https://www.youtube.com/watch?v=gcuR_-rzlDw\n→ Agentic Workflows (6hr full course): https://www.youtube.com/watch?v=MxyRjL7NG18\n→ N8N (6hr full course, 890K+ views): https://www.youtube.com/watch?v=2GZ2SNXWK-c\n\n💎 Other Higgsfield generators (Nano Banana Pro 2, which I used to generate the globe): https://higgsfield.ai/ai-video\n💎 Leon's \"taste\" skill: (https://github.com/Leonxlnx/taste-skill)\n\nSummary ⤵️\nTurns out you can build extremely high-end, sleek websites using two things: a skill by Leon Lin (https://github.com/Leonxlnx/taste-skill) + a video generator called Kling (which I'm using on Higgsfield) + Nano Banana Pro to generate images to feed into the video and so on. A bit frustrated that people are making it out to be more complicated t",
+    "upload_date": "20260316",
+    "view_count": 127278,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "gcuR_-rzlDw",
+    "url": "https://www.youtube.com/watch?v=gcuR_-rzlDw",
+    "title": "VIBE CODING FULL COURSE: Gemini 3.1 + Antigravity (6 Hrs)",
+    "channel": "Nick Saraev",
+    "duration": 22984,
+    "description": "🔥 Join Maker School & get customer #1 guaranteed: https://skool.com/makerschool/about\n💎 All course files: https://drive.google.com/drive/folders/1eGTwguPbANKzhtA7EFq4YSLsZnqA_ZCH?usp=drive_link\n🎙️ Listen to my silly podcast: www.youtube.com/@stackedpod\n\n💼 Work with my team: https://dub.sh/work-with-me-lkj\n\n📚 More free courses\n→ Claude Code (4hr full course): https://www.youtube.com/watch?v=QoQBzR1NIqI\n→ Agentic Workflows (6hr full course): https://www.youtube.com/watch?v=MxyRjL7NG18\n→ N8N (6hr full course, 890K+ views): https://www.youtube.com/watch?v=2GZ2SNXWK-c\n\nSummary ⤵️\nThis is the definitive vibe coding full course, where you'll learn how to vibe code with Gemini 3.1 & Antigravity. Throughout the course, you'll build five full fledged apps, and along the way, learn real software engineering topics like hosting and deployment, modern software design patterns, languages and frameworks, version control & GitHub repositories, and programming with agents and agent teams. We'll use a mixture of Gemini 3.1 Pro, Antigravity, Supabase, Next.js, Vite, Apify, & more.\n\nThe course will focus primarily on Gemini 3.1 Pro (High)/Antigravity. We'll teach you how to design apps from scratch an",
+    "upload_date": "20260227",
+    "view_count": 154688,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "ZbKNpn0woDY",
+    "url": "https://www.youtube.com/watch?v=ZbKNpn0woDY",
+    "title": "Claude Code's New Upgrade: /btw",
+    "channel": "Nick Saraev",
+    "duration": 311,
+    "description": "🔥 Join Maker School & get customer #1 guaranteed: https://skool.com/makerschool/about\n📚 Watch my NEW 2026 Claude Code course: https://www.youtube.com/watch?v=QoQBzR1NIqI\n💼 Work with my team: https://dub.sh/work-with-me-qot\n\n🎙️ Listen to my silly podcast: www.youtube.com/@stackedpod\n\n📚 Free multi-hour courses\n→ Claude Code (4hr full course): https://www.youtube.com/watch?v=QoQBzR1NIqI\n→ Vibe Coding w/ Antigravity (6hr full course): https://www.youtube.com/watch?v=gcuR_-rzlDw\n→ Agentic Workflows (6hr full course): https://www.youtube.com/watch?v=MxyRjL7NG18\n→ N8N (6hr full course, 890K+ views): https://www.youtube.com/watch?v=2GZ2SNXWK-c\n\nSummary ⤵️\nClaude Code just got /btw, a new feature that eliminates a massive amount of parallelization waste and keeps you on-task in the same thread. Also a big game-changer in terms of your ability to steer outputs.\n\nMy software, tools, & deals (some give me kickbacks—thank you!)\n🚀 Instantly: https://link.nicksaraev.com/instantly-short\n📧 Anymailfinder: https://link.nicksaraev.com/amf-short\n🤖 Apify: https://console.apify.com/sign-up (30% off with code 30NICKSARAEV)\n🧑🏽‍💻 n8n: https://n8n.partnerlinks.io/h372ujv8cw80\n📈 Rize: https://link.nicksaraev.",
+    "upload_date": "20260311",
+    "view_count": 38273,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "qKU-e0x2EmE",
+    "url": "https://www.youtube.com/watch?v=qKU-e0x2EmE",
+    "title": "Stop Fixing Your Claude Skills. Autoresearch Does It For You",
+    "channel": "Nick Saraev",
+    "duration": 992,
+    "description": "🔥 Join Maker School & get customer #1 guaranteed: https://skool.com/makerschool/about\n📚 Watch my NEW 2026 Claude Code course: https://www.youtube.com/watch?v=QoQBzR1NIqI\n💼 Work with my team: https://dub.sh/work-with-me-gnn\n\n🎙️ The free SKILL.md: https://drive.google.com/drive/folders/14nUSxV8cpi5OI2OQxhBqyeuN92ERTMX1\n\n📚 Free multi-hour courses\n→ Claude Code (4hr full course): https://www.youtube.com/watch?v=QoQBzR1NIqI\n→ Vibe Coding w/ Antigravity (6hr full course): https://www.youtube.com/watch?v=gcuR_-rzlDw\n→ Agentic Workflows (6hr full course): https://www.youtube.com/watch?v=MxyRjL7NG18\n→ N8N (6hr full course, 890K+ views): https://www.youtube.com/watch?v=2GZ2SNXWK-c\n\nSummary ⤵️\nYou can now automatically improve your Claude Code skills utilizing the principles of Karpathy's \"autoresearch\" combined with evals. \n\nIn this video, I give you a step-by-step, end-to-end walkthrough of how to do so. I also give you guys an example skill you could use to do this for yourself!\n\nMy software, tools, & deals (some give me kickbacks—thank you!)\n🚀 Instantly: https://link.nicksaraev.com/instantly-short\n📧 Anymailfinder: https://link.nicksaraev.com/amf-short\n🤖 Apify: https://console.apify.com/si",
+    "upload_date": "20260313",
+    "view_count": 120353,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "qJsDfREUwDs",
+    "url": "https://www.youtube.com/watch?v=qJsDfREUwDs",
+    "title": "The $100K AI Design System Masterclass (Gemini 3)",
+    "channel": "Jack Roberts",
+    "duration": 2736,
+    "description": "📈 ALL Systems: https://www.skool.com/aiautomationsbyjack\n🎙️ Type with your Voice: https://glaido-beta.paperform.co/\n\n\n🎁 FREE Resources: https://v57rasl0.paperform.co\n📈 GoHighLevel – https://bit.ly/44upV9l\n🔥 n8n – https://n8n.partnerlinks.io/rkk4h07a86pv\n🩵 Gemini (AI Studio / Gemini 3) – https://aistudio.google.com/\n🧠 Claude / Claude Code – https://claude.ai/\n🎨 Stitch – https://stitch.withgoogle.com/\n🍌 Nano Banana (via Higgsfield) – https://higgsfield.ai/\n🎥 Higgsfield AI – https://higgsfield.ai/\n⚙️ GitHub – https://github.com/\n💻 Cursor – https://cursor.com/\n🟢 Node.js – https://nodejs.org/\n🚀 Vercel – https://vercel.com/\n🎨 Dribbble – https://dribbble.com/\n📄 HTML Extractor – https://www.htmlextractor.com/\n📣 Meta Ads Library – https://www.facebook.com/ads/library/\n\n\n\n\n⌚️ Stamps\n00:00 The $100,000 Design System\n00:32 Level 1\n03:35 Level 2\n27:33 Level 3\n38:59 Level 4",
+    "upload_date": "20251218",
+    "view_count": 38563,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "vXylQqxsGX0",
+    "url": "https://www.youtube.com/watch?v=vXylQqxsGX0",
+    "title": "Claude Code + Kaparthy’s AutoResearch = GOD MODE",
+    "channel": "Jack Roberts",
+    "duration": 1880,
+    "description": "📈 ALL Systems: https://bit.ly/4kol0y5\n🔥 Type with your voice: https://glaido.com \n🎙️ My Goofy pod: https://bit.ly/46nLQ3U\n\n💼 Business File\nhttps://www.canva.com/design/DAG98pR87NU/3cq7eycQGJbHqyrZwoj6Zg/edit?utm_content=DAG98pR87NU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton\n\nKaparthy's autoresearch: https://github.com/karpathy/autoresearch",
+    "upload_date": "20260322",
+    "view_count": 20955,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "CpzZnudxSTM",
+    "url": "https://www.youtube.com/watch?v=CpzZnudxSTM",
+    "title": "The greatest design system I’ve ever used (AntiGravity)",
+    "channel": "Jack Roberts",
+    "duration": 3393,
+    "description": "📈 ALL Systems: https://www.skool.com/aiautomationsbyjack\n🎁 FREE Resources: https://bit.ly/4rJB3cf\n🤩 My Goofy pod: https://bit.ly/46nLQ3U\n\n🎙️ Type with your Voice: https://glaido.com\n🛠️ Google Antigravity - https://antigravity.google.com/\n🤖 Gemini 3 - https://gemini.google.com/\n🎨 Nano Banana Pro API - https://aistudio.google.com/\n📊 Gamma - https://gamma.app/\n🌐 Vercel - https://vercel.com/\n🖥️ AI Studio - https://aistudio.google.com/\n💻 GitHub - https://github.com/\n🤖 Claude - https://claide.ai/\n🏗️ 21st.dev - https://21st.dev/\n☁️ Google Cloud Console - https://console.cloud.google.com/\n\n\n⌚️ Stamps:\n00:00 Intro\n00:36 Design system\n01:18 5 design levels\n02:02 Level 1\n09:13 Level 2\n23:42 Level 3\n43:06 Level 4\n49:35 Level 5\n56:19 What next",
+    "upload_date": "20260211",
+    "view_count": 49348,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "nhibi9TRgNc",
+    "url": "https://www.youtube.com/watch?v=nhibi9TRgNc",
+    "title": "AntiGravity + Spline = INSANE 3D Websites (NEW Skill)",
+    "channel": "Jack Roberts",
+    "duration": 2446,
+    "description": "📈 ALL Systems: https://bit.ly/4kol0y5\n🎁 3D Spline Skill: https://bit.ly/4s2jOTG\n🤩 My Goofy pod: https://bit.ly/46nLQ3U\n\n-- CORE Software\n🛠️ Anti-gravity - https://antigravity.google.com/ \n🎨 Spline - https://spline.design/ \n🤖 Gemini 3.1 - https://gemini.google.com/ \n✨ Midjourney - https://www.midjourney.com/ \n📂 Sublime - https://www.sublimetext.com/ \n🧩 Gravity Claw - https://gravityclaw.com/ \n🏢 AI Studio - https://aistudio.google.com/ \n🖼️ Adobe Fonts - https://fonts.adobe.com/ \n🧠 Cosmos - https://www.cosmos.so/ \n📽️ Luma Dream Machine - https://lumalabs.ai/dream-machine/ \n✍️ Beehiiv - https://www.beehiiv.com/ \n📈 GoHighLevel - https://www.gohighlevel.com/ \n🕸️ TikTok - https://www.tiktok.com/ \n🖌️ Figma - https://www.figma.com/ \n🛍️ Canva - https://www.canva.com/ \n📹 YouTube - https://www.youtube.com/ \n🔍 Weave (YV) - https://www.yv.com/ \n\n⌚️ Stamps:\n00:00 Intro\n00:42 3D websites\n18:09 Vibe Design \n38:21 Posting & Hosting\n40:32 What next",
+    "upload_date": "20260225",
+    "view_count": 76259,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "eNJfD6yHeIY",
+    "url": "https://www.youtube.com/watch?v=eNJfD6yHeIY",
+    "title": "Claude Code + Stitch 2.0 Destroys Web design (Figma Killer)",
+    "channel": "Jack Roberts",
+    "duration": 1589,
+    "description": "📈 ALL Systems: https://bit.ly/4kol0y5\n🎁 FREE Resources: https://bit.ly/4lI98Ih\n🎙️ My Goofy pod: https://bit.ly/46nLQ3U\n\nGoogle just dropped Stitch 2.0 and when you combine it with Claude Code, you get a ridiculous website building machine. Now you can research competitors, generate multiple design variations, and deploy professional sites without being a design expert.\n\nCORE Software\n🔥 Type with your voice: https://glaido.com\n🚀 AntiGravity: https://antigravity.google/\n☁️ Claude: https://claude.ai/\n🧶 Stitch: https://stitch.withgoogle.com/\n📁 GitHub: https://github.com/\n\n\n\nClaude Code + Stitch 2.0 Builds INSANE Web Apps (Figma Killer)",
+    "upload_date": "20260324",
+    "view_count": 38855,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "mvHGl6zEA3w",
+    "url": "https://www.youtube.com/watch?v=mvHGl6zEA3w",
+    "title": "The Ultimate AntiGravity Masterclass (3+ HOUR FREE COURSE)",
+    "channel": "Jack Roberts",
+    "duration": 11774,
+    "description": "📈 ALL Systems: https://www.skool.com/aiautomationsbyjack\n🎁 FREE Resources: https://bit.ly/4kiTJxb\n🎙️ My Goofy pod: https://bit.ly/3Od4CV8\n\n--- Video TL;DR ---\nThis is he Definitive Masterclass for Google Antigravity. You'll be able to turn any idea into a real app or beautiful website, connect tools like NotebookLM and MCPs, and run AI agents that build entire projects for you, without writing a single line of code yourself. Hundreds of hours of learning, condensed so you can start building immediately.\n\n--- CORE Software ---\n⚡ Zapier: https://bit.ly/4s7L6bx\n💎 Work with me: https://scalewithteddy.com\n🎙️ Type with your Voice: https://glaido.com\n🎨 Lovable: https://lovable.link/tGDpWOx\n🤩 MCP Marketplace: https://mcpmarket.com/server\n🤖 Anti-Gravity: https://antigravity.google/\n📝 NotebookLM: https://notebooklm.google.com/\n💬 ChatGPT: https://chatgpt.com/\n♊ Gemini: https://gemini.google.com/\n💻 Cursor: https://cursor.com/\n🏄 Windsurf: https://windsurf.com/\n📁 GitHub: https://github.com/\n🛠️ Modal: https://modal.com/\n🌲 Pinecone: https://www.pinecone.io/\n☁️ Claude: https://claude.ai/\n\n⌚️ Stamps:\n00:00 Intro\n01:05 AntiGravity Masterclass\n06:52 Build your first AI App (Cloud)\n15:34 Install and ru",
+    "upload_date": "20260205",
+    "view_count": 136614,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "QZCYFJTv8jI",
+    "url": "https://www.youtube.com/watch?v=QZCYFJTv8jI",
+    "title": "How to Use AntiGravity Better than 99% of People",
+    "channel": "Jack Roberts",
+    "duration": 1441,
+    "description": "📈 ALL Systems: https://www.skool.com/aiautomationsbyjack\n🎁 FREE Resources: https://bit.ly/3N23lA9\n🎙️ Type with your Voice: https://glaido.com\n\n🩵 Gemini (AI Studio / Gemini 3): https://aistudio.google.com/\n👾 Debug: https://github.com/NeuraCerebra-AI/Ultimate-Debugger-Prompt-for-Claude-3\n🤖 Claude: https://claude.ai/\n🧠 Claude Code: https://claude.ai/\n🧪 Anti-Gravity (Google Antigravity): https://antigravity.google/\n🎨 Dribbble: https://dribbble.com/\n\nThis video shows how to use Google’s Anti-Gravity as a structured system for building real software, not just chatting to an AI. You learn a clear framework for turning ideas into working AI apps faster and at a higher quality than most people using these tools today. By the end, you have a fully functioning app and a repeatable process you can use to build and ship confidently.",
+    "upload_date": "20260101",
+    "view_count": 299138,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "3mMPtWjlefM",
+    "url": "https://www.youtube.com/watch?v=3mMPtWjlefM",
+    "title": "Vibe Design вышел на новый уровень — Figma + OpenAI Codex",
+    "channel": "Даниил Шишко x Pixel Perfect | Ai в Дизайне",
+    "duration": 1194,
+    "description": "Figma и OpenAI запустили интеграцию, которая соединяет дизайн и код в одном процессе. Теперь можно генерировать интерфейсы из промпта, получать готовый макет в Figma с Auto Layout и отправлять изменения обратно в код через Codex и MCP. В видео показываю, как работает связка Figma → код → обратно в Figma и как создать лендинг из промпта за несколько минут. Это новый этап AI-дизайна, где макет сразу превращается в рабочий сайт.\n\n⚡️ ХОЧЕШЬ ВНЕДРИТЬ AI В ДИЗАЙН-ПРОЦЕСС И ВЫЙТИ НА НОВЫЙ УРОВЕНЬ?\nЗаписывайся на курс AI-Native Designer со скидкой –41%: https://pixelperfect.school/ai-native-designer?utm_source=youtube&utm_campaign=youtube_videos&utm_content=figma_codex\n\n• Полноценный AI-пайплайн: от ресёрча до готового продакшн-визуала\n• Управляемая генерация (ноды, ассет-сеты, вариативность, контроль стиля)\n• AI в продуктовой логике: анализ конкурентов, гипотезы, PRD\n• Сборка UI в Figma без допиливания часами\n• Кейсы, которые можно сразу упаковать в портфолио\n📲 Остались вопросы, пиши нашеу менеджеру: https://t.me/pixelpsale\n\n📌 Проведу эфиры 17 - 18 марта 16:00 мск. Подключим Figma к Cursor через MCP, перенесем дизайн-систему и компоненты из макета в код, собрем страницу и задеплоим её на ",
+    "upload_date": "20260311",
+    "view_count": 16997,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "EsTrWCV0Ph4",
+    "url": "https://www.youtube.com/watch?v=EsTrWCV0Ph4",
+    "title": "AI Agents Full Course 2026: Master Agentic AI (2 Hours)",
+    "channel": "Nick Saraev",
+    "duration": 7994,
+    "description": "🔥 Join Maker School & get customer #1 guaranteed: https://skool.com/makerschool/about\n💎 All course files: https://drive.google.com/drive/folders/1Sjo54rul7zJXDES-Zu8snNuhYS0SC-IL\n🎙️ Listen to my silly podcast: www.youtube.com/@stackedpod\n\n💼 Work with my team: https://dub.sh/work-with-me-xtt\n\n📚 Free multi-hour courses\n→ Claude Code (4hr full course): https://www.youtube.com/watch?v=QoQBzR1NIqI\n→ Vibe Coding w/ Antigravity (6hr full course): https://www.youtube.com/watch?v=gcuR_-rzlDw\n→ Agentic Workflows (6hr full course): https://www.youtube.com/watch?v=MxyRjL7NG18\n→ N8N (6hr full course, 890K+ views): https://www.youtube.com/watch?v=2GZ2SNXWK-c\n\nSummary ⤵️\nHey, this is an end to end, extremely comprehensive course all about AI agents. It covers the three modern agentic AI tools: Codex, Claude Code, and Antigravity, and is agnostic to whichever you use. \n\nI will guide you through initial setup; workspace configuration; and then a variety of foundational to prompting techniques like self modifying agent instructions, multi agent MCP orchestration, video-to-action pipelines, agent chatrooms, subagent verification loops, prompt contracts, reverse prompting, and even more!\n\nBy the end, ",
+    "upload_date": "20260308",
+    "view_count": 121306,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "h2jzrWSJ008",
+    "url": "https://www.youtube.com/watch?v=h2jzrWSJ008",
+    "title": "Vibe Design — Новая эра интерфейсов | Claude + Figma MCP, Pencil.dev, Motiff",
+    "channel": "Даниил Шишко x Pixel Perfect | Ai в Дизайне",
+    "duration": 1371,
+    "description": "В этом видео разбираем новую эру Vibe Design — когда нейросети не просто генерируют картинки, а собирают полноценные редактируемые интерфейсы с Auto Layout и дизайн-системами. Сравним три инструмента: связку Claude Code + Figma через MCP, JSON-редактор Pencil.dev и Motiff AI. Покажу, как ИИ теперь добавляет блоки, правит экраны и собирает макеты прямо в рабочем процессе без ручной рутины. Профессия дизайнера меняется — и важно научиться управлять этими инструментами, а не конкурировать с ними.\n\n⚡️ ХОЧЕШЬ ВНЕДРИТЬ AI В ДИЗАЙН-ПРОЦЕСС И ВЫЙТИ НА НОВЫЙ УРОВЕНЬ?\nЗаписывайся на курс AI-Native Designer со скидкой –41%: https://pixelperfect.school/ai-native-designer?utm_source=youtube&utm_campaign=youtube_videos&utm_content=ai_pencil_motiff\n\n• Полноценный AI-пайплайн: от ресёрча до готового продакшн-визуала\n• Управляемая генерация (ноды, ассет-сеты, вариативность, контроль стиля)\n• AI в продуктовой логике: анализ конкурентов, гипотезы, PRD\n• Сборка UI в Figma без допиливания часами\n• Кейсы, которые можно сразу упаковать в портфолио\n📲 Остались вопросы, пиши нашеу менеджеру: https://t.me/pixelpsale\n\n📌 Проведу эфиры 17 - 18 марта 16:00 мск. Подключим Figma к Cursor через MCP, перенесем дизай",
+    "upload_date": "20260303",
+    "view_count": 20803,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  },
+  {
+    "id": "sTNy6cDMEjg",
+    "url": "https://www.youtube.com/watch?v=sTNy6cDMEjg",
+    "title": "How I Build a Production-Ready Design System with AI | Figma Make",
+    "channel": "AI Builder Space ",
+    "duration": 578,
+    "description": "📌Get the follow along guide here: https://link.builderspace.ai/ai-design-system \n\n🎬 Watch next: \nHow to turn your figma design to frontend UI code: https://youtu.be/j-YvrDrH-sw \n\nBuild a complete  AI design system with AI - from raw inspiration to production-ready UI components.\n\nIn this video, I walk you through the exact 5-step process I use to design scalable, consistent product ready UIs and Design systems using Figma Make\n\n✨ What you’ll learn in this video\n\n• How to systematically collect and organize UI inspiration\n• How to build a structured mood board in Figma\n• How to generate real UI pages using Figma Make\n• How to extract a minimum viable design system from AI-generated screens\n• How to refactor UI code using design tokens for production\n• How to avoid the spaghetti code trap when scaling your UI\n\n🕐 Timestamps:\n\n0:00 Product Requirements to Design Inspiration\n1:22 Mobbin.com showcase\n1:45 Collect inspiration for each page\n5:25 Generating the design system in Figma Make\n8:12 Refactor code and use on Cursor or Claude Code or Antigravity\n\n\n👩‍💻 Who this is for\n\n• Product builders and founders\n• Designers working with developers\n• Engineers building UI without a design system",
+    "upload_date": "20260121",
+    "view_count": 76872,
+    "transcript_error": "AttributeError: type object 'YouTubeTranscriptApi' has no attribute 'get_transcript'"
+  }
+]

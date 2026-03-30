@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "stitch": {
+      "command": "node",
+      "args": ["/Users/anton/Desktop/blizko 3/stitch-mcp-server/src/index.js"]
+    }
+  }
+}

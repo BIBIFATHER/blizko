@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Blizko — Premium Nanny Service</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Inter:wght@300;400;500;600;700&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#171512",
+              "surface-container-highest": "#e5e2dd",
+              "surface": "#fcf9f4",
+              "primary-fixed": "#e9e1dc",
+              "inverse-primary": "#cdc5c0",
+              "on-error": "#ffffff",
+              "on-primary-fixed": "#1e1b18",
+              "primary-container": "#2d2926",
+              "surface-container-high": "#ebe8e3",
+              "surface-container-lowest": "#ffffff",
+              "surface-variant": "#e5e2dd",
+              "on-tertiary-container": "#95908c",
+              "secondary": "#6b5d35",
+              "on-secondary-fixed": "#231b00",
+              "outline": "#7e756f",
+              "on-primary": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-primary-fixed-variant": "#4b4642",
+              "background": "#fcf9f4",
+              "on-secondary": "#ffffff",
+              "tertiary-fixed": "#e8e1dd",
+              "surface-dim": "#dcdad5",
+              "surface-container": "#f0ede9",
+              "primary": "#181512",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#2c2926",
+              "on-background": "#1c1c19",
+              "primary-fixed-dim": "#cdc5c0",
+              "on-tertiary-fixed-variant": "#4a4643",
+              "on-secondary-container": "#71633a",
+              "on-tertiary-fixed": "#1e1b19",
+              "secondary-container": "#f5e1ae",
+              "inverse-surface": "#31302d",
+              "surface-bright": "#fcf9f4",
+              "tertiary-fixed-dim": "#ccc5c1",
+              "outline-variant": "#cfc4bd",
+              "inverse-on-surface": "#f3f0eb",
+              "on-primary-container": "#96908b",
+              "surface-container-low": "#f6f3ee",
+              "on-secondary-fixed-variant": "#524620",
+              "surface-tint": "#635d5a",
+              "secondary-fixed": "#f5e1ae",
+              "on-surface-variant": "#4d4540",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "on-surface": "#1c1c19",
+              "secondary-fixed-dim": "#d8c594"
+            },
+            fontFamily: {
+              "headline": ["Newsreader", "serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"],
+              "serif-accent": ["Cormorant Garamond", "serif"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            boxShadow: {
+              "cloud": "0px 12px 40px rgba(45, 41, 38, 0.05)"
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fcf9f4;
+            color: #1c1c19;
+            font-family: 'Inter', sans-serif;
+        }
+        .editorial-shadow {
+            box-shadow: 0px 12px 40px rgba(45, 41, 38, 0.04);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased overflow-x-hidden selection:bg-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-xl">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-900 dark:text-stone-50 cursor-pointer" data-icon="menu">menu</span>
+<span class="text-2xl font-serif italic text-stone-900 dark:text-stone-50 tracking-tight">Blizko</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-stone-900 dark:text-stone-50 font-semibold tracking-wider text-[10px] uppercase transition-colors hover:text-amber-200" href="#">Discover</a>
+<a class="text-stone-500 dark:text-stone-400 tracking-wider text-[10px] uppercase transition-colors hover:text-amber-200" href="#">Nannies</a>
+<a class="text-stone-500 dark:text-stone-400 tracking-wider text-[10px] uppercase transition-colors hover:text-amber-200" href="#">Messages</a>
+</nav>
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden cursor-pointer active:scale-95 duration-200">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a smiling woman with soft studio lighting and warm tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzLBlO0gpCW87ZLoVmBsVQyErmmPPG5801mWNZcCh0r2J6FQ3j-hOikrGf9m1-gWeqevYDdXLRIoc9NGbhPDRvXiB-UHFpdEzVtp0x8a9cBkJTla6NqA9ScgxGz61uqHXjcTa0y0LnsUhQDc9s62TyQKvtT0ubJkMF3U-XUrgWvC-kJdfhY5_b8Wq19-y60KE7CGT7CHE4BAXLSpLbN7rRdarF_eS8QjVk1L7LAlBxB6y5qgE_igeZjFi2xH9ZqoQSeuxddswer6U"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32">
+<!-- Hero Section -->
+<section class="px-6 md:px-12 lg:px-24 mb-20">
+<div class="grid lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-8">
+<div class="inline-block px-4 py-1.5 rounded-full bg-surface-container-low text-secondary font-label text-[11px] uppercase tracking-[0.15em] font-semibold">
+                        Premium Childcare
+                    </div>
+<h1 class="font-serif-accent text-5xl md:text-7xl leading-[1.1] text-primary">
+                        Ваш дом в надёжных руках.
+                    </h1>
+<p class="font-headline text-xl md:text-2xl text-on-surface-variant max-w-lg leading-relaxed italic">
+                        Найдите идеальную няню, которой можно доверять.
+                    </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="bg-primary text-surface px-10 py-4 rounded-full font-label font-medium tracking-wide hover:opacity-90 transition-all active:scale-95">
+                            Начать поиск
+                        </button>
+<button class="bg-surface-container-low text-primary px-10 py-4 rounded-full font-label font-medium tracking-wide hover:bg-surface-container-high transition-all">
+                            О сервисе
+                        </button>
+</div>
+<!-- Trust Indicators -->
+<div class="flex items-center gap-8 pt-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="verified_user">verified_user</span>
+<span class="text-[12px] uppercase tracking-wider text-on-surface-variant font-medium">Проверенные профили</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="security">security</span>
+<span class="text-[12px] uppercase tracking-wider text-on-surface-variant font-medium">Личная модерация</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="aspect-[4/5] rounded-3xl overflow-hidden shadow-cloud">
+<img class="w-full h-full object-cover" data-alt="lifestyle shot of a professional nanny playing with a young child in a sunlit modern living room with soft beige tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCiJNg5YD6UjwJo_6SsYZInrwZ1ociWhrJYF6yPJM_zpoFezXX44pX8of4_pepVxVyAFXMN-UIGOsUncA2Xxo6iun5-E4XTBNnXzaWQizwIbI9tKqtdW6Fud6jw8uQkZ6hzX2VnfpCrtVBbp3DU6zqc4wPgWT12mVGSqDoCJycPwLrfqhguVholUF7WeJGzKNEIWAQCnOocYc06BQ5NNGkyHDPLNJT2S9gPFIFtQXU3r-C7sGdaDcORGjuGSeorVajErp6vO33r-8"/>
+</div>
+<!-- Floating Badge -->
+<div class="absolute -bottom-6 -left-6 bg-surface-container-lowest p-6 rounded-2xl shadow-cloud max-w-[200px]">
+<div class="flex -space-x-3 mb-3">
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="portrait of a professional caregiver in warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHAjGge5UW99p7BM3WukQlKLzdolK9HlOcT8F65ea2a64nqoyK-kAqt_xtkPTY_0rPoyLT2a31JM6N3Eec3tbzcI1vUxRNWfuEOrYxPxSIHvqUzJ11JGuty8v62KoWjvscLu9qpdKigMWaQrhsS3TQkXEE5XAEH4QHCzKm_MTiz5xj8xynlmVQNmZwlS_nD3SY5fofGGD_dAsLBzq5vsjgoPdX9BDoajCsLW_OUPx-lp2wuSqLSXeBFC3jjuFtSS4BVAUIDFamhGo"/>
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="friendly woman face portrait with soft background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh7fvfOLg_Fq4xnlU97HUSkVQypcXiUBYRGcAyjy4sEBSsBm_yvZa82AshrTIzeUX2n4BeHxozSVBoLGOX8tpnSUjt7xtZ5fD5vP-grmisqtnO8nq3dcRKCWlysT88yEYAnLOc9BSR1RABZDVjW9C5PKd1yw3hSIc-0r7ZVU_rDEUI_mq7nHE7WlGfj0IpoAzGa_1ShfVVqm3XczkBv3n7qjbDbu1X8yWmUOXC65ORisSUu1zs3rYRBYLLTRpp9RwPIpI_hjnHfAE"/>
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="smiling male professional in warm light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_LfRKX8vF9DWUOw2KZ2etVCkHHc7PvYhI0Q3zZXc8RYfmYRE6M1dbqTL-rUiLPJi8ytCqTkW-0509vuV1aj-jH5CrQUmtIY10B9Excyt5DKbbJ5HOmkFP7bbBG5G-2VGEj6KoSfqG5Mhe44_yRRDfbyiPv2-THPVVcqy_WszPdqRBlk5VpLoEQWNJbh_vEzdjxItZOHee97jgdblQzDo0iw-1KTgPUCpvO65HrB_fDSobJUKxaLlJIm-X3EInCJHMr0YVG8-OSY"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-[10px] font-bold">+12</div>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-tight">12 проверенных нянь рядом с вами</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Philosophy Section -->
+<section class="bg-surface-container-low py-24 px-6 md:px-12 lg:px-24">
+<div class="max-w-7xl mx-auto">
+<div class="mb-16 space-y-4">
+<h2 class="font-serif-accent text-4xl text-primary">Искусство выбора</h2>
+<p class="font-body text-on-surface-variant max-w-2xl">Мы объединяем технологии и человеческий подход, чтобы создать самый безопасный путь к идеальному уходу за вашими детьми.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Feature Card 1 -->
+<div class="md:col-span-2 bg-surface-container-lowest rounded-3xl p-10 flex flex-col justify-between shadow-cloud min-h-[400px]">
+<div class="max-w-md">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="text-2xl font-headline mb-4">Умный Shortlist</h3>
+<p class="text-on-surface-variant leading-relaxed">Вам не нужно просматривать сотни анкет. Наша система отбирает 3-5 кандидатов, идеально соответствующих ценностям вашей семьи и вашему графику.</p>
+</div>
+<div class="mt-8 flex items-center gap-4 text-secondary font-medium group cursor-pointer">
+<span class="text-sm font-label uppercase tracking-wider">Как это работает</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_right_alt">arrow_right_alt</span>
+</div>
+</div>
+<!-- Feature Card 2 -->
+<div class="bg-primary text-surface-container-lowest rounded-3xl p-10 shadow-cloud flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-4xl text-secondary-container mb-6" data-icon="verified">verified</span>
+<h3 class="text-2xl font-headline mb-4">Личное интервью</h3>
+<p class="text-stone-400 leading-relaxed text-sm">Каждый специалист проходит многоступенчатую проверку и личное собеседование с нашими психологами.</p>
+</div>
+<div class="mt-8 pt-8 border-t border-stone-800">
+<div class="text-3xl font-serif mb-1">100%</div>
+<div class="text-[10px] uppercase tracking-widest text-stone-500">Гарантия проверки данных</div>
+</div>
+</div>
+<!-- Feature Card 3 -->
+<div class="bg-secondary-container rounded-3xl p-10 shadow-cloud flex flex-col md:flex-row gap-8 items-center md:col-span-3">
+<div class="flex-1">
+<h3 class="text-2xl font-headline mb-4 text-on-secondary-container">Human-Centered Care</h3>
+<p class="text-on-secondary-fixed-variant leading-relaxed">Мы верим, что забота о ребенке — это не просто услуга, а доверительные отношения. Наша миссия — найти человека, который станет частью вашей семейной гармонии.</p>
+</div>
+<div class="w-full md:w-64 aspect-square rounded-2xl overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="close-up of a caregiver holding a child's hand gently, warm sunny filter, focus on the connection" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy74VqyUF8IZqVrimM76mBrSy0zYBaGwJwBGp4VAPsPbgZzvfSE1Xt9krz2TIj8HkrSeudimTKJcB9dPnOqnW3phH27qERmm95hQcJeDIqKNYEVHsAio4RTwqHilUE12aVP2zguR9_1NmMa5oMSUA9Ifn0IEJYeIyNUoK2F-slx2ohtvkUWpfaHKb-pxFUZY03AySxvrzA9xKnw0cjsdq775-hnePfa1uP_6H0pxMDtoWXoUdHVCNofenr58FlLBNKO94z22gzCQQ"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Premium List Section -->
+<section class="py-24 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div class="max-w-xl">
+<h2 class="font-serif-accent text-4xl text-primary mb-4">Наши лучшие специалисты</h2>
+<p class="text-on-surface-variant italic font-headline">Курируемый список опытных профессионалов, готовых приступить к работе.</p>
+</div>
+<a class="text-primary font-label uppercase text-[11px] tracking-widest border-b-2 border-secondary pb-1 hover:text-secondary transition-colors" href="#">Посмотреть всех</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Nanny Card 1 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-3xl overflow-hidden mb-6 relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="professional nanny portrait with soft lighting, natural look and calm expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1uScHPChJMKxeHkpDaH-3V7l50Jysh2I-_wXCATF5DakY4cLqT9XivZz5hnm0qHXW5_tOkoJYNIsyJhB_cnjHyPOYrYoy-uUjX9xjfhs_SUZPa__pbPkFyNPS_k6LBAh7C39ZAx6CjQATnsmzkHu4gU7hw2vh5lyAKDKaBao8s30_gXySQCRsBZcJEskM_DWcEKvpIoDQtOkrsb0GqpdySPrgB7eI67O67uoY5JJ7nRT2v8URning34XbkKinSNm99nxRCyu5zvA"/>
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-label uppercase tracking-wider text-primary">Top Rated</div>
+</div>
+<h4 class="text-xl font-headline mb-1">Анна Сергеева</h4>
+<p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-4">Педагогическое образование • 8 лет опыта</p>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs text-on-surface ml-2">5.0 (42 отзыва)</span>
+</div>
+</div>
+<!-- Nanny Card 2 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-3xl overflow-hidden mb-6 relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="gentle smiling woman portrait with cinematic soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTl3zJiiB5oKoO8jXCZtVomp7BINh4uIoC6k80mdOaffhT5klF35E5RlDuB1tFdWgHAbwnmL-VgQOFN2DQ5bRPOQFnWMqb_R9Rvs1iEjLMsYVbwFd36OsK0550SdSwrjGNOc1eOrMA7dc6mvkVvzJ5Y6jPCe2d8FLS0WMrFbEk7MeCg_SjuzhDayKYUb9ujxLDynHR2kTQ_IaBeOEJup_M-KRFKHWoXcMr5RR_tcHBsitxuVi1G2Qvmg9JxgzSME2f_EYhVxPdKGE"/>
+</div>
+<h4 class="text-xl font-headline mb-1">Мария Волкова</h4>
+<p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-4">Медицинский профиль • 5 лет опыта</p>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs text-on-surface ml-2">4.9 (28 отзывов)</span>
+</div>
+</div>
+<!-- Nanny Card 3 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-3xl overflow-hidden mb-6 relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="professional mature woman smiling warmly in soft afternoon light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHurLLVbD9RjDUO7hG4CI7QEkernd8Q-P7JMzvKj3EA0IClSB4ONM4Vk8JjaDyfWR24Vjr0NSw6LzDGcK80lUXBq7nDq3B-8ixu-Eogk7Gf932XywLxyEzkoYPVKtBPICIFsqssM1wS1EY2eFGIixdmbtm5P5UucC6iGTVsEpeNQRXAChjh0Lbheciece3JspUogf9hvHss7HkUkKRx3StA0OfCEwoo0oWAs5_GbXDWzWYsDJAi1MCRggDswXBM0oy2Z-F6BqBDX4"/>
+</div>
+<h4 class="text-xl font-headline mb-1">Елена Петрова</h4>
+<p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-4">Раннее развитие • 12 лет опыта</p>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-xs text-on-surface ml-2">5.0 (56 отзывов)</span>
+</div>
+</div>
+<!-- Nanny Card 4 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-3xl overflow-hidden mb-6 relative">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="portrait of a young smiling professional caregiver in bright minimalist setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbLsiv7QhUhudn_xkVimyXWx9gTBVgIZhrJIPiCRdX-Zfw3JvC1A7rNBTq0U3Dplx1BqMpwwvD5wFLcry9oeJWwrlh2EjKvrg5RosZawXoC9Y7369FjksogUkLZ0R26iuZi5NMuLqJEVZszeUKqWbgMQM0BheRbJEWHyIK6p6Nvq2dsZtg9txlclxJbYu8UbzXmXMn7LcSRsDFij-CcifZAZwLi3i_dnU7lCHWrMd6iQ3P2g59PeB6A96PwwmMjvCCChBTVORmLGQ"/>
+</div>
+<h4 class="text-xl font-headline mb-1">Виктория Ким</h4>
+<p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-4">Арт-терапия • 4 года опыта</p>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">star</span>
+<span class="text-xs text-on-surface ml-2">4.8 (15 отзывов)</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-safe">
+<div class="rounded-full mx-6 mb-8 w-full bg-stone-50/70 dark:bg-stone-900/70 backdrop-blur-2xl flex justify-between items-center px-6 py-3 shadow-cloud">
+<div class="flex flex-col items-center justify-center bg-stone-900 dark:bg-stone-100 text-stone-50 dark:text-stone-900 rounded-full px-5 py-2 scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="text-[10px] uppercase tracking-[0.05em] font-sans mt-0.5">Discover</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 rounded-full">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+<span class="text-[10px] uppercase tracking-[0.05em] font-sans mt-0.5">Nannies</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 rounded-full">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] uppercase tracking-[0.05em] font-sans mt-0.5">Messages</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-2 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 rounded-full">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] uppercase tracking-[0.05em] font-sans mt-0.5">Profile</span>
+</div>
+</div>
+</nav>
+<!-- FAB (Suppressed on Home according to shell rules as primary goal is search discovery) -->
+</body></html>

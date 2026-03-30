@@ -59,3 +59,10 @@
 - Диаграмма/описание UX‑потока
 - Спецификация компонентов/состояний
 - Краткий дизайн‑бриф для реализации
+
+## Preferred Skills
+- `blizko-design-system`
+- `frontend-design`
+- `responsive-design`
+- `blizko-ux-writing`
+- `accessibility-compliance`

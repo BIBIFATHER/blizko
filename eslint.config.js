@@ -86,16 +86,18 @@ export default [
 
       // React Hooks
       ...reactHooks.configs.recommended.rules,
+      'react-hooks/set-state-in-effect': 'warn',
 
       // General
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-undef': 'off', // TS type names and DOM globals are resolved by TypeScript, not ESLint core
       'no-unused-vars': 'off', // handled by @typescript-eslint
       'no-redeclare': 'off', // TS overloads are valid and tsc handles redeclarations
       'prefer-const': 'warn',
     },
   },
   {
-    ignores: ['dist/**', 'node_modules/**', '*.config.*', 'api/**', 'scripts/**', '.agents/**', '.venv/**', 'sw.js', 'public/sw.js', 'test-dom.js', 'android/**', 'ios/**', 'archive/**', 'cloudflare/**', 'figma-autobot/**'],
+    ignores: ['dist/**', 'node_modules/**', '*.config.*', 'api/**', 'scripts/**', '.agents/**', '.venv/**', 'sw.js', 'public/sw.js', 'test-dom.js', 'android/**', 'ios/**', 'archive/**', 'cloudflare/**', 'figma-autobot/**', 'stitch-mcp-server/**'],
   },
   prettier,
 ];

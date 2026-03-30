@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, Users, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { NannyProfile, Language } from '@/core/types';
 import { idFromSlug } from '@/core/utils/slugify';
-import { t } from '@/core/i18n/translations';
 import { getAssessmentSignalLabel } from '@/services/assessment';
 import { SeoHead } from '../seo/SeoHead';
 
@@ -24,7 +23,6 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const text = t[lang];
   const [nanny, setNanny] = useState<NannyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -125,7 +123,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
   if (loading) {
     return (
-      <div className="page-frame animate-fade-in py-10">
+      <div className="form-shell animate-fade-in py-10">
         <div className="hero-shell flex min-h-[50vh] flex-col items-center justify-center text-center">
           <div className="mb-4 h-14 w-14 rounded-2xl bg-amber-100/80 animate-pulse" />
           <p className="text-sm text-stone-400">Загружаем профиль…</p>
@@ -136,7 +134,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
   if (error || !nanny) {
     return (
-      <div className="page-frame animate-fade-in py-10">
+      <div className="form-shell animate-fade-in py-10">
         <div className="hero-shell flex min-h-[50vh] flex-col items-center justify-center px-6 text-center">
           <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-100 bg-amber-50">
             <Heart size={24} className="text-amber-400" />
@@ -219,7 +217,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
             <div className="min-w-0 flex-1">
               <div className="eyebrow mb-3">Профиль няни</div>
-              <h1 className="truncate text-3xl text-stone-950 md:text-4xl" itemProp="name">
+              <h1 className="text-3xl leading-tight text-stone-950 md:text-4xl" itemProp="name">
                 {nanny.name}
               </h1>
               {avgRating && (

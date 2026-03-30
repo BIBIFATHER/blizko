@@ -46,3 +46,10 @@
 - Краткий план эксперимента
 - Скрипты/офферы/сообщения
 - Мини‑сводка результатов
+
+## Preferred Skills
+- `marketing-demand-acquisition`
+- `marketing-ideas`
+- `marketing-psychology`
+- `content-design`
+- `technical-writer`

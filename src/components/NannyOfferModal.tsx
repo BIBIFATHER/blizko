@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Checkbox } from './UI';
-import { X, FileText, Shield } from 'lucide-react';
+import { Button, Checkbox, ModalShell } from './UI';
+import { X, FileText } from 'lucide-react';
 import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 
@@ -19,10 +19,8 @@ export const NannyOfferModal: React.FC<NannyOfferModalProps> = ({ onClose, onAcc
   const displayedText = activeTab === 'terms' ? text.offerText : text.nannyPersonalDataText;
 
   return (
-    <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-slide-up flex flex-col max-h-[85vh]">
-        {/* Header */}
-        <div className="bg-stone-50 border-b border-stone-100 p-4">
+    <ModalShell variant="card" className="z-80" panelClassName="bg-white">
+      <div className="border-b border-stone-100 bg-stone-50 p-4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2 text-stone-800 font-semibold">
               <FileText size={20} className="text-amber-500" />
@@ -48,10 +46,9 @@ export const NannyOfferModal: React.FC<NannyOfferModalProps> = ({ onClose, onAcc
                {text.offerTabPrivacy}
              </button>
           </div>
-        </div>
+      </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-white space-y-3">
+      <div className="flex-1 overflow-y-auto space-y-3 bg-white p-6">
           {displayedText.map((paragraph, index) => (
             <p 
               key={index} 
@@ -60,11 +57,10 @@ export const NannyOfferModal: React.FC<NannyOfferModalProps> = ({ onClose, onAcc
               {paragraph}
             </p>
           ))}
-        </div>
+      </div>
 
-        {/* Footer with Checkboxes */}
-        <div className="p-4 bg-stone-50 border-t border-stone-100 space-y-3">
-          <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+      <div className="space-y-3 border-t border-stone-100 bg-stone-50 p-4">
+          <div className="rounded-xl border border-amber-100 bg-amber-50 p-3">
             <Checkbox 
               label={`${text.offerAccept} *`}
               checked={termsAccepted}
@@ -75,7 +71,7 @@ export const NannyOfferModal: React.FC<NannyOfferModalProps> = ({ onClose, onAcc
             />
           </div>
           
-          <div className="bg-stone-100 border border-stone-200 rounded-xl p-3">
+          <div className="rounded-xl border border-stone-200 bg-stone-100 p-3">
             <Checkbox 
               label={`${text.offerPrivacyAccept} *`}
               checked={privacyAccepted}
@@ -93,8 +89,7 @@ export const NannyOfferModal: React.FC<NannyOfferModalProps> = ({ onClose, onAcc
           >
             {text.offerSubmit}
           </Button>
-        </div>
       </div>
-    </div>
+    </ModalShell>
   );
 };

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,wght@0,400;0,600;1,400;1,600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#171512",
+              "surface-container-highest": "#e5e2dd",
+              "surface": "#fcf9f4",
+              "primary-fixed": "#e9e1dc",
+              "inverse-primary": "#cdc5c0",
+              "on-error": "#ffffff",
+              "on-primary-fixed": "#1e1b18",
+              "primary-container": "#2d2926",
+              "surface-container-high": "#ebe8e3",
+              "surface-container-lowest": "#ffffff",
+              "surface-variant": "#e5e2dd",
+              "on-tertiary-container": "#95908c",
+              "secondary": "#6b5d35",
+              "on-secondary-fixed": "#231b00",
+              "outline": "#7e756f",
+              "on-primary": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-primary-fixed-variant": "#4b4642",
+              "background": "#fcf9f4",
+              "on-secondary": "#ffffff",
+              "tertiary-fixed": "#e8e1dd",
+              "surface-dim": "#dcdad5",
+              "surface-container": "#f0ede9",
+              "primary": "#181512",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#2c2926",
+              "on-background": "#1c1c19",
+              "primary-fixed-dim": "#cdc5c0",
+              "on-tertiary-fixed-variant": "#4a4643",
+              "on-secondary-container": "#71633a",
+              "on-tertiary-fixed": "#1e1b19",
+              "secondary-container": "#f5e1ae",
+              "inverse-surface": "#31302d",
+              "surface-bright": "#fcf9f4",
+              "tertiary-fixed-dim": "#ccc5c1",
+              "outline-variant": "#cfc4bd",
+              "inverse-on-surface": "#f3f0eb",
+              "on-primary-container": "#96908b",
+              "surface-container-low": "#f6f3ee",
+              "on-secondary-fixed-variant": "#524620",
+              "surface-tint": "#635d5a",
+              "secondary-fixed": "#f5e1ae",
+              "on-surface-variant": "#4d4540",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "on-surface": "#1c1c19",
+              "secondary-fixed-dim": "#d8c594"
+            },
+            fontFamily: {
+              "headline": ["Newsreader", "serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            boxShadow: {
+                'cloud': '0px 12px 40px rgba(45, 41, 38, 0.05)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fcf9f4; /* cloud-cream */
+            color: #1c1c19;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col items-center justify-center p-6">
+<main class="w-full max-w-2xl text-center space-y-12">
+<!-- Premium Visual Asset -->
+<div class="relative inline-block mx-auto group">
+<div class="w-48 h-64 md:w-64 md:h-80 bg-surface-container-low rounded-xl overflow-hidden shadow-cloud transition-transform duration-700 hover:scale-[1.02]">
+<img alt="Success Visual" class="w-full h-full object-cover grayscale opacity-90 mix-blend-multiply" data-alt="Minimalist artistic black and white photo of a dog sleeping peacefully on a linen couch with soft morning sunlight streaming through a window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS4efMUmU-NPG0t9Bk-kU4dtsdrgp7lrHkL0Z4bmQfrpCt_6PUkoojA3Sgp1UVokK_j84erPO5R-x0w0h3izhym0N9XW1ttiQ7n_tDwFahDjF1-VSqllKEkG0ZCYMpjPBjfXBgNJ6zUavppcKISyJuRQkF-yOgdhmUFkteny8HMF5ctNKFx036ifCNkaCL6E5OKK_Jqw6Ac_7-nK1GtJRH7qjpU9DgcLPBvkwuCh6Vt-IWWyBSDxH47vv2tgFxNrwuIwhwubG1QDA"/>
+<div class="absolute inset-0 bg-secondary/10"></div>
+</div>
+<!-- Floating Ornament -->
+<div class="absolute -bottom-6 -right-6 bg-secondary-container text-on-secondary-container w-20 h-20 rounded-full flex items-center justify-center shadow-cloud">
+<span class="material-symbols-outlined text-4xl" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Typography Cluster -->
+<div class="space-y-6">
+<h1 class="font-headline text-5xl md:text-7xl italic text-primary tracking-tight">
+                Запрос отправлен
+            </h1>
+<p class="font-body text-on-surface-variant text-lg md:text-xl max-w-md mx-auto leading-relaxed">
+                Мы уведомим вас, как только няня подтвердит запрос. Обычно это занимает не более 15 минут.
+            </p>
+</div>
+<!-- Secondary Information / Reassurance Bento-ish Card -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-lg mx-auto">
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-cloud flex items-start space-x-4">
+<div class="bg-surface-container text-primary p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+</div>
+<div>
+<span class="font-label text-[10px] uppercase tracking-wider block text-on-tertiary-container mb-1">Уведомление</span>
+<p class="text-sm font-medium">Push-уведомление придет на ваш телефон</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-cloud flex items-start space-x-4">
+<div class="bg-surface-container text-primary p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="shield_with_heart">shield_with_heart</span>
+</div>
+<div>
+<span class="font-label text-[10px] uppercase tracking-wider block text-on-tertiary-container mb-1">Безопасность</span>
+<p class="text-sm font-medium">Ваша бронь застрахована сервисом Blizko</p>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="pt-8 space-y-4">
+<button class="bg-primary text-on-primary font-body font-medium px-10 py-5 rounded-full shadow-cloud transition-all active:scale-95 hover:bg-tertiary-container text-lg">
+                Вернуться в кабинет
+            </button>
+<div class="pt-4">
+<button class="text-on-surface-variant font-label text-[10px] uppercase tracking-[0.1em] hover:text-primary transition-colors border-b border-transparent hover:border-secondary">
+                    Посмотреть детали запроса
+                </button>
+</div>
+</div>
+</main>
+<!-- Footer Aesthetic Detail -->
+<footer class="fixed bottom-12 w-full text-center">
+<span class="font-headline italic text-primary opacity-20 text-3xl select-none">Blizko</span>
+</footer>
+</body></html>

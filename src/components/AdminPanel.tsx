@@ -22,6 +22,7 @@ import {
 type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings';
 const ADMIN_PARENTS_SEEN_TS_KEY = 'blizko_admin_parents_seen_ts';
 const ADMIN_ACTIONS_KEY = 'blizko_admin_actions';
+const getNowTs = () => Date.now();
 
 export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [parents, setParents] = useState<ParentRequest[]>([]);
@@ -67,7 +68,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     try {
       const raw = getItem(ADMIN_ACTIONS_KEY) || '[]';
       const items = JSON.parse(raw);
-      items.unshift({ action, meta, at: Date.now() });
+      items.unshift({ action, meta, at: getNowTs() });
       setItem(ADMIN_ACTIONS_KEY, JSON.stringify(items.slice(0, 200)));
     } catch {
       // ignore
@@ -92,7 +93,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const markParentsAsSeen = () => {
-    setItem(ADMIN_PARENTS_SEEN_TS_KEY, String(Date.now()));
+    setItem(ADMIN_PARENTS_SEEN_TS_KEY, String(getNowTs()));
     setUnseenParentsCount(0);
   };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CalendarClock,
@@ -26,6 +26,8 @@ interface RoleDashboardProps {
   user: User;
   lang: Language;
 }
+
+const getNowTs = () => Date.now();
 
 const toneClasses: Record<DashboardKpi['tone'], string> = {
   stone: 'bg-white border-stone-100',
@@ -89,7 +91,7 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
 
   const isNanny = user.role === 'nanny';
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user.role) return;
 
     setLoading(true);
@@ -109,20 +111,20 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
       }
 
       setBookings(nextBookings);
-      setLastLoadedAt(Date.now());
+      setLastLoadedAt(getNowTs());
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : String(loadError));
     } finally {
       setLoading(false);
     }
-  };
+  }, [isNanny, user]);
 
   useEffect(() => {
     if (!user.role) return;
 
     trackPageView(isNanny ? 'nanny_dashboard' : 'family_dashboard');
     void loadData();
-  }, [isNanny, user.id, user.role]);
+  }, [isNanny, loadData, user.role]);
 
   if (!user.role) return null;
 
@@ -147,9 +149,9 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <h1 className="max-w-[12ch] text-[2.2rem] leading-[0.96] text-stone-950 sm:max-w-3xl sm:text-4xl md:text-5xl">{model.title}</h1>
-              <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">{model.description}</p>
+            <div className="hero-copy space-y-0">
+              <h1 className="hero-title hero-title-wide">{model.title}</h1>
+              <p className="hero-body max-w-2xl">{model.description}</p>
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -253,14 +255,14 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
               </div>
 
               {loading ? (
-                <div className="rounded-[24px] border border-dashed border-stone-200 bg-stone-50/70 px-4 py-10 text-center text-sm text-stone-500">
+                <div className="secondary-card border-dashed bg-stone-50/70 px-4 py-10 text-center text-sm text-stone-500">
                   {lang === 'ru' ? 'Загружаем реальные точки активности…' : 'Loading real activity points…'}
                 </div>
               ) : (
                 <TrendBars points={model.trend.points} />
               )}
 
-              <div className="mt-5 rounded-[24px] bg-stone-50 px-4 py-3 text-sm text-stone-600">
+              <div className="secondary-card mt-5 bg-stone-50 px-4 py-3 text-sm text-stone-600">
                 {model.trend.summary}
               </div>
             </Card>
@@ -276,7 +278,7 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
 
               <div className="mt-5 space-y-3">
                 {model.callout.items.map((item) => (
-                  <div key={item.label} className="surface-panel rounded-[22px] border border-white/70 px-4 py-3">
+                  <div key={item.label} className="surface-panel secondary-card border-white/70 px-4 py-3">
                     <div className="text-[11px] uppercase tracking-[0.08em] text-stone-400">{item.label}</div>
                     <div className="mt-1 text-sm font-medium text-stone-700">{item.value}</div>
                   </div>

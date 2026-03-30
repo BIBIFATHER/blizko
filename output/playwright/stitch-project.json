@@ -1,0 +1,65 @@
+{
+  "gotoError": null,
+  "data": {
+    "title": "Stitch - Projects",
+    "url": "https://stitch.withgoogle.com/projects/4760189100996710010",
+    "text": "",
+    "textLength": 0,
+    "htmlLength": 1418,
+    "iframes": [
+      {
+        "index": 0,
+        "src": "https://app-companion-430619.appspot.com/projects/4760189100996710010?usegapi=1&jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.PCvl17LujMs.O%2Fd%3D1%2Frs%3DAHpOoo-sAn5Asuf3MvShXCH_dsg8tE46Tw%2Fm%3D__features__#id=I0_1774297001708&_gfid=I0_1774297001708&parent=https%3A%2F%2Fstitch.withgoogle.com&pfname=&rpctoken=15337484",
+        "id": "I0_1774297001708",
+        "name": "I0_1774297001708"
+      }
+    ],
+    "rootNodes": [
+      {
+        "index": 0,
+        "tag": "APPCOMPANION-ROOT",
+        "id": null,
+        "className": "",
+        "text": "",
+        "childCount": 2
+      },
+      {
+        "index": 1,
+        "tag": "SCRIPT",
+        "id": "base-js",
+        "className": "",
+        "text": "",
+        "childCount": 0
+      }
+    ]
+  },
+  "events": {
+    "console": [
+      {
+        "type": "warning",
+        "text": "No `HydrateFallback` element provided to render during initial hydration"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      },
+      {
+        "type": "warning",
+        "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+      }
+    ],
+    "pageErrors": [],
+    "failures": [
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63k1h2v9218910579za200zd9218910579&_p=1774296999792&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=645087731.1774297001&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AEA&_s=1&tag_exp=103116026~103200004~115938466~115938468~116024733~117384405~117484252~118131588&sid=1774297000&sct=1&seg=0&dl=https%3A%2F%2Fstitch.withgoogle.com%2Fprojects%2F4760189100996710010&dt=Stitch%20-%20Projects&en=scroll&_fv=1&_nsi=1&_ss=1&epn.percent_scrolled=90&tfd=5413",
+        "errorText": "net::ERR_ABORTED",
+        "type": "fetch"
+      },
+      {
+        "url": "https://www.google-analytics.com/g/collect?v=2&tid=G-1CD1CPGEYF&gtm=45je63k1h2v9218910579za200zd9218910579&_p=1774296999792&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=645087731.1774297001&ul=en-us&sr=1440x1024&uaa=arm&uab=64&uafvl=Not%253AA-Brand%3B99.0.0.0%7CHeadlessChrome%3B145.0.7632.6%7CChromium%3B145.0.7632.6&uamb=0&uam=&uap=macOS&uapv=14.7.8&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&_s=2&tag_exp=103116026~103200004~115938466~115938468~116024733~117384405~117484252~118131588&dl=%2Fprojects%2F%3AprojectId&sid=1774297000&sct=1&seg=1&dt=Stitch%20-%20Projects&en=page_view&_ee=1&ep.user_status=logged_out&_et=5118&tfd=15811",
+        "errorText": "net::ERR_ABORTED",
+        "type": "fetch"
+      }
+    ]
+  }
+}

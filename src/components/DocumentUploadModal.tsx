@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Button } from './UI';
+import { Button, ModalShell } from './UI';
 import { X, UploadCloud, CheckCircle, FileText, ShieldCheck } from 'lucide-react';
 import { Language, DocumentVerification } from '@/core/types';
 import { t } from '@/core/i18n/translations';
@@ -45,11 +45,10 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
   };
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-sm rounded-3xl overflow-hidden animate-slide-up relative min-h-[380px] flex flex-col">
-        <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 z-10">
+    <ModalShell variant="card" className="z-60" panelClassName="bg-white min-h-[380px]">
+      <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-800 z-10">
           <X size={24} />
-        </button>
+      </button>
 
         {step === 'select' && (
           <div className="p-6 flex-1 flex flex-col">
@@ -144,7 +143,6 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
             <Button onClick={onClose}>OK</Button>
           </div>
         )}
-      </div>
-    </div>
+    </ModalShell>
   );
 };

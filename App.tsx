@@ -33,6 +33,7 @@ const AuthModal = lazy(() => import('@/components/AuthModal').then((module) => (
 const UserProfileModal = lazy(() => import('@/components/UserProfileModal').then((module) => ({ default: module.UserProfileModal })));
 const ShareModal = lazy(() => import('@/components/ShareModal').then((module) => ({ default: module.ShareModal })));
 const RoleDashboard = lazy(() => import('@/components/dashboard/RoleDashboard').then((module) => ({ default: module.RoleDashboard })));
+const RedesignDemo = lazy(() => import('@/components/redesign/RedesignDemo').then((module) => ({ default: module.RedesignDemo })));
 
 function RouteFallback() {
   return <div className="flex items-center justify-center py-16 text-sm text-stone-500">Загружаем...</div>;
@@ -298,6 +299,7 @@ export default function App() {
               }
             />
             <Route path="/login" element={<LoginPage onOpenAuth={() => setAuthOpen(true)} />} />
+            <Route path="/redesign" element={<RedesignDemo />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

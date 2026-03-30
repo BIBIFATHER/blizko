@@ -1,15 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Star,
-  ShieldCheck,
   MapPin,
   X,
-  MessageCircle,
-  Sparkles,
-  Check,
   Grid3X3,
   List,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface ShortlistCompareMobileProps {
@@ -69,6 +66,11 @@ export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
   const [viewMode, setViewMode] = useState<'cards' | 'compare'>('cards');
   const [selectedIds, setSelectedIds] = useState<string[]>(['1', '2']);
   const [shortlist, setShortlist] = useState(mockShortlist);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const removeFromShortlist = (id: string) => {
     setShortlist(prev => prev.filter(n => n.id !== id));
@@ -84,172 +86,149 @@ export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
   };
 
   const selectedNannies = shortlist.filter(n => selectedIds.includes(n.id));
-  const topMatch = shortlist[0];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F7]">
+    <div className={`min-h-screen bg-[#FDFCFB] transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       {/* Header */}
-      <header className="bg-white sticky top-0 z-30 border-b border-[#E8E4DF]">
-        <div className="flex items-center justify-between px-4 pt-12 pb-4">
+      <header className="bg-[#FDFCFB] sticky top-0 z-30 border-b border-stone-200/50">
+        <div className="flex items-center justify-between px-5 pt-12 pb-4">
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-full bg-[#F5F3F0] flex items-center justify-center text-[#4A4A4A] active:bg-[#E8E4DF] transition-colors"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-stone-500 active:bg-stone-100 transition-colors"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={20} strokeWidth={1.5} />
           </button>
           <div className="text-center">
-            <h1 className="text-lg font-semibold text-[#3D3D3D]">Мой шортлист</h1>
-            <p className="text-xs text-[#8B8680]">{shortlist.length} кандидатов</p>
+            <h1 className="font-serif text-xl text-stone-700">Мой шортлист</h1>
+            <p className="text-xs text-stone-400 font-light mt-0.5">{shortlist.length} кандидатов</p>
           </div>
           <div className="w-10" />
         </div>
 
-        {/* View toggle */}
-        <div className="flex gap-1 mx-4 mb-3 p-1 rounded-xl bg-[#F5F3F0]">
+        {/* View toggle - text-only links */}
+        <div className="flex items-center justify-center gap-6 pb-4">
           <button
             onClick={() => setViewMode('cards')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              viewMode === 'cards' ? 'bg-white text-[#3D3D3D] shadow-sm' : 'text-[#8B8680]'
+            className={`flex items-center gap-2 text-sm font-light tracking-wide transition-all ${
+              viewMode === 'cards' ? 'text-stone-700' : 'text-stone-400'
             }`}
           >
-            <List size={16} />
+            <List size={16} strokeWidth={1.5} />
             Карточки
           </button>
+          <span className="text-stone-200">|</span>
           <button
             onClick={() => setViewMode('compare')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              viewMode === 'compare' ? 'bg-white text-[#3D3D3D] shadow-sm' : 'text-[#8B8680]'
+            className={`flex items-center gap-2 text-sm font-light tracking-wide transition-all ${
+              viewMode === 'compare' ? 'text-stone-700' : 'text-stone-400'
             }`}
           >
-            <Grid3X3 size={16} />
+            <Grid3X3 size={16} strokeWidth={1.5} />
             Сравнить
           </button>
         </div>
       </header>
 
       {viewMode === 'cards' ? (
-        <div className="p-4 pb-32 space-y-4">
-          {/* Top recommendation */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#81B29A] to-[#6A9B83] p-4">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
-            <div className="relative flex items-center gap-3">
-              <div className="relative">
-                <img
-                  src={topMatch.photo}
-                  alt={topMatch.name}
-                  className="w-14 h-14 rounded-xl object-cover ring-2 ring-white/30"
-                />
-                <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#F2CC8F] flex items-center justify-center">
-                  <Sparkles size={10} className="text-[#3D3D3D]" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-semibold text-white/90 uppercase tracking-wide">Лучший выбор</span>
-                </div>
-                <p className="text-white font-semibold">{topMatch.name}</p>
-                <p className="text-white/70 text-sm">Совпадение {topMatch.matchScore}%</p>
-              </div>
-              <button
-                onClick={() => onSelectNanny?.(topMatch.id)}
-                className="px-4 py-2 rounded-xl bg-white text-[#5D8A72] text-sm font-semibold active:bg-[#F5F3F0] transition-colors"
-              >
-                Открыть
-              </button>
-            </div>
-          </div>
-
-          {/* Nanny Cards */}
+        <div className="px-5 pt-6 pb-32 space-y-6">
+          {/* Nanny Cards - clickable, no duplicate button */}
           {shortlist.map((nanny, index) => (
             <div
               key={nanny.id}
-              className="bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]"
+              onClick={() => onSelectNanny?.(nanny.id)}
+              className="bg-[#F0EDE8] rounded-2xl overflow-hidden border border-stone-200/50 cursor-pointer active:bg-[#E8E5E0] transition-colors"
             >
               {/* Card Image Header */}
-              <div className="relative h-48">
+              <div className="relative h-56">
                 <img
                   src={nanny.photo}
                   alt={nanny.name}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#3D3D3D]/70 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/60 via-transparent to-transparent" />
                 
                 {/* Remove button */}
                 <button
-                  onClick={() => removeFromShortlist(nanny.id)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#4A4A4A] active:bg-white transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeFromShortlist(nanny.id);
+                  }}
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#FDFCFB]/90 backdrop-blur-sm flex items-center justify-center text-stone-500 active:bg-white transition-colors"
                 >
-                  <X size={16} />
+                  <X size={14} strokeWidth={1.5} />
                 </button>
 
-                {/* Match badge */}
+                {/* Heart icon - moved to top left */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSelect(nanny.id);
+                  }}
+                  className={`absolute top-4 left-4 w-8 h-8 rounded-full backdrop-blur-sm flex items-center justify-center transition-colors ${
+                    selectedIds.includes(nanny.id) 
+                      ? 'bg-[#C17F5E] text-white' 
+                      : 'bg-[#FDFCFB]/90 text-stone-500'
+                  }`}
+                >
+                  {selectedIds.includes(nanny.id) ? (
+                    <CheckCircle2 size={14} strokeWidth={1.5} />
+                  ) : (
+                    <span className="text-xs">+</span>
+                  )}
+                </button>
+
+                {/* Match badge - gold/bronze subtle style */}
                 {index === 0 && (
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#81B29A] text-white text-xs font-semibold flex items-center gap-1">
-                    <Sparkles size={12} />
-                    Лучшее совпадение
+                  <div className="absolute top-4 left-14 px-3 py-1 rounded-full bg-[#FDFCFB]/90 backdrop-blur-sm flex items-center gap-1.5">
+                    <div className="w-4 h-4 rounded-full border border-[#C9A86C] flex items-center justify-center">
+                      <span className="text-[8px] text-[#C9A86C]">1</span>
+                    </div>
+                    <span className="text-xs text-stone-600 font-light">Лучшее совпадение</span>
                   </div>
                 )}
 
                 {/* Bottom info */}
-                <div className="absolute bottom-0 left-0 right-0 p-4">
+                <div className="absolute bottom-0 left-0 right-0 p-5">
                   <div className="flex items-end justify-between">
                     <div>
-                      <h3 className="text-white text-lg font-semibold mb-1">{nanny.name}</h3>
-                      <div className="flex items-center gap-2 text-white/90 text-sm">
+                      <h3 className="text-white text-xl font-serif mb-1">{nanny.name}</h3>
+                      <div className="flex items-center gap-2 text-white/80 text-sm font-light">
                         <div className="flex items-center gap-1">
-                          <Star size={14} className="text-[#F2CC8F] fill-[#F2CC8F]" />
-                          <span className="font-semibold">{nanny.rating}</span>
+                          <Star size={12} className="text-[#C9A86C] fill-[#C9A86C]" />
+                          <span>{nanny.rating}</span>
                         </div>
-                        <span className="text-white/50">|</span>
+                        <span className="text-white/40">|</span>
                         <div className="flex items-center gap-1">
-                          <MapPin size={12} />
+                          <MapPin size={11} strokeWidth={1.5} />
                           <span>{nanny.distance}</span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-white text-xl font-semibold">{nanny.rate}₽</p>
-                      <p className="text-white/60 text-xs">в час</p>
+                      <p className="text-white text-xl font-light">{nanny.rate}₽</p>
+                      <p className="text-white/50 text-xs font-light">в час</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Card Body */}
-              <div className="p-4">
-                {/* Quick stats */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1.5 text-sm text-[#4A4A4A]">
-                    <ShieldCheck size={16} className="text-[#81B29A]" />
-                    <span>{nanny.verified}/5</span>
+              {/* Card Body - verification row */}
+              <div className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-sm text-stone-500 font-light">
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 size={14} className="text-[#8B9D83]" strokeWidth={1.5} />
+                      <span>Verified</span>
+                    </div>
+                    <span className="text-stone-300">|</span>
+                    <span>{nanny.experience} лет опыта</span>
+                    <span className="text-stone-300">|</span>
+                    <span>Ответ {nanny.responseTime}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-sm text-[#4A4A4A]">
-                    <span className="font-medium">{nanny.experience}</span> лет опыта
+                  {/* Trust score - subtle gold circle */}
+                  <div className="w-10 h-10 rounded-full border border-[#C9A86C] flex items-center justify-center">
+                    <span className="text-xs text-[#C9A86C]">{nanny.matchScore}</span>
                   </div>
-                  <div className="text-sm text-[#8B8680]">
-                    Ответ: {nanny.responseTime}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => toggleSelect(nanny.id)}
-                    className={`flex-1 py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-colors ${
-                      selectedIds.includes(nanny.id)
-                        ? 'bg-[#5D8A72] text-white'
-                        : 'bg-[#F5F3F0] text-[#4A4A4A]'
-                    }`}
-                  >
-                    {selectedIds.includes(nanny.id) && <Check size={16} />}
-                    {selectedIds.includes(nanny.id) ? 'Выбрана' : 'Сравнить'}
-                  </button>
-                  <button
-                    onClick={() => onSelectNanny?.(nanny.id)}
-                    className="flex-1 py-3 rounded-xl bg-[#F5F3F0] text-[#3D3D3D] font-medium text-sm active:bg-[#E8E4DF] transition-colors"
-                  >
-                    Подробнее
-                  </button>
                 </div>
               </div>
             </div>
@@ -257,39 +236,39 @@ export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
         </div>
       ) : (
         /* Compare View */
-        <div className="p-4 pb-32">
+        <div className="px-5 pt-6 pb-32">
           {selectedNannies.length < 2 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-full bg-[#F5F3F0] flex items-center justify-center mx-auto mb-4">
-                <Grid3X3 size={24} className="text-[#8B8680]" />
+            <div className="text-center py-16">
+              <div className="w-16 h-16 rounded-full bg-[#F0EDE8] flex items-center justify-center mx-auto mb-4">
+                <Grid3X3 size={22} className="text-stone-400" strokeWidth={1.5} />
               </div>
-              <p className="text-[#4A4A4A] font-medium mb-1">Выберите для сравнения</p>
-              <p className="text-[#8B8680] text-sm">Минимум 2 кандидата</p>
+              <p className="text-stone-700 font-serif mb-1">Выберите для сравнения</p>
+              <p className="text-stone-400 text-sm font-light">Минимум 2 кандидата</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Comparison Header - Photos */}
-              <div className="bg-white rounded-2xl p-4 overflow-hidden border border-[#E8E4DF]">
-                <div className="flex gap-3">
+              <div className="bg-[#F0EDE8] rounded-2xl p-5 overflow-hidden border border-stone-200/50">
+                <div className="flex gap-4">
                   {selectedNannies.map((nanny) => (
                     <div key={nanny.id} className="flex-1 text-center">
-                      <div className="relative mx-auto w-20 h-20 mb-2">
+                      <div className="relative mx-auto w-20 h-20 mb-3">
                         <img
                           src={nanny.photo}
                           alt={nanny.name}
-                          className="w-full h-full rounded-2xl object-cover"
+                          className="w-full h-full rounded-full object-cover"
                         />
                         <button
                           onClick={() => toggleSelect(nanny.id)}
-                          className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#4A4A4A] text-white flex items-center justify-center"
+                          className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-stone-600 text-white flex items-center justify-center"
                         >
-                          <X size={12} />
+                          <X size={10} strokeWidth={1.5} />
                         </button>
                       </div>
-                      <p className="font-medium text-[#3D3D3D] text-sm truncate">{nanny.name.split(' ')[0]}</p>
+                      <p className="text-sm text-stone-700 truncate">{nanny.name.split(' ')[0]}</p>
                       <div className="flex items-center justify-center gap-1 mt-1">
-                        <Star size={12} className="text-[#F2CC8F] fill-[#F2CC8F]" />
-                        <span className="text-xs text-[#4A4A4A]">{nanny.rating}</span>
+                        <Star size={11} className="text-[#C9A86C] fill-[#C9A86C]" />
+                        <span className="text-xs text-stone-500 font-light">{nanny.rating}</span>
                       </div>
                     </div>
                   ))}
@@ -297,7 +276,7 @@ export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
               </div>
 
               {/* Comparison Table */}
-              <div className="bg-white rounded-2xl overflow-hidden border border-[#E8E4DF]">
+              <div className="bg-[#FDFCFB] rounded-2xl overflow-hidden border border-stone-200/50">
                 {[
                   { label: 'Совпадение', key: 'matchScore', suffix: '%', highlight: true },
                   { label: 'Рейтинг', key: 'rating' },
@@ -313,22 +292,22 @@ export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
                   return (
                     <div
                       key={row.key}
-                      className={`flex items-center px-4 py-3.5 ${i !== 0 ? 'border-t border-[#E8E4DF]' : ''}`}
+                      className={`flex items-center px-5 py-4 ${i !== 0 ? 'border-t border-stone-200/50' : ''}`}
                     >
-                      <span className="w-24 text-sm text-[#8B8680] shrink-0">{row.label}</span>
-                      <div className="flex-1 flex gap-3">
+                      <span className="w-24 text-sm text-stone-400 font-light shrink-0">{row.label}</span>
+                      <div className="flex-1 flex gap-4">
                         {selectedNannies.map((nanny) => {
                           const value = nanny[row.key as keyof typeof nanny];
                           const isMax = typeof value === 'number' && value === maxVal;
                           return (
                             <div
                               key={nanny.id}
-                              className={`flex-1 text-center py-1.5 rounded-lg text-sm font-medium ${
+                              className={`flex-1 text-center py-2 rounded-lg text-sm ${
                                 row.highlight && isMax
-                                  ? 'bg-[#81B29A]/15 text-[#5D8A72]'
+                                  ? 'bg-[#C9A86C]/15 text-[#9A7D4E] font-medium'
                                   : isMax
-                                  ? 'bg-[#F5F3F0] text-[#3D3D3D]'
-                                  : 'text-[#4A4A4A]'
+                                  ? 'bg-[#F0EDE8] text-stone-700'
+                                  : 'text-stone-500 font-light'
                               }`}
                             >
                               {value}{row.suffix || ''}
@@ -342,13 +321,10 @@ export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
               </div>
 
               {/* Recommendation */}
-              <div className="bg-gradient-to-br from-[#81B29A] to-[#6A9B83] rounded-2xl p-4 text-white">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles size={16} className="text-[#F2CC8F]" />
-                  <span className="text-xs font-semibold text-white/90 uppercase tracking-wide">Рекомендация Blizko</span>
-                </div>
-                <p className="text-sm text-white/90 leading-relaxed">
-                  <span className="text-white font-semibold">{selectedNannies[0]?.name}</span> лучше всего подходит: высокий рейтинг, ближе к вам и быстрее отвечает.
+              <div className="bg-[#F0EDE8] rounded-2xl p-5 border border-stone-200/50">
+                <p className="text-xs text-stone-400 uppercase tracking-wider font-light mb-2">Рекомендация Blizko</p>
+                <p className="text-sm text-stone-600 leading-relaxed font-light">
+                  <span className="text-stone-700">{selectedNannies[0]?.name}</span> лучше всего подходит: высокий рейтинг, ближе к вам и быстрее отвечает.
                 </p>
               </div>
             </div>
@@ -357,10 +333,9 @@ export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
       )}
 
       {/* Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E4DF] p-4 pb-8">
-        <button className="w-full h-14 rounded-2xl bg-[#5D8A72] text-white font-medium text-[15px] flex items-center justify-center gap-2 active:bg-[#4A7A62] transition-colors shadow-lg shadow-[#5D8A72]/20">
-          <MessageCircle size={20} />
-          Написать {viewMode === 'compare' && selectedNannies.length > 0 ? selectedNannies[0].name.split(' ')[0] : 'выбранным'}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#FDFCFB] border-t border-stone-200/50 p-5 pb-8">
+        <button className="w-full h-14 rounded-xl bg-stone-800 text-white font-light text-sm uppercase tracking-widest active:bg-stone-700 transition-colors">
+          Связаться
         </button>
       </div>
     </div>

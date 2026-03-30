@@ -14,52 +14,62 @@ export function RedesignDemo() {
     { id: 'profile', label: 'Profile' },
   ];
 
+  const handleNavigate = (path: string) => {
+    if (path.includes('shortlist')) {
+      setActiveScreen('shortlist');
+    } else if (path.includes('nanny')) {
+      setActiveScreen('profile');
+    } else if (path.includes('find-nanny')) {
+      setActiveScreen('dashboard');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-stone-100">
-      {/* Screen selector - fixed at top */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-stone-200 safe-top">
-        <div className="max-w-md mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">Demo</span>
-            <div className="flex gap-1 p-1 bg-stone-100 rounded-lg">
-              {screens.map((screen) => (
-                <button
-                  key={screen.id}
-                  onClick={() => setActiveScreen(screen.id)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                    activeScreen === screen.id
-                      ? 'bg-white text-stone-900 shadow-sm'
-                      : 'text-stone-500 hover:text-stone-700'
-                  }`}
-                >
-                  {screen.label}
-                </button>
-              ))}
-            </div>
+    <div className="min-h-screen bg-[#FAF9F7]">
+      {/* Mobile frame container */}
+      <div className="max-w-[430px] mx-auto min-h-screen bg-[#FAF9F7] shadow-2xl relative">
+        {/* Screen selector - fixed at top for demo navigation */}
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[430px]">
+          <div className="bg-black/90 backdrop-blur-xl px-4 py-2 flex items-center justify-center gap-2">
+            <span className="text-[10px] font-medium text-white/60 uppercase tracking-wider mr-2">Screen:</span>
+            {screens.map((screen) => (
+              <button
+                key={screen.id}
+                onClick={() => setActiveScreen(screen.id)}
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                  activeScreen === screen.id
+                    ? 'bg-white text-black'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                {screen.label}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Screen content */}
-      <div className="pt-14">
-        {activeScreen === 'profile' && (
-          <NannyProfileMobile 
-            onBack={() => setActiveScreen('shortlist')} 
-            onContact={() => alert('Contact flow would open')}
-          />
-        )}
-        {activeScreen === 'shortlist' && (
-          <ShortlistCompareMobile 
-            onViewProfile={() => setActiveScreen('profile')}
-            onBack={() => setActiveScreen('dashboard')}
-          />
-        )}
-        {activeScreen === 'dashboard' && (
-          <ParentDashboardMobile 
-            onViewShortlist={() => setActiveScreen('shortlist')}
-          />
-        )}
+        {/* Screen content with top padding for demo nav */}
+        <div className="pt-10">
+          {activeScreen === 'profile' && (
+            <NannyProfileMobile 
+              onBack={() => setActiveScreen('shortlist')}
+            />
+          )}
+          {activeScreen === 'shortlist' && (
+            <ShortlistCompareMobile 
+              onSelectNanny={() => setActiveScreen('profile')}
+              onBack={() => setActiveScreen('dashboard')}
+            />
+          )}
+          {activeScreen === 'dashboard' && (
+            <ParentDashboardMobile 
+              onNavigate={handleNavigate}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 }
+
+export default RedesignDemo;

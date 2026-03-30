@@ -8,7 +8,7 @@ import {
   ChevronRight,
   Clock,
   Users,
-  CheckCircle2,
+  Check,
   Award,
   Play,
 } from 'lucide-react';
@@ -84,93 +84,90 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
 
   return (
     <div className={`min-h-screen bg-[#FDFCFB] pb-28 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Hero Image */}
-      <div className="relative h-[52vh] min-h-[380px]">
-        <img 
-          src={nanny.photo} 
-          alt={nanny.name}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        
-        {/* Warm gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/70 via-transparent to-transparent" />
-        
-        {/* Top navigation */}
-        <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 pt-12 z-10">
-          <button
-            onClick={onBack}
-            className="w-11 h-11 rounded-full bg-[#FDFCFB]/95 backdrop-blur-sm flex items-center justify-center text-stone-600 active:scale-95 transition-transform"
-          >
-            <ArrowLeft size={20} strokeWidth={1.5} />
-          </button>
-          <div className="flex gap-2">
+      {/* Hero Image - fixed aspect ratio 3/4 */}
+      <div className="relative mx-4 mt-4">
+        <div className="relative aspect-[3/4] max-h-[420px] rounded-3xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+          <img 
+            src={nanny.photo} 
+            alt={nanny.name}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)' }}
+          />
+          
+          {/* Subtle warm gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/60 via-transparent to-transparent" />
+          
+          {/* Top navigation */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 pt-8 z-10">
             <button
-              onClick={() => setLiked(!liked)}
-              className={`w-11 h-11 rounded-full backdrop-blur-sm flex items-center justify-center transition-all active:scale-95 ${
-                liked ? 'bg-[#FDFCFB] text-[#C17F5E]' : 'bg-[#FDFCFB]/95 text-stone-600'
-              }`}
+              onClick={onBack}
+              className="w-10 h-10 rounded-full bg-[#FDFCFB]/90 backdrop-blur-sm flex items-center justify-center text-stone-600 active:scale-95 transition-transform shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]"
             >
-              <Heart size={20} strokeWidth={1.5} fill={liked ? 'currentColor' : 'none'} />
+              <ArrowLeft size={18} strokeWidth={1} />
             </button>
-            <button className="w-11 h-11 rounded-full bg-[#FDFCFB]/95 backdrop-blur-sm flex items-center justify-center text-stone-600 active:scale-95 transition-transform">
-              <Share2 size={18} strokeWidth={1.5} />
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setLiked(!liked)}
+                className={`w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center transition-all active:scale-95 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)] ${
+                  liked ? 'bg-[#FDFCFB] text-[#C17F5E]' : 'bg-[#FDFCFB]/90 text-stone-600'
+                }`}
+              >
+                <Heart size={18} strokeWidth={1} fill={liked ? 'currentColor' : 'none'} />
+              </button>
+              <button className="w-10 h-10 rounded-full bg-[#FDFCFB]/90 backdrop-blur-sm flex items-center justify-center text-stone-600 active:scale-95 transition-transform shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+                <Share2 size={16} strokeWidth={1} />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Bottom info on photo */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-          {/* Trust badge - gold/bronze line-art style */}
-          <div className="inline-flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-full border-2 border-[#C9A86C] flex items-center justify-center">
-              <span className="text-xs font-light text-[#C9A86C]">{nanny.matchScore}</span>
-            </div>
-            <span className="text-sm font-light tracking-wide text-white/90">% совпадение</span>
-          </div>
-          
-          <h1 className="text-3xl font-serif font-medium mb-1 tracking-tight">{nanny.name}</h1>
-          
-          <div className="flex items-center gap-3 text-white/90 font-light">
-            <div className="flex items-center gap-1">
-              <Star size={14} className="text-[#C9A86C] fill-[#C9A86C]" />
-              <span>{nanny.rating}</span>
-              <span className="text-white/50">({nanny.reviewCount})</span>
-            </div>
-            <span className="text-white/30">|</span>
-            <div className="flex items-center gap-1">
-              <MapPin size={13} strokeWidth={1.5} />
-              <span>{nanny.distance}</span>
+          {/* Bottom info on photo */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+            <h1 className="text-2xl font-serif font-normal tracking-tight mb-1">{nanny.name}</h1>
+            
+            {/* Trust Row - minimalist, bronze percentage inline */}
+            <div className="flex items-center gap-2 text-white/90 text-sm font-light">
+              <div className="flex items-center gap-1">
+                <Check size={12} strokeWidth={1} className="text-[#C9A86C]" />
+                <span>Verified</span>
+              </div>
+              <span className="text-white/40">·</span>
+              <span>{nanny.experience} лет опыта</span>
+              <span className="text-white/40">·</span>
+              <span className="text-[#C9A86C]">{nanny.matchScore}%</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Stats Bar */}
-      <div className="bg-[#F0EDE8] border-b border-stone-200/50">
-        <div className="flex">
-          <div className="flex-1 py-5 text-center border-r border-stone-200/50">
-            <p className="text-2xl font-light text-stone-700">{nanny.experience}</p>
-            <p className="text-xs text-stone-500 mt-1 font-light tracking-wide">лет опыта</p>
+      {/* Quick Stats - Bento Grid Style */}
+      <div className="px-4 pt-5">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-[#F7F5F2] rounded-2xl p-4 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+            <p className="text-xl font-serif font-normal tracking-tight text-stone-700">{nanny.rating}</p>
+            <div className="flex items-center gap-1 mt-1">
+              <Star size={10} className="text-[#C9A86C] fill-[#C9A86C]" />
+              <span className="text-xs text-stone-600 font-light">{nanny.reviewCount} отзывов</span>
+            </div>
           </div>
-          <div className="flex-1 py-5 text-center border-r border-stone-200/50">
-            <p className="text-2xl font-light text-stone-700">{nanny.rate}₽</p>
-            <p className="text-xs text-stone-500 mt-1 font-light tracking-wide">в час</p>
+          <div className="bg-[#F7F5F2] rounded-2xl p-4 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+            <p className="text-xl font-serif font-normal tracking-tight text-stone-700">{nanny.rate}₽</p>
+            <p className="text-xs text-stone-600 mt-1 font-light">в час</p>
           </div>
-          <div className="flex-1 py-5 text-center">
-            <p className="text-2xl font-light text-stone-700">{nanny.responseTime}</p>
-            <p className="text-xs text-stone-500 mt-1 font-light tracking-wide">ответ</p>
+          <div className="bg-[#F7F5F2] rounded-2xl p-4 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+            <p className="text-xl font-serif font-normal tracking-tight text-stone-700">{nanny.responseTime}</p>
+            <p className="text-xs text-stone-600 mt-1 font-light">ответ</p>
           </div>
         </div>
       </div>
 
       {/* Section Toggle */}
-      <div className="bg-[#FDFCFB] px-5 py-3 sticky top-0 z-20 border-b border-stone-200/50">
-        <div className="flex gap-8">
+      <div className="px-4 py-4 sticky top-0 z-20 bg-[#FDFCFB]">
+        <div className="flex gap-6">
           <button
             onClick={() => setActiveSection('info')}
-            className={`pb-2 text-sm tracking-wide transition-all border-b-2 ${
+            className={`pb-2 text-sm tracking-tight transition-all border-b ${
               activeSection === 'info'
-                ? 'border-stone-700 text-stone-700 font-medium'
+                ? 'border-stone-600 text-stone-700 font-medium'
                 : 'border-transparent text-stone-400 font-light'
             }`}
           >
@@ -178,9 +175,9 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
           </button>
           <button
             onClick={() => setActiveSection('reviews')}
-            className={`pb-2 text-sm tracking-wide transition-all border-b-2 ${
+            className={`pb-2 text-sm tracking-tight transition-all border-b ${
               activeSection === 'reviews'
-                ? 'border-stone-700 text-stone-700 font-medium'
+                ? 'border-stone-600 text-stone-700 font-medium'
                 : 'border-transparent text-stone-400 font-light'
             }`}
           >
@@ -190,47 +187,47 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
       </div>
 
       {/* Content */}
-      <div className="px-5 pt-6 space-y-8">
+      <div className="px-4 space-y-6">
         {activeSection === 'info' ? (
           <>
-            {/* Verification Row - thin line icons */}
-            <div className="flex items-center justify-center gap-6 py-4 bg-[#F0EDE8] rounded-2xl">
-              {nanny.verifications.slice(0, 4).map((v, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-stone-600">
-                  <CheckCircle2 size={14} strokeWidth={1.5} className="text-[#8B9D83]" />
-                  <span className="text-xs font-light">{v.label}</span>
-                </div>
-              ))}
-            </div>
-
             {/* About */}
             <div>
-              <h3 className="font-serif text-lg text-stone-700 mb-3">О себе</h3>
+              <h3 className="font-serif text-lg font-normal tracking-tight text-stone-700 mb-3">О себе</h3>
               <p className="text-[15px] text-stone-600 leading-relaxed font-light">{nanny.about}</p>
             </div>
 
-            {/* Key Info Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#F0EDE8] rounded-2xl p-5 border border-stone-200/50">
-                <Users size={18} className="text-[#8B9D83] mb-3" strokeWidth={1.5} />
-                <p className="text-xs text-stone-500 uppercase tracking-wider font-light mb-1">Возраст детей</p>
-                <p className="text-sm text-stone-700">{nanny.childAges}</p>
+            {/* Key Info - Bento Grid */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-[#F7F5F2] rounded-2xl p-4 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+                <Users size={16} className="text-stone-400 mb-2" strokeWidth={1} />
+                <p className="text-xs text-stone-500 font-light mb-1">Возраст детей</p>
+                <p className="text-sm text-stone-700 font-normal">{nanny.childAges}</p>
               </div>
-              <div className="bg-[#F0EDE8] rounded-2xl p-5 border border-stone-200/50">
-                <Award size={18} className="text-[#8B9D83] mb-3" strokeWidth={1.5} />
-                <p className="text-xs text-stone-500 uppercase tracking-wider font-light mb-1">Образование</p>
-                <p className="text-sm text-stone-700">Педагог</p>
+              <div className="bg-[#F7F5F2] rounded-2xl p-4 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+                <Award size={16} className="text-stone-400 mb-2" strokeWidth={1} />
+                <p className="text-xs text-stone-500 font-light mb-1">Образование</p>
+                <p className="text-sm text-stone-700 font-normal">Педагог</p>
+              </div>
+              <div className="bg-[#F7F5F2] rounded-2xl p-4 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+                <MapPin size={16} className="text-stone-400 mb-2" strokeWidth={1} />
+                <p className="text-xs text-stone-500 font-light mb-1">Расстояние</p>
+                <p className="text-sm text-stone-700 font-normal">{nanny.distance}</p>
+              </div>
+              <div className="bg-[#F7F5F2] rounded-2xl p-4 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+                <Clock size={16} className="text-stone-400 mb-2" strokeWidth={1} />
+                <p className="text-xs text-stone-500 font-light mb-1">Доступность</p>
+                <p className="text-sm text-stone-700 font-normal">Пн-Пт</p>
               </div>
             </div>
 
             {/* Specialties */}
             <div>
-              <h3 className="font-serif text-lg text-stone-700 mb-4">Специализация</h3>
+              <h3 className="font-serif text-lg font-normal tracking-tight text-stone-700 mb-3">Специализация</h3>
               <div className="flex flex-wrap gap-2">
                 {nanny.specialties.map((skill) => (
                   <span
                     key={skill}
-                    className="px-4 py-2 rounded-full bg-[#F0EDE8] text-sm font-light text-stone-600 border border-stone-200/50"
+                    className="px-3 py-1.5 rounded-full bg-[#F7F5F2] text-sm font-light text-stone-600 border-[0.5px] border-stone-200/50"
                   >
                     {skill}
                   </span>
@@ -240,20 +237,20 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
 
             {/* Verifications */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-serif text-lg text-stone-700">Проверки</h3>
-                <span className="text-xs font-light text-[#8B9D83] bg-[#8B9D83]/10 px-3 py-1 rounded-full">
-                  {verifiedCount}/5 подтверждено
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-serif text-lg font-normal tracking-tight text-stone-700">Проверки</h3>
+                <span className="text-xs font-light text-stone-500">
+                  {verifiedCount}/5
                 </span>
               </div>
-              <div className="space-y-3">
+              <div className="bg-[#F7F5F2] rounded-2xl border-[0.5px] border-stone-200/50 overflow-hidden shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
                 {nanny.verifications.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between py-2">
+                  <div key={i} className={`flex items-center justify-between px-4 py-3 ${i !== 0 ? 'border-t border-stone-200/30' : ''}`}>
                     <span className="text-sm text-stone-600 font-light">{item.label}</span>
                     {item.verified ? (
-                      <CheckCircle2 size={18} className="text-[#8B9D83]" strokeWidth={1.5} />
+                      <Check size={16} className="text-[#8B9D83]" strokeWidth={1} />
                     ) : (
-                      <Clock size={18} className="text-stone-300" strokeWidth={1.5} />
+                      <Clock size={16} className="text-stone-300" strokeWidth={1} />
                     )}
                   </div>
                 ))}
@@ -261,29 +258,29 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
             </div>
 
             {/* Video intro */}
-            <button className="w-full bg-[#F0EDE8] rounded-2xl p-5 flex items-center gap-4 active:bg-[#E8E5E0] transition-colors border border-stone-200/50">
-              <div className="w-14 h-14 rounded-xl bg-[#8B9D83] flex items-center justify-center">
-                <Play size={20} className="text-white ml-0.5" fill="white" />
+            <button className="w-full bg-[#F7F5F2] rounded-2xl p-4 flex items-center gap-4 active:bg-[#F0EDE8] transition-colors border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+              <div className="w-12 h-12 rounded-xl bg-stone-300 flex items-center justify-center">
+                <Play size={18} className="text-white ml-0.5" fill="white" />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-sm text-stone-700">Видео-визитка</p>
+                <p className="text-sm text-stone-700 font-normal">Видео-визитка</p>
                 <p className="text-xs text-stone-500 mt-0.5 font-light">2:34 мин</p>
               </div>
-              <ChevronRight size={18} className="text-stone-400" strokeWidth={1.5} />
+              <ChevronRight size={16} className="text-stone-400" strokeWidth={1} />
             </button>
           </>
         ) : (
           <>
             {/* Rating Summary */}
-            <div className="bg-[#F0EDE8] rounded-2xl p-6 border border-stone-200/50">
-              <div className="flex items-center gap-8">
+            <div className="bg-[#F7F5F2] rounded-2xl p-5 border-[0.5px] border-stone-200/50 shadow-[0_4px_20px_-4px_rgba(200,190,170,0.15)]">
+              <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <div className="text-4xl font-light text-stone-700">{nanny.rating}</div>
+                  <div className="text-3xl font-serif font-normal tracking-tight text-stone-700">{nanny.rating}</div>
                   <div className="flex items-center justify-center gap-0.5 mt-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        size={14}
+                        size={12}
                         className="text-[#C9A86C] fill-[#C9A86C]"
                       />
                     ))}
@@ -292,9 +289,9 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
                 </div>
                 <div className="flex-1 space-y-2">
                   {[5, 4, 3, 2, 1].map((rating) => (
-                    <div key={rating} className="flex items-center gap-3">
+                    <div key={rating} className="flex items-center gap-2">
                       <span className="text-xs text-stone-500 w-3 font-light">{rating}</span>
-                      <div className="flex-1 h-1.5 rounded-full bg-stone-200 overflow-hidden">
+                      <div className="flex-1 h-1 rounded-full bg-stone-200 overflow-hidden">
                         <div
                           className="h-full bg-[#C9A86C] rounded-full"
                           style={{
@@ -310,44 +307,44 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
 
             {/* Reviews */}
             {nanny.reviews.map((review) => (
-              <div key={review.id} className="py-5 border-b border-stone-200/50">
-                <div className="flex items-start gap-4">
+              <div key={review.id} className="py-4 border-b border-stone-200/30">
+                <div className="flex items-start gap-3">
                   <img
                     src={review.avatar}
                     alt={review.author}
-                    className="w-11 h-11 rounded-full object-cover"
+                    className="w-10 h-10 rounded-full object-cover"
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="text-sm text-stone-700">{review.author}</h4>
+                      <h4 className="text-sm text-stone-700 font-normal">{review.author}</h4>
                       <span className="text-xs text-stone-400 font-light">{review.date}</span>
                     </div>
-                    <div className="flex items-center gap-0.5 mb-3">
+                    <div className="flex items-center gap-0.5 mb-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          size={11}
+                          size={10}
                           className="text-[#C9A86C] fill-[#C9A86C]"
                         />
                       ))}
                     </div>
-                    <p className="text-[15px] text-stone-600 leading-relaxed font-light">{review.text}</p>
+                    <p className="text-sm text-stone-600 leading-relaxed font-light">{review.text}</p>
                   </div>
                 </div>
               </div>
             ))}
 
             {/* Load more */}
-            <button className="w-full py-4 text-sm tracking-wider uppercase text-stone-500 font-light active:text-stone-700 transition-colors">
+            <button className="w-full py-3 text-xs tracking-wider uppercase text-stone-400 font-light active:text-stone-600 transition-colors">
               Показать все отзывы
             </button>
           </>
         )}
       </div>
 
-      {/* Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#FDFCFB] border-t border-stone-200/50 p-5 pb-8">
-        <button className="w-full h-14 rounded-xl bg-stone-800 text-white font-light text-sm uppercase tracking-widest active:bg-stone-700 transition-colors">
+      {/* Bottom CTA - elegant, thin, uppercase */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#FDFCFB] border-t border-stone-200/30 p-4 pb-8">
+        <button className="w-full h-12 rounded-xl bg-[#6B9A8A] text-white font-light text-xs uppercase tracking-wider active:bg-[#5A8677] transition-colors border border-[#5A8677]/30">
           Связаться с Анной
         </button>
       </div>

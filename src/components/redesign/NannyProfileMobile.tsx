@@ -6,19 +6,15 @@ import {
   ShieldCheck,
   Heart,
   MessageCircle,
-  Phone,
   ChevronRight,
   BadgeCheck,
   Clock,
   Users,
-  Bookmark,
   Share2,
   CheckCircle2,
-  Calendar,
   Award,
-  GraduationCap,
-  FileText,
-  ThumbsUp,
+  Play,
+  Sparkles,
 } from 'lucide-react';
 
 interface NannyProfileMobileProps {
@@ -26,32 +22,35 @@ interface NannyProfileMobileProps {
   onBack?: () => void;
 }
 
-// Mock data for demonstration
 const mockNanny = {
   id: '1',
   name: 'Анна Морозова',
   age: 34,
-  photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
-  location: 'Пресненский, ЦАО',
-  experience: '8 лет',
+  photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=1000&fit=crop&crop=face',
+  gallery: [
+    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
+    'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=400&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=400&h=400&fit=crop',
+  ],
+  location: 'Пресненский район',
+  distance: '1.2 км',
+  experience: 8,
   rating: 4.9,
   reviewCount: 47,
   rate: 1200,
   verified: true,
-  verificationLevel: 'platinum',
-  responseTime: '~15 мин',
-  about: 'Профессиональная няня с педагогическим образованием. Владею методиками раннего развития. Спокойная, внимательная, ответственная. Опыт работы с детьми от 6 месяцев до 10 лет.',
-  specialties: ['Раннее развитие', 'Монтессори', 'Подготовка к школе', 'Первая помощь'],
+  responseTime: '15 мин',
+  about: 'Профессиональная няня с педагогическим образованием. Владею методиками раннего развития Монтессори и Вальдорф. Спокойная, внимательная, ответственная.',
+  specialties: ['Раннее развитие', 'Монтессори', 'Первая помощь', 'Творчество'],
   languages: ['Русский', 'English'],
   education: 'МПГУ, дошкольная педагогика',
   childAges: '6 мес - 7 лет',
-  schedule: 'Пн-Пт, с 8:00',
   verifications: [
-    { type: 'identity', label: 'Личность подтверждена', verified: true },
-    { type: 'background', label: 'Проверка безопасности', verified: true },
-    { type: 'medical', label: 'Медицинская книжка', verified: true },
-    { type: 'education', label: 'Диплом педагога', verified: true },
-    { type: 'references', label: '3 рекомендации', verified: true },
+    { label: 'Паспорт', verified: true },
+    { label: 'Справка', verified: true },
+    { label: 'Диплом', verified: true },
+    { label: 'Рекомендации', verified: true },
+    { label: 'Медкнижка', verified: true },
   ],
   reviews: [
     {
@@ -60,8 +59,7 @@ const mockNanny = {
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
       rating: 5,
       date: '2 недели назад',
-      text: 'Анна - чудесная няня! Сын (3 года) обожает с ней проводить время. Очень спокойная, находит подход к ребёнку. Рекомендую!',
-      helpful: 12,
+      text: 'Анна - чудесная няня! Сын обожает с ней время. Очень рекомендую всем родителям.',
     },
     {
       id: '2',
@@ -69,258 +67,245 @@ const mockNanny = {
       avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
       rating: 5,
       date: '1 месяц назад',
-      text: 'Работаем с Анной уже полгода. Профессионал высокого уровня, дочка быстро к ней привыкла.',
-      helpful: 8,
+      text: 'Профессионал высокого уровня. Дочка очень быстро привыкла.',
     },
-  ],
-  matchReasons: [
-    'Опыт работы с детьми вашего возраста',
-    'Район проживания рядом с вами',
-    'Подходит под ваш график',
-    'Высокий рейтинг доверия',
   ],
 };
 
 export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({ 
-  lang = 'ru',
   onBack,
 }) => {
-  const [activeTab, setActiveTab] = useState<'about' | 'reviews' | 'verification'>('about');
-  const [isSaved, setIsSaved] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [activeSection, setActiveSection] = useState<'info' | 'reviews'>('info');
   const nanny = mockNanny;
+  const verifiedCount = nanny.verifications.filter(v => v.verified).length;
 
   return (
-    <div className="min-h-screen bg-[#FAF9F7]">
-      {/* Hero Section with Photo */}
-      <div className="relative">
-        {/* Background gradient */}
-        <div className="absolute inset-0 h-72 bg-gradient-to-b from-[#2D4A3E] to-[#3D5A4E]" />
+    <div className="min-h-screen bg-[#FAFAFA] pb-28">
+      {/* Hero Image */}
+      <div className="relative h-[56vh] min-h-[420px]">
+        <img 
+          src={nanny.photo} 
+          alt={nanny.name}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         
-        {/* Header */}
-        <header className="relative z-10 flex items-center justify-between px-4 pt-12 pb-4">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        
+        {/* Top navigation */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 pt-12 z-10">
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white"
+            className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={22} strokeWidth={2} />
           </button>
           <div className="flex gap-2">
             <button
-              onClick={() => setIsSaved(!isSaved)}
-              className={`w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center transition-colors ${
-                isSaved ? 'bg-white text-rose-500' : 'bg-white/20 text-white'
+              onClick={() => setLiked(!liked)}
+              className={`w-11 h-11 rounded-full backdrop-blur-md flex items-center justify-center transition-all active:scale-95 ${
+                liked ? 'bg-white text-red-500' : 'bg-black/30 text-white'
               }`}
             >
-              <Bookmark size={20} fill={isSaved ? 'currentColor' : 'none'} />
+              <Heart size={22} strokeWidth={2} fill={liked ? 'currentColor' : 'none'} />
             </button>
-            <button className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
-              <Share2 size={20} />
+            <button className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white active:scale-95 transition-transform">
+              <Share2 size={20} strokeWidth={2} />
             </button>
           </div>
-        </header>
+        </div>
 
-        {/* Profile Card */}
-        <div className="relative z-10 px-4 pt-2 pb-6">
-          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-            {/* Photo and basic info */}
-            <div className="relative px-5 pt-5 pb-4">
-              <div className="flex gap-4">
-                {/* Avatar */}
-                <div className="relative">
-                  <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-lg">
-                    <img 
-                      src={nanny.photo} 
-                      alt={nanny.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  {nanny.verified && (
-                    <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-3 border-white flex items-center justify-center shadow-md">
-                      <CheckCircle2 size={14} className="text-white" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0 pt-1">
-                  <h1 className="text-xl font-semibold text-[#1A1A1A] mb-1 font-serif">{nanny.name}</h1>
-                  
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex items-center gap-1">
-                      <Star size={14} className="text-amber-400 fill-amber-400" />
-                      <span className="text-sm font-semibold text-[#1A1A1A]">{nanny.rating}</span>
-                    </div>
-                    <span className="text-sm text-[#8B8680]">({nanny.reviewCount} отзывов)</span>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-sm text-[#6B6660]">
-                    <MapPin size={14} className="text-[#9B958E]" />
-                    <span>{nanny.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Badge */}
-              <div className="mt-4 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100">
-                <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
-                  <ShieldCheck size={16} className="text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-emerald-800">Полная проверка пройдена</p>
-                  <p className="text-xs text-emerald-600">5 из 5 верификаций</p>
-                </div>
-                <ChevronRight size={18} className="text-emerald-400" />
-              </div>
+        {/* Bottom info on photo */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+          {/* Trust badge */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm mb-3">
+            <ShieldCheck size={14} className="text-emerald-400" />
+            <span className="text-xs font-medium">{verifiedCount}/5 проверок</span>
+          </div>
+          
+          <h1 className="text-3xl font-bold mb-1">{nanny.name}</h1>
+          
+          <div className="flex items-center gap-3 text-white/90">
+            <div className="flex items-center gap-1">
+              <Star size={16} className="text-amber-400 fill-amber-400" />
+              <span className="font-semibold">{nanny.rating}</span>
+              <span className="text-white/60">({nanny.reviewCount})</span>
             </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 border-t border-[#F0EFED]">
-              <div className="px-4 py-3 text-center border-r border-[#F0EFED]">
-                <p className="text-lg font-semibold text-[#1A1A1A]">{nanny.experience}</p>
-                <p className="text-xs text-[#8B8680]">Опыт</p>
-              </div>
-              <div className="px-4 py-3 text-center border-r border-[#F0EFED]">
-                <p className="text-lg font-semibold text-[#1A1A1A]">{nanny.rate}₽</p>
-                <p className="text-xs text-[#8B8680]">в час</p>
-              </div>
-              <div className="px-4 py-3 text-center">
-                <p className="text-lg font-semibold text-[#1A1A1A]">{nanny.responseTime}</p>
-                <p className="text-xs text-[#8B8680]">Отвечает</p>
-              </div>
+            <span className="text-white/40">|</span>
+            <div className="flex items-center gap-1">
+              <MapPin size={14} />
+              <span>{nanny.distance}</span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Why this nanny fits */}
-      <section className="px-4 pb-5">
-        <div className="bg-gradient-to-br from-[#FFF8F0] to-white rounded-2xl border border-[#F5E6D3] p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center">
-              <ThumbsUp size={12} className="text-amber-600" />
-            </div>
-            <h3 className="text-sm font-semibold text-[#1A1A1A]">Почему Анна вам подходит</h3>
-          </div>
-          <div className="space-y-2">
-            {nanny.matchReasons.map((reason, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
-                <span className="text-sm text-[#4A4540]">{reason}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Tab Navigation */}
-      <div className="px-4 mb-4">
-        <div className="flex gap-1 p-1 rounded-xl bg-[#F0EFED]">
-          {[
-            { id: 'about', label: 'О няне' },
-            { id: 'reviews', label: 'Отзывы' },
-            { id: 'verification', label: 'Проверки' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
-                activeTab === tab.id
-                  ? 'bg-white text-[#1A1A1A] shadow-sm'
-                  : 'text-[#8B8680]'
-              }`}
-            >
-              {tab.label}
-            </button>
+        {/* Gallery dots */}
+        <div className="absolute bottom-5 right-5 flex gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-white/40'}`} />
           ))}
         </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="px-4 pb-32">
-        {activeTab === 'about' && (
+      {/* Quick Stats Bar */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="flex">
+          <div className="flex-1 py-4 text-center border-r border-gray-100">
+            <p className="text-2xl font-bold text-gray-900">{nanny.experience}</p>
+            <p className="text-xs text-gray-500 mt-0.5">лет опыта</p>
+          </div>
+          <div className="flex-1 py-4 text-center border-r border-gray-100">
+            <p className="text-2xl font-bold text-gray-900">{nanny.rate}₽</p>
+            <p className="text-xs text-gray-500 mt-0.5">в час</p>
+          </div>
+          <div className="flex-1 py-4 text-center">
+            <p className="text-2xl font-bold text-gray-900">{nanny.responseTime}</p>
+            <p className="text-xs text-gray-500 mt-0.5">ответ</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Section Toggle */}
+      <div className="bg-white px-4 py-2 sticky top-0 z-20 border-b border-gray-100">
+        <div className="flex gap-1 p-1 rounded-xl bg-gray-100">
+          <button
+            onClick={() => setActiveSection('info')}
+            className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              activeSection === 'info'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500'
+            }`}
+          >
+            Информация
+          </button>
+          <button
+            onClick={() => setActiveSection('reviews')}
+            className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              activeSection === 'reviews'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500'
+            }`}
+          >
+            Отзывы ({nanny.reviewCount})
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        {activeSection === 'info' ? (
           <div className="space-y-4">
+            {/* AI Match reason */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-4 text-white">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-2xl" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles size={16} className="text-emerald-400" />
+                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Blizko Match</span>
+                </div>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  Анна идеально подходит: опыт с детьми 2-4 лет, живёт в 12 минутах от вас, свободна в нужные дни.
+                </p>
+              </div>
+            </div>
+
             {/* About */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-2">О себе</h3>
-              <p className="text-sm text-[#4A4540] leading-relaxed">{nanny.about}</p>
+            <div className="bg-white rounded-2xl p-4">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">О себе</h3>
+              <p className="text-[15px] text-gray-600 leading-relaxed">{nanny.about}</p>
             </div>
 
-            {/* Details Grid */}
+            {/* Key Info Grid */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded-xl p-3.5 shadow-sm">
-                <div className="w-8 h-8 rounded-lg bg-[#F0EFED] flex items-center justify-center mb-2">
-                  <Users size={16} className="text-[#6B6660]" />
-                </div>
-                <p className="text-xs text-[#8B8680] mb-0.5">Возраст детей</p>
-                <p className="text-sm font-medium text-[#1A1A1A]">{nanny.childAges}</p>
+              <div className="bg-white rounded-2xl p-4">
+                <Users size={20} className="text-gray-400 mb-2" />
+                <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Возраст детей</p>
+                <p className="text-sm font-semibold text-gray-900">{nanny.childAges}</p>
               </div>
-              <div className="bg-white rounded-xl p-3.5 shadow-sm">
-                <div className="w-8 h-8 rounded-lg bg-[#F0EFED] flex items-center justify-center mb-2">
-                  <Calendar size={16} className="text-[#6B6660]" />
-                </div>
-                <p className="text-xs text-[#8B8680] mb-0.5">График</p>
-                <p className="text-sm font-medium text-[#1A1A1A]">{nanny.schedule}</p>
-              </div>
-              <div className="bg-white rounded-xl p-3.5 shadow-sm">
-                <div className="w-8 h-8 rounded-lg bg-[#F0EFED] flex items-center justify-center mb-2">
-                  <GraduationCap size={16} className="text-[#6B6660]" />
-                </div>
-                <p className="text-xs text-[#8B8680] mb-0.5">Образование</p>
-                <p className="text-sm font-medium text-[#1A1A1A]">{nanny.education}</p>
-              </div>
-              <div className="bg-white rounded-xl p-3.5 shadow-sm">
-                <div className="w-8 h-8 rounded-lg bg-[#F0EFED] flex items-center justify-center mb-2">
-                  <FileText size={16} className="text-[#6B6660]" />
-                </div>
-                <p className="text-xs text-[#8B8680] mb-0.5">Языки</p>
-                <p className="text-sm font-medium text-[#1A1A1A]">{nanny.languages.join(', ')}</p>
+              <div className="bg-white rounded-2xl p-4">
+                <Award size={20} className="text-gray-400 mb-2" />
+                <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Образование</p>
+                <p className="text-sm font-semibold text-gray-900">Педагог</p>
               </div>
             </div>
 
-            {/* Skills */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">Навыки и специализация</h3>
+            {/* Specialties */}
+            <div className="bg-white rounded-2xl p-4">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">Специализация</h3>
               <div className="flex flex-wrap gap-2">
                 {nanny.specialties.map((skill) => (
                   <span
                     key={skill}
-                    className="px-3 py-1.5 rounded-full bg-[#F5F4F2] text-sm text-[#4A4540]"
+                    className="px-3 py-2 rounded-full bg-gray-100 text-sm font-medium text-gray-700"
                   >
                     {skill}
                   </span>
                 ))}
               </div>
             </div>
-          </div>
-        )}
 
-        {activeTab === 'reviews' && (
+            {/* Verifications */}
+            <div className="bg-white rounded-2xl p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Проверки</h3>
+                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  {verifiedCount}/5
+                </span>
+              </div>
+              <div className="space-y-3">
+                {nanny.verifications.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">{item.label}</span>
+                    {item.verified ? (
+                      <CheckCircle2 size={20} className="text-emerald-500" />
+                    ) : (
+                      <Clock size={20} className="text-gray-300" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Video intro */}
+            <button className="w-full bg-white rounded-2xl p-4 flex items-center gap-4 active:bg-gray-50 transition-colors">
+              <div className="w-16 h-16 rounded-xl bg-gray-900 flex items-center justify-center">
+                <Play size={24} className="text-white ml-1" fill="white" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-gray-900">Видео-визитка</p>
+                <p className="text-xs text-gray-500 mt-0.5">2:34 мин</p>
+              </div>
+              <ChevronRight size={20} className="text-gray-400" />
+            </button>
+          </div>
+        ) : (
           <div className="space-y-4">
             {/* Rating Summary */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm">
-              <div className="flex items-center gap-4">
+            <div className="bg-white rounded-2xl p-5">
+              <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-[#1A1A1A]">{nanny.rating}</div>
-                  <div className="flex items-center gap-0.5 mt-1">
+                  <div className="text-5xl font-bold text-gray-900">{nanny.rating}</div>
+                  <div className="flex items-center justify-center gap-0.5 mt-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        size={14}
-                        className={star <= Math.round(nanny.rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}
+                        size={16}
+                        className="text-amber-400 fill-amber-400"
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-[#8B8680] mt-1">{nanny.reviewCount} отзывов</p>
+                  <p className="text-xs text-gray-500 mt-1">{nanny.reviewCount} отзывов</p>
                 </div>
-                <div className="flex-1 space-y-1.5">
+                <div className="flex-1 space-y-2">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <div key={rating} className="flex items-center gap-2">
-                      <span className="text-xs text-[#8B8680] w-3">{rating}</span>
-                      <div className="flex-1 h-1.5 rounded-full bg-[#F0EFED] overflow-hidden">
+                      <span className="text-xs text-gray-500 w-3">{rating}</span>
+                      <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
                         <div
                           className="h-full bg-amber-400 rounded-full"
                           style={{
-                            width: rating === 5 ? '85%' : rating === 4 ? '12%' : '3%',
+                            width: rating === 5 ? '82%' : rating === 4 ? '15%' : '3%',
                           }}
                         />
                       </div>
@@ -330,97 +315,51 @@ export const NannyProfileMobile: React.FC<NannyProfileMobileProps> = ({
               </div>
             </div>
 
-            {/* Reviews List */}
+            {/* Reviews */}
             {nanny.reviews.map((review) => (
-              <div key={review.id} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-start gap-3 mb-3">
+              <div key={review.id} className="bg-white rounded-2xl p-4">
+                <div className="flex items-start gap-3">
                   <img
                     src={review.avatar}
                     alt={review.author}
-                    className="w-10 h-10 rounded-full object-cover"
+                    className="w-11 h-11 rounded-full object-cover"
                   />
                   <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-medium text-[#1A1A1A]">{review.author}</h4>
-                      <span className="text-xs text-[#8B8680]">{review.date}</span>
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="text-sm font-semibold text-gray-900">{review.author}</h4>
+                      <span className="text-xs text-gray-400">{review.date}</span>
                     </div>
-                    <div className="flex items-center gap-0.5 mt-0.5">
+                    <div className="flex items-center gap-0.5 mb-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
                           size={12}
-                          className={star <= review.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}
+                          className="text-amber-400 fill-amber-400"
                         />
                       ))}
                     </div>
+                    <p className="text-[15px] text-gray-600 leading-relaxed">{review.text}</p>
                   </div>
                 </div>
-                <p className="text-sm text-[#4A4540] leading-relaxed mb-3">{review.text}</p>
-                <button className="flex items-center gap-1.5 text-xs text-[#8B8680]">
-                  <ThumbsUp size={12} />
-                  <span>Полезно ({review.helpful})</span>
-                </button>
               </div>
             ))}
-          </div>
-        )}
 
-        {activeTab === 'verification' && (
-          <div className="space-y-3">
-            <div className="bg-white rounded-2xl p-4 shadow-sm mb-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
-                  <Award size={24} className="text-emerald-500" />
-                </div>
-                <div>
-                  <h3 className="text-base font-semibold text-[#1A1A1A]">Платиновый статус</h3>
-                  <p className="text-sm text-[#8B8680]">Максимальный уровень доверия</p>
-                </div>
-              </div>
-              <p className="text-sm text-[#6B6660] leading-relaxed">
-                Анна прошла полную проверку Blizko. Все документы верифицированы, рекомендации подтверждены.
-              </p>
-            </div>
-
-            {nanny.verifications.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm"
-              >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  item.verified ? 'bg-emerald-50' : 'bg-gray-100'
-                }`}>
-                  {item.verified ? (
-                    <CheckCircle2 size={20} className="text-emerald-500" />
-                  ) : (
-                    <Clock size={20} className="text-gray-400" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-[#1A1A1A]">{item.label}</p>
-                  <p className="text-xs text-[#8B8680]">
-                    {item.verified ? 'Подтверждено командой Blizko' : 'На проверке'}
-                  </p>
-                </div>
-                {item.verified && (
-                  <BadgeCheck size={18} className="text-emerald-500" />
-                )}
-              </div>
-            ))}
+            {/* Load more */}
+            <button className="w-full py-3 text-sm font-semibold text-gray-900 bg-white rounded-2xl active:bg-gray-50 transition-colors">
+              Показать все отзывы
+            </button>
           </div>
         )}
       </div>
 
       {/* Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-[#F0EFED] px-4 py-4 pb-8">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-8">
         <div className="flex gap-3">
-          <button className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#F5F4F2] text-[#4A4540] font-medium">
-            <MessageCircle size={18} />
-            <span>Написать</span>
+          <button className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-600 active:bg-gray-200 transition-colors">
+            <MessageCircle size={24} />
           </button>
-          <button className="flex-[2] flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#2D4A3E] text-white font-medium shadow-lg shadow-[#2D4A3E]/20">
-            <Phone size={18} />
-            <span>Связаться</span>
+          <button className="flex-1 h-14 rounded-2xl bg-gray-900 text-white font-semibold text-[15px] active:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20">
+            Связаться с Анной
           </button>
         </div>
       </div>

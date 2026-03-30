@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NannyProfileMobile } from './NannyProfileMobile';
 import { ShortlistCompareMobile } from './ShortlistCompareMobile';
 import { ParentDashboardMobile } from './ParentDashboardMobile';
+import { Smartphone } from 'lucide-react';
 
 type Screen = 'profile' | 'shortlist' | 'dashboard';
 
@@ -25,47 +26,68 @@ export function RedesignDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F7]">
-      {/* Mobile frame container */}
-      <div className="max-w-[430px] mx-auto min-h-screen bg-[#FAF9F7] shadow-2xl relative">
-        {/* Screen selector - fixed at top for demo navigation */}
-        <div className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[430px]">
-          <div className="bg-black/90 backdrop-blur-xl px-4 py-2 flex items-center justify-center gap-2">
-            <span className="text-[10px] font-medium text-white/60 uppercase tracking-wider mr-2">Screen:</span>
-            {screens.map((screen) => (
-              <button
-                key={screen.id}
-                onClick={() => setActiveScreen(screen.id)}
-                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
-                  activeScreen === screen.id
-                    ? 'bg-white text-black'
-                    : 'text-white/70 hover:text-white'
-                }`}
-              >
-                {screen.label}
-              </button>
-            ))}
+    <div className="min-h-screen bg-gray-950 flex items-start justify-center p-4 pt-8">
+      {/* Phone frame */}
+      <div className="relative">
+        {/* Screen selector above phone */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <Smartphone size={14} className="text-gray-500" />
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Preview</span>
+          <div className="h-3 w-px bg-gray-700 mx-2" />
+          {screens.map((screen) => (
+            <button
+              key={screen.id}
+              onClick={() => setActiveScreen(screen.id)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${
+                activeScreen === screen.id
+                  ? 'bg-white text-gray-900'
+                  : 'text-gray-400 hover:text-white bg-gray-800/50'
+              }`}
+            >
+              {screen.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Phone shell */}
+        <div className="relative mx-auto">
+          {/* Phone bezel */}
+          <div className="absolute -inset-3 bg-gray-800 rounded-[3rem] shadow-2xl" />
+          
+          {/* Dynamic island */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 w-28 h-7 bg-black rounded-full" style={{ top: '8px' }} />
+          
+          {/* Screen */}
+          <div className="relative w-[375px] h-[812px] bg-gray-100 rounded-[2.5rem] overflow-hidden">
+            {/* Screen content */}
+            <div className="h-full overflow-y-auto overflow-x-hidden">
+              {activeScreen === 'profile' && (
+                <NannyProfileMobile 
+                  onBack={() => setActiveScreen('shortlist')}
+                />
+              )}
+              {activeScreen === 'shortlist' && (
+                <ShortlistCompareMobile 
+                  onSelectNanny={() => setActiveScreen('profile')}
+                  onBack={() => setActiveScreen('dashboard')}
+                />
+              )}
+              {activeScreen === 'dashboard' && (
+                <ParentDashboardMobile 
+                  onNavigate={handleNavigate}
+                />
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Screen content with top padding for demo nav */}
-        <div className="pt-10">
-          {activeScreen === 'profile' && (
-            <NannyProfileMobile 
-              onBack={() => setActiveScreen('shortlist')}
-            />
-          )}
-          {activeScreen === 'shortlist' && (
-            <ShortlistCompareMobile 
-              onSelectNanny={() => setActiveScreen('profile')}
-              onBack={() => setActiveScreen('dashboard')}
-            />
-          )}
-          {activeScreen === 'dashboard' && (
-            <ParentDashboardMobile 
-              onNavigate={handleNavigate}
-            />
-          )}
+        {/* Description below */}
+        <div className="text-center mt-6 max-w-sm mx-auto">
+          <p className="text-gray-400 text-sm">
+            {activeScreen === 'dashboard' && 'Parent Dashboard - главный экран с прогрессом поиска и шортлистом'}
+            {activeScreen === 'shortlist' && 'Shortlist - сравнение кандидатов и управление избранным'}
+            {activeScreen === 'profile' && 'Nanny Profile - детальный профиль няни с проверками и отзывами'}
+          </p>
         </div>
       </div>
     </div>

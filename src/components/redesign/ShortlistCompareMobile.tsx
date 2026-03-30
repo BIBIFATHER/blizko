@@ -3,19 +3,14 @@ import {
   ArrowLeft,
   Star,
   ShieldCheck,
-  ChevronRight,
-  CheckCircle2,
   MapPin,
-  Clock,
   X,
   MessageCircle,
   Sparkles,
-  MoreHorizontal,
-  ArrowUpDown,
-  Filter,
-  Users,
   Check,
-  Heart,
+  ChevronDown,
+  Grid3X3,
+  List,
 } from 'lucide-react';
 
 interface ShortlistCompareMobileProps {
@@ -27,448 +22,348 @@ const mockShortlist = [
   {
     id: '1',
     name: 'Анна Морозова',
-    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
+    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=500&fit=crop&crop=face',
     rating: 4.9,
     reviews: 47,
-    experience: '8 лет',
+    experience: 8,
     rate: 1200,
-    location: 'Пресненский р-н',
     distance: '1.2 км',
-    verified: true,
+    verified: 5,
     matchScore: 96,
     availability: 'Пн-Пт',
-    childAges: '6 мес - 7 лет',
-    specialties: ['Раннее развитие', 'Монтессори'],
-    highlights: ['Быстро отвечает', 'Топ-рейтинг'],
+    responseTime: '15 мин',
   },
   {
     id: '2',
     name: 'Елена Козлова',
-    photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face',
+    photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=face',
     rating: 4.8,
     reviews: 32,
-    experience: '5 лет',
+    experience: 5,
     rate: 1000,
-    location: 'Арбат',
     distance: '2.1 км',
-    verified: true,
+    verified: 5,
     matchScore: 91,
     availability: 'Пн-Сб',
-    childAges: '1 - 6 лет',
-    specialties: ['Подготовка к школе', 'Английский'],
-    highlights: ['Гибкий график'],
+    responseTime: '30 мин',
   },
   {
     id: '3',
     name: 'Мария Петрова',
-    photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face',
+    photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop&crop=face',
     rating: 4.7,
     reviews: 28,
-    experience: '6 лет',
+    experience: 6,
     rate: 950,
-    location: 'Тверской р-н',
     distance: '3.4 км',
-    verified: true,
+    verified: 4,
     matchScore: 87,
-    availability: 'Полный день',
-    childAges: '0 - 5 лет',
-    specialties: ['Младенцы', 'Первая помощь'],
-    highlights: ['Медицинское образование'],
+    availability: 'Весь день',
+    responseTime: '1 час',
   },
-];
-
-const compareCategories = [
-  { key: 'matchScore', label: 'Совпадение', format: (v: number) => `${v}%` },
-  { key: 'rating', label: 'Рейтинг', format: (v: number) => v.toString() },
-  { key: 'rate', label: 'Ставка', format: (v: number) => `${v}₽/ч` },
-  { key: 'experience', label: 'Опыт', format: (v: string) => v },
-  { key: 'distance', label: 'Расстояние', format: (v: string) => v },
 ];
 
 export const ShortlistCompareMobile: React.FC<ShortlistCompareMobileProps> = ({
   onBack,
   onSelectNanny,
 }) => {
-  const [viewMode, setViewMode] = useState<'list' | 'compare'>('list');
-  const [selectedForCompare, setSelectedForCompare] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'cards' | 'compare'>('cards');
+  const [selectedIds, setSelectedIds] = useState<string[]>(['1', '2']);
   const [shortlist, setShortlist] = useState(mockShortlist);
-
-  const toggleCompareSelection = (id: string) => {
-    setSelectedForCompare(prev => 
-      prev.includes(id) 
-        ? prev.filter(x => x !== id)
-        : prev.length < 3 
-          ? [...prev, id]
-          : prev
-    );
-  };
 
   const removeFromShortlist = (id: string) => {
     setShortlist(prev => prev.filter(n => n.id !== id));
-    setSelectedForCompare(prev => prev.filter(x => x !== id));
+    setSelectedIds(prev => prev.filter(x => x !== id));
   };
 
-  const selectedNannies = shortlist.filter(n => selectedForCompare.includes(n.id));
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : prev.length < 3 ? [...prev, id] : prev
+    );
+  };
+
+  const selectedNannies = shortlist.filter(n => selectedIds.includes(n.id));
+  const topMatch = shortlist[0];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F7]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-[#F0EFED]">
-        <div className="flex items-center justify-between px-4 pt-12 pb-3">
+      <header className="bg-white sticky top-0 z-30 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 pt-12 pb-4">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[#6B6660]"
+            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 active:bg-gray-200 transition-colors"
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-lg font-semibold text-[#1A1A1A] font-serif">Мой шортлист</h1>
-          <div className="w-8" />
+          <div className="text-center">
+            <h1 className="text-lg font-bold text-gray-900">Мой шортлист</h1>
+            <p className="text-xs text-gray-500">{shortlist.length} кандидатов</p>
+          </div>
+          <div className="w-10" />
         </div>
 
-        {/* View Toggle */}
-        <div className="px-4 pb-3">
-          <div className="flex gap-1 p-1 rounded-xl bg-[#F0EFED]">
-            <button
-              onClick={() => setViewMode('list')}
-              className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
-                viewMode === 'list'
-                  ? 'bg-white text-[#1A1A1A] shadow-sm'
-                  : 'text-[#8B8680]'
-              }`}
-            >
-              Список
-            </button>
-            <button
-              onClick={() => setViewMode('compare')}
-              className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
-                viewMode === 'compare'
-                  ? 'bg-white text-[#1A1A1A] shadow-sm'
-                  : 'text-[#8B8680]'
-              }`}
-            >
-              Сравнить {selectedForCompare.length > 0 && `(${selectedForCompare.length})`}
-            </button>
-          </div>
+        {/* View toggle */}
+        <div className="flex gap-1 mx-4 mb-3 p-1 rounded-xl bg-gray-100">
+          <button
+            onClick={() => setViewMode('cards')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              viewMode === 'cards' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+            }`}
+          >
+            <List size={16} />
+            Карточки
+          </button>
+          <button
+            onClick={() => setViewMode('compare')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              viewMode === 'compare' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+            }`}
+          >
+            <Grid3X3 size={16} />
+            Сравнить
+          </button>
         </div>
       </header>
 
-      {viewMode === 'list' ? (
-        <>
-          {/* Summary Card */}
-          <div className="px-4 py-4">
-            <div className="bg-gradient-to-br from-[#2D4A3E] to-[#3D5A4E] rounded-2xl p-4 text-white">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Sparkles size={22} />
-                </div>
-                <div>
-                  <p className="text-sm opacity-80">В вашем шортлисте</p>
-                  <p className="text-2xl font-semibold">{shortlist.length} кандидата</p>
+      {viewMode === 'cards' ? (
+        <div className="p-4 pb-32 space-y-4">
+          {/* Top recommendation */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-3xl" />
+            <div className="relative flex items-center gap-3">
+              <div className="relative">
+                <img
+                  src={topMatch.photo}
+                  alt={topMatch.name}
+                  className="w-14 h-14 rounded-xl object-cover"
+                />
+                <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                  <Sparkles size={10} className="text-white" />
                 </div>
               </div>
-              <p className="text-sm opacity-80 leading-relaxed">
-                Выберите до 3 нянь для сравнения или свяжитесь с лучшим кандидатом
-              </p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Лучший выбор</span>
+                </div>
+                <p className="text-white font-semibold">{topMatch.name}</p>
+                <p className="text-gray-400 text-sm">Совпадение {topMatch.matchScore}%</p>
+              </div>
+              <button
+                onClick={() => onSelectNanny?.(topMatch.id)}
+                className="px-4 py-2 rounded-xl bg-white text-gray-900 text-sm font-semibold active:bg-gray-100 transition-colors"
+              >
+                Открыть
+              </button>
             </div>
-          </div>
-
-          {/* Filter/Sort Bar */}
-          <div className="px-4 pb-3 flex gap-2">
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#E8E6E3] text-sm text-[#4A4540] shadow-sm">
-              <ArrowUpDown size={14} />
-              <span>По совпадению</span>
-            </button>
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-[#E8E6E3] text-sm text-[#4A4540] shadow-sm">
-              <Filter size={14} />
-              <span>Фильтры</span>
-            </button>
           </div>
 
           {/* Nanny Cards */}
-          <div className="px-4 pb-32 space-y-3">
-            {shortlist.map((nanny, index) => (
-              <div
-                key={nanny.id}
-                className="bg-white rounded-2xl shadow-sm overflow-hidden border border-[#F0EFED]"
-              >
-                {/* Top match badge */}
+          {shortlist.map((nanny, index) => (
+            <div
+              key={nanny.id}
+              className="bg-white rounded-2xl overflow-hidden shadow-sm"
+            >
+              {/* Card Image Header */}
+              <div className="relative h-48">
+                <img
+                  src={nanny.photo}
+                  alt={nanny.name}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                
+                {/* Remove button */}
+                <button
+                  onClick={() => removeFromShortlist(nanny.id)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/80 active:bg-black/50 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+
+                {/* Match badge */}
                 {index === 0 && (
-                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2.5 flex items-center gap-2 border-b border-amber-100">
-                    <Sparkles size={14} className="text-amber-500" />
-                    <span className="text-xs font-semibold text-amber-700">Лучшее совпадение для вас</span>
+                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1">
+                    <Sparkles size={12} />
+                    Лучшее совпадение
                   </div>
                 )}
 
-                <div className="p-4">
-                  <div className="flex gap-3">
-                    {/* Checkbox for compare */}
-                    <button
-                      onClick={() => toggleCompareSelection(nanny.id)}
-                      className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 mt-1 transition-all ${
-                        selectedForCompare.includes(nanny.id)
-                          ? 'bg-[#2D4A3E] border-[#2D4A3E]'
-                          : 'border-[#D4D2CF] hover:border-[#2D4A3E]'
-                      }`}
-                    >
-                      {selectedForCompare.includes(nanny.id) && (
-                        <Check size={14} className="text-white" />
-                      )}
-                    </button>
-
-                    {/* Avatar */}
-                    <div 
-                      className="relative shrink-0 cursor-pointer"
-                      onClick={() => onSelectNanny?.(nanny.id)}
-                    >
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-md">
-                        <img
-                          src={nanny.photo}
-                          alt={nanny.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      {nanny.verified && (
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
-                          <CheckCircle2 size={10} className="text-white" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div 
-                      className="flex-1 min-w-0 cursor-pointer"
-                      onClick={() => onSelectNanny?.(nanny.id)}
-                    >
-                      <div className="flex items-start justify-between mb-1">
-                        <h3 className="text-base font-semibold text-[#1A1A1A]">{nanny.name}</h3>
-                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50">
-                          <span className="text-xs font-bold text-emerald-700">{nanny.matchScore}%</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 mb-2">
+                {/* Bottom info */}
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <h3 className="text-white text-lg font-bold mb-1">{nanny.name}</h3>
+                      <div className="flex items-center gap-2 text-white/90 text-sm">
                         <div className="flex items-center gap-1">
-                          <Star size={12} className="text-amber-400 fill-amber-400" />
-                          <span className="text-sm font-semibold text-[#1A1A1A]">{nanny.rating}</span>
+                          <Star size={14} className="text-amber-400 fill-amber-400" />
+                          <span className="font-semibold">{nanny.rating}</span>
                         </div>
-                        <span className="text-xs text-[#8B8680]">({nanny.reviews})</span>
-                        <span className="text-[#D4D2CF]">|</span>
-                        <span className="text-xs text-[#8B8680]">{nanny.experience}</span>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1.5 mb-2">
-                        {nanny.highlights.map((h, i) => (
-                          <span
-                            key={i}
-                            className="text-xs px-2 py-0.5 rounded-full bg-[#F5F4F2] text-[#6B6660]"
-                          >
-                            {h}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center gap-3 text-xs text-[#8B8680]">
-                        <span className="flex items-center gap-1">
+                        <span className="text-white/50">|</span>
+                        <div className="flex items-center gap-1">
                           <MapPin size={12} />
-                          {nanny.distance}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock size={12} />
-                          {nanny.rate}₽/ч
-                        </span>
+                          <span>{nanny.distance}</span>
+                        </div>
                       </div>
                     </div>
-
-                    {/* Actions */}
-                    <div className="flex flex-col gap-2">
-                      <button
-                        onClick={() => removeFromShortlist(nanny.id)}
-                        className="w-8 h-8 rounded-xl bg-[#F5F4F2] flex items-center justify-center text-[#8B8680] hover:bg-rose-50 hover:text-rose-500 transition-colors"
-                      >
-                        <X size={16} />
-                      </button>
-                      <button className="w-8 h-8 rounded-xl bg-[#F5F4F2] flex items-center justify-center text-[#8B8680]">
-                        <Heart size={16} />
-                      </button>
+                    <div className="text-right">
+                      <p className="text-white text-xl font-bold">{nanny.rate}₽</p>
+                      <p className="text-white/60 text-xs">в час</p>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Quick action */}
-                <div className="px-4 pb-4">
+              {/* Card Body */}
+              <div className="p-4">
+                {/* Quick stats */}
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-1.5 text-sm text-gray-600">
+                    <ShieldCheck size={16} className="text-emerald-500" />
+                    <span>{nanny.verified}/5</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm text-gray-600">
+                    <span className="font-semibold">{nanny.experience}</span> лет опыта
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Ответ: {nanny.responseTime}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => toggleSelect(nanny.id)}
+                    className={`flex-1 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors ${
+                      selectedIds.includes(nanny.id)
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {selectedIds.includes(nanny.id) && <Check size={16} />}
+                    {selectedIds.includes(nanny.id) ? 'Выбрана' : 'Сравнить'}
+                  </button>
                   <button
                     onClick={() => onSelectNanny?.(nanny.id)}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#F5F4F2] text-[#4A4540] font-medium text-sm hover:bg-[#ECEAE7] transition-colors"
+                    className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-900 font-semibold text-sm active:bg-gray-200 transition-colors"
                   >
-                    <span>Открыть профиль</span>
-                    <ChevronRight size={16} />
+                    Подробнее
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Bottom CTA */}
-          {shortlist.length > 0 && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-[#F0EFED] px-4 py-4 pb-8">
-              <button
-                onClick={() => onSelectNanny?.(shortlist[0].id)}
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#2D4A3E] text-white font-medium shadow-lg shadow-[#2D4A3E]/20"
-              >
-                <MessageCircle size={18} />
-                <span>Связаться с {shortlist[0].name.split(' ')[0]}</span>
-              </button>
             </div>
-          )}
-        </>
+          ))}
+        </div>
       ) : (
         /* Compare View */
-        <>
-          {selectedNannies.length === 0 ? (
-            <div className="px-4 py-16 text-center">
-              <div className="w-20 h-20 rounded-2xl bg-[#F0EFED] flex items-center justify-center mx-auto mb-4">
-                <Users size={32} className="text-[#8B8680]" />
+        <div className="p-4 pb-32">
+          {selectedNannies.length < 2 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                <Grid3X3 size={24} className="text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2 font-serif">Выберите нянь для сравнения</h3>
-              <p className="text-sm text-[#8B8680] mb-6">Отметьте до 3 кандидатов в списке</p>
-              <button
-                onClick={() => setViewMode('list')}
-                className="px-6 py-3 rounded-xl bg-[#2D4A3E] text-white text-sm font-medium"
-              >
-                Перейти к списку
-              </button>
+              <p className="text-gray-600 font-medium mb-1">Выберите для сравнения</p>
+              <p className="text-gray-400 text-sm">Минимум 2 кандидата</p>
             </div>
           ) : (
-            <div className="pb-32">
-              {/* Compare Header Cards */}
-              <div className="px-4 py-4">
-                <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-                  {selectedNannies.map((nanny, index) => (
-                    <div
-                      key={nanny.id}
-                      className={`flex-shrink-0 w-28 rounded-2xl p-3 text-center relative ${
-                        index === 0 ? 'bg-gradient-to-b from-emerald-50 to-white border-2 border-emerald-200' : 'bg-white border border-[#E8E6E3]'
-                      }`}
-                    >
-                      {index === 0 && (
-                        <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-emerald-500 text-xs font-medium text-white whitespace-nowrap">
-                          Лучший
-                        </div>
-                      )}
-                      <button
-                        onClick={() => toggleCompareSelection(nanny.id)}
-                        className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#F0EFED] flex items-center justify-center text-[#8B8680] hover:bg-rose-100 hover:text-rose-500"
-                      >
-                        <X size={12} />
-                      </button>
-                      <div className="w-14 h-14 rounded-xl overflow-hidden mx-auto mb-2 shadow-sm">
+            <div className="space-y-4">
+              {/* Comparison Header - Photos */}
+              <div className="bg-white rounded-2xl p-4 overflow-hidden">
+                <div className="flex gap-3">
+                  {selectedNannies.map((nanny) => (
+                    <div key={nanny.id} className="flex-1 text-center">
+                      <div className="relative mx-auto w-20 h-20 mb-2">
                         <img
                           src={nanny.photo}
                           alt={nanny.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full rounded-2xl object-cover"
                         />
+                        <button
+                          onClick={() => toggleSelect(nanny.id)}
+                          className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gray-900 text-white flex items-center justify-center"
+                        >
+                          <X size={12} />
+                        </button>
                       </div>
-                      <p className="text-sm font-semibold text-[#1A1A1A] truncate">{nanny.name.split(' ')[0]}</p>
+                      <p className="font-semibold text-gray-900 text-sm truncate">{nanny.name.split(' ')[0]}</p>
                       <div className="flex items-center justify-center gap-1 mt-1">
-                        <Star size={10} className="text-amber-400 fill-amber-400" />
-                        <span className="text-xs text-[#6B6660]">{nanny.rating}</span>
+                        <Star size={12} className="text-amber-400 fill-amber-400" />
+                        <span className="text-xs text-gray-600">{nanny.rating}</span>
                       </div>
                     </div>
                   ))}
-                  {selectedNannies.length < 3 && (
-                    <button
-                      onClick={() => setViewMode('list')}
-                      className="flex-shrink-0 w-28 h-[124px] rounded-2xl border-2 border-dashed border-[#D4D2CF] flex flex-col items-center justify-center gap-2 text-[#8B8680] hover:border-[#2D4A3E] hover:text-[#2D4A3E] transition-colors"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-[#F0EFED] flex items-center justify-center">
-                        <span className="text-xl">+</span>
-                      </div>
-                      <span className="text-xs font-medium">Добавить</span>
-                    </button>
-                  )}
                 </div>
               </div>
 
               {/* Comparison Table */}
-              <div className="px-4 space-y-2">
-                {compareCategories.map((category) => (
-                  <div key={category.key} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#F0EFED]">
-                    <div className="px-4 py-2.5 bg-[#FAF9F7] border-b border-[#F0EFED]">
-                      <p className="text-xs font-semibold text-[#8B8680] uppercase tracking-wider">{category.label}</p>
-                    </div>
-                    <div className="flex">
-                      {selectedNannies.map((nanny, index) => {
-                        const value = nanny[category.key as keyof typeof nanny];
-                        const isHighest = index === 0 && (category.key === 'matchScore' || category.key === 'rating');
-                        return (
-                          <div
-                            key={nanny.id}
-                            className={`flex-1 py-3 px-4 text-center border-r border-[#F0EFED] last:border-r-0 ${
-                              isHighest ? 'bg-emerald-50/50' : ''
-                            }`}
-                          >
-                            <span className={`text-sm font-semibold ${
-                              isHighest ? 'text-emerald-700' : 'text-[#1A1A1A]'
-                            }`}>
-                              {category.format(value as never)}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Specialties comparison */}
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#F0EFED]">
-                  <div className="px-4 py-2.5 bg-[#FAF9F7] border-b border-[#F0EFED]">
-                    <p className="text-xs font-semibold text-[#8B8680] uppercase tracking-wider">Специализация</p>
-                  </div>
-                  <div className="flex">
-                    {selectedNannies.map((nanny) => (
-                      <div key={nanny.id} className="flex-1 p-3 border-r border-[#F0EFED] last:border-r-0">
-                        <div className="flex flex-wrap gap-1 justify-center">
-                          {nanny.specialties.map((s, i) => (
-                            <span key={i} className="text-xs px-2 py-1 rounded-full bg-[#F5F4F2] text-[#6B6660]">
-                              {s}
-                            </span>
-                          ))}
-                        </div>
+              <div className="bg-white rounded-2xl overflow-hidden">
+                {[
+                  { label: 'Совпадение', key: 'matchScore', suffix: '%', highlight: true },
+                  { label: 'Рейтинг', key: 'rating' },
+                  { label: 'Опыт', key: 'experience', suffix: ' лет' },
+                  { label: 'Ставка', key: 'rate', suffix: '₽/ч' },
+                  { label: 'Расстояние', key: 'distance' },
+                  { label: 'Проверки', key: 'verified', suffix: '/5' },
+                  { label: 'Ответ', key: 'responseTime' },
+                ].map((row, i) => {
+                  const values = selectedNannies.map(n => n[row.key as keyof typeof n]);
+                  const maxVal = Math.max(...values.filter(v => typeof v === 'number') as number[]);
+                  
+                  return (
+                    <div
+                      key={row.key}
+                      className={`flex items-center px-4 py-3.5 ${i !== 0 ? 'border-t border-gray-100' : ''}`}
+                    >
+                      <span className="w-24 text-sm text-gray-500 shrink-0">{row.label}</span>
+                      <div className="flex-1 flex gap-3">
+                        {selectedNannies.map((nanny) => {
+                          const value = nanny[row.key as keyof typeof nanny];
+                          const isMax = typeof value === 'number' && value === maxVal;
+                          return (
+                            <div
+                              key={nanny.id}
+                              className={`flex-1 text-center py-1.5 rounded-lg text-sm font-semibold ${
+                                row.highlight && isMax
+                                  ? 'bg-emerald-50 text-emerald-700'
+                                  : isMax
+                                  ? 'bg-gray-100 text-gray-900'
+                                  : 'text-gray-600'
+                              }`}
+                            >
+                              {value}{row.suffix || ''}
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Recommendation */}
-              <div className="px-4 py-4">
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-                      <Sparkles size={16} className="text-white" />
-                    </div>
-                    <span className="text-sm font-semibold text-emerald-800">Рекомендация Blizko</span>
-                  </div>
-                  <p className="text-sm text-emerald-700 leading-relaxed">
-                    <span className="font-semibold">{selectedNannies[0]?.name}</span> — лучший выбор по совокупности критериев: высокий рейтинг, ближе всего к вам, опыт работы с детьми вашего возраста.
-                  </p>
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-4 text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles size={16} className="text-emerald-400" />
+                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Рекомендация Blizko</span>
                 </div>
-              </div>
-
-              {/* Bottom CTA */}
-              <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-[#F0EFED] px-4 py-4 pb-8">
-                <button
-                  onClick={() => onSelectNanny?.(selectedNannies[0]?.id)}
-                  className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-[#2D4A3E] text-white font-medium shadow-lg shadow-[#2D4A3E]/20"
-                >
-                  <MessageCircle size={18} />
-                  <span>Выбрать {selectedNannies[0]?.name.split(' ')[0]}</span>
-                </button>
+                <p className="text-sm text-gray-300 leading-relaxed">
+                  <span className="text-white font-semibold">{selectedNannies[0]?.name}</span> лучше всего подходит: высокий рейтинг, ближе к вам и быстрее отвечает.
+                </p>
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
+
+      {/* Bottom CTA */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-8">
+        <button className="w-full h-14 rounded-2xl bg-gray-900 text-white font-semibold text-[15px] flex items-center justify-center gap-2 active:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20">
+          <MessageCircle size={20} />
+          Написать {viewMode === 'compare' && selectedNannies.length > 0 ? selectedNannies[0].name.split(' ')[0] : 'выбранным'}
+        </button>
+      </div>
     </div>
   );
 };

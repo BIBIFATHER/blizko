@@ -2,10 +2,8 @@ import React from 'react';
 import {
   Bell,
   ChevronRight,
-  Clock,
   MessageCircle,
   Search,
-  ShieldCheck,
   Star,
   Sparkles,
   Heart,
@@ -59,10 +57,10 @@ const mockData = {
       id: '1',
       type: 'match',
       title: 'Новое совпадение',
-      subtitle: 'Анна Морозова — 96% совпадение',
+      subtitle: 'Анна Морозова - 96% совпадение',
       time: '2 часа назад',
       icon: Sparkles,
-      color: 'emerald',
+      color: 'teal',
     },
     {
       id: '2',
@@ -94,31 +92,31 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
   onNavigate,
 }) => {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] pb-24">
+    <div className="min-h-screen bg-[#FAF9F7] pb-24">
       {/* Header */}
-      <header className="bg-gray-900 text-white px-5 pt-12 pb-6">
+      <header className="bg-gradient-to-br from-[#81B29A] to-[#6A9B83] text-white px-5 pt-12 pb-6 rounded-b-3xl">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <img
               src={mockData.user.avatar}
               alt={mockData.user.name}
-              className="w-12 h-12 rounded-full object-cover border-2 border-white/20"
+              className="w-12 h-12 rounded-full object-cover border-2 border-white/30"
             />
             <div>
-              <p className="text-white/60 text-sm">Добрый день,</p>
-              <p className="font-bold text-lg">{mockData.user.name}</p>
+              <p className="text-white/80 text-sm">Добрый день,</p>
+              <p className="font-semibold text-lg">{mockData.user.name}</p>
             </div>
           </div>
-          <button className="relative w-11 h-11 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors">
+          <button className="relative w-11 h-11 rounded-full bg-white/15 flex items-center justify-center active:bg-white/25 transition-colors">
             <Bell size={20} />
-            <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-gray-900" />
+            <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-[#E07A5F] border-2 border-[#81B29A]" />
           </button>
         </div>
 
         {/* Search Progress */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+        <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-white/70">Прогресс поиска</span>
+            <span className="text-sm text-white/80">Прогресс поиска</span>
             <span className="text-sm font-semibold">{mockData.searchProgress.stage}/{mockData.searchProgress.totalStages}</span>
           </div>
           <div className="flex gap-1.5 mb-3">
@@ -126,7 +124,7 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
               <div
                 key={step}
                 className={`flex-1 h-1.5 rounded-full ${
-                  step <= mockData.searchProgress.stage ? 'bg-emerald-400' : 'bg-white/20'
+                  step <= mockData.searchProgress.stage ? 'bg-[#F2CC8F]' : 'bg-white/20'
                 }`}
               />
             ))}
@@ -136,13 +134,13 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
       </header>
 
       {/* Quick Actions */}
-      <div className="px-5 -mt-1 mb-6">
+      <div className="px-5 mb-6">
         <div className="flex gap-3 overflow-x-auto py-4 -mx-5 px-5 scrollbar-hide">
           {[
-            { icon: Search, label: 'Найти', color: 'bg-gray-900' },
-            { icon: Heart, label: 'Избранное', color: 'bg-rose-500' },
-            { icon: MessageCircle, label: 'Чаты', color: 'bg-blue-500', badge: 2 },
-            { icon: Calendar, label: 'Встречи', color: 'bg-amber-500' },
+            { icon: Search, label: 'Найти', color: 'bg-[#5D8A72]' },
+            { icon: Heart, label: 'Избранное', color: 'bg-[#E07A5F]' },
+            { icon: MessageCircle, label: 'Чаты', color: 'bg-[#6B9AC4]', badge: 2 },
+            { icon: Calendar, label: 'Встречи', color: 'bg-[#DDA15E]' },
           ].map((action) => (
             <button
               key={action.label}
@@ -151,12 +149,12 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
               <div className={`relative w-14 h-14 rounded-2xl ${action.color} flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform`}>
                 <action.icon size={24} />
                 {action.badge && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-xs font-bold flex items-center justify-center border-2 border-white">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#E07A5F] text-xs font-bold flex items-center justify-center border-2 border-white">
                     {action.badge}
                   </span>
                 )}
               </div>
-              <span className="text-xs text-gray-600 font-medium">{action.label}</span>
+              <span className="text-xs text-[#4A4A4A] font-medium">{action.label}</span>
             </button>
           ))}
         </div>
@@ -165,10 +163,10 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
       {/* Shortlist Section */}
       <section className="mb-6">
         <div className="flex items-center justify-between px-5 mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Ваш шортлист</h2>
+          <h2 className="text-lg font-semibold text-[#3D3D3D]">Ваш шортлист</h2>
           <button
             onClick={() => onNavigate?.('/shortlist')}
-            className="flex items-center gap-1 text-sm font-semibold text-gray-500 active:text-gray-900 transition-colors"
+            className="flex items-center gap-1 text-sm font-medium text-[#8B8680] active:text-[#4A4A4A] transition-colors"
           >
             Все
             <ChevronRight size={16} />
@@ -183,16 +181,16 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
               onClick={() => onNavigate?.(`/nanny/${nanny.id}`)}
               className="relative flex-shrink-0 w-32 active:scale-98 transition-transform"
             >
-              <div className="relative h-44 rounded-2xl overflow-hidden mb-2">
+              <div className="relative h-44 rounded-2xl overflow-hidden mb-2 shadow-sm">
                 <img
                   src={nanny.photo}
                   alt={nanny.name}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#3D3D3D]/60 via-transparent to-transparent" />
                 
                 {nanny.isTop && (
-                  <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-emerald-500 flex items-center gap-1">
+                  <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-[#81B29A] flex items-center gap-1">
                     <Sparkles size={10} className="text-white" />
                     <span className="text-[10px] font-bold text-white">TOP</span>
                   </div>
@@ -200,18 +198,18 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
 
                 <div className="absolute bottom-2 left-2 right-2">
                   <div className="flex items-center gap-1 mb-0.5">
-                    <Star size={12} className="text-amber-400 fill-amber-400" />
+                    <Star size={12} className="text-[#F2CC8F] fill-[#F2CC8F]" />
                     <span className="text-white text-xs font-semibold">{nanny.rating}</span>
                   </div>
                 </div>
               </div>
-              <p className="text-sm font-semibold text-gray-900 text-left">{nanny.name}</p>
-              <p className="text-xs text-gray-500 text-left">{nanny.matchScore}% совпадение</p>
+              <p className="text-sm font-medium text-[#3D3D3D] text-left">{nanny.name}</p>
+              <p className="text-xs text-[#8B8680] text-left">{nanny.matchScore}% совпадение</p>
             </button>
           ))}
 
           {/* Add more button */}
-          <button className="flex-shrink-0 w-32 h-44 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 active:border-gray-300 active:text-gray-500 transition-colors">
+          <button className="flex-shrink-0 w-32 h-44 rounded-2xl border-2 border-dashed border-[#D4CFC7] flex flex-col items-center justify-center gap-2 text-[#8B8680] active:border-[#81B29A] active:text-[#5D8A72] transition-colors">
             <Plus size={24} />
             <span className="text-xs font-medium">Найти ещё</span>
           </button>
@@ -220,47 +218,47 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
 
       {/* Stats */}
       <section className="px-5 mb-6">
-        <div className="bg-white rounded-2xl p-4 flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-4 flex items-center justify-between border border-[#E8E4DF]">
           <div className="text-center flex-1">
-            <p className="text-2xl font-bold text-gray-900">{mockData.stats.viewed}</p>
-            <p className="text-xs text-gray-500">Просмотрено</p>
+            <p className="text-2xl font-semibold text-[#3D3D3D]">{mockData.stats.viewed}</p>
+            <p className="text-xs text-[#8B8680]">Просмотрено</p>
           </div>
-          <div className="w-px h-10 bg-gray-100" />
+          <div className="w-px h-10 bg-[#E8E4DF]" />
           <div className="text-center flex-1">
-            <p className="text-2xl font-bold text-gray-900">{mockData.stats.saved}</p>
-            <p className="text-xs text-gray-500">Сохранено</p>
+            <p className="text-2xl font-semibold text-[#3D3D3D]">{mockData.stats.saved}</p>
+            <p className="text-xs text-[#8B8680]">Сохранено</p>
           </div>
-          <div className="w-px h-10 bg-gray-100" />
+          <div className="w-px h-10 bg-[#E8E4DF]" />
           <div className="text-center flex-1">
-            <p className="text-2xl font-bold text-gray-900">{mockData.stats.contacted}</p>
-            <p className="text-xs text-gray-500">Связались</p>
+            <p className="text-2xl font-semibold text-[#3D3D3D]">{mockData.stats.contacted}</p>
+            <p className="text-xs text-[#8B8680]">Связались</p>
           </div>
         </div>
       </section>
 
       {/* Activity Feed */}
       <section className="px-5">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Активность</h2>
+        <h2 className="text-lg font-semibold text-[#3D3D3D] mb-4">Активность</h2>
         <div className="space-y-3">
           {mockData.activity.map((item) => (
             <button
               key={item.id}
-              className="w-full bg-white rounded-2xl p-4 flex items-center gap-4 active:bg-gray-50 transition-colors text-left"
+              className="w-full bg-white rounded-2xl p-4 flex items-center gap-4 active:bg-[#FAF9F7] transition-colors text-left border border-[#E8E4DF]"
             >
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                item.color === 'emerald' ? 'bg-emerald-100 text-emerald-600' :
-                item.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                'bg-amber-100 text-amber-600'
+                item.color === 'teal' ? 'bg-[#81B29A]/15 text-[#5D8A72]' :
+                item.color === 'blue' ? 'bg-[#6B9AC4]/15 text-[#5A8AB5]' :
+                'bg-[#F2CC8F]/25 text-[#DDA15E]'
               }`}>
                 <item.icon size={22} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 mb-0.5">{item.title}</p>
-                <p className="text-sm text-gray-500 truncate">{item.subtitle}</p>
+                <p className="text-sm font-medium text-[#3D3D3D] mb-0.5">{item.title}</p>
+                <p className="text-sm text-[#8B8680] truncate">{item.subtitle}</p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="text-xs text-gray-400">{item.time}</span>
-                <ArrowRight size={16} className="text-gray-300" />
+                <span className="text-xs text-[#8B8680]">{item.time}</span>
+                <ArrowRight size={16} className="text-[#C9C5BF]" />
               </div>
             </button>
           ))}
@@ -268,7 +266,7 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
       </section>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 pb-6 pt-2">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E8E4DF] px-6 pb-6 pt-2">
         <div className="flex items-center justify-around">
           {[
             { icon: Home, label: 'Главная', active: true },
@@ -280,7 +278,7 @@ export const ParentDashboardMobile: React.FC<ParentDashboardMobileProps> = ({
             <button
               key={item.label}
               className={`flex flex-col items-center gap-1 py-2 px-3 ${
-                item.active ? 'text-gray-900' : 'text-gray-400'
+                item.active ? 'text-[#5D8A72]' : 'text-[#8B8680]'
               }`}
             >
               <item.icon size={24} strokeWidth={item.active ? 2.5 : 2} />

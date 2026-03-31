@@ -18,7 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    "w-full min-h-[52px] py-3.5 sm:py-4 rounded-full font-semibold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 text-sm sm:text-base tracking-[0.01em] touch-manipulation select-none hover-lift";
+    "w-full min-h-[48px] py-3 sm:min-h-[52px] sm:py-4 rounded-full font-semibold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 text-sm sm:text-base tracking-[0.01em] touch-manipulation select-none hover-lift";
 
   const variants = {
     primary: `btn-honey ${pulse && !props.disabled ? "btn-honey-pulse" : ""}`,

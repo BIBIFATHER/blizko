@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { slugify } from '@/core/utils/slugify';
 import { Card, Button, Badge, EmptyState } from './UI';
@@ -17,6 +17,7 @@ import {
     markMatchFollowUpProfileOpened,
     saveMatchFollowUp,
 } from '@/services/matchFollowUp';
+import { t } from '@/core/i18n/translations';
 
 interface MatchResultsScreenProps {
     lang: Language;
@@ -63,6 +64,7 @@ const CandidateCard: React.FC<{
     onOpenProfile: (nannyId: string, nannyName: string, position: number, score: number, navigateToProfile?: boolean) => void;
     onShareToast: () => void;
 }> = ({ candidate, index, lang, onOpenProfile, onShareToast }) => {
+    const text = t[lang];
     const { nanny, score, humanExplanation, trustBadges, riskFlags } = candidate;
 
     const initials = (nanny.name || '?')
@@ -105,96 +107,120 @@ const CandidateCard: React.FC<{
     }, [index, nanny.id, nanny.name, onOpenProfile, score]);
 
     const hasMeta = !!(nanny.experience || nanny.city || nanny.district);
+    const recommendationTone =
+        index === 0
+            ? (lang === 'ru' ? 'Сильнейшая рекомендация' : 'Strongest recommendation')
+            : lang === 'ru'
+                ? 'Спокойный запасной вариант'
+                : 'Calm backup option';
+    const recommendationCopy =
+        score >= 90
+            ? (lang === 'ru' ? 'Очень высокий уровень совпадения по стилю семьи и запросу.' : 'Very strong alignment with family style and request.')
+            : score >= 80
+                ? (lang === 'ru' ? 'Хороший баланс между опытом, ритмом семьи и сигналами доверия.' : 'Strong balance of experience, family rhythm, and trust signals.')
+                : (lang === 'ru' ? 'Подходит как вариант для аккуратного диалога и уточнения деталей.' : 'Worth opening for a careful conversation and detail check.');
+    const contextPills = [
+        nanny.experience ? { icon: <Clock size={12} />, label: nanny.experience } : null,
+        nanny.city || nanny.district ? { icon: <MapPin size={12} />, label: nanny.district || nanny.city || '' } : null,
+        nanny.isNannySharing ? { icon: <Heart size={12} />, label: 'Nanny Sharing' } : null,
+    ].filter(Boolean) as Array<{ icon: React.ReactNode; label: string }>;
 
     return (
         <div className="animate-pop-in" style={{ animationDelay: `${index * 140 + 200}ms` }}>
-            <Card className="p-4! sm:p-5!">
-                <div className="space-y-4">
-                    <div className="flex items-start gap-4">
-                        {/* Avatar */}
-                        <div className={`w-[72px] h-[72px] rounded-[20px] bg-linear-to-br ${avatarGradients[index % 3]} flex items-center justify-center shrink-0 shadow-md overflow-hidden ring-2 ring-white/80`}>
-                            {nanny.photo ? (
-                                <img src={nanny.photo} alt={nanny.name} className="w-full h-full object-cover" />
-                            ) : (
-                                <span className="text-2xl font-black text-white/90 drop-shadow-sm">{initials}</span>
-                            )}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
+            <Card className="overflow-hidden p-0!">
+                <div className="space-y-0">
+                    <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(160deg,rgba(252,249,244,0.96),rgba(241,236,227,0.98))] px-4 py-4 sm:px-5 sm:py-5">
+                        <div className="absolute inset-x-6 top-0 h-24 rounded-full bg-[radial-gradient(circle_at_top,rgba(216,171,89,0.18),transparent_72%)] blur-2xl" />
+                        <div className="relative space-y-4">
                             <div className="flex items-start justify-between gap-3">
-                                <div className="min-w-0">
-                                    <h3 className="text-lg sm:text-xl font-semibold text-stone-800 truncate leading-tight">
-                                        <Link
-                                            to={`/nanny/${slugify(nanny.name, nanny.id)}`}
-                                            onClick={handleTrackProfileOpen}
-                                            className="hover:text-amber-700 transition-colors"
-                                        >
-                                            {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
-                                        </Link>
-                                    </h3>
+                                <div className="inline-flex items-center gap-2 rounded-full bg-white/78 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-500 shadow-cloud-soft">
+                                    <Sparkles size={12} className="text-amber-600" />
+                                    {recommendationTone}
+                                </div>
+                                <div className="rounded-[22px] bg-stone-950 px-4 py-3 text-center text-white shadow-lg">
+                                    <div className="text-[2rem] font-semibold leading-none">{score}</div>
+                                    <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/60">
+                                        {lang === 'ru' ? 'Рекомендация' : 'Fit'}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-4">
+                                <div className={`h-[84px] w-[84px] rounded-[26px] bg-linear-to-br ${avatarGradients[index % 3]} flex items-center justify-center shrink-0 overflow-hidden shadow-md ring-2 ring-white/80`}>
+                                    {nanny.photo ? (
+                                        <img src={nanny.photo} alt={nanny.name} className="h-full w-full object-cover" />
+                                    ) : (
+                                        <span className="text-2xl font-black text-white/90 drop-shadow-sm">{initials}</span>
+                                    )}
+                                </div>
+
+                                <div className="min-w-0 flex-1 space-y-2">
+                                    <div className="space-y-1">
+                                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-400">
+                                            {lang === 'ru' ? `Кандидат ${index + 1}` : `Candidate ${index + 1}`}
+                                        </p>
+                                        <h3 className="text-[1.4rem] font-semibold leading-[1.02] text-stone-900 sm:text-[1.6rem]">
+                                            <Link
+                                                to={`/nanny/${slugify(nanny.name, nanny.id)}`}
+                                                onClick={handleTrackProfileOpen}
+                                                className="transition-colors hover:text-amber-700"
+                                            >
+                                                {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
+                                            </Link>
+                                        </h3>
+                                        <p className="max-w-[26ch] text-sm leading-6 text-stone-600">
+                                            {recommendationCopy}
+                                        </p>
+                                    </div>
+
                                     {hasMeta && (
-                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-stone-500">
-                                            {nanny.city && (
-                                                <span className="flex items-center gap-1 text-xs font-medium">
-                                                    <MapPin size={11} className="text-stone-400" />
-                                                    {nanny.district || nanny.city}
+                                        <div className="flex flex-wrap gap-2">
+                                            {contextPills.map((item) => (
+                                                <span
+                                                    key={item.label}
+                                                    className="inline-flex items-center gap-1.5 rounded-full bg-white/82 px-2.5 py-1.5 text-[11px] font-medium text-stone-600 shadow-sm"
+                                                >
+                                                    <span className="text-stone-400">{item.icon}</span>
+                                                    {item.label}
                                                 </span>
-                                            )}
-                                            {nanny.experience && (
-                                                <span className="flex items-center gap-1 text-xs font-medium">
-                                                    <Clock size={11} className="text-stone-400" />
-                                                    {nanny.experience}
-                                                </span>
-                                            )}
+                                            ))}
                                         </div>
                                     )}
                                 </div>
-                                <div className="rounded-[18px] border border-[color:var(--cloud-border)] bg-white/80 px-3 py-2 flex min-w-[76px] shrink-0 flex-col items-center justify-center shadow-cloud-soft">
-                                    <span className="text-2xl font-black text-stone-900 leading-none">{score}</span>
-                                    <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-stone-400 mt-1">
-                                        {lang === 'ru' ? 'Match' : 'Match'}
-                                    </span>
-                                </div>
                             </div>
-                            {/* Nanny Sharing badge inline */}
-                            {nanny.isNannySharing && (
-                                <span className="inline-flex items-center gap-1 mt-2 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
-                                    <Heart size={10} className="text-emerald-500" />
-                                    Nanny Sharing
-                                </span>
-                            )}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_0.9fr] gap-3">
-                        <div className="secondary-card p-3.5">
-                            <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] block mb-1.5">
-                                {lang === 'ru' ? 'Почему подходит' : 'Why it fits'}
-                            </span>
-                            <p className="text-[13px] sm:text-sm text-stone-700 leading-relaxed font-medium">
+                    <div className="grid gap-3 px-4 pb-4 pt-3 sm:px-5 sm:pb-5 sm:pt-4">
+                        <div className="rounded-[1.7rem] bg-[color:var(--surface)] px-4 py-4">
+                            <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
+                                <MessageCircle size={12} className="text-stone-400" />
+                                {text.shortlistReasonTitle}
+                            </div>
+                            <p className="text-[14px] leading-7 text-stone-700">
                                 {humanExplanation}
                             </p>
                         </div>
 
-                        <div className="secondary-card p-3.5">
-                            <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.18em] mb-2 flex items-center gap-1">
-                                <CheckCheck size={11} />
-                                {lang === 'ru' ? 'Доверие' : 'Trust'}
-                            </span>
-                            <div className="flex flex-wrap gap-1.5">
+                        <div className="rounded-[1.7rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(246,243,238,0.96))] px-4 py-4">
+                            <div className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
+                                <CheckCheck size={12} className="text-emerald-600" />
+                                {text.shortlistTrustTitle}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
                                 {trustBadges.length > 0 ? (
-                                    trustBadges.slice(0, 4).map(badge => (
+                                    trustBadges.slice(0, 4).map((badge) => (
                                         <span
                                             key={badge}
-                                            className="inline-flex items-center gap-1 rounded-full border border-[color:var(--cloud-border)] bg-white px-2 py-0.5 text-[10px] font-medium text-stone-600"
+                                            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-stone-600 shadow-sm"
                                         >
                                             <span className="text-[10px]">{TRUST_BADGE_ICONS[badge]}</span>
                                             {TRUST_BADGE_LABELS[badge]?.[lang] || badge}
                                         </span>
                                     ))
                                 ) : (
-                                    <span className="text-[10px] text-stone-400 font-medium italic">
-                                        {lang === 'ru' ? 'Базовая проверка пройдена' : 'Basic check passed'}
+                                    <span className="text-[11px] font-medium italic text-stone-400">
+                                        {lang === 'ru' ? 'Базовая проверка уже пройдена' : 'Basic review already passed'}
                                     </span>
                                 )}
                             </div>
@@ -202,9 +228,9 @@ const CandidateCard: React.FC<{
                     </div>
 
                     {riskFlags && riskFlags.length > 0 && (
-                        <div className="secondary-card bg-stone-50/80 p-3">
-                            <span className="text-[9px] font-bold text-stone-400 uppercase tracking-[0.15em] block mb-2">
-                                {lang === 'ru' ? 'Обсудить заранее' : 'Discuss in advance'}
+                        <div className="mx-4 rounded-[1.7rem] bg-[linear-gradient(180deg,rgba(250,248,244,0.95),rgba(246,241,234,0.95))] px-4 py-4 sm:mx-5">
+                            <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.15em] text-stone-400">
+                                {text.shortlistRiskTitle}
                             </span>
                             <div className="space-y-1.5">
                                 {riskFlags.map((flag, i) => (
@@ -224,7 +250,7 @@ const CandidateCard: React.FC<{
                                             <p className="font-semibold">{flag.message}</p>
                                             {flag.advice && (
                                                 <p className="mt-0.5 opacity-75 font-medium">
-                                                    💡 {flag.advice}
+                                                    {flag.advice}
                                                 </p>
                                             )}
                                         </div>
@@ -234,19 +260,19 @@ const CandidateCard: React.FC<{
                         </div>
                     )}
 
-                    <div className="grid grid-cols-5 gap-2.5">
+                    <div className="grid grid-cols-5 gap-2.5 px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
                         <Button
                             variant="primary"
                             onClick={handleOpenProfile}
-                            className="col-span-3 py-3.5! rounded-[20px]! shadow-lg"
+                            className="col-span-3 py-3.5! rounded-[22px]! shadow-lg"
                         >
                             <MessageCircle size={16} />
-                            {lang === 'ru' ? 'Написать' : 'Message'}
+                            {lang === 'ru' ? 'Открыть профиль' : 'Open profile'}
                         </Button>
                         <Button
                             variant="outline"
                             onClick={copyShareLink}
-                            className="col-span-2 py-3.5! rounded-[20px]! border-stone-200 bg-white text-stone-600 shadow-sm hover:bg-stone-50"
+                            className="col-span-2 py-3.5! rounded-[22px]! border-stone-200 bg-white text-stone-600 shadow-sm hover:bg-stone-50"
                         >
                             <Share2 size={15} className="text-stone-400" />
                             {lang === 'ru' ? 'Обсудить' : 'Share'}
@@ -260,9 +286,104 @@ const CandidateCard: React.FC<{
 
 /* ─── Main Screen ─── */
 export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) => {
+    const text = t[lang];
     const location = useLocation() as ReturnType<typeof useLocation> & { state: MatchResultsLocationState | null };
     const navigate = useNavigate();
-    const matchResult = location.state?.matchResult;
+    const mockMatchResult: MatchResult | null = useMemo(() => {
+        if (!import.meta.env.DEV) return null;
+        const params = new URLSearchParams(location.search);
+        if (params.get('mock') !== '1') return null;
+
+        return {
+            overallAdvice: lang === 'ru'
+                ? 'Мы оставили только те профили, где можно спокойно перейти к разговору о деталях, а не тратить силы на хаотичный просмотр.'
+                : 'We kept only the profiles worth moving into a real conversation instead of chaotic browsing.',
+            requestId: 'mock-request-1',
+            candidates: [
+                {
+                    score: 93,
+                    reasons: ['high_empathy', 'verified', 'experience_fit'],
+                    humanExplanation: lang === 'ru'
+                        ? 'Анна хорошо подходит семьям, которым важны спокойный ритм, прозрачная коммуникация и мягкая адаптация ребёнка.'
+                        : 'Anna fits families that value calm rhythm, transparent communication, and a gentle child adaptation.',
+                    trustBadges: ['verified_moderation', 'soft_skills', 'has_reviews'],
+                    riskFlags: [
+                        {
+                            level: 'warning',
+                            message: lang === 'ru' ? 'Уточните вечерний график заранее.' : 'Confirm evening schedule in advance.',
+                            advice: lang === 'ru' ? 'Лучше сразу обсудить регулярные поздние смены.' : 'Discuss recurring late shifts early.',
+                        },
+                    ],
+                    nanny: {
+                        id: 'demo1234-mock',
+                        name: 'Анна Иванова',
+                        city: 'Москва',
+                        district: 'Пресня',
+                        experience: '7 лет',
+                        expectedRate: '900 ₽',
+                        contact: '+7 999 123-45-67',
+                        isVerified: true,
+                        about: 'Работаю с детьми 0–7 лет, внимательно отношусь к режиму и эмоциональному комфорту ребёнка.',
+                        skills: ['Развивающие игры', 'Монтессори', 'Подготовка к школе'],
+                        childAges: ['0-1', '1-3', '3-6'],
+                        reviews: [
+                            { id: 'r1', authorName: 'Мария', rating: 5, text: 'Очень спокойная и внимательная няня.', date: Date.now() },
+                            { id: 'r2', authorName: 'Екатерина', rating: 5, text: 'Дочка быстро привыкла, всё прошло отлично.', date: Date.now() },
+                        ],
+                        softSkills: {
+                            method: 'rule_based_v1',
+                            rawScore: 88,
+                            dominantStyle: 'Empathetic',
+                            summary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
+                            familySummary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
+                            moderationSummary: 'Высокая эмпатия, устойчивое поведение, без выраженных рисковых сигналов.',
+                            completedAt: Date.now(),
+                            coverage: 0.86,
+                            confidenceReason: 'full_answers',
+                            answeredItems: 12,
+                            totalItems: 14,
+                            traits: {
+                                empathy: 92,
+                                stability: 84,
+                                responsibility: 87,
+                                structure: 73,
+                            },
+                            signals: [],
+                        },
+                        photo: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
+                        createdAt: Date.now(),
+                        type: 'nanny',
+                    },
+                },
+                {
+                    score: 88,
+                    reasons: ['good_schedule_fit', 'verified'],
+                    humanExplanation: lang === 'ru'
+                        ? 'Екатерина сильна там, где семье нужен более структурный режим и опыт с дошкольниками.'
+                        : 'Ekaterina is strong where the family needs a more structured rhythm and preschool experience.',
+                    trustBadges: ['verified_moderation', 'ai_checked'],
+                    nanny: {
+                        id: 'demo5678-mock',
+                        name: 'Екатерина Смирнова',
+                        city: 'Москва',
+                        district: 'Хамовники',
+                        experience: '5 лет',
+                        expectedRate: '850 ₽',
+                        contact: '+7 999 123-45-67',
+                        isVerified: true,
+                        about: 'Люблю понятный режим дня, развитие через рутину и спокойное общение с семьёй.',
+                        skills: ['Подготовка к школе', 'Прогулки', 'Режим дня'],
+                        childAges: ['1-3', '3-6'],
+                        reviews: [],
+                        photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop',
+                        createdAt: Date.now(),
+                        type: 'nanny',
+                    },
+                },
+            ],
+        };
+    }, [lang, location.search]);
+    const matchResult = location.state?.matchResult || mockMatchResult;
     const [showToast, setShowToast] = useState(false);
 
     const handleShareToast = useCallback(() => {
@@ -309,9 +430,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                 <EmptyState
                     icon={<User size={28} />}
                     title={lang === 'ru' ? 'Пока кандидатов нет' : 'No candidates yet'}
-                    description={lang === 'ru'
-                        ? 'Мы расширяем поиск. Попробуйте скорректировать бюджет или график.'
-                        : 'We\'re expanding the search. Try adjusting your budget or schedule.'}
+                    description={text.shortlistEmptyDesc}
                     actionLabel={lang === 'ru' ? 'Изменить запрос' : 'Edit request'}
                     onAction={() => navigate('/find-nanny')}
                 />
@@ -348,12 +467,10 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
 
                             <div className="space-y-3">
                                 <h1 className="max-w-[12ch] text-[2.35rem] leading-[0.96] text-stone-950 sm:max-w-3xl sm:text-4xl md:text-6xl">
-                                    {lang === 'ru' ? 'Кандидаты, с которыми можно спокойно идти дальше.' : 'Candidates you can calmly move forward with.'}
+                                    {text.shortlistHeroTitle}
                                 </h1>
                                 <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
-                                    {lang === 'ru'
-                                        ? 'Мы оставили профили, где совпадают требования семьи, базовые сигналы доверия и общий стиль общения.'
-                                        : 'We kept the profiles where family needs, trust signals, and overall style align.'}
+                                    {text.shortlistHeroSubtitle}
                                 </p>
                             </div>
 
@@ -362,6 +479,28 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                     {matchResult.overallAdvice}
                                 </div>
                             )}
+
+                            <div className="grid gap-2 sm:grid-cols-3">
+                                {[
+                                    {
+                                        title: lang === 'ru' ? 'Не бесконечный список' : 'Not an endless list',
+                                        text: lang === 'ru' ? 'Только кандидаты, с которыми есть смысл созваниваться.' : 'Only profiles worth opening and discussing.'
+                                    },
+                                    {
+                                        title: lang === 'ru' ? 'Сигналы доверия видны сразу' : 'Trust appears early',
+                                        text: lang === 'ru' ? 'Проверки, отзывы и риски вынесены вверх карточки.' : 'Checks, reviews, and risks are visible before deeper reading.'
+                                    },
+                                    {
+                                        title: lang === 'ru' ? 'Решение без спешки' : 'Decision without rush',
+                                        text: lang === 'ru' ? 'Можно открыть профиль, обсудить и вернуться к shortlist.' : 'Open a profile, discuss it, and come back later.'
+                                    },
+                                ].map((item) => (
+                                    <div key={item.title} className="rounded-[1.6rem] bg-white/78 px-4 py-4 shadow-cloud-soft">
+                                        <p className="text-sm font-semibold text-stone-900">{item.title}</p>
+                                        <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="relative z-10 grid gap-3">
@@ -377,11 +516,11 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
 
                             <div className="grid grid-cols-3 gap-2">
                                 {[
-                                    lang === 'ru' ? 'AI shortlist' : 'AI shortlist',
-                                    lang === 'ru' ? 'Верификация' : 'Verification',
-                                    lang === 'ru' ? 'Поддержка рядом' : 'Support nearby',
+                                    lang === 'ru' ? 'Shortlist' : 'Shortlist',
+                                    lang === 'ru' ? 'Проверка' : 'Verification',
+                                    lang === 'ru' ? 'Диалог' : 'Dialogue',
                                 ].map((item) => (
-                            <div key={item} className="secondary-card px-3 py-3 text-center text-[11px] font-semibold text-stone-600 sm:text-xs">
+                                    <div key={item} className="secondary-card px-3 py-3 text-center text-[11px] font-semibold text-stone-600 sm:text-xs">
                                         {item}
                                     </div>
                                 ))}
@@ -433,9 +572,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
 
                 <div className="form-footer-rail p-5 text-center md:p-6">
                     <p className="mx-auto max-w-2xl text-sm leading-7 text-stone-500">
-                        {lang === 'ru'
-                            ? 'Напишите няне, обсудите shortlist с партнёром или вернитесь позже. Решение всегда за вами, а не за интерфейсом.'
-                            : 'Message a nanny, discuss the shortlist with your partner, or come back later. The decision is yours, not the interface’s.'}
+                        {text.shortlistFooter}
                     </p>
                 </div>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../UI';
+import { Badge, Card } from '../UI';
 import { NannyProfile, ParentRequest } from '@/core/types';
 import {
     ListChecks,
@@ -48,74 +48,85 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
     );
     const aReady = readiness.filter((item) => item.readyForReview).length;
     const qualityApproved = readiness.filter((item) => item.qualityApproved).length;
+    const topMetrics = [
+        {
+            label: 'Заявки родителей',
+            value: metrics.parentOps.total,
+            icon: <ListChecks size={18} />,
+            note: `Требуют действия: ${metrics.parentOps.needsAction}`,
+            badge: <Badge variant="neutral">Ops</Badge>,
+        },
+        {
+            label: 'Анкеты нянь',
+            value: metrics.supply.total,
+            icon: <Users size={18} />,
+            note: 'Весь активный supply',
+            badge: <Badge variant="info">Supply</Badge>,
+        },
+        {
+            label: 'Готовы к ручной проверке',
+            value: aReady,
+            icon: <CheckCircle size={18} />,
+            note: 'Можно брать в модерацию',
+            badge: <Badge variant="warning">Ревью</Badge>,
+        },
+        {
+            label: 'Quality-approved supply',
+            value: qualityApproved,
+            icon: <TrendingUp size={18} />,
+            note: 'Готовы к показу семье',
+            badge: <Badge variant="success">Quality</Badge>,
+        },
+        {
+            label: 'Документы загружены',
+            value: withDocs,
+            icon: <FileCheck2 size={18} />,
+            note: 'Есть база для проверки',
+            badge: <Badge variant="info">Docs</Badge>,
+        },
+        {
+            label: 'Верифицировано',
+            value: verified,
+            icon: <ShieldCheck size={18} />,
+            note: `На проверке документов: ${pendingDocs}`,
+            badge: pendingDocs > 0 ? <Badge variant="warning">Есть pending</Badge> : <Badge variant="trust">Чисто</Badge>,
+        },
+    ];
 
     return (
         <>
             {unseenParentsCount > 0 && (
-                <div className="bg-red-50 border border-red-100 text-red-700 text-sm px-3 py-2 rounded-lg">
-                    Новые/обновлённые заявки родителей: {unseenParentsCount}
+                <div className="section-shell flex items-center justify-between gap-3 rounded-[1.5rem] px-4 py-3 text-sm text-stone-700">
+                    <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">Требует внимания</div>
+                        <div className="mt-1">Новые или обновлённые заявки родителей: {unseenParentsCount}</div>
+                    </div>
+                    <Badge variant="danger">Новые заявки</Badge>
                 </div>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                <Card className="p-4!">
-                    <div className="text-xs text-stone-500">Заявки родителей</div>
-                    <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
-                        <ListChecks size={18} /> {metrics.parentOps.total}
-                    </div>
-                    <div className="text-[11px] text-stone-500 mt-1">
-                        Требуют действия: {metrics.parentOps.needsAction}
-                    </div>
-                </Card>
-
-                <Card className="p-4!">
-                    <div className="text-xs text-stone-500">Анкеты нянь</div>
-                    <div className="text-2xl font-bold text-stone-800 mt-1 flex items-center gap-2">
-                        <Users size={18} /> {metrics.supply.total}
-                    </div>
-                </Card>
-
-                <Card className="p-4! bg-indigo-50 border-indigo-100">
-                    <div className="text-xs text-stone-500">Готовы к ручной проверке</div>
-                    <div className="text-2xl font-bold text-indigo-700 mt-1 flex items-center gap-2">
-                        <CheckCircle size={18} /> {aReady}
-                    </div>
-                </Card>
-
-                <Card className="p-4! bg-emerald-50 border-emerald-100">
-                    <div className="text-xs text-stone-500">Quality-approved supply</div>
-                    <div className="text-2xl font-bold text-emerald-700 mt-1 flex items-center gap-2">
-                        <TrendingUp size={18} /> {qualityApproved}
-                    </div>
-                    <div className="text-[11px] text-stone-500 mt-1">
-                        Готовы к показу семье
-                    </div>
-                </Card>
-
-                <Card className="p-4! bg-sky-50 border-sky-100">
-                    <div className="text-xs text-stone-500">Документы загружены</div>
-                    <div className="text-2xl font-bold text-sky-700 mt-1 flex items-center gap-2">
-                        <FileCheck2 size={18} /> {withDocs}
-                    </div>
-                </Card>
-
-                <Card className="p-4! bg-green-50 border-green-100">
-                    <div className="text-xs text-stone-500">Верифицировано</div>
-                    <div className="text-2xl font-bold text-green-700 mt-1 flex items-center gap-2">
-                        <ShieldCheck size={18} /> {verified}
-                    </div>
-                </Card>
-
-                <Card className="p-4! bg-amber-50 border-amber-100">
-                    <div className="text-xs text-stone-500">Документы на проверке</div>
-                    <div className="text-2xl font-bold text-amber-700 mt-1 flex items-center gap-2">
-                        <ShieldAlert size={18} /> {pendingDocs}
-                    </div>
-                </Card>
+                {topMetrics.map((metric) => (
+                    <Card key={metric.label} className="p-4!">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="text-xs text-stone-500">{metric.label}</div>
+                            {metric.badge}
+                        </div>
+                        <div className="text-2xl font-bold text-stone-800 mt-2 flex items-center gap-2">
+                            {metric.icon} {metric.value}
+                        </div>
+                        <div className="text-[11px] text-stone-500 mt-2">
+                            {metric.note}
+                        </div>
+                    </Card>
+                ))}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-4">
                 <Card className="p-4!">
-                    <div className="text-xs uppercase tracking-wide text-stone-400 mb-2">Parent Conversion</div>
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="text-xs uppercase tracking-wide text-stone-400">Parent Conversion</div>
+                        <Badge variant="info">Воронка</Badge>
+                    </div>
                     <div className="space-y-2 text-sm text-stone-600">
                         <div className="flex items-center justify-between">
                             <span>Старт формы</span>
@@ -136,7 +147,10 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                 </Card>
 
                 <Card className="p-4!">
-                    <div className="text-xs uppercase tracking-wide text-stone-400 mb-2">Nanny Quality Funnel</div>
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="text-xs uppercase tracking-wide text-stone-400">Nanny Quality Funnel</div>
+                        <Badge variant="success">Quality</Badge>
+                    </div>
                     <div className="space-y-2 text-sm text-stone-600">
                         <div className="flex items-center justify-between">
                             <span>Документы</span>
@@ -158,7 +172,10 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
                 </Card>
 
                 <Card className="p-4!">
-                    <div className="text-xs uppercase tracking-wide text-stone-400 mb-2">Post-Match Retention</div>
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="text-xs uppercase tracking-wide text-stone-400">Post-Match Retention</div>
+                        <Badge variant="neutral">Retention</Badge>
+                    </div>
                     <div className="space-y-2 text-sm text-stone-600">
                         <div className="flex items-center justify-between">
                             <span>Открыли профиль</span>
@@ -180,7 +197,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
             </div>
 
             <div className="text-[11px] text-stone-400 mt-3">
-                Event source: {events?.length ? 'remote analytics store' : 'local browser fallback'}.
+                Event source: {events?.length ? 'remote analytics store' : 'local browser fallback'}. Pending docs: <span className="font-medium text-stone-600 inline-flex items-center gap-1"><ShieldAlert size={12} /> {pendingDocs}</span>
             </div>
         </>
     );

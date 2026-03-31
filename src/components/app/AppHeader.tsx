@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { User as UserIcon, Share2 } from 'lucide-react';
+import { ChevronLeft, User as UserIcon, Share2 } from 'lucide-react';
 import { Language, User } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 
@@ -25,16 +25,64 @@ export function AppHeader({
 }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const pathname = location.pathname;
+  const isRoot = pathname === '/';
+  const screenTitle = (() => {
+    if (pathname === '/') return 'Blizko';
+    if (pathname === '/find-nanny') return lang === 'ru' ? 'Запрос семьи' : 'Family request';
+    if (pathname === '/match-results') return lang === 'ru' ? 'Ваш shortlist' : 'Your shortlist';
+    if (pathname.startsWith('/nanny/')) return lang === 'ru' ? 'Профиль няни' : 'Nanny profile';
+    if (pathname === '/become-nanny') return lang === 'ru' ? 'Анкета няни' : 'Nanny profile form';
+    if (pathname === '/for-nannies') return lang === 'ru' ? 'Для нянь' : 'For nannies';
+    if (pathname.includes('dashboard')) return lang === 'ru' ? 'Кабинет' : 'Dashboard';
+    if (pathname === '/admin') return 'Admin';
+    return 'Blizko';
+  })();
+  const screenHint = (() => {
+    if (pathname === '/') return lang === 'ru' ? 'Подбор рядом' : 'Matching nearby';
+    if (pathname === '/match-results') return lang === 'ru' ? 'Подобранные профили' : 'Curated profiles';
+    if (pathname.startsWith('/nanny/')) return lang === 'ru' ? 'Проверка и контекст' : 'Trust and context';
+    if (pathname === '/find-nanny') return lang === 'ru' ? 'Заполняем шаг за шагом' : 'Step by step';
+    return lang === 'ru' ? 'Спокойный выбор' : 'Calm decision';
+  })();
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 top-safe ${isScrolled ? 'py-3' : 'py-4'}`}>
+    <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 top-safe ${isScrolled ? 'py-2.5' : 'py-3.5'}`}>
       <div className="page-frame">
-        <div className={`floating-bar flex items-center justify-between rounded-[26px] px-4 py-3 md:px-5 ${isScrolled ? 'translate-y-0 opacity-100' : 'bg-white/62'}`}>
-        <div
-          className={`shrink-0 font-semibold text-stone-900 logo-serif text-[1.4rem] leading-none transition-[opacity,width,min-width] duration-300 ${isScrolled && location.pathname === '/' ? 'min-w-[5.5rem] cursor-pointer opacity-100' : 'w-0 min-w-0 overflow-hidden pointer-events-none opacity-0'}`}
-          onClick={() => { if (location.pathname !== '/') navigate('/'); }}
-        >
-          Blizko
+        <div className={`floating-bar app-topbar flex items-center justify-between rounded-[26px] px-3 py-2.5 md:px-5 ${isScrolled ? 'translate-y-0 opacity-100' : 'bg-white/62'}`}>
+        <div className="flex min-w-0 items-center gap-2">
+          {isRoot ? (
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/82 text-stone-500 shadow-sm"
+              aria-label="Blizko home"
+            >
+              <span className="logo-serif text-[1.15rem] leading-none text-stone-900">B</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/82 text-stone-500 shadow-sm transition-colors hover:text-stone-800"
+              aria-label={lang === 'ru' ? 'Назад' : 'Back'}
+            >
+              <ChevronLeft size={18} />
+            </button>
+          )}
+
+          <div className="min-w-0">
+            {!isRoot && (
+              <div className="truncate text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-stone-400">
+                {screenHint}
+              </div>
+            )}
+            <div
+              className={`truncate leading-none text-stone-950 transition-all duration-300 ${isRoot ? 'logo-serif text-[1.2rem] sm:text-[1.35rem]' : 'text-[0.98rem] font-semibold'}`}
+            >
+              {screenTitle}
+            </div>
+          </div>
         </div>
 
         <div className="flex min-w-0 items-center gap-2 pr-safe">

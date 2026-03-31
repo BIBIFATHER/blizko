@@ -103,8 +103,11 @@ export const copyNanniesOpsForTable = async (nannies: NannyProfile[]) => {
     const tsv = matrix.map((row) => row.map((v) => String(v ?? '')).join('\t')).join('\n');
     try {
         await navigator.clipboard.writeText(tsv);
-        alert('Скопировано. Вставьте в Google Sheets в ячейку A1.');
+        return { ok: true as const, message: 'Скопировано. Вставьте в Google Sheets в ячейку A1.' };
     } catch {
-        alert('Не удалось скопировать автоматически. Скачайте CSV и импортируйте в таблицу.');
+        return {
+            ok: false as const,
+            message: 'Не удалось скопировать автоматически. Скачайте CSV и импортируйте в таблицу.',
+        };
     }
 };

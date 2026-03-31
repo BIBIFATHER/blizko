@@ -229,7 +229,7 @@ export default function App() {
   })();
 
   return (
-    <div className="min-h-screen text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
+    <div className="app-scaffold min-h-screen text-stone-700 font-sans selection:bg-amber-100 flex flex-col pb-safe">
       <SeoHead 
         title={pageSeo.title}
         description={pageSeo.description}
@@ -257,7 +257,7 @@ export default function App() {
         onOpenProfile={() => setProfileOpen(true)}
       />
 
-      <main className="app-main-frame flex-1 pb-24 relative">
+      <main className="app-main-frame flex-1 relative">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home lang={lang} />} />

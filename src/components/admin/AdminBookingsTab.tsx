@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Card, Badge } from '../UI';
 import { Booking } from '@/services/booking';
-import { Calendar, Clock, User, CheckCircle, XCircle, AlertCircle, Filter } from 'lucide-react';
+import { Calendar, Clock, User, CheckCircle, XCircle } from 'lucide-react';
+import { AdminPillButton } from './adminPrimitives';
 
 type BookingFilter = 'all' | 'pending' | 'confirmed' | 'active' | 'completed' | 'cancelled';
 
@@ -61,48 +62,52 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
 
     return (
         <div className="space-y-4">
-            {/* Stats row */}
             <div className="grid grid-cols-3 gap-3">
                 <Card className="p-4 text-center">
-                    <div className="text-2xl font-bold text-amber-600">{counts.pending + counts.confirmed}</div>
-                    <div className="text-xs text-stone-400 mt-1">В работе</div>
+                    <div className="flex justify-center">
+                        <Badge variant="warning">В работе</Badge>
+                    </div>
+                    <div className="text-2xl font-bold text-stone-800 mt-2">{counts.pending + counts.confirmed}</div>
+                    <div className="text-xs text-stone-400 mt-1">Ожидают старта или подтверждения</div>
                 </Card>
                 <Card className="p-4 text-center">
-                    <div className="text-2xl font-bold text-green-600">{counts.completed}</div>
-                    <div className="text-xs text-stone-400 mt-1">Завершено</div>
+                    <div className="flex justify-center">
+                        <Badge variant="success">Завершено</Badge>
+                    </div>
+                    <div className="text-2xl font-bold text-stone-800 mt-2">{counts.completed}</div>
+                    <div className="text-xs text-stone-400 mt-1">Успешно закрытые брони</div>
                 </Card>
                 <Card className="p-4 text-center">
-                    <div className="text-2xl font-bold text-red-500">{counts.cancelled}</div>
-                    <div className="text-xs text-stone-400 mt-1">Отменено</div>
+                    <div className="flex justify-center">
+                        <Badge variant="danger">Отменено</Badge>
+                    </div>
+                    <div className="text-2xl font-bold text-stone-800 mt-2">{counts.cancelled}</div>
+                    <div className="text-xs text-stone-400 mt-1">Требуют разбора причин</div>
                 </Card>
             </div>
 
-            {/* Filters */}
             <div className="flex gap-2 overflow-x-auto pb-1">
                 {filters.map(f => (
-                    <button
+                    <AdminPillButton
                         key={f.key}
                         onClick={() => setFilter(f.key)}
-                        className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filter === f.key
-                                ? 'bg-amber-500 text-white'
-                                : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-                            }`}
+                        active={filter === f.key}
+                        tone="neutral"
+                        className="whitespace-nowrap"
                     >
                         {f.label}
-                    </button>
+                    </AdminPillButton>
                 ))}
             </div>
 
-            {/* Search */}
             <input
                 type="text"
                 placeholder="Поиск по ID..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-white/80 backdrop-blur-sm border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
+                className="input-glass w-full px-4 py-3 text-sm"
             />
 
-            {/* Bookings list */}
             {filtered.length === 0 ? (
                 <div className="text-center py-12 text-stone-400">
                     <Calendar size={32} className="mx-auto mb-2 opacity-50" />
@@ -151,13 +156,13 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => onStatusChange(booking.id, 'confirmed')}
-                                            className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-green-50 text-green-700 text-xs font-medium hover:bg-green-100 transition-colors"
+                                            className="flex-1 flex items-center justify-center gap-1 rounded-full border border-green-200/80 bg-green-50 py-2 text-xs font-medium text-green-700 transition-colors hover:bg-green-100"
                                         >
                                             <CheckCircle size={14} /> Подтвердить
                                         </button>
                                         <button
                                             onClick={() => onStatusChange(booking.id, 'cancelled')}
-                                            className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
+                                            className="flex-1 flex items-center justify-center gap-1 rounded-full border border-red-200/80 bg-red-50 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
                                         >
                                             <XCircle size={14} /> Отменить
                                         </button>
@@ -167,7 +172,7 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
                                 {booking.status === 'confirmed' && (
                                     <button
                                         onClick={() => onStatusChange(booking.id, 'active')}
-                                        className="w-full flex items-center justify-center gap-1 py-2 rounded-lg bg-amber-50 text-amber-700 text-xs font-medium hover:bg-amber-100 transition-colors"
+                                        className="w-full flex items-center justify-center gap-1 rounded-full border border-amber-200/80 bg-amber-50 py-2 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-100"
                                     >
                                         <Clock size={14} /> Отметить как активное
                                     </button>
@@ -176,7 +181,7 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
                                 {booking.status === 'active' && (
                                     <button
                                         onClick={() => onStatusChange(booking.id, 'completed')}
-                                        className="w-full flex items-center justify-center gap-1 py-2 rounded-lg bg-green-50 text-green-700 text-xs font-medium hover:bg-green-100 transition-colors"
+                                        className="w-full flex items-center justify-center gap-1 rounded-full border border-green-200/80 bg-green-50 py-2 text-xs font-medium text-green-700 transition-colors hover:bg-green-100"
                                     >
                                         <CheckCircle size={14} /> Завершить
                                     </button>

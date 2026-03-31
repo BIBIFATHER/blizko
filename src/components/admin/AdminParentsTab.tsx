@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Card, Badge } from '../UI';
-import { ParentRequest, DocumentVerification } from '@/core/types';
+import { ParentRequest } from '@/core/types';
 import { X } from 'lucide-react';
-import { adminUpdateParentRequest } from '@/services/adminApi';
-import { notifyUserStatusChanged } from '@/services/notifications';
+import { AdminDocumentPreviewModal, AdminPillButton, adminModalHeader, adminModalSurface, adminSectionPanel, adminSubsectionPanel } from './adminPrimitives';
+import { AdminPreviewDoc } from './adminModerationUtils';
+import { useAdminParentModeration } from '@/hooks/useAdminParentModeration';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
-type ParentWorkflowStatus = NonNullable<ParentRequest['status']>;
-const getNowTs = () => Date.now();
 
 interface AdminParentsTabProps {
     parents: ParentRequest[];
@@ -25,7 +24,15 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     const [selectedParent, setSelectedParent] = useState<ParentRequest | null>(null);
     const [rejectReasonCode, setRejectReasonCode] = useState<'profile_incomplete' | 'docs_missing' | 'budget_invalid' | 'contact_invalid' | 'other'>('profile_incomplete');
     const [rejectReasonText, setRejectReasonText] = useState('');
-    const [previewDoc, setPreviewDoc] = useState<{ url: string; name?: string } | null>(null);
+    const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
+    const { updateParentStatus, rejectParent } = useAdminParentModeration({
+        onDataChanged,
+        selectedParent,
+        setSelectedParent,
+        rejectReasonCode,
+        rejectReasonText,
+        setRejectReasonText,
+    });
 
     const filteredParents = React.useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -54,87 +61,25 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         return 'Новая';
     };
 
-    const parentStatusBadge = (status?: ParentRequest['status']) => {
-        if (status === 'payment_pending') return 'bg-stone-100 text-stone-700';
-        if (status === 'in_review') return 'bg-amber-100 text-amber-700';
-        if (status === 'approved') return 'bg-green-100 text-green-700';
-        if (status === 'rejected') return 'bg-red-100 text-red-700';
-        return 'bg-sky-100 text-sky-700';
-    };
-
-    const setParentStatus = async (parent: ParentRequest, status: ParentWorkflowStatus) => {
-        const updated = await adminUpdateParentRequest({
-            id: parent.id,
-            changes: { status },
-            note: `Админ изменил статус на: ${status}`,
-        });
-        if (!updated) {
-            alert('Не удалось сохранить статус на сервере.');
-            return;
-        }
-        if (updated) await notifyUserStatusChanged(updated);
-        onDataChanged();
-        if (selectedParent?.id === parent.id) {
-            setSelectedParent(updated);
-        }
-    };
-
-    const rejectParentWithReason = async (parent: ParentRequest) => {
-        const reasonMap = {
-            profile_incomplete: 'Анкета заполнена не полностью',
-            docs_missing: 'Не хватает документов',
-            budget_invalid: 'Некорректный бюджет',
-            contact_invalid: 'Некорректные контактные данные',
-            other: 'Другая причина',
-        } as const;
-
-        let reasonText = (rejectReasonText || '').trim();
-        if (reasonText.length < 8) {
-            const typed = prompt('Добавьте комментарий к отклонению анкеты (минимум 8 символов):', 'Пожалуйста, дополните анкету и исправьте замечания модератора');
-            reasonText = (typed || '').trim();
-        }
-        if (reasonText.length < 8) {
-            alert('Укажи комментарий минимум 8 символов, чтобы пользователь понял что исправить.');
-            return;
-        }
-        if (reasonText !== rejectReasonText) {
-            setRejectReasonText(reasonText);
-        }
-
-        const note = `Отклонено: ${reasonMap[rejectReasonCode]}. ${reasonText}`;
-
-        const updated = await adminUpdateParentRequest({
-            id: parent.id,
-            changes: {
-                status: 'rejected',
-                rejectionInfo: {
-                    reasonCode: rejectReasonCode,
-                    reasonText,
-                    rejectedAt: getNowTs(),
-                    rejectedBy: 'admin',
-                },
-            },
-            note,
-            forceStatusEvent: true,
-        });
-        if (!updated) {
-            alert('Не удалось сохранить отклонение на сервере.');
-            return;
-        }
-
-        if (updated) await notifyUserStatusChanged(updated);
-        setRejectReasonText('');
-        onDataChanged();
-    };
-
     return (
         <>
             <section>
-                <h3 className="text-stone-500 font-bold uppercase text-xs mb-3">
-                    Заявки родителей ({filteredParents.length})
-                </h3>
+                <div className="mb-4 flex items-center justify-between gap-3">
+                    <div>
+                        <h3 className="text-stone-500 font-bold uppercase text-xs">
+                            Заявки родителей
+                        </h3>
+                        <div className="mt-1 text-sm text-stone-600">
+                            {filteredParents.length} в текущем срезе
+                        </div>
+                    </div>
+                    <Badge variant={onlyNeedsAction ? 'warning' : 'neutral'}>
+                        {onlyNeedsAction ? 'Только action-needed' : 'Все заявки'}
+                    </Badge>
+                </div>
 
-                <div className="mb-3 flex flex-wrap gap-2">
+                <div className={`${adminSectionPanel} mb-3`}>
+                    <div className="mb-3 flex flex-wrap gap-2">
                     {([
                         ['all', 'Все'],
                         ['new', 'Новые'],
@@ -143,35 +88,36 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                         ['approved', 'Одобрены'],
                         ['rejected', 'Отклонены'],
                     ] as const).map(([key, label]) => (
-                        <button
+                        <AdminPillButton
                             key={key}
                             onClick={() => setParentStatusFilter(key)}
-                            className={`text-xs px-2.5 py-1.5 rounded-lg border ${parentStatusFilter === key
-                                ? 'bg-stone-800 text-white border-stone-800'
-                                : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
-                                }`}
+                            active={parentStatusFilter === key}
+                            tone="neutral"
                         >
                             {label}
-                        </button>
+                        </AdminPillButton>
                     ))}
-                </div>
+                    </div>
 
-                <label className="mb-3 inline-flex items-center gap-2 text-xs text-stone-700 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2">
-                    <input
-                        type="checkbox"
-                        checked={onlyNeedsAction}
-                        onChange={(e) => setOnlyNeedsAction(e.target.checked)}
-                    />
-                    Только требуют действия
-                </label>
+                    <label className="mb-3 inline-flex items-center gap-2 rounded-full border border-stone-200/70 bg-white/70 px-3 py-2 text-xs text-stone-700">
+                        <input
+                            type="checkbox"
+                            checked={onlyNeedsAction}
+                            onChange={(e) => setOnlyNeedsAction(e.target.checked)}
+                        />
+                        Только требуют действия
+                    </label>
 
-                <div className="mb-3 bg-red-50 border border-red-100 rounded-lg p-3 space-y-2">
-                    <div className="text-xs font-semibold text-red-700">Причина отклонения (для доработки анкеты)</div>
+                    <div className="rounded-[1.25rem] border border-red-100/80 bg-red-50/70 p-3 space-y-2">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="text-xs font-semibold text-red-700">Причина отклонения</div>
+                            <Badge variant="danger">Нужно объяснение семье</Badge>
+                        </div>
                     <div className="flex flex-wrap gap-2">
                         <select
                             value={rejectReasonCode}
                             onChange={(e) => setRejectReasonCode(e.target.value as any)}
-                            className="text-xs border border-red-200 rounded px-2 py-1 bg-white"
+                            className="input-glass min-h-[40px] rounded-full border-red-200/80 px-3 py-2 text-xs"
                         >
                             <option value="profile_incomplete">Анкета заполнена не полностью</option>
                             <option value="docs_missing">Не хватает документов</option>
@@ -183,9 +129,10 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                             value={rejectReasonText}
                             onChange={(e) => setRejectReasonText(e.target.value)}
                             placeholder="Комментарий для пользователя"
-                            className="flex-1 min-w-[220px] text-xs border border-red-200 rounded px-2 py-1"
+                            className="input-glass min-h-[40px] min-w-[220px] flex-1 rounded-full border-red-200/80 px-3 py-2 text-xs"
                         />
                     </div>
+                </div>
                 </div>
 
                 {filteredParents.length === 0 ? (
@@ -193,7 +140,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                 ) : (
                     <div className="space-y-3">
                         {filteredParents.map((p) => (
-                            <Card key={p.id} className="p-4! bg-amber-50/50">
+                            <Card key={p.id} className="p-4!">
                                 <div className="flex justify-between text-xs text-stone-400 mb-1">
                                     <span>{new Date(p.createdAt).toLocaleString()}</span>
                                     <div className="flex items-center gap-2">
@@ -219,35 +166,33 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                 )}
 
                                 <div className="mt-3 flex flex-wrap gap-2">
-                                    <button
-                                        onClick={() => setParentStatus(p, 'in_review')}
-                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200"
+                                    <AdminPillButton
+                                        onClick={() => updateParentStatus(p, 'in_review')}
+                                        tone="warm"
                                     >
                                         На проверку
-                                    </button>
-                                    <button
-                                        onClick={() => setParentStatus(p, 'approved')}
-                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200"
+                                    </AdminPillButton>
+                                    <AdminPillButton
+                                        onClick={() => updateParentStatus(p, 'approved')}
+                                        tone="success"
                                     >
                                         Одобрить
-                                    </button>
-                                    <button
-                                        onClick={() => rejectParentWithReason(p)}
+                                    </AdminPillButton>
+                                    <AdminPillButton
+                                        onClick={() => rejectParent(p)}
                                         disabled={rejectReasonText.trim().length < 8}
                                         title={rejectReasonText.trim().length < 8 ? 'Добавь комментарий (минимум 8 символов)' : 'Отклонить с причиной'}
-                                        className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${rejectReasonText.trim().length < 8
-                                            ? 'bg-red-50 text-red-300 cursor-not-allowed'
-                                            : 'bg-red-100 text-red-700 hover:bg-red-200'
-                                            }`}
+                                        tone="danger"
+                                        className={rejectReasonText.trim().length < 8 ? 'bg-red-50 text-red-300 border-red-100 cursor-not-allowed hover:bg-red-50' : ''}
                                     >
                                         Отклонить
-                                    </button>
-                                    <button
+                                    </AdminPillButton>
+                                    <AdminPillButton
                                         onClick={() => setSelectedParent(p)}
-                                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200"
+                                        tone="neutral"
                                     >
                                         Открыть анкету
-                                    </button>
+                                    </AdminPillButton>
                                 </div>
                             </Card>
                         ))}
@@ -258,35 +203,39 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
             {/* Selected parent detail modal */}
             {selectedParent && (
                 <div className="fixed inset-0 z-60 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden">
-                        <div className="p-4 border-b border-stone-100 flex items-center justify-between">
-                            <h3 className="font-bold text-stone-800">Анкета родителя</h3>
-                            <button onClick={() => setSelectedParent(null)} className="p-2 rounded-full hover:bg-stone-100">
+                    <div className={`${adminModalSurface} w-full max-w-xl`}>
+                        <div className={adminModalHeader}>
+                            <div>
+                                <div className="eyebrow">Parent request</div>
+                                <h3 className="font-bold text-stone-800">Анкета родителя</h3>
+                                <div className="section-body mt-1">Проверка заявки, документов и истории изменений в одном окне.</div>
+                            </div>
+                            <button onClick={() => setSelectedParent(null)} className="p-2 rounded-full hover:bg-white/70">
                                 <X size={18} />
                             </button>
                         </div>
 
                         <div className="p-4 space-y-3 text-sm">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="bg-stone-50 rounded-lg p-3">
+                                <div className={adminSubsectionPanel}>
                                     <div className="text-xs text-stone-500">Город</div>
                                     <div className="font-semibold text-stone-800">{selectedParent.city}</div>
                                 </div>
-                                <div className="bg-stone-50 rounded-lg p-3">
+                                <div className={adminSubsectionPanel}>
                                     <div className="text-xs text-stone-500">Возраст ребёнка</div>
                                     <div className="font-semibold text-stone-800">{selectedParent.childAge}</div>
                                 </div>
-                                <div className="bg-stone-50 rounded-lg p-3">
+                                <div className={adminSubsectionPanel}>
                                     <div className="text-xs text-stone-500">График</div>
                                     <div className="font-semibold text-stone-800">{selectedParent.schedule}</div>
                                 </div>
-                                <div className="bg-stone-50 rounded-lg p-3">
+                                <div className={adminSubsectionPanel}>
                                     <div className="text-xs text-stone-500">Бюджет</div>
                                     <div className="font-semibold text-stone-800">{selectedParent.budget}</div>
                                 </div>
                             </div>
 
-                            <div className="bg-stone-50 rounded-lg p-3">
+                            <div className={adminSubsectionPanel}>
                                 <div className="text-xs text-stone-500 mb-1">Требования</div>
                                 <div className="text-stone-700">
                                     {selectedParent.requirements?.length
@@ -295,27 +244,28 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                 </div>
                             </div>
 
-                            <div className="bg-stone-50 rounded-lg p-3">
+                            <div className={adminSubsectionPanel}>
                                 <div className="text-xs text-stone-500 mb-1">Комментарий</div>
                                 <div className="text-stone-700">{selectedParent.comment || 'Нет комментария'}</div>
                             </div>
 
-                            <div className="bg-stone-50 rounded-lg p-3">
+                            <div className={adminSubsectionPanel}>
                                 <div className="text-xs text-stone-500 mb-1">Документы</div>
                                 {!selectedParent.documents?.length ? (
                                     <div className="text-stone-500">Нет документов</div>
                                 ) : (
                                     <div className="space-y-2">
                                         {selectedParent.documents.map((doc, i) => (
-                                            <div key={i} className="flex items-center justify-between bg-white border border-stone-100 rounded p-2">
+                                            <div key={i} className="flex items-center justify-between rounded-[1rem] border border-stone-200/70 bg-white/80 p-2">
                                                 <div className="text-xs text-stone-700">{(doc.fileName && !String(doc.fileName).startsWith('data:')) ? doc.fileName : `${doc.type}.pdf`}</div>
                                                 {doc.fileDataUrl ? (
-                                                    <button
+                                                    <AdminPillButton
                                                         onClick={() => setPreviewDoc({ url: doc.fileDataUrl!, name: doc.fileName || 'document' })}
-                                                        className="text-[10px] px-2 py-1 rounded bg-sky-100 text-sky-700 hover:bg-sky-200"
+                                                        tone="neutral"
+                                                        className="px-2.5 py-1 text-[10px]"
                                                     >
                                                         Просмотр
-                                                    </button>
+                                                    </AdminPillButton>
                                                 ) : (
                                                     <span className="text-[10px] text-stone-400">Файл недоступен</span>
                                                 )}
@@ -333,13 +283,13 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                 <Badge variant={selectedParent.status === 'approved' ? 'trust' : selectedParent.status === 'rejected' ? 'status' : 'info'}>
                                     Статус: {parentStatusLabel(selectedParent.status)}
                                 </Badge>
-                                <span className="text-[10px] px-2 py-1 rounded bg-stone-100 text-stone-600">
+                                <span className="text-[10px] px-2 py-1 rounded-full bg-stone-100 text-stone-600">
                                     Обновлено: {new Date(selectedParent.updatedAt || selectedParent.createdAt).toLocaleString()}
                                 </span>
                             </div>
 
                             {!!selectedParent.changeLog?.length && (
-                                <div className="bg-stone-50 rounded-lg p-3">
+                                <div className={adminSubsectionPanel}>
                                     <div className="text-xs text-stone-500 mb-2">История изменений</div>
                                     <div className="space-y-1">
                                         {[...selectedParent.changeLog].slice(-6).reverse().map((item, idx) => (
@@ -355,36 +305,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     </div>
                 </div>
             )}
-
-            {/* Document preview modal */}
-            {previewDoc && (
-                <div className="fixed inset-0 z-80 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-                        <div className="p-3 border-b border-stone-100 flex items-center justify-between">
-                            <div className="text-sm font-semibold text-stone-800 truncate pr-4">{previewDoc.name || 'Документ'}</div>
-                            <div className="flex items-center gap-2">
-                                <a
-                                    href={previewDoc.url}
-                                    download={previewDoc.name || 'document'}
-                                    className="text-xs px-2 py-1 rounded bg-sky-100 text-sky-700 hover:bg-sky-200"
-                                >
-                                    Скачать
-                                </a>
-                                <button onClick={() => setPreviewDoc(null)} className="p-2 rounded-full hover:bg-stone-100">
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        </div>
-                        {String(previewDoc.url).startsWith('data:image/') ? (
-                            <div className="flex-1 overflow-auto bg-stone-50 p-4">
-                                <img src={previewDoc.url} alt={previewDoc.name || 'preview'} className="max-w-full mx-auto rounded border border-stone-200" />
-                            </div>
-                        ) : (
-                            <iframe title="document-preview" src={previewDoc.url} className="flex-1 w-full" />
-                        )}
-                    </div>
-                </div>
-            )}
+            <AdminDocumentPreviewModal previewDoc={previewDoc} onClose={() => setPreviewDoc(null)} />
         </>
     );
 };

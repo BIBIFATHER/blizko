@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, FileCheck, Users, Video, CheckCircle, ArrowLeft, Sparkles } from 'lucide-react';
 import { SeoHead } from './SeoHead';
+import { Button, Badge } from '../UI';
 
 /* ─── HowWeVerifyPage ─── /how-we-verify ─── */
 
@@ -84,43 +85,53 @@ export const HowWeVerifyPage: React.FC = () => {
                 schema={howWeVerifySchema}
             />
 
-            <article className="min-h-screen bg-gradient-warm px-4 py-8 max-w-2xl mx-auto">
+            <article className="page-frame section-stack animate-fade-in py-4 pb-16 md:py-8">
                 <nav>
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-stone-500 mb-6 hover:text-stone-700 transition-colors">
+                    <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800">
                         <ArrowLeft size={18} /> Назад
                     </button>
                 </nav>
 
-                <header>
-                    <h1 className="text-2xl font-bold text-stone-800 mb-2">Как мы проверяем нянь</h1>
-                    <p className="text-stone-500 mb-8">5 уровней внимания — от документов до сигналов совместимости</p>
+                <header className="hero-shell">
+                    <div className="section-stack">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="eyebrow">
+                                <ShieldCheck size={14} />
+                                Trust layer
+                            </div>
+                            <Badge variant="trust">5 уровней проверки</Badge>
+                        </div>
+                        <h1 className="section-heading max-w-none">Как мы проверяем нянь</h1>
+                        <p className="section-body">Документы, видеовизитка, рекомендации, ручная модерация и объяснимые сигналы совместимости.</p>
+                    </div>
                 </header>
 
-                <section className="space-y-4" aria-label="Шаги верификации">
+                <section className="section-stack" aria-label="Шаги верификации">
                     {steps.map((step, i) => (
-                        <div key={i} className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 flex gap-4 items-start hover-lift transition-all">
-                            <div className="mt-0.5 shrink-0 w-12 h-12 rounded-xl bg-stone-50 flex items-center justify-center">
+                        <div key={i} className="section-shell p-5 md:p-6">
+                          <div className="flex gap-4 items-start">
+                            <div className="proof-icon-wrap mt-0.5 shrink-0 bg-stone-100 text-stone-700">
                                 {step.icon}
                             </div>
                             <div>
-                                <h2 className="font-semibold text-stone-800 mb-1 text-base">{step.title}</h2>
-                                <p className="text-sm text-stone-500 leading-relaxed">{step.description}</p>
+                                <h2 className="text-lg font-semibold text-stone-900 mb-1">{step.title}</h2>
+                                <p className="text-sm leading-7 text-stone-600">{step.description}</p>
                             </div>
+                          </div>
                         </div>
                     ))}
                 </section>
 
-                <section className="mt-8 bg-white/60 backdrop-blur rounded-2xl p-6 text-center">
-                    <p className="text-stone-600 mb-4">
+                <section className="section-shell p-6 text-center">
+                    <p className="section-body mx-auto mb-4">
                         <strong>Профили проходят модерацию, но окончательное решение всегда остаётся за семьёй.</strong><br />
                         Мы помогаем быстрее понять, что важно обсудить до первого выхода.
                     </p>
-                    <button
-                        onClick={() => navigate('/find-nanny')}
-                        className="btn-honey-pulse px-8 py-3 rounded-full text-base font-semibold flex items-center gap-2 mx-auto"
-                    >
+                    <div className="mx-auto w-full max-w-sm">
+                      <Button onClick={() => navigate('/find-nanny')} pulse>
                         <Sparkles size={18} /> Найти няню
-                    </button>
+                      </Button>
+                    </div>
                 </section>
 
                 <footer className="mt-6 text-center text-sm text-stone-400">
@@ -178,36 +189,47 @@ export const HumanityPlusPage: React.FC = () => {
                 schema={humanityPlusSchema}
             />
 
-            <article className="min-h-screen bg-gradient-warm px-4 py-8 max-w-2xl mx-auto">
+            <article className="page-frame section-stack animate-fade-in py-4 pb-16 md:py-8">
                 <nav>
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-stone-500 mb-6 hover:text-stone-700 transition-colors">
+                    <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800">
                         <ArrowLeft size={18} /> Назад
                     </button>
                 </nav>
 
-                <header>
-                    <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-2xl font-bold text-stone-800">AI-подбор няни по совместимости — Humanity+</h1>
-                        <span className="text-sm px-3 py-1 rounded-full bg-amber-100 text-amber-700 font-medium whitespace-nowrap">Технология</span>
+                <header className="hero-shell">
+                    <div className="section-stack">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="eyebrow">
+                                <Sparkles size={14} />
+                                Explainable matching
+                            </div>
+                            <Badge variant="info">Humanity+</Badge>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3">
+                            <h1 className="section-heading max-w-none">AI-подбор няни по совместимости</h1>
+                            <span className="topbar-chip">Технология</span>
+                        </div>
+                        <p className="section-body">AI, который не просто фильтрует анкеты, а объясняет совместимость и точки внимания до первого контакта.</p>
                     </div>
-                    <p className="text-stone-500 mb-8">AI, который понимает людей — не просто фильтрует, а объясняет совместимость</p>
                 </header>
 
-                <section className="space-y-4" aria-label="Факторы совместимости">
+                <section className="section-stack" aria-label="Факторы совместимости">
                     {factors.map((f, i) => (
-                        <div key={i} className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 flex gap-4 items-start hover-lift transition-all">
+                        <div key={i} className="section-shell p-5 md:p-6">
+                          <div className="flex gap-4 items-start">
                             <span className="text-2xl mt-0.5" role="img" aria-hidden="true">{f.emoji}</span>
                             <div>
-                                <h2 className="font-semibold text-stone-800 mb-1 text-base">{f.title}</h2>
-                                <p className="text-sm text-stone-500 leading-relaxed">{f.description}</p>
+                                <h2 className="text-lg font-semibold text-stone-900 mb-1">{f.title}</h2>
+                                <p className="text-sm leading-7 text-stone-600">{f.description}</p>
                             </div>
+                          </div>
                         </div>
                     ))}
                 </section>
 
-                <section className="mt-8 bg-amber-50/80 backdrop-blur rounded-2xl p-6">
-                    <h2 className="font-semibold text-stone-800 mb-3">Как это работает?</h2>
-                    <ol className="space-y-2 text-sm text-stone-600 list-decimal list-inside">
+                <section className="section-shell p-6">
+                    <h2 className="text-lg font-semibold text-stone-900 mb-3">Как это работает?</h2>
+                    <ol className="space-y-2 text-sm text-stone-600 list-decimal list-inside leading-7">
                         <li>Вы заполняете заявку — отвечаете на 5 вопросов о стиле воспитания</li>
                         <li>AI анализирует ваш профиль и профили нянь</li>
                         <li>Вы получаете 2-3 подобранных кандидата</li>
@@ -215,13 +237,12 @@ export const HumanityPlusPage: React.FC = () => {
                     </ol>
                 </section>
 
-                <section className="mt-6 text-center">
-                    <button
-                        onClick={() => navigate('/find-nanny')}
-                        className="btn-honey-pulse px-8 py-3 rounded-full text-base font-semibold flex items-center gap-2 mx-auto"
-                    >
+                <section className="text-center">
+                    <div className="mx-auto w-full max-w-sm">
+                      <Button onClick={() => navigate('/find-nanny')} pulse>
                         <Sparkles size={18} /> Попробовать Humanity+
-                    </button>
+                      </Button>
+                    </div>
                 </section>
 
                 <footer className="mt-6 text-center text-sm text-stone-400">

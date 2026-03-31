@@ -6,7 +6,7 @@ import { getServerEnv, verifyBearerAdmin, verifyBearerUser } from './_auth.js';
 import { getDbPool } from './_db.js';
 
 const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
-const RESOURCES = new Set(['parents', 'nannies', 'analytics']);
+const RESOURCES = new Set(['parents', 'nannies', 'analytics', 'admin-actions']);
 const ANALYTICS_EVENT_LIMIT = 5_000;
 const ANALYTICS_ALLOWED_EVENTS = new Set([
   'page_view',
@@ -37,9 +37,9 @@ const ANALYTICS_ALLOWED_EVENTS = new Set([
   'admin_panel_opened',
 ]);
 
-function getResource(req: VercelRequest): 'parents' | 'nannies' | 'analytics' | null {
+function getResource(req: VercelRequest): 'parents' | 'nannies' | 'analytics' | 'admin-actions' | null {
   const resource = String((req.query as any)?.resource || '').trim().toLowerCase();
-  return RESOURCES.has(resource) ? (resource as 'parents' | 'nannies' | 'analytics') : null;
+  return RESOURCES.has(resource) ? (resource as 'parents' | 'nannies' | 'analytics' | 'admin-actions') : null;
 }
 
 function extractOwnedUserId(resource: 'parents' | 'nannies', item: any): string | null {
@@ -305,6 +305,92 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
   return json(res, 405, { error: 'Method not allowed' });
 }
 
+function toAdminActionRecord(row: any) {
+  return {
+    id: row?.id ? String(row.id) : undefined,
+    action: String(row?.action || ''),
+    meta: row?.meta && typeof row.meta === 'object' ? row.meta : {},
+    adminId: row?.admin_id ? String(row.admin_id) : null,
+    at: row?.created_at ? new Date(row.created_at).getTime() : Date.now(),
+  };
+}
+
+async function handleAdminActions(req: VercelRequest, res: VercelResponse) {
+  const { supabaseUrl, supabaseServiceRoleKey } = getServerEnv();
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    return json(res, 500, { error: 'Supabase is not configured' });
+  }
+
+  const adminUser = await verifyBearerAdmin(req);
+  if (!adminUser) return json(res, 403, { error: 'Admin access required' });
+
+  if (req.method === 'GET') {
+    const limitRaw = Number((req.query as any)?.limit || 50);
+    const limit = Number.isFinite(limitRaw) ? Math.max(1, Math.min(200, Math.round(limitRaw))) : 50;
+    const beforeAtRaw = String((req.query as any)?.beforeAt || '').trim();
+    const daysRaw = String((req.query as any)?.days || '').trim();
+    const beforeIso = beforeAtRaw ? new Date(Number(beforeAtRaw)).toISOString() : '';
+    const days = daysRaw && daysRaw !== 'all' ? Number(daysRaw) : null;
+    const sinceIso =
+      days && Number.isFinite(days)
+        ? new Date(Date.now() - Math.max(1, days) * 24 * 60 * 60 * 1000).toISOString()
+        : '';
+
+    const filters = [
+      'select=id,action,meta,admin_id,created_at',
+      `order=created_at.desc`,
+      `limit=${limit + 1}`,
+    ];
+    if (beforeIso) filters.push(`created_at=lt.${encodeURIComponent(beforeIso)}`);
+    if (sinceIso) filters.push(`created_at=gte.${encodeURIComponent(sinceIso)}`);
+
+    const response = await sb(
+      `admin_actions?${filters.join('&')}`,
+      { method: 'GET' },
+      supabaseUrl,
+      supabaseServiceRoleKey,
+    );
+    const data = await response.json().catch(() => []);
+    if (!response.ok) {
+      return json(res, response.status, { error: data?.message || 'Failed to read admin actions' });
+    }
+    const rows = Array.isArray(data) ? data : [];
+    const hasMore = rows.length > limit;
+    const items = rows.slice(0, limit).map(toAdminActionRecord);
+    const nextCursor = hasMore && items.length > 0 ? items[items.length - 1]?.at : null;
+    return json(res, 200, { items, hasMore, nextCursor });
+  }
+
+  if (req.method === 'POST') {
+    const action = String(req.body?.action || '').trim().slice(0, 120);
+    const meta =
+      req.body?.meta && typeof req.body.meta === 'object' && !Array.isArray(req.body.meta)
+        ? req.body.meta
+        : {};
+
+    if (!action) return json(res, 400, { error: 'Missing action' });
+
+    const response = await sb(
+      'admin_actions',
+      {
+        method: 'POST',
+        headers: { Prefer: 'return=representation' },
+        body: JSON.stringify([{ admin_id: adminUser.id, action, meta }]),
+      },
+      supabaseUrl,
+      supabaseServiceRoleKey,
+    );
+    const data = await response.json().catch(() => []);
+    if (!response.ok) {
+      return json(res, response.status, { error: data?.message || 'Failed to write admin action' });
+    }
+    const saved = Array.isArray(data) && data[0] ? toAdminActionRecord(data[0]) : null;
+    return json(res, 201, { item: saved });
+  }
+
+  return json(res, 405, { error: 'Method not allowed' });
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
@@ -319,6 +405,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
     if (!limit.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
     return handleAnalytics(req, res);
+  }
+
+  if (resource === 'admin-actions') {
+    const limit = rateLimit(req, {
+      max: req.method === 'POST' ? 120 : 30,
+      prefix: `data:${resource}:${req.method.toLowerCase()}`,
+    });
+    if (!limit.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
+    return handleAdminActions(req, res);
   }
 
   const rl = rateLimit(req, { max: 30, prefix: `data:${resource}` });

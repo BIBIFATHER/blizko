@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Card, Badge } from '../UI';
-import { NannyProfile, DocumentVerification } from '@/core/types';
-import { adminUpdateNannyProfile } from '@/services/adminApi';
+import { Card, Badge, ProgressBar } from '../UI';
+import { NannyProfile } from '@/core/types';
 import { getAssessmentSignalLabel } from '@/services/assessment';
 import {
     getNannyReadinessLabel,
@@ -20,9 +19,14 @@ import {
     exportNanniesOpsCsv,
     copyNanniesOpsForTable,
 } from './adminExportUtils';
+import { AdminDocumentPreviewModal, AdminPillButton, adminModalSurface, adminSectionPanel, adminSubsectionPanel } from './adminPrimitives';
+import {
+    AdminPreviewDoc,
+} from './adminModerationUtils';
+import { useAdminNannyModeration } from '@/hooks/useAdminNannyModeration';
+import { useAdminWorkflowUI } from './adminWorkflowUI';
 
 type NannyIssueFilter = 'all' | 'noDocs' | 'rejected' | 'pending' | 'unverified';
-const getNowTs = () => Date.now();
 
 interface AdminNanniesTabProps {
     nannies: NannyProfile[];
@@ -39,8 +43,9 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
     onDataChanged,
     logAdminAction,
 }) => {
+    const { reportError, reportInfo, reportSuccess } = useAdminWorkflowUI();
     const [issueFilter, setIssueFilter] = useState<NannyIssueFilter>('all');
-    const [previewDoc, setPreviewDoc] = useState<{ url: string; name?: string } | null>(null);
+    const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
     const [calendarNanny, setCalendarNanny] = useState<NannyProfile | null>(null);
 
     const getNannyFlags = (n: NannyProfile) => {
@@ -83,123 +88,58 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
             (n) => byQuery(n) && (!onlyProblematic || isProblematicNanny(n)) && byIssue(n)
         );
     }, [nannies, query, onlyProblematic, issueFilter]);
-
-    const toggleVerified = async (nanny: NannyProfile) => {
-        const updated = await adminUpdateNannyProfile(nanny.id, { isVerified: !nanny.isVerified });
-        if (!updated) {
-            alert('Не удалось обновить статус верификации на сервере.');
-            return;
-        }
-        onDataChanged();
-    };
-
-    const updateDocumentStatus = async (
-        nanny: NannyProfile,
-        idx: number,
-        status: DocumentVerification['status']
-    ) => {
-        const docs = [...(nanny.documents || [])];
-        if (!docs[idx]) return;
-
-        let adminNote =
-            status === 'verified'
-                ? 'Статус подтверждён администратором'
-                : status === 'rejected'
-                    ? 'Отклонено администратором'
-                    : 'Ожидает ручной проверки';
-
-        if (status === 'rejected') {
-            const reason = prompt('Комментарий к отклонению документа (минимум 8 символов):', 'Нужен более читаемый документ или исправление данных');
-            const text = (reason || '').trim();
-            if (text.length < 8) {
-                alert('Отклонение отменено: добавьте понятный комментарий (минимум 8 символов).');
-                return;
-            }
-            adminNote = `Отклонено администратором: ${text}`;
-        }
-
-        docs[idx] = {
-            ...docs[idx],
-            status,
-            aiNotes: adminNote,
-            verifiedAt: getNowTs(),
-        };
-
-        const updated = await adminUpdateNannyProfile(nanny.id, { documents: docs });
-        if (!updated) {
-            alert('Не удалось сохранить статус документа на сервере.');
-            return;
-        }
-        onDataChanged();
-    };
-
-    const bulkVerifyVisible = async () => {
-        if (filteredNannies.length === 0) return;
-        if (!confirm(`Подтвердить профиль у ${filteredNannies.length} анкет?`)) return;
-        logAdminAction('bulk_verify_profiles', { count: filteredNannies.length });
-        const results = await Promise.all(filteredNannies.map((n) => adminUpdateNannyProfile(n.id, { isVerified: true })));
-        if (results.some((item) => !item)) {
-            alert('Часть профилей не удалось обновить на сервере.');
-        }
-        onDataChanged();
-    };
-
-    const bulkSetDocsStatusVisible = async (status: DocumentVerification['status']) => {
-        if (filteredNannies.length === 0) return;
-        if (!confirm(`Проставить статус '${status}' для документов у видимых анкет?`)) return;
-        logAdminAction('bulk_docs_status', { status, count: filteredNannies.length });
-
-        await Promise.all(
-            filteredNannies.map(async (n) => {
-                const docs = (n.documents || []).map((d) => ({
-                    ...d,
-                    status,
-                    aiNotes:
-                        status === 'verified'
-                            ? 'Статус подтверждён администратором'
-                            : status === 'rejected'
-                                ? 'Отклонено администратором'
-                                : 'Ожидает ручной проверки',
-                    verifiedAt: getNowTs(),
-                }));
-                if (docs.length > 0) {
-                    await adminUpdateNannyProfile(n.id, { documents: docs });
-                }
-            })
-        );
-        onDataChanged();
-    };
+    const {
+        toggleVerified,
+        updateDocumentStatus,
+        bulkVerifyVisible,
+        bulkSetDocsStatusVisible,
+    } = useAdminNannyModeration({
+        filteredNannies,
+        onDataChanged,
+        logAdminAction,
+    });
 
     return (
         <>
             <section>
                 <div className="mb-3 flex items-center justify-between gap-3">
-                    <h3 className="text-stone-500 font-bold uppercase text-xs">
-                        Анкеты нянь ({filteredNannies.length})
-                    </h3>
+                    <div>
+                        <h3 className="text-stone-500 font-bold uppercase text-xs">
+                            Анкеты нянь
+                        </h3>
+                        <div className="mt-1 text-sm text-stone-600">{filteredNannies.length} в текущем срезе</div>
+                    </div>
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => copyNanniesOpsForTable(filteredNannies)}
-                            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200"
+                        <AdminPillButton
+                            onClick={async () => {
+                                const result = await copyNanniesOpsForTable(filteredNannies);
+                                if (result.ok) {
+                                    reportSuccess(result.message);
+                                    return;
+                                }
+                                reportInfo(result.message);
+                            }}
+                            tone="neutral"
                         >
                             Скопировать для таблицы
-                        </button>
-                        <button
+                        </AdminPillButton>
+                        <AdminPillButton
                             onClick={() => exportNanniesOpsCsv(filteredNannies)}
-                            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200"
+                            tone="warm"
                         >
                             Выгрузить для Ops
-                        </button>
-                        <button
+                        </AdminPillButton>
+                        <AdminPillButton
                             onClick={() => exportNanniesCsv(filteredNannies)}
-                            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-100 text-stone-700 hover:bg-stone-200"
+                            tone="neutral"
                         >
                             Выгрузить CSV
-                        </button>
+                        </AdminPillButton>
                     </div>
                 </div>
 
-                <div className="mb-3 flex flex-wrap gap-2">
+                <div className={`${adminSectionPanel} mb-3`}>
+                <div className="flex flex-wrap gap-2">
                     {([
                         ['all', 'Все'],
                         ['noDocs', 'Без документов'],
@@ -207,38 +147,37 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                         ['pending', 'Есть на проверке'],
                         ['unverified', 'Не верифицированы'],
                     ] as const).map(([key, label]) => (
-                        <button
+                        <AdminPillButton
                             key={key}
                             onClick={() => setIssueFilter(key)}
-                            className={`text-xs px-2.5 py-1.5 rounded-lg border ${issueFilter === key
-                                ? 'bg-stone-800 text-white border-stone-800'
-                                : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
-                                }`}
+                            active={issueFilter === key}
+                            tone="neutral"
                         >
                             {label}
-                        </button>
+                        </AdminPillButton>
                     ))}
                 </div>
 
                 <div className="mb-4 flex flex-wrap gap-2">
-                    <button
+                    <AdminPillButton
                         onClick={bulkVerifyVisible}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200"
+                        tone="success"
                     >
                         Массово: подтвердить профиль
-                    </button>
-                    <button
+                    </AdminPillButton>
+                    <AdminPillButton
                         onClick={() => bulkSetDocsStatusVisible('verified')}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200"
+                        tone="neutral"
                     >
                         Массово: документы подтверждены
-                    </button>
-                    <button
+                    </AdminPillButton>
+                    <AdminPillButton
                         onClick={() => bulkSetDocsStatusVisible('pending')}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200"
+                        tone="warm"
                     >
                         Массово: документы на проверке
-                    </button>
+                    </AdminPillButton>
+                </div>
                 </div>
 
                 {filteredNannies.length === 0 ? (
@@ -255,7 +194,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                 !readiness.readyForReview;
 
                             return (
-                                <Card key={n.id} className={`p-4! ${n.isVerified ? 'bg-green-50 border-green-100' : 'bg-sky-50/50'}`}>
+                                <Card key={n.id} className="p-4!">
                                     <div className="flex justify-between text-xs text-stone-400 mb-1">
                                         <span>{new Date(n.createdAt).toLocaleString()}</span>
                                         <div className="flex items-center gap-2">
@@ -283,29 +222,28 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                     </div>
 
                                     <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        <button
+                                        <AdminPillButton
                                             onClick={() => toggleVerified(n)}
-                                            className={`text-xs font-bold px-3 py-2 rounded-lg transition-colors ${n.isVerified
-                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
-                                                }`}
+                                            tone={n.isVerified ? 'success' : 'neutral'}
+                                            className="justify-center"
                                         >
                                             {n.isVerified ? 'Снять верификацию' : 'Подтвердить профиль'}
-                                        </button>
+                                        </AdminPillButton>
                                         {n.video && (
-                                            <button className="flex items-center gap-2 text-xs font-bold text-purple-700 bg-purple-100 hover:bg-purple-200 px-3 py-2 rounded-lg transition-colors justify-center">
+                                            <AdminPillButton className="flex items-center gap-2 justify-center" tone="neutral">
                                                 <PlayCircle size={14} /> Смотреть видео
-                                            </button>
+                                            </AdminPillButton>
                                         )}
-                                        <button
+                                        <AdminPillButton
                                             onClick={() => setCalendarNanny(n)}
-                                            className="text-xs font-bold px-3 py-2 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200"
+                                            tone="warm"
+                                            className="justify-center"
                                         >
                                             Календарь занятости
-                                        </button>
+                                        </AdminPillButton>
                                     </div>
 
-                                    <div className="mt-3 bg-white/80 p-3 rounded-xl border border-stone-100">
+                                    <div className={`mt-3 ${adminSubsectionPanel}`}>
                                         <div className="flex items-start justify-between gap-3">
                                             <div>
                                                 <div className="text-[11px] uppercase tracking-wide text-stone-400 font-bold">
@@ -319,10 +257,12 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                                 {readiness.qualityScore}/100
                                             </div>
                                         </div>
-                                        <div className="mt-2 flex items-center justify-between text-xs text-stone-500">
-                                            <span>Готовность профиля</span>
-                                            <strong className="text-stone-700">{readiness.completionRatio}%</strong>
-                                        </div>
+                                        <ProgressBar
+                                            className="mt-3"
+                                            label="Готовность профиля"
+                                            showPercent
+                                            value={readiness.completionRatio}
+                                        />
                                         {readiness.missingFields.length > 0 ? (
                                             <div className="mt-3 flex flex-wrap gap-1.5">
                                                 {readiness.missingFields.slice(0, 5).map((item) => (
@@ -342,7 +282,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                     </div>
 
                                     {n.softSkills && (
-                                        <div className="mt-3 bg-white p-2 rounded border border-stone-100">
+                                        <div className={`mt-3 ${adminSubsectionPanel}`}>
                                             <div className="flex items-center gap-1 text-xs font-bold text-amber-600 mb-1">
                                                 <BrainCircuit size={12} /> Поведенческий профиль ({n.softSkills.dominantStyle})
                                             </div>
@@ -381,7 +321,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                     {n.documents && n.documents.length > 0 && (
                                         <div className="mt-2 space-y-2">
                                             {n.documents.map((doc, idx) => (
-                                                <div key={idx} className="bg-white p-2 rounded border border-stone-200">
+                                                <div key={idx} className={adminSubsectionPanel}>
                                                     <div className="flex items-center justify-between gap-2">
                                                         <div className="flex items-center gap-2">
                                                             <FileCheck2 size={14} className="text-stone-500" />
@@ -398,33 +338,33 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                                                     : doc.status === 'pending' ? 'загружено'
                                                                         : 'отклонено'}
                                                             </span>
-                                                            <button
+                                                            <AdminPillButton
                                                                 onClick={() => {
                                                                     if (!doc.fileDataUrl) {
-                                                                        alert('Файл не прикреплён к этой записи. Перезагрузите резюме заново.');
+                                                                        reportError('Файл не прикреплён к этой записи. Перезагрузите резюме заново.');
                                                                         return;
                                                                     }
                                                                     setPreviewDoc({ url: doc.fileDataUrl, name: doc.fileName || 'document' });
                                                                 }}
-                                                                className={`text-[10px] px-2 py-0.5 rounded ${doc.fileDataUrl ? 'bg-sky-100 text-sky-700 hover:bg-sky-200' : 'bg-stone-100 text-stone-400'}`}
+                                                                tone={doc.fileDataUrl ? 'neutral' : 'neutral'}
+                                                                className={`px-2.5 py-1 text-[10px] ${doc.fileDataUrl ? '' : 'bg-stone-100 text-stone-400 border-stone-200 hover:bg-stone-100 hover:border-stone-200'}`}
                                                             >
                                                                 Просмотр
-                                                            </button>
+                                                            </AdminPillButton>
                                                         </div>
                                                     </div>
                                                     <div className="text-[10px] text-stone-600 mt-1 italic">{doc.aiNotes}</div>
                                                     <div className="flex gap-1 mt-2">
                                                         {(['verified', 'rejected'] as const).map((s) => (
-                                                            <button
+                                                            <AdminPillButton
                                                                 key={s}
                                                                 onClick={() => updateDocumentStatus(n, idx, s)}
-                                                                className={`text-[10px] px-2 py-1 rounded ${doc.status === s
-                                                                    ? 'bg-stone-800 text-white'
-                                                                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                                                                    }`}
+                                                                active={doc.status === s}
+                                                                tone="neutral"
+                                                                className="px-2.5 py-1 text-[10px]"
                                                             >
                                                                 {s === 'verified' ? 'проверено' : 'отклонить'}
-                                                            </button>
+                                                            </AdminPillButton>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -437,7 +377,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                             <div className="text-xs font-bold text-stone-500 mb-2">Отзывы ({n.reviews.length})</div>
                                             <div className="space-y-2">
                                                 {n.reviews.map((r: any, idx: number) => (
-                                                    <div key={idx} className="bg-white p-2 rounded border border-stone-100">
+                                                    <div key={idx} className={adminSubsectionPanel}>
                                                         <div className="flex justify-between">
                                                             <div className="text-xs font-semibold text-stone-700">{r?.author ?? 'Parent'}</div>
                                                             {typeof r?.rating === 'number' && (
@@ -456,38 +396,13 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                     </div>
                 )}
             </section>
-
-            {/* Document preview modal */}
-            {previewDoc && (
-                <div className="fixed inset-0 z-80 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-5xl h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-                        <div className="p-3 border-b border-stone-100 flex items-center justify-between">
-                            <div className="text-sm font-semibold text-stone-800 truncate pr-4">{previewDoc.name || 'Документ'}</div>
-                            <div className="flex items-center gap-2">
-                                <a href={previewDoc.url} download={previewDoc.name || 'document'} className="text-xs px-2 py-1 rounded bg-sky-100 text-sky-700 hover:bg-sky-200">
-                                    Скачать
-                                </a>
-                                <button onClick={() => setPreviewDoc(null)} className="p-2 rounded-full hover:bg-stone-100">
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        </div>
-                        {String(previewDoc.url).startsWith('data:image/') ? (
-                            <div className="flex-1 overflow-auto bg-stone-50 p-4">
-                                <img src={previewDoc.url} alt={previewDoc.name || 'preview'} className="max-w-full mx-auto rounded border border-stone-200" />
-                            </div>
-                        ) : (
-                            <iframe title="document-preview" src={previewDoc.url} className="flex-1 w-full" />
-                        )}
-                    </div>
-                </div>
-            )}
+            <AdminDocumentPreviewModal previewDoc={previewDoc} onClose={() => setPreviewDoc(null)} />
 
             {/* Calendar modal */}
             {calendarNanny && (
                 <div className="fixed inset-0 z-80 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden">
-                        <div className="p-4 border-b border-stone-100 flex items-center justify-between">
+                    <div className={`${adminModalSurface} w-full max-w-3xl`}>
+                        <div className="hero-shell p-4 flex items-center justify-between">
                             <div>
                                 <div className="text-sm font-semibold text-stone-800">Календарь няни: {calendarNanny.name}</div>
                                 <div className="text-xs text-stone-500">Просмотр администратором</div>
@@ -497,10 +412,10 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                             </button>
                         </div>
                         <div className="p-4 space-y-3">
-                            <div className="bg-amber-50 border border-amber-100 text-amber-700 text-[11px] rounded-lg p-2">
+                            <div className="rounded-[1.25rem] border border-amber-100 bg-amber-50/70 text-amber-700 text-[11px] p-3">
                                 Здесь больше нет синтетического календаря. Показываем только то, что няня реально указала в анкете.
                             </div>
-                            <Card className="p-4! bg-stone-50 border-stone-100">
+                            <Card className="p-4!">
                                 <div className="text-xs font-semibold text-stone-500 uppercase mb-2">График из анкеты</div>
                                 <div className="text-sm text-stone-700">
                                     {calendarNanny.schedule || 'Няня ещё не указала структурированный график.'}

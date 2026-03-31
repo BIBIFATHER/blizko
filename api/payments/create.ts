@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import type { ParentRequest } from '../../types.js';
+import type { ParentRequest } from '../../src/core/types/types.js';
 import { setCors } from '../_cors.js';
 import { verifyBearerUser } from '../_auth.js';
 import { getDbPool } from '../_db.js';

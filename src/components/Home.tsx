@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Badge } from './UI';
-import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles } from 'lucide-react';
+import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles, Star, Clock } from 'lucide-react';
 import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import type { ModalMode } from './CompatibilityModal';
@@ -71,43 +71,51 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
     return text.split('. ').filter(s => s.trim().length > 0).map(s => s.trim().endsWith('.') ? s : s + '.');
   };
 
-  const proofChips = text.homeProofChips as string[] | undefined;
+  // Trust signals — concrete service guarantees
+  const socialProof = lang === 'ru'
+    ? [
+      { icon: <ShieldCheck size={14} />, label: 'Проверка профилей' },
+      { icon: <Star size={14} />, label: 'AI + человек' },
+      { icon: <Clock size={14} />, label: '< 24ч ответ' },
+    ]
+    : [
+      { icon: <ShieldCheck size={14} />, label: 'Profile checks' },
+      { icon: <Star size={14} />, label: 'AI + human' },
+      { icon: <Clock size={14} />, label: '< 24h response' },
+    ];
 
   return (
     <>
-      <div className="flex min-h-full animate-fade-in flex-col gap-6 pb-8">
-        <div className="relative overflow-hidden rounded-[1.7rem] bg-[linear-gradient(165deg,rgba(252,249,244,0.98),rgba(243,237,229,0.98))] px-5 pb-5 pt-6 shadow-cloud-soft sm:rounded-[2rem] sm:px-8 sm:pb-8 sm:pt-10">
-          <div className="absolute inset-x-10 top-0 h-24 rounded-full bg-[radial-gradient(circle_at_top,rgba(216,171,89,0.16),transparent_70%)] blur-3xl" />
-          <div className="relative space-y-4 text-center">
-            <div className="hidden items-center gap-2 rounded-full bg-white/82 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-500 shadow-cloud-soft sm:inline-flex">
-              <Sparkles size={12} className="text-amber-600" />
-              {lang === 'ru' ? 'Curated childcare matching' : 'Curated childcare matching'}
-            </div>
+      <div className="flex flex-col min-h-full animate-fade-in space-y-8 pb-10">
+        <div className="text-center space-y-5 pt-10 sm:pt-12 bg-linear-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight font-display">
+            Blizko
+          </div>
+          <div className="space-y-3">
+            <p className="text-base sm:text-lg font-semibold text-stone-800">
+              {lang === 'ru' ? 'Технология ' : 'Technology '}
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-700 font-semibold shadow-sm">
+                Humanity+
+              </span>
+            </p>
+            <p className="text-stone-500/90 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
+              {lang === 'ru'
+                ? 'AI анализирует стиль воспитания, подход и совместимость. Подбор с первого дня.'
+                : 'AI analyzes parenting style, approach and compatibility. Matching from day one.'}
+            </p>
+          </div>
 
-            <div className="space-y-2">
-              <div className="text-[2rem] sm:text-5xl font-semibold text-stone-950 tracking-tight font-display leading-[0.95]">
-                {text.heroTitle}
+          <div className="flex items-center justify-center gap-3 pt-1">
+            {socialProof.map((item, i) => (
+              <div key={i} className="flex items-center gap-1 text-[11px] text-stone-400 font-medium">
+                <span className="text-amber-500">{item.icon}</span>
+                {item.label}
               </div>
-              <p className="mx-auto max-w-md text-sm leading-6 text-stone-600 sm:text-base sm:leading-7">
-                {text.heroSubtitle}
-              </p>
-            </div>
-
-            <div className="hidden flex-wrap items-center justify-center gap-2 pt-1 sm:flex">
-              {(proofChips || []).map((item, i) => (
-                <div
-                  key={i}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-medium text-stone-600 shadow-sm"
-                >
-                  <span className="text-amber-600">•</span>
-                  {item}
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
 
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           <Button onClick={onFindNanny} pulse>
             <Sparkles size={18} />
             {text.findNanny}
@@ -117,8 +125,8 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
           </Button>
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-center text-stone-400/80 text-[11px] uppercase tracking-[0.18em] font-semibold">
+        <div className="space-y-5">
+          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
             {text.whyTrust}
           </h2>
 
@@ -127,28 +135,23 @@ export const Home: React.FC<HomeProps> = ({ lang }) => {
               <Card
                 key={block.id}
                 onClick={() => handleBlockClick(block)}
-                className="animate-fade-up overflow-hidden p-0! cursor-pointer hover-lift active:scale-[0.99] group border-transparent hover:border-stone-100/70"
+                className="animate-fade-up flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover-lift active:scale-[0.99] group border-transparent hover:border-stone-100/70"
                 role="button"
                 tabIndex={0}
                 style={{ animationDelay: `${index * 100 + 200}ms` }}
               >
-                <div className="flex items-start gap-4 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(246,243,238,0.96))] px-4 py-4 sm:px-5 sm:py-5">
-                  <div className={`${block.colorClass} shrink-0 rounded-[1.1rem] p-3 transition-transform group-hover:scale-105 ring-1 ring-white/70 shadow-sm`}>
-                    {block.icon}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
-                      {lang === 'ru' ? `Причина ${index + 1}` : `Reason ${index + 1}`}
-                    </div>
-                    <h3 className="text-[1.05rem] font-semibold text-stone-900 leading-snug">
-                      {block.title}
-                    </h3>
-                    <p className="mt-1.5 text-sm text-stone-600 leading-6">
-                      {block.desc}
-                    </p>
-                  </div>
-                  <ChevronRight size={18} className="mt-1 text-stone-300 transition-colors group-hover:text-stone-500" />
+                <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
+                  {block.icon}
                 </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold text-stone-800 leading-snug">
+                    {block.title}
+                  </h3>
+                  <p className="text-sm text-stone-500 leading-relaxed mt-0.5">
+                    {block.desc}
+                  </p>
+                </div>
+                <ChevronRight size={18} className="text-stone-300 group-hover:text-stone-500 transition-colors mt-1" />
               </Card>
             ))}
           </div>

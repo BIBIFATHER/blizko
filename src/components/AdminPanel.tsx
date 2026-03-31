@@ -42,7 +42,7 @@ const AdminPanelContent: React.FC<{
   setJournalRange: React.Dispatch<React.SetStateAction<AdminJournalRange>>;
   setActionFeed: React.Dispatch<React.SetStateAction<AdminActionEntry[]>>;
   loadMoreActionFeed: () => Promise<void>;
-  logAdminAction: (action: string, meta?: Record<string, any>) => void;
+  logAdminAction: (action: string, meta?: Record<string, unknown>) => void;
 }> = ({
   onClose,
   actionFeed,
@@ -482,7 +482,7 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setActionFeed(nextItems.slice(0, 12));
   };
 
-  const logAdminAction = (action: string, meta?: Record<string, any>) => {
+  const logAdminAction = (action: string, meta?: Record<string, unknown>) => {
     try {
       const raw = getItem(ADMIN_ACTIONS_KEY) || '[]';
       const items = JSON.parse(raw);

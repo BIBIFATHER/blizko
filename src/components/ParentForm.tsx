@@ -75,7 +75,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
 
   const [selectedSlots, setSelectedSlots] = useState<Record<string, boolean>>({});
 
-  const [requirements, setRequirements] = useState<string[]>(initialData?.requirements || []);
+  const [requirements] = useState<string[]>(initialData?.requirements || []);
   const [documents, setDocuments] = useState(initialData?.documents || []);
   const [riskProfile, setRiskProfile] = useState<ParentRequest['riskProfile']>({
     priorityStyle: initialData?.riskProfile?.priorityStyle || 'balanced',
@@ -187,7 +187,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
         const nr = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&limit=5`);
         const nj = await nr.json().catch(() => []);
         const list = (Array.isArray(nj) ? nj : [])
-          .map((x: any) => x?.display_name)
+          .map((x: Record<string, unknown>) => x?.display_name as string)
           .filter(Boolean)
           .slice(0, 5);
 
@@ -502,6 +502,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
               <select
                 className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
                 value={riskProfile?.familyStyle || 'balanced'}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: e.target.value as any }))}
               >
                 <option value="warm">Мягкий, эмпатичный</option>
@@ -513,6 +514,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
               <select
                 className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
                 value={riskProfile?.childStress || 'tantrum'}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: e.target.value as any }))}
               >
                 <option value="cry">Плачет и ищет поддержку</option>
@@ -532,6 +534,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
               <select
                 className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
                 value={riskProfile?.nannyStylePreference || 'gentle'}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: e.target.value as any }))}
               >
                 <option value="gentle">Мягкая и спокойная</option>
@@ -543,6 +546,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
               <select
                 className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
                 value={riskProfile?.communicationPreference || 'regular'}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: e.target.value as any }))}
               >
                 <option value="minimal">Минимум сообщений</option>
@@ -561,6 +565,7 @@ export const ParentForm: React.FC<ParentFormProps> = ({ onSubmit, lang }) => {
               <select
                 className={`${selectClass} border-violet-200 focus:ring-violet-200/40`}
                 value={riskProfile?.pcmType || 'harmonizer'}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: e.target.value as any }))}
               >
                 <option value="thinker">Мыслитель — логика, структура</option>

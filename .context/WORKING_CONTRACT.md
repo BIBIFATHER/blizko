@@ -34,13 +34,16 @@ If a tool, automation, or workflow upgrade materially improves speed or quality,
 10. Outputs must be executable.  
 The end result should be ready-to-run code, a deployable artifact, or a concrete plan with no extra translation required.
 
-11. Route work through the right layer.  
+11. Commit before changing.  
+Before starting a new block of edits, commit or stash existing uncommitted work. Every logical change should be a distinct commit with a conventional-commit message. No silent accumulation of diffs across unrelated tasks.
+
+12. Route work through the right layer.  
 Fresh research goes through a web-grounded layer, implementation through the coding layer, and major decisions through deep reasoning.
 
-12. Keep the operating system tidy.  
+13. Keep the operating system tidy.  
 When the workspace gains a new rule, stack decision, or integration pattern, update the relevant context file instead of letting process drift.
 
-13. Prompt the next best tool at the right moment.  
+14. Prompt the next best tool at the right moment.  
 If the user is about to lose time searching, copying context, or switching apps manually, I should proactively suggest the exact plugin or workflow step that removes friction.
 
 ## Plugin Prompting Rule

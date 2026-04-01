@@ -351,3 +351,65 @@ export const RangeSlider: React.FC<RangeSliderProps> = ({
     </div>
   );
 };
+
+/* ─── Select ─── */
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+interface SelectProps {
+  label: string;
+  options: SelectOption[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  autoAdvance?: boolean;
+}
+
+export const Select: React.FC<SelectProps> = ({
+  label,
+  options,
+  value,
+  onChange,
+  placeholder = "Выберите…",
+  className = "",
+  autoAdvance,
+}) => {
+  const ref = React.useRef<HTMLSelectElement>(null);
+
+  return (
+    <div className="mb-4">
+      <label className="ml-1 mb-2 block text-[13px] font-semibold uppercase tracking-[0.08em] text-stone-500/90">
+        {label}
+      </label>
+      <select
+        ref={ref}
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          if (autoAdvance && e.target.value && ref.current) {
+            scrollToNext(ref.current);
+          }
+        }}
+        className={`input-glass w-full appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2378716c%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_16px_center] bg-no-repeat px-4 py-3.5 pr-10 text-stone-800 ${
+          value ? "input-success" : ""
+        } ${className}`}
+      >
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+

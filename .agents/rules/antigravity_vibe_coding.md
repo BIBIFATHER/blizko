@@ -73,6 +73,22 @@ description: Blizko workspace rule for Antigravity. Strong vibe-coding baseline 
 - Для UI: не генерировать generic SaaS slop
 - Для Blizko: trust-first, calm, editorial, no cheap growth hacks in core UX
 
+### RLS Gate (обязательно)
+
+Перед написанием фронтенда, который читает/пишет в Supabase таблицу:
+
+1. Проверь, есть ли RLS policy для этой таблицы
+2. Если нет — **сначала напиши RLS**, потом фронтенд
+3. Каждая новая таблица ОБЯЗАНА иметь RLS policy с `auth.uid()`
+4. Проверяй стиль по существующим миграциям в `supabase/`
+
+### Known Constraints
+
+- Vercel Hobby: **12 serverless functions MAX** (сейчас 12/12 — лимит!)
+- Supabase Free Tier: ограничения на размер БД, auth users, edge functions
+- ESM-only API routes: все импорты ОБЯЗАТЕЛЬНО с `.js` расширением
+- API utils (`_cors.ts`, `_db.ts`, etc.) начинаются с `_` — не считаются functions
+
 ## 6. Коммуникация
 
 Пиши коротко и по делу.

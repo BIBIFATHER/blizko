@@ -1,11 +1,14 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { slugify } from '@/core/utils/slugify';
 import { Card, Button, Badge, EmptyState } from './UI';
+import { Skeleton } from './ui/feedback-primitives';
+import { useMatchResults } from '@/hooks/useMatchResults';
 import {
     MessageCircle, ArrowLeft, Sparkles, User,
     AlertTriangle, ShieldAlert, Share2, CheckCheck,
-    Heart, Clock, MapPin, Check
+    Heart, Clock, MapPin, Check, ChevronDown
 } from 'lucide-react';
 import { MatchResult, MatchCandidate, TrustBadge, Language } from '@/core/types';
 import {
@@ -19,12 +22,13 @@ import {
 } from '@/services/matchFollowUp';
 import { t } from '@/core/i18n/translations';
 
+/* ─── Accent palette (scoped) ─── */
+const ACCENT = '#6C5CE7';
+const ACCENT_SOFT = '#A29BFE';
+const ACCENT_BG = '#F0EEFF';
+
 interface MatchResultsScreenProps {
     lang: Language;
-}
-
-interface MatchResultsLocationState {
-    matchResult?: MatchResult;
 }
 
 const TRUST_BADGE_LABELS: Record<TrustBadge, Record<Language, string>> = {
@@ -43,6 +47,11 @@ const TRUST_BADGE_ICONS: Record<TrustBadge, string> = {
     has_reviews: '⭐',
 };
 
+/* ─── Spring config — weighty, no bounce ─── */
+const layoutSpring = { type: 'spring' as const, damping: 28, stiffness: 220 };
+const prefersReducedMotion =
+    typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
 /* ─── Toast notification for copy feedback ─── */
 const ShareToast: React.FC<{ show: boolean; lang: Language }> = ({ show, lang }) => (
     <div
@@ -56,14 +65,16 @@ const ShareToast: React.FC<{ show: boolean; lang: Language }> = ({ show, lang })
     </div>
 );
 
-/* ─── Candidate Bento Card ─── */
+/* ─── Candidate Bento Card — Layout Morphing ─── */
 const CandidateCard: React.FC<{
     candidate: MatchCandidate;
     index: number;
     lang: Language;
+    isExpanded: boolean;
+    onToggle: () => void;
     onOpenProfile: (nannyId: string, nannyName: string, position: number, score: number, navigateToProfile?: boolean) => void;
     onShareToast: () => void;
-}> = ({ candidate, index, lang, onOpenProfile, onShareToast }) => {
+}> = ({ candidate, index, lang, isExpanded, onToggle, onOpenProfile, onShareToast }) => {
     const text = t[lang];
     const { nanny, score, humanExplanation, trustBadges, riskFlags } = candidate;
 
@@ -75,7 +86,7 @@ const CandidateCard: React.FC<{
         .toUpperCase();
 
     const avatarGradients = [
-        'from-amber-300 to-[#d8b886]',
+        'from-[#6C5CE7] to-[#A29BFE]',
         'from-[#aab79a] to-[#d3decb]',
         'from-[#b79c82] to-[#dfc5a8]',
     ];
@@ -107,18 +118,12 @@ const CandidateCard: React.FC<{
     }, [index, nanny.id, nanny.name, onOpenProfile, score]);
 
     const hasMeta = !!(nanny.experience || nanny.city || nanny.district);
-    const recommendationTone =
-        index === 0
-            ? (lang === 'ru' ? 'Сильнейшая рекомендация' : 'Strongest recommendation')
-            : lang === 'ru'
-                ? 'Спокойный запасной вариант'
-                : 'Calm backup option';
     const recommendationCopy =
         score >= 90
-            ? (lang === 'ru' ? 'Очень высокий уровень совпадения по стилю семьи и запросу.' : 'Very strong alignment with family style and request.')
+            ? (lang === 'ru' ? 'Очень высокий уровень совпадения.' : 'Very strong alignment.')
             : score >= 80
-                ? (lang === 'ru' ? 'Хороший баланс между опытом, ритмом семьи и сигналами доверия.' : 'Strong balance of experience, family rhythm, and trust signals.')
-                : (lang === 'ru' ? 'Подходит как вариант для аккуратного диалога и уточнения деталей.' : 'Worth opening for a careful conversation and detail check.');
+                ? (lang === 'ru' ? 'Хороший баланс опыта и доверия.' : 'Strong balance of experience and trust.')
+                : (lang === 'ru' ? 'Вариант для аккуратного диалога.' : 'Worth a careful conversation.');
     const contextPills = [
         nanny.experience ? { icon: <Clock size={12} />, label: nanny.experience } : null,
         nanny.city || nanny.district ? { icon: <MapPin size={12} />, label: nanny.district || nanny.city || '' } : null,
@@ -126,265 +131,269 @@ const CandidateCard: React.FC<{
     ].filter(Boolean) as Array<{ icon: React.ReactNode; label: string }>;
 
     return (
-        <div className="animate-pop-in" style={{ animationDelay: `${index * 140 + 200}ms` }}>
-            <Card className="overflow-hidden p-0!">
-                <div className="space-y-0">
-                    <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(160deg,rgba(252,249,244,0.96),rgba(241,236,227,0.98))] px-4 py-4 sm:px-5 sm:py-5">
-                        <div className="absolute inset-x-6 top-0 h-24 rounded-full bg-[radial-gradient(circle_at_top,rgba(216,171,89,0.18),transparent_72%)] blur-2xl" />
-                        <div className="relative space-y-4">
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="inline-flex items-center gap-2 rounded-full bg-white/78 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-500 shadow-cloud-soft">
-                                    <Sparkles size={12} className="text-amber-600" />
-                                    {recommendationTone}
-                                </div>
-                                <div className="rounded-[22px] bg-stone-950 px-4 py-3 text-center text-white shadow-lg">
-                                    <div className="text-[2rem] font-semibold leading-none">{score}</div>
-                                    <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/60">
-                                        {lang === 'ru' ? 'Рекомендация' : 'Fit'}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-4">
-                                <div className={`h-[84px] w-[84px] rounded-[26px] bg-linear-to-br ${avatarGradients[index % 3]} flex items-center justify-center shrink-0 overflow-hidden shadow-md ring-2 ring-white/80`}>
-                                    {nanny.photo ? (
-                                        <img src={nanny.photo} alt={nanny.name} className="h-full w-full object-cover" />
-                                    ) : (
-                                        <span className="text-2xl font-black text-white/90 drop-shadow-sm">{initials}</span>
-                                    )}
-                                </div>
-
-                                <div className="min-w-0 flex-1 space-y-2">
-                                    <div className="space-y-1">
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-400">
-                                            {lang === 'ru' ? `Кандидат ${index + 1}` : `Candidate ${index + 1}`}
-                                        </p>
-                                        <h3 className="text-[1.4rem] font-semibold leading-[1.02] text-stone-900 sm:text-[1.6rem]">
-                                            <Link
-                                                to={`/nanny/${slugify(nanny.name, nanny.id)}`}
-                                                onClick={handleTrackProfileOpen}
-                                                className="transition-colors hover:text-amber-700"
-                                            >
-                                                {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
-                                            </Link>
-                                        </h3>
-                                        <p className="max-w-[26ch] text-sm leading-6 text-stone-600">
-                                            {recommendationCopy}
-                                        </p>
-                                    </div>
-
-                                    {hasMeta && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {contextPills.map((item) => (
-                                                <span
-                                                    key={item.label}
-                                                    className="inline-flex items-center gap-1.5 rounded-full bg-white/82 px-2.5 py-1.5 text-[11px] font-medium text-stone-600 shadow-sm"
-                                                >
-                                                    <span className="text-stone-400">{item.icon}</span>
-                                                    {item.label}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid gap-3 px-4 pb-4 pt-3 sm:px-5 sm:pb-5 sm:pt-4">
-                        <div className="rounded-[1.7rem] bg-[color:var(--surface)] px-4 py-4">
-                            <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
-                                <MessageCircle size={12} className="text-stone-400" />
-                                {text.shortlistReasonTitle}
-                            </div>
-                            <p className="text-[14px] leading-7 text-stone-700">
-                                {humanExplanation}
-                            </p>
-                        </div>
-
-                        <div className="rounded-[1.7rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(246,243,238,0.96))] px-4 py-4">
-                            <div className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
-                                <CheckCheck size={12} className="text-emerald-600" />
-                                {text.shortlistTrustTitle}
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {trustBadges.length > 0 ? (
-                                    trustBadges.slice(0, 4).map((badge) => (
-                                        <span
-                                            key={badge}
-                                            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-stone-600 shadow-sm"
-                                        >
-                                            <span className="text-[10px]">{TRUST_BADGE_ICONS[badge]}</span>
-                                            {TRUST_BADGE_LABELS[badge]?.[lang] || badge}
-                                        </span>
-                                    ))
+        <motion.div
+            layout={!prefersReducedMotion}
+            layoutId={`card-${nanny.id}`}
+            transition={layoutSpring}
+            className="animate-pop-in"
+            style={{ animationDelay: `${index * 140 + 200}ms` }}
+        >
+            <div
+                className={`overflow-hidden rounded-[2rem] bg-white transition-shadow duration-300 ${
+                    isExpanded
+                        ? 'shadow-[0_20px_60px_-15px_rgba(108,92,231,0.15)]'
+                        : 'shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_32px_-8px_rgba(108,92,231,0.12)]'
+                }`}
+            >
+                {/* ─── Always-visible header: avatar + name + score ─── */}
+                <motion.div
+                    layout={!prefersReducedMotion}
+                    className="cursor-pointer select-none active:scale-[0.995] transition-transform"
+                    onClick={onToggle}
+                >
+                    <div className="px-6 pt-6 pb-5 sm:px-8 sm:pt-8 sm:pb-6">
+                        <div className="flex items-start gap-5">
+                            {/* Avatar */}
+                            <motion.div
+                                layout={!prefersReducedMotion}
+                                className={`${isExpanded ? 'h-[88px] w-[88px]' : 'h-[72px] w-[72px]'} rounded-[24px] bg-linear-to-br ${avatarGradients[index % 3]} flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-white transition-all duration-300`}
+                                style={{ boxShadow: `0 8px 24px -4px ${ACCENT}30` }}
+                            >
+                                {nanny.photo ? (
+                                    <img src={nanny.photo} alt={nanny.name} className="h-full w-full object-cover" />
                                 ) : (
-                                    <span className="text-[11px] font-medium italic text-stone-400">
-                                        {lang === 'ru' ? 'Базовая проверка уже пройдена' : 'Basic review already passed'}
-                                    </span>
+                                    <span className="text-2xl font-black text-white/90 drop-shadow-sm">{initials}</span>
+                                )}
+                            </motion.div>
+
+                            {/* Name + meta */}
+                            <div className="min-w-0 flex-1 space-y-2.5">
+                                <div className="space-y-1">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-400">
+                                        {lang === 'ru' ? `Кандидат ${index + 1}` : `Candidate ${index + 1}`}
+                                    </p>
+                                    <h3 className="text-[1.35rem] font-semibold leading-[1.1] text-[#1A1A2E] sm:text-[1.5rem]">
+                                        {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
+                                    </h3>
+                                    <p className="text-[13px] leading-5 text-[#6B7280]">
+                                        {recommendationCopy}
+                                    </p>
+                                </div>
+
+                                {hasMeta && (
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {contextPills.map((item) => (
+                                            <span
+                                                key={item.label}
+                                                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium text-[#6B7280]"
+                                                style={{ backgroundColor: '#F8F9FA' }}
+                                            >
+                                                <span className="text-[#9CA3AF]">{item.icon}</span>
+                                                {item.label}
+                                            </span>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
+
+                            {/* Score badge — pulse glow for top candidates */}
+                            <motion.div
+                                className="rounded-[20px] px-4 py-3 text-center text-white shrink-0"
+                                style={{ backgroundColor: ACCENT, boxShadow: `0 4px 20px -4px ${ACCENT}60` }}
+                                {...(score > 90 && !prefersReducedMotion ? {
+                                    animate: {
+                                        boxShadow: [
+                                            `0 4px 20px -4px ${ACCENT}60`,
+                                            `0 4px 32px -2px ${ACCENT}90`,
+                                            `0 4px 20px -4px ${ACCENT}60`,
+                                        ],
+                                    },
+                                    transition: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
+                                } : {})}
+                            >
+                                <div className="text-[1.75rem] font-bold leading-none">{score}</div>
+                                <div className="mt-1 text-[8px] font-bold uppercase tracking-[0.22em] text-white/70">
+                                    {lang === 'ru' ? 'Балл' : 'Fit'}
+                                </div>
+                            </motion.div>
+                        </div>
+
+                        {/* Expand chevron hint */}
+                        <div className="mt-4 flex items-center justify-center">
+                            <motion.div
+                                animate={{ rotate: isExpanded ? 180 : 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="rounded-full p-1"
+                                style={{ color: isExpanded ? ACCENT : '#9CA3AF' }}
+                            >
+                                <ChevronDown size={18} />
+                            </motion.div>
                         </div>
                     </div>
+                </motion.div>
 
-                    {riskFlags && riskFlags.length > 0 && (
-                        <div className="mx-4 rounded-[1.7rem] bg-[linear-gradient(180deg,rgba(250,248,244,0.95),rgba(246,241,234,0.95))] px-4 py-4 sm:mx-5">
-                            <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.15em] text-stone-400">
-                                {text.shortlistRiskTitle}
-                            </span>
-                            <div className="space-y-1.5">
-                                {riskFlags.map((flag, i) => (
-                                    <div
-                                        key={i}
-                                        className={`flex items-start gap-2 p-2.5 rounded-xl text-xs leading-relaxed ${
-                                            flag.level === 'critical'
-                                                ? 'bg-red-50/80 text-red-800'
-                                                : 'bg-amber-50/60 text-amber-900'
-                                        }`}
-                                    >
-                                        {flag.level === 'critical'
-                                            ? <ShieldAlert size={14} className="text-red-500 shrink-0 mt-px" />
-                                            : <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-px" />
-                                        }
-                                        <div>
-                                            <p className="font-semibold">{flag.message}</p>
-                                            {flag.advice && (
-                                                <p className="mt-0.5 opacity-75 font-medium">
-                                                    {flag.advice}
-                                                </p>
-                                            )}
+                {/* ─── Expanded details — layout morph ─── */}
+                <AnimatePresence mode="wait">
+                    {isExpanded && (
+                        <motion.div
+                            initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={prefersReducedMotion ? { duration: 0 } : { ...layoutSpring, opacity: { duration: 0.2 } }}
+                            className="overflow-hidden"
+                        >
+                            <div className="space-y-4 px-6 pb-6 sm:px-8 sm:pb-8">
+                                {/* Tonal divider */}
+                                <div className="h-px" style={{ backgroundColor: '#F1F3F5' }} />
+
+                                {/* AI explanation */}
+                                <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: '#F8F9FA' }}>
+                                    <div className="mb-2.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">
+                                        <MessageCircle size={12} style={{ color: ACCENT_SOFT }} />
+                                        {text.shortlistReasonTitle}
+                                    </div>
+                                    <p className="text-[14px] leading-7 text-[#374151]">
+                                        {humanExplanation}
+                                    </p>
+                                </div>
+
+                                {/* Trust badges */}
+                                <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: ACCENT_BG }}>
+                                    <div className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: ACCENT }}>
+                                        <CheckCheck size={12} />
+                                        {text.shortlistTrustTitle}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {trustBadges.length > 0 ? (
+                                            trustBadges.slice(0, 4).map((badge) => (
+                                                <span
+                                                    key={badge}
+                                                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-[#374151] shadow-sm"
+                                                >
+                                                    <span className="text-[10px]">{TRUST_BADGE_ICONS[badge]}</span>
+                                                    {TRUST_BADGE_LABELS[badge]?.[lang] || badge}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span className="text-[11px] font-medium italic text-[#9CA3AF]">
+                                                {lang === 'ru' ? 'Базовая проверка уже пройдена' : 'Basic review already passed'}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Risk flags */}
+                                {riskFlags && riskFlags.length > 0 && (
+                                    <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: '#FFF7ED' }}>
+                                        <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9CA3AF]">
+                                            {text.shortlistRiskTitle}
+                                        </span>
+                                        <div className="space-y-2">
+                                            {riskFlags.map((flag, i) => (
+                                                <div
+                                                    key={i}
+                                                    className={`flex items-start gap-2.5 rounded-xl p-3 text-xs leading-relaxed ${
+                                                        flag.level === 'critical'
+                                                            ? 'bg-red-50/80 text-red-800'
+                                                            : 'bg-amber-50/60 text-amber-900'
+                                                    }`}
+                                                >
+                                                    {flag.level === 'critical'
+                                                        ? <ShieldAlert size={14} className="text-red-500 shrink-0 mt-px" />
+                                                        : <AlertTriangle size={14} className="text-amber-500 shrink-0 mt-px" />
+                                                    }
+                                                    <div>
+                                                        <p className="font-semibold">{flag.message}</p>
+                                                        {flag.advice && (
+                                                            <p className="mt-0.5 opacity-75 font-medium">{flag.advice}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                                )}
 
-                    <div className="grid grid-cols-5 gap-2.5 px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
-                        <Button
-                            variant="primary"
-                            onClick={handleOpenProfile}
-                            className="col-span-3 py-3.5! rounded-[22px]! shadow-lg"
-                        >
-                            <MessageCircle size={16} />
-                            {lang === 'ru' ? 'Открыть профиль' : 'Open profile'}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            onClick={copyShareLink}
-                            className="col-span-2 py-3.5! rounded-[22px]! border-stone-200 bg-white text-stone-600 shadow-sm hover:bg-stone-50"
-                        >
-                            <Share2 size={15} className="text-stone-400" />
-                            {lang === 'ru' ? 'Обсудить' : 'Share'}
-                        </Button>
-                    </div>
-                </div>
-            </Card>
-        </div>
+                                {/* Action buttons */}
+                                <div className="grid grid-cols-5 gap-3 pt-2">
+                                    <button
+                                        onClick={handleOpenProfile}
+                                        className="col-span-3 flex min-h-[52px] items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white transition-all duration-300 active:scale-[0.97] hover:brightness-110"
+                                        style={{
+                                            backgroundColor: ACCENT,
+                                            boxShadow: `0 8px 24px -6px ${ACCENT}50`,
+                                        }}
+                                    >
+                                        <MessageCircle size={16} />
+                                        {lang === 'ru' ? 'Открыть профиль' : 'Open profile'}
+                                    </button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={copyShareLink}
+                                        className="col-span-2 py-3.5! rounded-2xl! border-[#E5E7EB] bg-white text-[#6B7280] shadow-sm hover:bg-[#F8F9FA]"
+                                    >
+                                        <Share2 size={15} className="text-[#9CA3AF]" />
+                                        {lang === 'ru' ? 'Обсудить' : 'Share'}
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </motion.div>
     );
 };
+
+/* ─── Skeleton card for loading state ─── */
+const SkeletonCard: React.FC = () => (
+    <div className="overflow-hidden rounded-[2rem] bg-white p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)]">
+        <div className="flex items-start gap-5">
+            <Skeleton className="h-[72px] w-[72px] rounded-[24px]" />
+            <div className="flex-1 space-y-3">
+                <Skeleton className="h-3 w-20 rounded-full" />
+                <Skeleton className="h-6 w-40 rounded-lg" />
+                <Skeleton className="h-4 w-56 rounded-lg" />
+            </div>
+            <Skeleton className="h-16 w-14 rounded-[20px]" />
+        </div>
+        <div className="mt-5 flex justify-center">
+            <Skeleton className="h-4 w-4 rounded-full" />
+        </div>
+    </div>
+);
+
+/* ─── Error fallback ─── */
+const ErrorState: React.FC<{ lang: Language; onRetry: () => void }> = ({ lang, onRetry }) => (
+    <div className="flex flex-col items-center gap-5 rounded-[2rem] bg-white px-8 py-14 text-center shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)]">
+        <div className="rounded-2xl bg-red-50 p-4">
+            <AlertTriangle size={28} className="text-red-400" />
+        </div>
+        <div className="space-y-2">
+            <p className="text-lg font-semibold text-[#1A1A2E]">
+                {lang === 'ru' ? 'Не удалось загрузить результаты' : 'Failed to load results'}
+            </p>
+            <p className="text-sm text-[#6B7280]">
+                {lang === 'ru' ? 'Проверьте соединение и попробуйте снова.' : 'Check your connection and try again.'}
+            </p>
+        </div>
+        <button
+            onClick={onRetry}
+            className="rounded-2xl px-6 py-3 text-sm font-semibold text-white transition-all active:scale-[0.97]"
+            style={{ backgroundColor: ACCENT, boxShadow: `0 4px 16px -4px ${ACCENT}50` }}
+        >
+            {lang === 'ru' ? 'Попробовать снова' : 'Try again'}
+        </button>
+    </div>
+);
 
 /* ─── Main Screen ─── */
 export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) => {
     const text = t[lang];
-    const location = useLocation() as ReturnType<typeof useLocation> & { state: MatchResultsLocationState | null };
     const navigate = useNavigate();
-    const mockMatchResult: MatchResult | null = useMemo(() => {
-        if (!import.meta.env.DEV) return null;
-        const params = new URLSearchParams(location.search);
-        if (params.get('mock') !== '1') return null;
-
-        return {
-            overallAdvice: lang === 'ru'
-                ? 'Мы оставили только те профили, где можно спокойно перейти к разговору о деталях, а не тратить силы на хаотичный просмотр.'
-                : 'We kept only the profiles worth moving into a real conversation instead of chaotic browsing.',
-            requestId: 'mock-request-1',
-            candidates: [
-                {
-                    score: 93,
-                    reasons: ['high_empathy', 'verified', 'experience_fit'],
-                    humanExplanation: lang === 'ru'
-                        ? 'Анна хорошо подходит семьям, которым важны спокойный ритм, прозрачная коммуникация и мягкая адаптация ребёнка.'
-                        : 'Anna fits families that value calm rhythm, transparent communication, and a gentle child adaptation.',
-                    trustBadges: ['verified_moderation', 'soft_skills', 'has_reviews'],
-                    riskFlags: [
-                        {
-                            level: 'warning',
-                            message: lang === 'ru' ? 'Уточните вечерний график заранее.' : 'Confirm evening schedule in advance.',
-                            advice: lang === 'ru' ? 'Лучше сразу обсудить регулярные поздние смены.' : 'Discuss recurring late shifts early.',
-                        },
-                    ],
-                    nanny: {
-                        id: 'demo1234-mock',
-                        name: 'Анна Иванова',
-                        city: 'Москва',
-                        district: 'Пресня',
-                        experience: '7 лет',
-                        expectedRate: '900 ₽',
-                        contact: '+7 999 123-45-67',
-                        isVerified: true,
-                        about: 'Работаю с детьми 0–7 лет, внимательно отношусь к режиму и эмоциональному комфорту ребёнка.',
-                        skills: ['Развивающие игры', 'Монтессори', 'Подготовка к школе'],
-                        childAges: ['0-1', '1-3', '3-6'],
-                        reviews: [
-                            { id: 'r1', authorName: 'Мария', rating: 5, text: 'Очень спокойная и внимательная няня.', date: 1711900000000 },
-                            { id: 'r2', authorName: 'Екатерина', rating: 5, text: 'Дочка быстро привыкла, всё прошло отлично.', date: 1711900000000 },
-                        ],
-                        softSkills: {
-                            method: 'rule_based_v1',
-                            rawScore: 88,
-                            dominantStyle: 'Empathetic',
-                            summary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
-                            familySummary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
-                            moderationSummary: 'Высокая эмпатия, устойчивое поведение, без выраженных рисковых сигналов.',
-                            completedAt: 1711900000000,
-                            coverage: 0.86,
-                            confidenceReason: 'full_answers',
-                            answeredItems: 12,
-                            totalItems: 14,
-                            traits: {
-                                empathy: 92,
-                                stability: 84,
-                                responsibility: 87,
-                                structure: 73,
-                            },
-                            signals: [],
-                        },
-                        photo: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
-                        createdAt: 1711900000000,
-                        type: 'nanny',
-                    },
-                },
-                {
-                    score: 88,
-                    reasons: ['good_schedule_fit', 'verified'],
-                    humanExplanation: lang === 'ru'
-                        ? 'Екатерина сильна там, где семье нужен более структурный режим и опыт с дошкольниками.'
-                        : 'Ekaterina is strong where the family needs a more structured rhythm and preschool experience.',
-                    trustBadges: ['verified_moderation', 'ai_checked'],
-                    nanny: {
-                        id: 'demo5678-mock',
-                        name: 'Екатерина Смирнова',
-                        city: 'Москва',
-                        district: 'Хамовники',
-                        experience: '5 лет',
-                        expectedRate: '850 ₽',
-                        contact: '+7 999 123-45-67',
-                        isVerified: true,
-                        about: 'Люблю понятный режим дня, развитие через рутину и спокойное общение с семьёй.',
-                        skills: ['Подготовка к школе', 'Прогулки', 'Режим дня'],
-                        childAges: ['1-3', '3-6'],
-                        reviews: [],
-                        photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop',
-                        createdAt: 1711900000000,
-                        type: 'nanny',
-                    },
-                },
-            ],
-        };
-    }, [lang, location.search]);
-    const matchResult = location.state?.matchResult || mockMatchResult;
+    const { data: matchResult, loading, error } = useMatchResults(lang);
     const [showToast, setShowToast] = useState(false);
+    const [expandedId, setExpandedId] = useState<string | null>(null);
 
     const handleShareToast = useCallback(() => {
         setShowToast(true);
@@ -415,6 +424,34 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
         const slug = slugify(nannyName || nannyId, nannyId);
         navigate(`/nanny/${slug}`);
     };
+
+    if (loading) {
+        return (
+            <div className="page-frame animate-fade-in py-4 pb-14 md:py-8">
+                <div className="section-stack space-y-6">
+                    <Skeleton className="h-8 w-48 rounded-full" />
+                    <SkeletonCard />
+                    <SkeletonCard />
+                    <SkeletonCard />
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="page-frame animate-fade-in py-6">
+                <button
+                    onClick={() => navigate('/')}
+                    className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800"
+                >
+                    <ArrowLeft size={18} />
+                    <span className="text-sm">{lang === 'ru' ? 'Назад' : 'Back'}</span>
+                </button>
+                <ErrorState lang={lang} onRetry={() => window.location.reload()} />
+            </div>
+        );
+    }
 
     if (!matchResult || matchResult.candidates.length === 0) {
         return (
@@ -556,18 +593,24 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                         <Badge variant="neutral" className="hidden md:inline-flex">{lang === 'ru' ? 'Открывайте профили по одному' : 'Open profiles one by one'}</Badge>
                     </div>
 
-                    <div className="space-y-6">
-                        {matchResult.candidates.map((candidate, index) => (
-                            <CandidateCard
-                                key={candidate.nanny.id}
-                                candidate={candidate}
-                                index={index}
-                                lang={lang}
-                                onOpenProfile={handleOpenProfile}
-                                onShareToast={handleShareToast}
-                            />
-                        ))}
-                    </div>
+                    <LayoutGroup>
+                        <div className="space-y-6">
+                            {matchResult.candidates.map((candidate, index) => (
+                                <CandidateCard
+                                    key={candidate.nanny.id}
+                                    candidate={candidate}
+                                    index={index}
+                                    lang={lang}
+                                    isExpanded={expandedId === candidate.nanny.id}
+                                    onToggle={() => setExpandedId(
+                                        expandedId === candidate.nanny.id ? null : candidate.nanny.id
+                                    )}
+                                    onOpenProfile={handleOpenProfile}
+                                    onShareToast={handleShareToast}
+                                />
+                            ))}
+                        </div>
+                    </LayoutGroup>
                 </section>
 
                 <div className="form-footer-rail p-5 text-center md:p-6">

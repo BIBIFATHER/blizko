@@ -4,6 +4,8 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { slugify } from '@/core/utils/slugify';
 import { Card, Button, Badge, EmptyState } from './UI';
 import { Skeleton } from './ui/feedback-primitives';
+import { SkeletonNannyCard } from './ui/SkeletonNannyCard';
+import { ErrorState } from './ui/ErrorState';
 import { useMatchResults } from '@/hooks/useMatchResults';
 import {
     MessageCircle, ArrowLeft, Sparkles, User,
@@ -137,6 +139,18 @@ const CandidateCard: React.FC<{
             transition={layoutSpring}
             className="animate-pop-in"
             style={{ animationDelay: `${index * 140 + 200}ms` }}
+            {...(score > 90 && !prefersReducedMotion ? {
+                animate: {
+                    opacity: [0.88, 1, 0.88],
+                    scale: [1, 1.008, 1],
+                    boxShadow: [
+                        '0 2px 16px -4px rgba(108,92,231,0.08)',
+                        '0 0 18px 2px rgba(108,92,231,0.18)',
+                        '0 2px 16px -4px rgba(108,92,231,0.08)',
+                    ],
+                },
+                transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+            } : {})}
         >
             <div
                 className={`overflow-hidden rounded-[2rem] bg-white transition-shadow duration-300 ${
@@ -345,48 +359,6 @@ const CandidateCard: React.FC<{
     );
 };
 
-/* ─── Skeleton card for loading state ─── */
-const SkeletonCard: React.FC = () => (
-    <div className="overflow-hidden rounded-[2rem] bg-white p-6 sm:p-8 shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)]">
-        <div className="flex items-start gap-5">
-            <Skeleton className="h-[72px] w-[72px] rounded-[24px]" />
-            <div className="flex-1 space-y-3">
-                <Skeleton className="h-3 w-20 rounded-full" />
-                <Skeleton className="h-6 w-40 rounded-lg" />
-                <Skeleton className="h-4 w-56 rounded-lg" />
-            </div>
-            <Skeleton className="h-16 w-14 rounded-[20px]" />
-        </div>
-        <div className="mt-5 flex justify-center">
-            <Skeleton className="h-4 w-4 rounded-full" />
-        </div>
-    </div>
-);
-
-/* ─── Error fallback ─── */
-const ErrorState: React.FC<{ lang: Language; onRetry: () => void }> = ({ lang, onRetry }) => (
-    <div className="flex flex-col items-center gap-5 rounded-[2rem] bg-white px-8 py-14 text-center shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)]">
-        <div className="rounded-2xl bg-red-50 p-4">
-            <AlertTriangle size={28} className="text-red-400" />
-        </div>
-        <div className="space-y-2">
-            <p className="text-lg font-semibold text-[#1A1A2E]">
-                {lang === 'ru' ? 'Не удалось загрузить результаты' : 'Failed to load results'}
-            </p>
-            <p className="text-sm text-[#6B7280]">
-                {lang === 'ru' ? 'Проверьте соединение и попробуйте снова.' : 'Check your connection and try again.'}
-            </p>
-        </div>
-        <button
-            onClick={onRetry}
-            className="rounded-2xl px-6 py-3 text-sm font-semibold text-white transition-all active:scale-[0.97]"
-            style={{ backgroundColor: ACCENT, boxShadow: `0 4px 16px -4px ${ACCENT}50` }}
-        >
-            {lang === 'ru' ? 'Попробовать снова' : 'Try again'}
-        </button>
-    </div>
-);
-
 /* ─── Main Screen ─── */
 export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) => {
     const text = t[lang];
@@ -430,9 +402,9 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
             <div className="page-frame animate-fade-in py-4 pb-14 md:py-8">
                 <div className="section-stack space-y-6">
                     <Skeleton className="h-8 w-48 rounded-full" />
-                    <SkeletonCard />
-                    <SkeletonCard />
-                    <SkeletonCard />
+                    <SkeletonNannyCard />
+                    <SkeletonNannyCard />
+                    <SkeletonNannyCard />
                 </div>
             </div>
         );

@@ -10,7 +10,6 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 
     try {
         const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('[Push] SW registered:', registration.scope);
         return registration;
     } catch (error) {
         console.error('[Push] SW registration failed:', error);

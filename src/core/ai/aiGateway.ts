@@ -41,7 +41,7 @@ async function callAi(messages: AIMessage[], options?: AIRequestOptions): Promis
   });
 
   if (!res.ok) {
-    let errPayload: any = null;
+    let errPayload: { details?: { error?: { message?: string } }; error?: string } | null = null;
     const contentType = res.headers.get('content-type') || '';
 
     if (contentType.includes('application/json')) {

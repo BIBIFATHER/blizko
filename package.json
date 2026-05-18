@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:vercel": "vercel dev",
+    "env:doctor": "bash -lc 'for v in VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY VITE_SENTRY_DSN SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY NOTIFY_TOKEN SENTRY_ORG SENTRY_PROJECT SENTRY_AUTH_TOKEN; do if [ -n \"${!v:-}\" ]; then echo \"$v=present\"; else echo \"$v=missing\"; fi; done'",
+    "env:doctor:local": "bash scripts/with-env.sh npm run env:doctor",
     "build": "vite build",
     "preview": "vite preview",
     "check:nannies-rls": "bash scripts/check_nannies_rls.sh",
@@ -15,7 +17,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write '**/*.{ts,tsx,js,json,css,md}'",
     "format:check": "prettier --check '**/*.{ts,tsx,js,json,css,md}'",
-    "seed": "node scripts/importHhNannies.js"
+    "seed": "node scripts/importHhNannies.js",
+    "seed:hh": "node scripts/parseHhResponses.js"
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",
@@ -27,6 +30,7 @@
     "@sentry/vite-plugin": "^4.9.1",
     "@supabase/supabase-js": "^2.95.3",
     "clsx": "^2.1.1",
+    "csv-parser": "^3.2.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.561.0",
     "pg": "^8.20.0",

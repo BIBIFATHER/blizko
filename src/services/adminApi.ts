@@ -4,7 +4,7 @@ import { supabase } from './supabase';
 export interface AdminActionRecord {
   id?: string;
   action: string;
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
   adminId?: string | null;
   at: number;
 }
@@ -103,7 +103,7 @@ export async function fetchAdminActions(params?: {
 
 export async function createAdminAction(
   action: string,
-  meta?: Record<string, any>,
+  meta?: Record<string, unknown>,
 ): Promise<AdminActionRecord | null> {
   const headers = await getAdminHeaders();
   if (!headers) return null;

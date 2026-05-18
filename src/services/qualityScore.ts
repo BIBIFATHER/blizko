@@ -22,6 +22,11 @@ export interface QualityScoreBreakdown {
     profileCompleteness: number;
 }
 
+type BookingStats = {
+    total?: number;
+    completed?: number;
+};
+
 export function calculateQualityScore(nanny: NannyProfile): QualityScoreBreakdown {
     let documents = 0;
     let reviews = 0;
@@ -54,9 +59,9 @@ export function calculateQualityScore(nanny: NannyProfile): QualityScoreBreakdow
 
     // 4. Reliability (15 points max)
     // Based on booking completion rate (if we have data)
-    const stats = (nanny as any).bookingStats;
-    if (stats && stats.total > 0) {
-        const completionRate = stats.completed / stats.total;
+    const stats = (nanny as NannyProfile & { bookingStats?: BookingStats }).bookingStats;
+    if (stats?.total && stats.total > 0) {
+        const completionRate = (stats.completed || 0) / stats.total;
         reliability += Math.round(completionRate * 15);
     } else {
         // New nanny — give benefit of the doubt

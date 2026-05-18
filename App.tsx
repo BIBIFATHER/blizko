@@ -244,23 +244,41 @@ export default function App() {
         <div className="cloud-blob cloud-blob-lavender" />
       </div>
 
-      <AppHeader
-        lang={lang}
-        user={effectiveUser}
-        isScrolled={isScrolled}
-        onToggleLanguage={toggleLanguage}
-        onShare={handleShare}
-        onOpenAuth={() => {
-          trackAuthModalOpen('app_header');
-          setAuthOpen(true);
-        }}
-        onOpenProfile={() => setProfileOpen(true)}
-      />
+      {currentPath !== '/' && (
+        <AppHeader
+          lang={lang}
+          user={effectiveUser}
+          isScrolled={isScrolled}
+          onToggleLanguage={toggleLanguage}
+          onShare={handleShare}
+          onOpenAuth={() => {
+            trackAuthModalOpen('app_header');
+            setAuthOpen(true);
+          }}
+          onOpenProfile={() => setProfileOpen(true)}
+        />
+      )}
 
-      <main className="app-main-frame flex-1 relative">
+      <main className={`app-main-frame flex-1 relative ${currentPath === '/' ? '!pt-0' : ''}`}>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<Home lang={lang} />} />
+            <Route
+              path="/"
+              element={
+                <Home
+                  lang={lang}
+                  onShare={handleShare}
+                  onOpenAccount={() => {
+                    if (effectiveUser) {
+                      setProfileOpen(true);
+                      return;
+                    }
+                    trackAuthModalOpen('home_account_button');
+                    setAuthOpen(true);
+                  }}
+                />
+              }
+            />
             <Route path="/nanny/:slug" element={<NannyPublicProfile lang={lang} />} />
             <Route path="/find-nanny" element={<ParentForm onSubmit={handleParentSubmit} lang={lang} />} />
             <Route path="/become-nanny" element={<NannyForm onSubmit={handleNannySubmit} lang={lang} />} />

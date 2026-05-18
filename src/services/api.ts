@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 // Универсальная отправка событий уведомлений
-export const sendToWebhook = async (payload: any): Promise<void> => {
+export const sendToWebhook = async (payload: Record<string, unknown>): Promise<void> => {
   try {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (supabase) {

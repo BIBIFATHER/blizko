@@ -13,6 +13,9 @@ Curated long-term memory for the main Blizko workspace.
 - Prefer execution-ready artifacts over long discussion.
 - For larger tasks, parallelize only when the work splits into genuinely independent blocks.
 - Value directness, speed, and high technical standards over reassuring chatter.
+- Default preferred operating mode: one primary objective per session, then immediate execution.
+- The user wants Codex to proactively maintain workspace memory and operating files when that improves future execution.
+- When capability is constrained by missing access, list the exact permission or system needed instead of working around it silently.
 
 ## Product Context
 
@@ -26,13 +29,23 @@ Curated long-term memory for the main Blizko workspace.
 - The workspace already has enough strategic documentation; the bigger leverage comes from connectors, verification loops, and repeatable execution paths.
 - MCP readiness must be validated from the active client, not inferred from config files.
 - Durable context belongs in files, not in chat memory.
+- Highest-leverage collaboration pattern is: concise task framing, fast context pull, immediate implementation, short closeout.
+
+## Requested Access Pattern
+
+- The user explicitly wants a concrete list of permissions/access needed to unlock maximum execution quality.
+- Highest-value accesses for this workspace are: live `Linear`, `Supabase`, `GitHub`, `Vercel`, `Sentry`, `Figma`, `Notion`, and stable local env visibility for the relevant projects.
 
 ## Current Operational Reality
 
 - `figma` MCP is working.
+- `figma` auth works, but current seats are `View`, so write access to design files may be blocked until edit permissions are granted.
 - `notion` MCP can authenticate, but remote MCP state should still be rechecked after a clean app restart.
-- `github` and `supabase` are configured for bearer-token MCP auth and still depend on real shell-visible env vars.
-- `linear` MCP remains unreliable in the current environment and should be treated as unresolved until verified from a fresh session.
+- `notion` auth is currently working for read access.
+- `github` CLI auth is working with `repo` and `workflow` scopes.
+- `supabase` CLI auth is working and a project is linked at the account level, but shell env vars are still missing by default.
+- `vercel` CLI auth is working, but this repo is not locally linked via `.vercel/project.json`.
+- `linear` auth is currently working and should no longer be treated as unresolved.
 
 ## Product Delivery Snapshot
 

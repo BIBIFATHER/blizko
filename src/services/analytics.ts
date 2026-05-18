@@ -192,10 +192,6 @@ export function track(event: EventName, properties?: Record<string, unknown>): v
             });
         }
 
-        // Console log in dev mode
-        if (import.meta.env.DEV) {
-            console.log(`📊 [Analytics] ${event}`, properties || '');
-        }
     } catch {
         // Analytics should never break the app
     }
@@ -206,9 +202,6 @@ export function identify(userId: string, traits?: Record<string, unknown>): void
     try {
         if (typeof window !== 'undefined' && window.posthog) {
             window.posthog.identify(userId, traits);
-        }
-        if (import.meta.env.DEV) {
-            console.log(`📊 [Analytics] identify:`, userId, traits);
         }
     } catch {
         // silently fail

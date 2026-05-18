@@ -9,13 +9,14 @@
  */
 
 import { supabase } from '@/services/supabase';
-import { NannyProfile, ParentRequest } from '@/core/types';
+import { NannyProfile } from '@/core/types';
+import type { RiskFlag } from './riskEngine';
 
 export interface ScoredCandidate {
   nanny: NannyProfile;
   score: number;
   reasons: string[];
-  riskFlags: any[];
+  riskFlags: RiskFlag[];
   factors?: Record<string, number>;
 }
 

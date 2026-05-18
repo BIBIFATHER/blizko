@@ -87,7 +87,7 @@ export interface NannyFormContextType {
 
 const NannyFormContext = createContext<NannyFormContextType | undefined>(undefined);
 
-export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: NannyProfile; lang: Language }> = ({ children, initialData, lang }) => {
+export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: NannyProfile; lang?: Language }> = ({ children, initialData, lang: _lang }) => {
     const totalSteps = 4;
     const [currentStep, setStep] = useState(1);
 
@@ -231,8 +231,10 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
     useEffect(() => {
         const q = formData.city.trim();
         if (q.length < 3) {
-            setCitySuggestions([]);
-            return;
+            const resetTimer = setTimeout(() => {
+                setCitySuggestions([]);
+            }, 0);
+            return () => clearTimeout(resetTimer);
         }
 
         const tmr = setTimeout(async () => {
@@ -240,7 +242,7 @@ export const NannyFormProvider: React.FC<{ children: ReactNode; initialData?: Na
                 const nr = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&limit=5`);
                 const nj = await nr.json().catch(() => []);
                 const list = (Array.isArray(nj) ? nj : [])
-                    .map((x: any) => x?.display_name)
+                    .map((x: { display_name?: string }) => x?.display_name)
                     .filter(Boolean)
                     .slice(0, 5);
 

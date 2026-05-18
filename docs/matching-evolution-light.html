@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blizko: Matching Evolution</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+    <style>
+      /* VIEWPORT FITTING BASE */
+      html, body {
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      html {
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+      }
+
+      /* THEME: CLOUD BENTO (Light, Warm, Glassy) */
+      :root {
+        --bg: #FDFBF7;
+        --text-primary: #1F2937;
+        --text-secondary: #6B7280;
+        --text-accent: #0ea5e9;
+        
+        --card-bg: rgba(255, 255, 255, 0.65);
+        --card-border: rgba(17, 24, 39, 0.05);
+        
+        --cyan: #38bdf8;
+        --amber: #fbbf24;
+        --rose: #fb7185;
+        --sage: #4ade80;
+
+        --title-size: clamp(2rem, 5.5vw, 4.5rem);
+        --h2-size: clamp(1.5rem, 3.5vw, 2.5rem);
+        --h3-size: clamp(1.1rem, 2.5vw, 1.5rem);
+        --body-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        --small-size: clamp(0.75rem, 1vw, 0.9rem);
+
+        --slide-padding: clamp(1.5rem, 4vw, 3rem);
+        --content-gap: clamp(1rem, 2vw, 2rem);
+        
+        --shadow-bento: 0 10px 40px -10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.9);
+      }
+
+      body {
+        margin: 0;
+        font-family: "Manrope", sans-serif;
+        background-color: var(--bg);
+        color: var(--text-primary);
+        line-height: 1.4;
+      }
+
+      /* Organic Noise & Blur Orbs */
+      .bg-fx {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+      }
+      .bg-fx::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.25;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+      .orb-1, .orb-2, .orb-3 {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.6;
+        animation: float 20s infinite ease-in-out alternate;
+      }
+      .orb-1 { width: 50vw; height: 50vh; background: #e0f2fe; top: -10%; right: -10%; animation-delay: -5s; }
+      .orb-2 { width: 40vw; height: 40vh; background: #fef9c3; bottom: -10%; left: -10%; }
+      .orb-3 { width: 30vw; height: 30vh; background: #fce7f3; top: 40%; left: 30%; animation-duration: 25s; }
+
+      @keyframes float {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(5%, 10%) scale(1.1); }
+      }
+
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
+      .slide-content {
+        width: 100%;
+        max-width: 1300px;
+        padding: var(--slide-padding);
+        display: flex;
+        flex-direction: column;
+        gap: var(--content-gap);
+      }
+
+      /* Typography */
+      h1, h2 {
+        font-family: "Newsreader", serif;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        margin: 0;
+        line-height: 1.05;
+      }
+      h1 { font-size: var(--title-size); }
+      h2 { font-size: var(--h2-size); }
+      h3 { font-family: "Newsreader", serif; font-size: var(--h3-size); margin: 0 0 0.5rem 0; font-weight: 500;}
+      p { font-size: var(--body-size); color: var(--text-secondary); margin: 0; }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: var(--small-size);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        padding: 0.3rem 0.8rem;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: var(--text-secondary);
+        border: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 0.5rem;
+      }
+      .eye-blue { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+      .eye-amber { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+      .eye-rose { background: #ffe4e6; color: #be123c; border-color: #fecdd3; }
+      .eye-sage { background: #dcfce7; color: #166534; border-color: #86efac; }
+
+      /* BENTO CARDS */
+      .bento-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--card-border);
+        border-radius: 2rem;
+        padding: 2rem;
+        box-shadow: var(--shadow-bento);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* LAYOUTS */
+      .grid-2 { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: var(--content-gap); align-items: center; }
+      .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--content-gap); }
+      .bento-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: var(--content-gap);
+      }
+      .bento-main { grid-column: span 2; grid-row: span 2; }
+      
+      /* Visual Indicators */
+      .stat-circle {
+        display: flex; align-items: center; justify-content: center;
+        width: 3rem; height: 3rem; border-radius: 50%;
+        background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        font-family: "Newsreader", serif; font-size: 1.5rem; color: var(--text-accent);
+        margin-bottom: 1rem;
+      }
+
+      /* ANIMATIONS */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal.active { opacity: 1; transform: translateY(0); }
+      .delay-1 { transition-delay: 0.1s; }
+      .delay-2 { transition-delay: 0.2s; }
+      .delay-3 { transition-delay: 0.3s; }
+
+      /* GRAPHICS */
+      .svg-graphic { width: 100%; height: auto; margin-top: auto; }
+      
+      .bridge-container {
+        display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+        padding-top: 1rem;
+      }
+      .bridge-arrow {
+        flex: 1; height: 2px; background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
+        position: relative;
+      }
+      .bridge-arrow::after {
+        content: "→"; position: absolute; right: 20%; top: -14px; color: #94a3b8; font-size: 1.5rem;
+      }
+      .timeline-dot {
+        width: 12px; height: 12px; border-radius: 50%; background: var(--text-accent);
+        position: relative;
+      }
+      .timeline-dot::before {
+        content: ""; position: absolute; inset: -6px; border-radius: 50%;
+        background: var(--text-accent); opacity: 0.2; animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.4; }
+        100% { transform: scale(2.5); opacity: 0; }
+      }
+
+      /* NAVIGATION */
+      .nav-dots {
+        position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%);
+        display: flex; flex-direction: column; gap: 0.5rem; z-index: 100;
+      }
+      .nav-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.1);
+        border: none; cursor: pointer; transition: 0.3s; padding: 0;
+      }
+      .nav-dot.active { background: var(--text-accent); transform: scale(1.5); }
+
+      @media (max-width: 900px) {
+        .grid-2 { grid-template-columns: 1fr; }
+        .bento-layout { grid-template-columns: 1fr; }
+        .bento-main { grid-column: span 1; grid-row: span 1; }
+        .bridge-container { flex-direction: column; }
+        .bridge-arrow { width: 2px; height: 40px; background: linear-gradient(180deg, transparent, #cbd5e1, transparent); }
+        .bridge-arrow::after { content: "↓"; top: 30%; right: -12px; }
+      }
+    </style>
+  </head>
+  <body>
+    
+    <div class="bg-fx">
+      <div class="orb-1"></div>
+      <div class="orb-2"></div>
+      <div class="orb-3"></div>
+    </div>
+
+    <div class="nav-dots" id="nav"></div>
+
+    <!-- SLIDE 1: HERO -->
+    <section class="slide">
+      <div class="slide-content grid-2">
+        <div class="reveal">
+          <span class="eyebrow eye-blue">Trust-First Architecture</span>
+          <h1>Эволюция<br>Матчинга</h1>
+          <p style="margin-top: 1rem; font-size: 1.25rem;">
+            От детерминированной математики и эвристики к системе, которая учится на реальных исходах и повышает шанс на долгий, спокойный fit между семьей и няней.
+          </p>
+        </div>
+        <div class="bento-card reveal delay-1" style="min-height: 400px; justify-content: center;">
+          <!-- Custom SVG Abstract Visual for Hero -->
+          <svg viewBox="0 0 200 200" fill="none" class="svg-graphic">
+            <circle cx="100" cy="100" r="80" stroke="#bae6fd" stroke-width="2" stroke-dasharray="4 8"/>
+            <circle cx="100" cy="100" r="40" fill="#0ea5e9" opacity="0.1"/>
+            <path d="M 60 100 Q 100 50 140 100 Q 100 150 60 100" fill="#38bdf8" opacity="0.4"/>
+            <circle cx="140" cy="100" r="6" fill="#0284c7"/>
+            <circle cx="60" cy="100" r="6" fill="#0284c7"/>
+          </svg>
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <h3 style="font-size: 1.2rem;">Две системы. Одна цель.</h3>
+            <p style="font-size: 0.85rem;">Дать надежный результат сегодня и собрать обучающий контур для более умного подбора завтра.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: CURRENT STATE BENTO -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="reveal">
+          <span class="eyebrow eye-sage">Phase 1: В продакшене</span>
+          <h2>Логика. Цифры. Эвристика.</h2>
+        </div>
+        
+        <div class="bento-layout reveal delay-1">
+          <div class="bento-card bento-main">
+            <div class="stat-circle" style="color: #4ade80;">1</div>
+            <h3>Logistic & Budget Math</h3>
+            <p>Гео-проксимити (+20 баллов за район, +18 за метро) и жесткие фильтры финансовой совместимости (отсечение при x2).</p>
+            
+            <!-- Bento Visual: Math Bars -->
+            <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.25rem;">
+                  <span>District Match</span><span>+20 pts</span>
+                </div>
+                <div style="height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
+                  <div style="width:100%; height:100%; background:#4ade80;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.25rem;">
+                  <span>Same Metro Line</span><span>+14 pts</span>
+                </div>
+                <div style="height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
+                  <div style="width:70%; height:100%; background:#4ade80; opacity:0.6;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bento-card">
+            <div class="stat-circle" style="color: #fbbf24;">2</div>
+            <h3>Risk Engine</h3>
+            <p style="font-size: 0.85rem;">Зеркализация приоритетов по воспитанию и реакции на истерику. Избегаем базовых конфликтов.</p>
+          </div>
+          
+          <div class="bento-card">
+            <div class="stat-circle" style="color: #c084fc;">3</div>
+            <h3>AI "The Why"</h3>
+            <p style="font-size: 0.85rem;">Gemini переводит сухой score в понятное объяснение fit: <i>"подходит вам по режиму и ожиданиям к коммуникации"</i>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: THE BRIDGE -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="reveal" style="text-align: center; max-width: 800px; margin: 0 auto;">
+          <span class="eyebrow eye-amber">Архитектурный мост</span>
+          <h2>Машина Сбора Данных</h2>
+          <p>Приложение не только помогает выбрать сейчас, но и создает обучающий контур из реальных сигналов успешного долгосрочного матча.</p>
+        </div>
+
+        <div class="bridge-container reveal delay-1">
+          <div class="bento-card" style="flex:1; text-align: center;">
+            <svg viewBox="0 0 50 50" width="40" height="40" style="margin: 0 auto 1rem;"><circle cx="25" cy="25" r="20" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4"/><path d="M25 15v10l8 8" fill="none" stroke="#94a3b8" stroke-width="2"/></svg>
+            <h3>Shadow Scoring</h3>
+            <p style="font-size: 0.8rem;">Сохраняем сырые оценки и сигналы до фильтрации, чтобы понять, что действительно влияет на качество матча.</p>
+          </div>
+          <div class="bridge-arrow"></div>
+          <div class="bento-card" style="flex:1; text-align: center;">
+            <svg viewBox="0 0 50 50" width="40" height="40" style="margin: 0 auto 1rem;"><rect x="10" y="10" width="10" height="10" fill="#fbbf24" rx="2"/><rect x="30" y="10" width="10" height="10" fill="#e2e8f0" rx="2"/><rect x="10" y="30" width="10" height="10" fill="#e2e8f0" rx="2"/><rect x="30" y="30" width="10" height="10" fill="#fbbf24" rx="2"/></svg>
+            <h3>Controlled Exploration</h3>
+            <p style="font-size: 0.8rem;">Небольшая примесь неочевидных кандидатов помогает системе учиться за пределами уже известных правил.</p>
+          </div>
+          <div class="bridge-arrow"></div>
+          <div class="bento-card" style="flex:1; text-align: center;">
+            <svg viewBox="0 0 50 50" width="40" height="40" style="margin: 0 auto 1rem;"><path d="M10 25c15-20 15 20 30 0" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/></svg>
+            <h3>Retention Loop</h3>
+            <p style="font-size: 0.8rem;">Истинная награда не клик и не чат, а устойчивый fit: вышла ли пара в повторяемое доверие через недели и месяцы.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: FUTURE ML -->
+    <section class="slide">
+      <div class="slide-content grid-2">
+        <div class="bento-card reveal" style="min-height: 400px; display: flex; flex-direction: column;">
+          <h3 style="margin-bottom: 2rem;">Heuristics vs ML</h3>
+          <!-- Abstract ML Curve Visual -->
+          <svg viewBox="0 0 300 200" width="100%" height="100%" style="overflow:visible;">
+            <!-- Grid -->
+            <path d="M0 50h300M0 100h300M0 150h300" stroke="#f1f5f9" stroke-width="1"/>
+            <!-- Heuristic Line (Flat) -->
+            <path d="M 0 120 C 100 120, 200 120, 300 120" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 5"/>
+            <text x="210" y="110" font-family="Manrope" font-size="10" fill="#64748b">Rule-Based Limit</text>
+            <!-- ML Line (Exponential) -->
+            <path d="M 0 160 C 100 160, 150 100, 300 20" fill="none" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round"/>
+            <!-- Points -->
+            <circle cx="150" cy="118" r="4" fill="#0ea5e9"/>
+            <circle cx="225" cy="65" r="4" fill="#0ea5e9"/>
+            <circle cx="300" cy="20" r="4" fill="#0ea5e9"/>
+            <text x="240" y="45" font-family="Manrope" font-weight="600" font-size="12" fill="#0284c7">ML Prediction</text>
+          </svg>
+        </div>
+        <div class="reveal delay-1">
+          <span class="eyebrow eye-rose">Phase II: Целевая Архитектура</span>
+          <h2>Контекстные Бандиты & Вектора</h2>
+          <p style="margin-top: 1rem;">
+            Настоящий moat появляется не в момент запуска модели, а в момент накопления качественных исходов. Тогда подбор превращается из сравнения анкет в прогноз долгосрочного успешного fit.
+          </p>
+          <ul style="padding-left: 1rem; margin-top: 1.5rem; color: var(--text-secondary); line-height: 1.6;">
+            <li>Поиск <b>скрытых паттернов</b>: семантика отзывов, повторяемые trust-сигналы, неочевидные корреляции между ожиданиями семьи и стилем няни.</li>
+            <li>Переход от оптимизации <b style="color:var(--text-primary);">"открытых чатов"</b> к оптимизации <b style="color:var(--text-primary);">"стабильных долгих отношений без срывов"</b>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- JS for scroll interactions -->
+    <script>
+      // Populate Nav Dots
+      const sections = document.querySelectorAll('.slide');
+      const nav = document.getElementById('nav');
+      
+      sections.forEach((s, i) => {
+        const dot = document.createElement('button');
+        dot.className = i === 0 ? 'nav-dot active' : 'nav-dot';
+        dot.onclick = () => s.scrollIntoView({behavior: 'smooth'});
+        nav.appendChild(dot);
+      });
+
+      // Intersection Observer for Animations & Nav
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Highlight nav
+            const index = Array.from(sections).indexOf(entry.target);
+            document.querySelectorAll('.nav-dot').forEach((d, i) => {
+              d.classList.toggle('active', i === index);
+            });
+            // Trigger reveals
+            entry.target.querySelectorAll('.reveal').forEach(el => {
+              el.classList.add('active');
+            });
+          }
+        });
+      }, { threshold: 0.3 });
+
+      sections.forEach(s => observer.observe(s));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Эволюция Матчинга Blizko</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap");
+
+      html, body {
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      html {
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+      }
+
+      :root {
+        --bg: #07111f;
+        --bg-2: #0d1b2f;
+        --ink: #eef4ff;
+        --muted: #9eb2cd;
+        --line: rgba(174, 212, 255, 0.18);
+        --cyan: #54d5ff;
+        --blue: #4a7cff;
+        --lime: #c7ff5e;
+        --amber: #ffbc42;
+        --coral: #ff6b6b;
+        --violet: #7d8cff;
+        --card: rgba(10, 23, 41, 0.82);
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+        --title-size: clamp(1.8rem, 5.4vw, 4.8rem);
+        --h2-size: clamp(1.15rem, 3vw, 2.4rem);
+        --h3-size: clamp(0.95rem, 2vw, 1.35rem);
+        --body-size: clamp(0.78rem, 1.3vw, 1.04rem);
+        --small-size: clamp(0.64rem, 1vw, 0.82rem);
+        --slide-padding: clamp(1rem, 4vw, 4rem);
+        --content-gap: clamp(0.6rem, 1.4vw, 1.4rem);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Manrope", sans-serif;
+        background:
+          radial-gradient(circle at 12% 20%, rgba(84, 213, 255, 0.18), transparent 28%),
+          radial-gradient(circle at 88% 30%, rgba(74, 124, 255, 0.18), transparent 32%),
+          radial-gradient(circle at 50% 100%, rgba(199, 255, 94, 0.08), transparent 28%),
+          linear-gradient(180deg, #04101d 0%, #081223 48%, #07111f 100%);
+        color: var(--ink);
+      }
+
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        isolation: isolate;
+      }
+
+      .slide-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-height: 100%;
+        padding: var(--slide-padding);
+        gap: var(--content-gap);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        width: fit-content;
+        padding: 0.4rem 0.75rem;
+        border: 1px solid rgba(84, 213, 255, 0.26);
+        border-radius: 999px;
+        color: var(--cyan);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: var(--small-size);
+        background: rgba(8, 17, 31, 0.72);
+      }
+
+      h1, h2, h3, p { margin: 0; }
+
+      h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: var(--title-size);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
+      }
+
+      h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: var(--h2-size);
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      p, li {
+        font-size: var(--body-size);
+        line-height: 1.45;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(1rem, 2vw, 2rem);
+        align-items: center;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 1.35rem;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+        padding: 1.5rem;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .metric {
+        padding: 1rem;
+        border-radius: 1.2rem;
+        background: rgba(7, 18, 32, 0.86);
+        border: 1px solid var(--line);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 2rem;
+        color: var(--cyan);
+        margin-bottom: 0.5rem;
+      }
+      
+      .metric.amber strong { color: var(--amber); }
+      .metric.lime strong { color: var(--lime); }
+      
+      .pill {
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .bullet-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.8rem; }
+      .bullet-list li {
+        display: flex; gap: 0.8rem; align-items: flex-start;
+      }
+      .bullet-list li::before {
+        content: "→"; color: var(--cyan); font-weight: bold;
+      }
+      
+      .bridge {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        margin: 2rem 0;
+      }
+      .bridge-arrow {
+        color: var(--cyan);
+        font-size: 3rem;
+      }
+
+      @media (max-width: 900px) {
+        .hero { grid-template-columns: 1fr; }
+        .grid-3 { grid-template-columns: 1fr; }
+        .bridge { flex-direction: column; }
+        .bridge-arrow { transform: rotate(90deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SLIDE 1: Title & Overview -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="hero">
+          <div>
+            <div class="eyebrow">Стратегия Матчинга</div>
+            <h1 style="margin-top: 1rem; margin-bottom: 1rem;">Эволюция Подбора в Blizko</h1>
+            <p>От жесткой логики и эвристик к самообучающейся системе удержания. Два этапа, обеспечивающие мгновенный старт и бесконечное совершенствование.</p>
+          </div>
+          <div class="card">
+            <h3>Два агрегатных состояния</h3>
+            <div class="bullet-list" style="margin-top: 1rem;">
+              <li>
+                <strong>State 1: Текущее (TS + Heuristics + LLM)</strong><br />
+                Прозрачные веса, хард-фильтры бюджета и детекция рисков. Идеально для старта и предсказуемости.
+              </li>
+              <li>
+                <strong>Мост: Shadow Scoring</strong><br />
+                Сбор сырых баллов и реальных решений пользователей для тренировки будущей модели.
+              </li>
+              <li>
+                <strong>State 2: Будущее (ML + Contextual Bandits)</strong><br />
+                Обучение на отказах и метриках удержания. Нейросеть прогнозирует успешность сотрудничества.
+              </li>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: CURRENT STATE -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="eyebrow" style="color: var(--lime); border-color: rgba(199, 255, 94, 0.3)">Этап 1: Работает сейчас</div>
+        <h2 style="margin-top: 1rem;">Эвристика + Gemini Explanations</h2>
+        <p>Ядро платформы на текущий момент построено на жесткой математике и ИИ-генерации текстов.</p>
+        
+        <div class="grid-3">
+          <div class="metric">
+            <strong>Geo & Budget</strong>
+            <p>Точная математика: +20 баллов за тот же район. Hard Filter, если ставка няни превышает бюджет семьи в 2+ раза.</p>
+          </div>
+          <div class="metric">
+            <strong>Risk Engine</strong>
+            <p>Умное сзеркаливание: система выявляет скрытые конфликты стилей воспитания или реакций на стресс (напр. Strict vs Gentle).</p>
+          </div>
+          <div class="metric">
+            <strong>AI Explainer</strong>
+            <p>Gemini анализирует профиль няни и потребности семьи на лету, объясняя выбор теплым, человечным языком ("Объяснение Анны").</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: THE BRIDGE -->
+    <section class="slide">
+      <div class="slide-content" style="align-items: center; text-align: center;">
+        <div class="eyebrow">Мост перехода</div>
+        <h2 style="margin-top: 1rem;">Как мы готовим датасет для ML</h2>
+        <p style="max-width: 800px;">Текущая система не просто распределяет нянь — она выступает движком сбора данных для будущей Machine Learning архитектуры.</p>
+        
+        <div class="bridge">
+          <div class="card" style="text-align: left;">
+            <strong style="color: var(--cyan); font-size: 1.2rem;">Shadow Scoring</strong>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Каждый скоринг тихо записывается в базу (набор весов + предсказание алгоритма). Мы видим, какие оценки давала эвристика.</p>
+          </div>
+          <div class="bridge-arrow">→</div>
+          <div class="card" style="text-align: left;">
+            <strong style="color: var(--amber); font-size: 1.2rem;">ε-Greedy Injection</strong>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">В 10% случаев система подкидывает "Wildcard" кандидата. Это позволяет собирать контр-интуитивные данные (exploration).</p>
+          </div>
+          <div class="bridge-arrow">→</div>
+          <div class="card" style="text-align: left;">
+            <strong style="color: var(--lime); font-size: 1.2rem;">Retention Data</strong>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Метч логгируется вместе с исходом: состоялся ли найм и осталась ли няня через месяц. Это — разметка для будущей модели.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: FUTURE STATE -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="eyebrow" style="color: var(--amber); border-color: rgba(255, 188, 66, 0.3)">Этап 2: Будущее (Целевая архитектура)</div>
+        <h2 style="margin-top: 1rem;">Самообучающийся Матчинг</h2>
+        <p>Переход от Rule-based шортлиста к системе, которая учится на каждом показе, найме и отказе.</p>
+        
+        <div class="hero" style="margin-top: 2rem;">
+          <ul class="bullet-list">
+            <li>
+              <strong style="color: var(--ink);">Контекстные бандиты</strong><br />
+              Система исследует новые гипотезы (explore) в безопасной зоне, максимизируя отдачу (exploit) для top-2 кандидатов.
+            </li>
+            <li>
+              <strong style="color: var(--ink);">Модель удержания (LTV / 30d Retention)</strong><br />
+              Цель системы меняется с "получить клик / открытие чата" на "обеспечить долгосрочный контракт".
+            </li>
+            <li>
+              <strong style="color: var(--ink);">Векторные вложения (Embeddings)</strong><br />
+              Семантический поиск по неочевидным признакам из отзывов и скрытой таксономии, невидимой простой эвристике.
+            </li>
+          </ul>
+          <div class="card" style="background: rgba(255, 188, 66, 0.05); border-color: rgba(255, 188, 66, 0.2);">
+            <h3 style="color: var(--amber);">Почему это работает?</h3>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">ML-эволюция возможна только благодаря честной сборке данных на Этапе 1. Мы не запускаем "глупый" ИИ на старте — мы даем отличные результаты правилами, обучая ML на эталонном поведении с первого дня платформы.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

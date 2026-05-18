@@ -113,22 +113,6 @@ function getParentStatusLabel(status: ParentRequest['status'], lang: Language): 
   return copy(lang, 'Черновик', 'Draft');
 }
 
-function getBookingStatusVariant(status: Booking['status']): DashboardBadgeVariant {
-  if (status === 'completed') return 'success';
-  if (status === 'cancelled') return 'danger';
-  if (status === 'active') return 'trust';
-  if (status === 'confirmed') return 'info';
-  return 'warning';
-}
-
-function getBookingStatusLabel(status: Booking['status'], lang: Language): string {
-  if (status === 'completed') return copy(lang, 'Завершено', 'Completed');
-  if (status === 'cancelled') return copy(lang, 'Отменено', 'Cancelled');
-  if (status === 'active') return copy(lang, 'Активно', 'Active');
-  if (status === 'confirmed') return copy(lang, 'Подтверждено', 'Confirmed');
-  return copy(lang, 'Ожидает', 'Pending');
-}
-
 function getReadinessVariant(input: { done: boolean; warning?: boolean }): DashboardBadgeVariant {
   if (input.done) return 'success';
   if (input.warning) return 'warning';

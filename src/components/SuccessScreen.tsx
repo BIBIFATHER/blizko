@@ -38,7 +38,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
     const t2 = setTimeout(() => setStep('done'), 3000);
 
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
+  }, [isPaid]);
 
   useEffect(() => {
     if (!isPaid || !paymentId || !supabase) return;
@@ -93,7 +93,12 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
         const allNannies = await getNannyProfiles();
         const { findBestMatch } = await import('@/core/ai/matchingAi');
-        const { id, createdAt, type, ...requestInput } = paidRequest;
+        const {
+          id: _requestId,
+          createdAt: _createdAt,
+          type: _requestType,
+          ...requestInput
+        } = paidRequest;
         const aiMatchResult = await findBestMatch(requestInput, allNannies, lang, session.user.id);
 
         if (cancelled) return;

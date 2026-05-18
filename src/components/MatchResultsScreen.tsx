@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { slugify } from '@/core/utils/slugify';
 import { Card, Button, Badge, EmptyState } from './UI';
@@ -12,7 +12,7 @@ import {
     AlertTriangle, ShieldAlert, Share2, CheckCheck,
     Heart, Clock, MapPin, Check, ChevronDown
 } from 'lucide-react';
-import { MatchResult, MatchCandidate, TrustBadge, Language } from '@/core/types';
+import { MatchCandidate, TrustBadge, Language } from '@/core/types';
 import {
     trackMatchingResults,
     trackMatchProfileOpen,
@@ -113,10 +113,6 @@ const CandidateCard: React.FC<{
 
     const handleOpenProfile = useCallback(() => {
         onOpenProfile(nanny.id, nanny.name || 'unknown', index + 1, score, true);
-    }, [index, nanny.id, nanny.name, onOpenProfile, score]);
-
-    const handleTrackProfileOpen = useCallback(() => {
-        onOpenProfile(nanny.id, nanny.name || 'unknown', index + 1, score, false);
     }, [index, nanny.id, nanny.name, onOpenProfile, score]);
 
     const hasMeta = !!(nanny.experience || nanny.city || nanny.district);

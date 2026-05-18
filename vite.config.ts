@@ -27,6 +27,7 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 3000,
+    allowedHosts: ['its-bathrooms-from-sent.trycloudflare.com'],
     proxy: {
       '/api': {
         target: 'https://ai-proxy.blizko-ai.workers.dev',

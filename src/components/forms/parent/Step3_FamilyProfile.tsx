@@ -3,8 +3,8 @@ import { useParentForm } from './ParentFormProvider';
 import { Button, Textarea, ChipGroup, Card } from '../../UI';
 import { DocumentUploadModal } from '../../DocumentUploadModal';
 import { t } from '@/core/i18n/translations';
-import { Language, DocumentVerification } from '@/core/types';
-import { Upload, FileText, Check } from 'lucide-react';
+import { Language, ParentRiskProfile } from '@/core/types';
+import { Check, FileText, HeartHandshake, Upload } from 'lucide-react';
 
 interface Props {
     lang: Language;
@@ -24,85 +24,109 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
     const [showDocUpload, setShowDocUpload] = useState(false);
 
+    const setSingleRiskValue = <K extends keyof ParentRiskProfile>(key: K) => (values: string[]) => {
+        const nextValue = values[0];
+        if (!nextValue) return;
+        setRiskProfile((prev) => ({ ...(prev || {}), [key]: nextValue as ParentRiskProfile[K] }));
+    };
+
     // Helper arrays for language
     const arrChildTriggers = lang === 'ru' ? ['Шум', 'Смена режима', 'Новые люди', 'Запреты', 'Усталость'] : ['Noise', 'Routine changes', 'New people', 'Restrictions', 'Fatigue'];
     const arrNeeds = lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity'];
 
-    const sectionLabel = "flex items-center gap-3 text-xs uppercase tracking-wider text-stone-400 font-semibold";
-    const selectClass = "w-full text-sm border border-stone-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-amber-200/50 focus:border-amber-300 transition-all";
-
     return (
-        <div className="animate-fade-in space-y-6">
-            <div className="section-label">
-                Дополнительно
+        <div className="animate-fade-in space-y-6 pb-24">
+            <div className="wizard-hero-card">
+                <div className="wizard-hero-copy">
+                    <div className="wizard-kicker">
+                        <HeartHandshake size={14} />
+                        {lang === 'ru' ? 'Шаг 3. Точная настройка' : 'Step 3. Fine tuning'}
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="wizard-section-title">
+                            {lang === 'ru' ? 'Добавьте контекст о семье' : 'Add family context'}
+                        </h3>
+                        <p className="wizard-section-body">
+                            {lang === 'ru'
+                                ? 'Это финальный слой: бытовые детали, стиль общения и то, что помогает понять семью глубже. Здесь рождается не просто shortlist, а более точное совпадение.'
+                                : 'This is the final layer: daily details, communication style, and signals that help understand the family more deeply.'}
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            <div className="section-label">Общие параметры</div>
-            <ChipGroup
-                label={lang === 'ru' ? 'Видеонаблюдение' : 'Cameras'}
-                options={lang === 'ru' ? ['Допустимо', 'Нежелательно'] : ['Acceptable', 'Not desired']}
-                selected={advanced.cameras ? [advanced.cameras] : []}
-                onChange={(s) => setAdvanced((p) => ({ ...p, cameras: s[0] || '' }))}
-                single
-            />
-            <ChipGroup
-                label={lang === 'ru' ? 'Поездки с няней' : 'Travel with nanny'}
-                options={lang === 'ru' ? ['Возможны', 'Не нужны'] : ['Possible', 'Not needed']}
-                selected={advanced.travel ? [advanced.travel] : []}
-                onChange={(s) => setAdvanced((p) => ({ ...p, travel: s[0] || '' }))}
-                single
-            />
-            <ChipGroup
-                label={lang === 'ru' ? 'Помощь по дому' : 'Household help'}
-                options={lang === 'ru' ? ['Легкая', 'Расширенная', 'Не требуется'] : ['Light', 'Extended', 'None']}
-                selected={advanced.household ? [advanced.household] : []}
-                onChange={(s) => setAdvanced((p) => ({ ...p, household: s[0] || '' }))}
-                single
-            />
-            <ChipGroup
-                label={lang === 'ru' ? 'Животные' : 'Pets'}
-                options={lang === 'ru' ? ['Есть животные', 'Животных нет'] : ['Have pets', 'No pets']}
-                selected={advanced.pets ? [advanced.pets] : []}
-                onChange={(s) => setAdvanced((p) => ({ ...p, pets: s[0] || '' }))}
-                single
-            />
-            <ChipGroup
-                label={lang === 'ru' ? 'Ночные смены' : 'Night shifts'}
-                options={lang === 'ru' ? ['Да', 'Иногда', 'Не нужны'] : ['Yes', 'Sometimes', 'Not needed']}
-                selected={advanced.night ? [advanced.night] : []}
-                onChange={(s) => setAdvanced((p) => ({ ...p, night: s[0] || '' }))}
-                single
-            />
-
-            <div className="section-label">
-                Для точного подбора
-            </div>
-
-            <div className="bg-white/60 backdrop-blur-md border border-white/60 shadow-sm rounded-2xl p-4">
-                <div className="text-xs font-semibold text-stone-700 mb-2">Для точного анализа (AI)</div>
-                <Textarea
-                    label={lang === 'ru' ? 'Что важно знать о ребёнке и семье?' : 'What should we know about your family?'}
-                    placeholder={lang === 'ru' ? 'Режим, привычки, триггеры, что недопустимо — всё, что поможет подобрать идеального человека.' : 'Routine, triggers, non-negotiables — anything that helps match the right person.'}
-                    value={formData.analysisNotes}
-                    onChange={e => setFormData({ ...formData, analysisNotes: e.target.value })}
+            <section className="wizard-block">
+                <div className="section-label">{lang === 'ru' ? 'Общие параметры' : 'Additional conditions'}</div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Видеонаблюдение' : 'Cameras'}
+                    options={lang === 'ru' ? ['Допустимо', 'Нежелательно'] : ['Acceptable', 'Not desired']}
+                    selected={advanced.cameras ? [advanced.cameras] : []}
+                    onChange={(s) => setAdvanced((p) => ({ ...p, cameras: s[0] || '' }))}
+                    single
                 />
-            </div>
+                <ChipGroup
+                    label={lang === 'ru' ? 'Поездки с няней' : 'Travel with nanny'}
+                    options={lang === 'ru' ? ['Возможны', 'Не нужны'] : ['Possible', 'Not needed']}
+                    selected={advanced.travel ? [advanced.travel] : []}
+                    onChange={(s) => setAdvanced((p) => ({ ...p, travel: s[0] || '' }))}
+                    single
+                />
+                <ChipGroup
+                    label={lang === 'ru' ? 'Помощь по дому' : 'Household help'}
+                    options={lang === 'ru' ? ['Легкая', 'Расширенная', 'Не требуется'] : ['Light', 'Extended', 'None']}
+                    selected={advanced.household ? [advanced.household] : []}
+                    onChange={(s) => setAdvanced((p) => ({ ...p, household: s[0] || '' }))}
+                    single
+                />
+                <ChipGroup
+                    label={lang === 'ru' ? 'Животные' : 'Pets'}
+                    options={lang === 'ru' ? ['Есть животные', 'Животных нет'] : ['Have pets', 'No pets']}
+                    selected={advanced.pets ? [advanced.pets] : []}
+                    onChange={(s) => setAdvanced((p) => ({ ...p, pets: s[0] || '' }))}
+                    single
+                />
+                <ChipGroup
+                    label={lang === 'ru' ? 'Ночные смены' : 'Night shifts'}
+                    options={lang === 'ru' ? ['Да', 'Иногда', 'Не нужны'] : ['Yes', 'Sometimes', 'Not needed']}
+                    selected={advanced.night ? [advanced.night] : []}
+                    onChange={(s) => setAdvanced((p) => ({ ...p, night: s[0] || '' }))}
+                    single
+                />
+            </section>
 
-            <Textarea
-                label={text.commentLabel}
-                placeholder={lang === 'ru' ? "Например: у нас есть кот..." : "Example: we have a cat..."}
-                value={formData.comment}
-                onChange={e => setFormData({ ...formData, comment: e.target.value })}
-            />
+            <section className="wizard-block">
+                <div className="section-label">
+                    {lang === 'ru' ? 'Для точного подбора' : 'For precise matching'}
+                </div>
 
-            <div className="bg-amber-50/40 backdrop-blur-md border border-amber-200/50 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
+                <div className="wizard-note-panel">
+                    <div className="text-xs font-semibold uppercase tracking-[0.08em] text-stone-500 mb-2">
+                        {lang === 'ru' ? 'Для точного анализа (AI)' : 'For AI analysis'}
+                    </div>
+                    <Textarea
+                        label={lang === 'ru' ? 'Что важно знать о ребёнке и семье?' : 'What should we know about your family?'}
+                        placeholder={lang === 'ru' ? 'Режим, привычки, триггеры, что недопустимо — всё, что поможет подобрать идеального человека.' : 'Routine, triggers, non-negotiables — anything that helps match the right person.'}
+                        value={formData.analysisNotes}
+                        onChange={e => setFormData({ ...formData, analysisNotes: e.target.value })}
+                    />
+                </div>
+
+                <Textarea
+                    label={text.commentLabel}
+                    placeholder={lang === 'ru' ? "Например: у нас есть кот..." : "Example: we have a cat..."}
+                    value={formData.comment}
+                    onChange={e => setFormData({ ...formData, comment: e.target.value })}
+                />
+            </section>
+
+            <section className="wizard-block wizard-block-muted">
                 <div className="text-sm font-semibold text-amber-900 mb-4">{lang === 'ru' ? 'Психологический профиль (улучшает мэтчинг)' : 'Psychological profile (improves matching)'}</div>
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Стиль семьи' : 'Family style'}
                     options={lang === 'ru' ? ['Мягкий, эмпатичный', 'Структурный, с правилами', 'Баланс'] : ['Gentle, empathetic', 'Structured, rules-based', 'Balanced']}
                     selected={riskProfile?.familyStyle ? [riskProfile.familyStyle] : []}
-                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), familyStyle: s[0] as any }))}
+                    onChange={setSingleRiskValue('familyStyle')}
                     single
                 />
 
@@ -110,7 +134,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     label={lang === 'ru' ? 'Как ребёнок реагирует на стресс?' : 'How does the child react to stress?'}
                     options={lang === 'ru' ? ['Берет поддержку', 'Замыкается', 'Злится', 'Истерики'] : ['Seeks support', 'Withdraws', 'Gets angry', 'Tantrums']}
                     selected={riskProfile?.childStress ? [riskProfile.childStress] : []}
-                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), childStress: s[0] as any }))}
+                    onChange={setSingleRiskValue('childStress')}
                     single
                 />
 
@@ -125,7 +149,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     label={lang === 'ru' ? 'Комфортный стиль няни' : 'Preferred nanny style'}
                     options={lang === 'ru' ? ['Мягкая и спокойная', 'Структурная', 'Игровая'] : ['Gentle & calm', 'Structured', 'Playful']}
                     selected={riskProfile?.nannyStylePreference ? [riskProfile.nannyStylePreference] : []}
-                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), nannyStylePreference: s[0] as any }))}
+                    onChange={setSingleRiskValue('nannyStylePreference')}
                     single
                 />
 
@@ -133,7 +157,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     label={lang === 'ru' ? 'Частота сообщений от няни' : 'Nanny communication frequency'}
                     options={lang === 'ru' ? ['Минимум сообщений', 'Регулярно (2-3 раза)', 'Часто'] : ['Minimal messages', 'Regular (2-3 times)', 'Frequent']}
                     selected={riskProfile?.communicationPreference ? [riskProfile.communicationPreference] : []}
-                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), communicationPreference: s[0] as any }))}
+                    onChange={setSingleRiskValue('communicationPreference')}
                     single
                 />
 
@@ -151,10 +175,10 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                         : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet', 'Action']
                     }
                     selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
-                    onChange={(s) => setRiskProfile((prev) => ({ ...(prev || {}), pcmType: s[0] as any }))}
+                    onChange={setSingleRiskValue('pcmType')}
                     single
                 />
-            </div>
+            </section>
 
             <Card className={`transition-all duration-300 ${documents.length > 0 ? 'bg-sky-50/50 border-sky-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
@@ -201,7 +225,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                 </div>
             </Card>
 
-            <div className="bg-white/60 backdrop-blur-sm border border-white/60 shadow-sm rounded-xl p-3 text-sm text-stone-600 mt-6">
+            <div className="wizard-note-panel text-sm text-stone-600">
                 <div>{text.parentEtaLine}</div>
                 <div className="text-stone-400 mt-1">{text.parentSafetyLine}</div>
             </div>

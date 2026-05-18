@@ -59,7 +59,7 @@ export function AppFooter({
 
   return (
     <>
-      <footer className="fixed inset-x-0 bottom-0 z-30 pb-[calc(var(--sab)+0.65rem)]">
+      <footer className="fixed inset-x-0 bottom-0 z-30 pb-[calc(var(--sab)+0.65rem)] md:hidden">
         <div className="page-frame">
           <div className="app-tabbar">
             {items.map((item) => {

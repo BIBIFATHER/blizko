@@ -45,7 +45,7 @@ export const analyzeDocument = async (
         }, 400);
       });
 
-    const safeJsonParse = (raw: string): any | null => {
+    const safeJsonParse = (raw: string): Record<string, unknown> | null => {
       if (!raw) return null;
       const trimmed = raw.trim();
       const variants = [

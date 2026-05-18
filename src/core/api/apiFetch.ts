@@ -17,7 +17,7 @@ interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
   body?: Record<string, unknown> | string;
 }
 
-export async function apiFetch<T = any>(
+export async function apiFetch<T = unknown>(
   url: string,
   options: ApiFetchOptions = {}
 ): Promise<{ ok: boolean; status: number; data: T }> {
@@ -47,7 +47,7 @@ export async function apiFetch<T = any>(
 /**
  * POST shorthand
  */
-export async function apiPost<T = any>(
+export async function apiPost<T = unknown>(
   url: string,
   body: Record<string, unknown>,
   headers?: Record<string, string>

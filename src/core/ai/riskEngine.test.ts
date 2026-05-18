@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { detectRiskFlags } from './riskEngine';
+import type { NannyProfile, ParentRequest } from '@/core/types';
 
 describe('detectRiskFlags', () => {
   it('returns a critical discipline mismatch flag', () => {
@@ -15,7 +16,7 @@ describe('detectRiskFlags', () => {
           nannyStylePreference: 'gentle',
           communicationPreference: 'frequent',
         },
-      } as any,
+      } as ParentRequest,
       {
         id: 'nanny-1',
         name: 'Анна',
@@ -25,7 +26,7 @@ describe('detectRiskFlags', () => {
           disciplineStyle: 'strict',
           communicationStyle: 'minimal',
         },
-      } as any
+      } as NannyProfile
     );
 
     expect(flags.map((flag) => flag.factor)).toContain('discipline_conflict');
@@ -42,7 +43,7 @@ describe('detectRiskFlags', () => {
         requirements: [],
         comment: '',
         riskProfile: {},
-      } as any,
+      } as ParentRequest,
       {
         id: 'nanny-2',
         name: 'Мария',
@@ -51,7 +52,7 @@ describe('detectRiskFlags', () => {
         childAges: ['1-3 года'],
         documents: [],
         riskProfile: {},
-      } as any
+      } as NannyProfile
     );
 
     expect(flags.map((flag) => flag.factor)).toContain('no_medical_book');

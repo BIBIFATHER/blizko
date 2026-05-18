@@ -14,7 +14,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
     const {
         formData, setFormData,
         photo, setPhoto,
-        citySuggestions, setCitySuggestions,
+        citySuggestions,
         showCitySuggestions, setShowCitySuggestions,
         detectingLocation, detectLocation,
         nextStep

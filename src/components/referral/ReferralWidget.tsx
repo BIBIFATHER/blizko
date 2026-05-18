@@ -7,7 +7,7 @@ interface ReferralWidgetProps {
     userName: string;
 }
 
-export const ReferralWidget: React.FC<ReferralWidgetProps> = ({ userId, userName }) => {
+export const ReferralWidget: React.FC<ReferralWidgetProps> = ({ userId, userName: _userName }) => {
     const [copied, setCopied] = useState(false);
     const code = generateReferralCode(userId);
     const shareLink = getReferralShareLink(code);

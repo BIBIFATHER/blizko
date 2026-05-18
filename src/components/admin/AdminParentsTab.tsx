@@ -7,6 +7,7 @@ import { AdminPreviewDoc } from './adminModerationUtils';
 import { useAdminParentModeration } from '@/hooks/useAdminParentModeration';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
+type RejectReasonCode = 'profile_incomplete' | 'docs_missing' | 'budget_invalid' | 'contact_invalid' | 'other';
 
 interface AdminParentsTabProps {
     parents: ParentRequest[];
@@ -22,7 +23,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     const [parentStatusFilter, setParentStatusFilter] = useState<ParentStatusFilter>('all');
     const [onlyNeedsAction, setOnlyNeedsAction] = useState(true);
     const [selectedParent, setSelectedParent] = useState<ParentRequest | null>(null);
-    const [rejectReasonCode, setRejectReasonCode] = useState<'profile_incomplete' | 'docs_missing' | 'budget_invalid' | 'contact_invalid' | 'other'>('profile_incomplete');
+    const [rejectReasonCode, setRejectReasonCode] = useState<RejectReasonCode>('profile_incomplete');
     const [rejectReasonText, setRejectReasonText] = useState('');
     const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
     const { updateParentStatus, rejectParent } = useAdminParentModeration({
@@ -116,7 +117,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     <div className="flex flex-wrap gap-2">
                         <select
                             value={rejectReasonCode}
-                            onChange={(e) => setRejectReasonCode(e.target.value as any)}
+                            onChange={(e) => setRejectReasonCode(e.target.value as RejectReasonCode)}
                             className="input-glass min-h-[40px] rounded-full border-red-200/80 px-3 py-2 text-xs"
                         >
                             <option value="profile_incomplete">Анкета заполнена не полностью</option>

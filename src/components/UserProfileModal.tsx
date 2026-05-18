@@ -3,7 +3,6 @@ import { X, Briefcase } from 'lucide-react';
 import { Language, User, Review, NannyProfile, ParentRequest } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { getMyNannyProfile } from '@/services/storage';
-import { PaymentModal } from './PaymentModal';
 import { ProfileTab } from './profile/ProfileTab';
 import { BookingsTab } from './profile/BookingsTab';
 import { ReviewsTab } from './profile/ReviewsTab';
@@ -25,22 +24,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   const [activeTab, setActiveTab] = useState<'profile' | 'bookings' | 'reviews'>('profile');
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  // Payment state (shared across tabs)
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentType, setPaymentType] = useState<'registration' | 'commission'>('registration');
-  const [paymentAmount, setPaymentAmount] = useState('');
-
   useEffect(() => {
     if (isNanny) {
       getMyNannyProfile(user).then((myProfile) => {
         if (myProfile?.reviews) setReviews(myProfile.reviews);
       });
     }
-  }, [isNanny, user.name]);
-
-  const handlePaymentSuccess = () => {
-    setShowPayment(false);
-  };
+  }, [isNanny, user]);
 
   const handleReviewSubmit = (review: Review) => {
     setReviews((prev) => [...prev, review]);
@@ -118,15 +108,6 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         </div>
       </div>
 
-      {showPayment && (
-        <PaymentModal
-          amount={paymentAmount}
-          title={paymentType === 'registration' ? text.payRegistration : text.payCommission}
-          onClose={() => setShowPayment(false)}
-          onSuccess={handlePaymentSuccess}
-          lang={lang}
-        />
-      )}
     </>
   );
 };

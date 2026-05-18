@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button, Card, ProgressBar, Badge } from '../UI';
 import { AvailabilityCalendar, SlotStatus } from '../AvailabilityCalendar';
 import {
-    User as UserIcon, LogOut, Calendar, CheckCircle, Wallet, Star,
-    ShieldCheck, Briefcase, Edit, Lock, Phone, Mail, BadgeCheck, LifeBuoy, X, Clock,
+    User as UserIcon, LogOut, Calendar, Wallet, Star,
+    ShieldCheck, Edit, Lock, Phone, Mail, BadgeCheck, LifeBuoy, X, Clock,
 } from 'lucide-react';
-import { Language, User, NannyProfile, ParentRequest, Review } from '@/core/types';
+import { Language, User, NannyProfile, ParentRequest } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { getMyNannyProfile, getMyParentRequests, resubmitParentRequest } from '@/services/storage';
 import { notifyAdminResubmitted } from '@/services/notifications';
 import { supabase } from '@/services/supabase';
-import { SERVICE_COMMISSION_RATE } from '@/core/config/pricing';
 import { getNannyReadinessSnapshot } from '@/services/nannyReadiness';
 import { getItem, setItem } from '@/core/platform/storage';
 import { ReferralWidget } from '../referral/ReferralWidget';
@@ -45,13 +44,9 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     // Nanny-specific
     const [showCalendar, setShowCalendar] = useState(false);
     const [calendarSlots, setCalendarSlots] = useState<Record<string, SlotStatus>>({});
-    const [isRegistrationPaid, setIsRegistrationPaid] = useState(false);
-    const [showPayment, setShowPayment] = useState(false);
-    const [paymentType, setPaymentType] = useState<'registration' | 'commission'>('registration');
+    const [isRegistrationPaid] = useState(false);
 
     const earnedTotal = Number((myNannyProfile as NannyProfile & { bookingStats?: { earnedTotal?: number } } | undefined)?.bookingStats?.earnedTotal || 0);
-    const commissionRate = SERVICE_COMMISSION_RATE;
-    const commissionDue = earnedTotal * commissionRate;
     const nannyReadiness = myNannyProfile ? getNannyReadinessSnapshot(myNannyProfile) : null;
     const nannyReviewCount = myNannyProfile?.reviews?.length || 0;
     const nannyAverageRating = nannyReviewCount > 0
@@ -86,7 +81,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             const raw = getItem(PARENT_MODERATION_SEEN_KEY);
             if (raw) setModerationSeenMap(JSON.parse(raw));
         } catch { /* ignore */ }
-    }, [isNanny, user.name]);
+    }, [isNanny, user]);
 
     useEffect(() => {
         const loadPhoneMeta = async () => {
@@ -113,8 +108,8 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             if (!r.ok || !data?.ok) throw new Error(data?.error || 'Не удалось отправить код');
             setPhoneStep('code');
             if (data?.demoCode) setPhoneVerifyError(`Тестовый код: ${data.demoCode}`);
-        } catch (e: any) {
-            setPhoneVerifyError(String(e?.message || e));
+        } catch (e: unknown) {
+            setPhoneVerifyError(e instanceof Error ? e.message : String(e));
         } finally {
             setPhoneVerifyLoading(false);
         }
@@ -138,16 +133,11 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             }
             setPhoneStep('verified');
             setPhoneCode('');
-        } catch (e: any) {
-            setPhoneVerifyError(String(e?.message || e));
+        } catch (e: unknown) {
+            setPhoneVerifyError(e instanceof Error ? e.message : String(e));
         } finally {
             setPhoneVerifyLoading(false);
         }
-    };
-
-    const handlePaymentClick = (type: 'registration' | 'commission') => {
-        setPaymentType(type);
-        setShowPayment(true);
     };
 
     const toggleCalendarSlot = (dayIndex: number, slotIndex: number) => {
@@ -170,13 +160,6 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         if (status === 'approved') return 'Одобрена';
         if (status === 'rejected') return 'Отклонена';
         return 'Новая';
-    };
-    const parentStatusClass = (status?: ParentRequest['status']) => {
-        if (status === 'payment_pending') return 'bg-stone-100 text-stone-700';
-        if (status === 'in_review') return 'bg-sky-100 text-sky-700';
-        if (status === 'approved') return 'bg-green-100 text-green-700';
-        if (status === 'rejected') return 'bg-red-100 text-red-700';
-        return 'bg-amber-100 text-amber-700';
     };
     const parentRejectReasonLabel = (code?: string) => {
         if (code === 'profile_incomplete') return 'Анкета заполнена не полностью';
@@ -349,11 +332,11 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                                 </p>
                             </div>
                             {!isRegistrationPaid ? (
-                                <button onClick={() => handlePaymentClick('registration')} className="bg-white hover:bg-stone-200 text-stone-900 px-4 py-2 rounded-xl transition-all text-xs font-bold flex flex-col items-center gap-1">
+                                <button onClick={openSupportChat} className="bg-white hover:bg-stone-200 text-stone-900 px-4 py-2 rounded-xl transition-all text-xs font-bold flex flex-col items-center gap-1">
                                     <Lock size={16} /> {text.payRegistration}
                                 </button>
                             ) : (
-                                <button onClick={() => handlePaymentClick('commission')} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl transition-all text-xs font-bold flex flex-col items-center gap-1 border border-white/30">
+                                <button onClick={openSupportChat} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl transition-all text-xs font-bold flex flex-col items-center gap-1 border border-white/30">
                                     <Wallet size={16} /> {text.payCommission}
                                 </button>
                             )}

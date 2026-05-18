@@ -1,0 +1,427 @@
+# Blizko Logic Map
+
+- Active Routes
+  - `/` — landing, role entry, trust explainer
+  - `/find-nanny` — parent search intake
+  - `/become-nanny` — nanny onboarding/profile intake
+  - `/success` — post-submit / post-payment transition
+  - `/match-results` — shortlist / match results
+  - `/nanny/:slug` — public nanny profile
+  - `/for-nannies` — nanny acquisition landing
+  - `/how-we-verify` — verification explainer
+  - `/humanity-plus` — AI matching explainer
+  - `/oferta` — offer/legal
+  - `/about` — company/about/legal
+  - `/safe-deal` — payment/safe-deal rules
+  - `/privacy` — privacy policy
+  - `/login` — auth entry
+  - `/nanny-dashboard` — nanny dashboard
+  - `/family-dashboard` — family dashboard
+  - `/admin` — admin/moderation panel
+  - `*` — redirect to `/`
+
+- Parent Search Route
+  - Route: `/find-nanny`
+  - Step 1 fields
+    - `city`
+    - `childAge`
+    - `schedule`
+    - `budgetHourly`
+    - `budgetMonthly`
+    - `isNannySharing`
+  - Step 2 fields
+    - `dateFrom`
+    - `dateTo`
+    - `selectedSlots[day-slot]`
+  - Step 3 fields
+    - `advanced.cameras`
+    - `advanced.travel`
+    - `advanced.household`
+    - `advanced.pets`
+    - `advanced.night`
+    - `analysisNotes`
+    - `comment`
+    - `riskProfile.familyStyle`
+    - `riskProfile.childStress`
+    - `riskProfile.triggers[]`
+    - `riskProfile.nannyStylePreference`
+    - `riskProfile.communicationPreference`
+    - `riskProfile.needs[]`
+    - `riskProfile.pcmType`
+    - `documents[]`
+  - Derived payload
+    - `budget`
+    - `comment + [Доп. условия] + [Календарь] + [Для анализа]`
+
+- Nanny Onboarding Route
+  - Route: `/become-nanny`
+  - Step 1 fields
+    - `photo`
+    - `name`
+    - `city`
+    - `district`
+    - `metro`
+    - `contact`
+    - `isNannySharing`
+  - Step 2 fields
+    - `experience`
+    - `schedule`
+    - `expectedRate`
+    - `childAges[]`
+    - `skills[]`
+    - `advanced.cameras`
+    - `advanced.travel`
+    - `advanced.household`
+    - `advanced.pets`
+    - `advanced.night`
+    - `about`
+  - Step 3 fields
+    - `documents[]`
+    - `documents[].type`
+    - `documents[].file`
+    - `resumeNormalized`
+    - Resume autofill targets
+      - `name`
+      - `city`
+      - `contact`
+      - `about`
+      - `experience`
+      - `skills[]`
+  - Step 4 fields
+    - `behavioralTest.answers[itemId]`
+    - `riskProfile.tantrumFirstStep`
+    - `riskProfile.disciplineStyle`
+    - `riskProfile.routineStyle`
+    - `riskProfile.communicationStyle`
+    - `riskProfile.strengths[]`
+    - `riskProfile.pcmType`
+    - `riskProfile.notBestAt`
+  - Derived payload
+    - `about + [Предпочтения]`
+    - `softSkills`
+    - `isVerified`
+    - `resumeNormalized`
+    - `documents[]`
+
+- Existing Hooks
+  - `useAuthSession`
+    - Fetches
+      - `supabase.auth.getUser()`
+      - `supabase.auth.onAuthStateChange()`
+    - Returns
+      - `user`
+      - `setUser`
+      - `isAuthOpen`
+      - `setAuthOpen`
+      - `isProfileOpen`
+      - `setProfileOpen`
+      - `handleLogin`
+      - `handleLogout`
+  - `useMatchResults`
+    - Fetches
+      - router `location.state.matchResult`
+      - local cache `blizko_last_match_result`
+      - dev preview data
+    - Returns
+      - `data: MatchResult | null`
+      - `loading: false`
+      - `error: false`
+  - `useParentSubmit`
+    - Fetches
+      - `saveParentRequest()`
+      - `updateParentRequest()`
+      - `getNannyProfiles()`
+      - AI matching via `findBestMatch()`
+    - Returns
+      - `handleParentSubmit(data)`
+  - `useNannySubmit`
+    - Fetches
+      - `saveNannyProfile()`
+      - readiness via `getNannyReadinessSnapshot()`
+    - Returns
+      - `handleNannySubmit(data)`
+  - `useAdminParentModeration`
+    - Fetches
+      - `adminUpdateParentRequest()`
+      - `notifyUserStatusChanged()`
+    - Returns
+      - `updateParentStatus()`
+      - `rejectParent()`
+  - `useAdminNannyModeration`
+    - Fetches
+      - `adminUpdateNannyProfile()`
+    - Returns
+      - `toggleVerified()`
+      - `updateDocumentStatus()`
+      - `bulkVerifyVisible()`
+      - `bulkSetDocsStatusVisible()`
+
+- Service-Based Supabase Data Access Used In Active Flows
+  - `getMyParentRequests()` — own parent requests
+  - `getMyNannyProfile()` — own nanny profile
+  - `getNannyProfiles()` — nanny profiles list
+  - `getBookingsForUser()` — bookings by user
+  - `saveParentRequest()` — create parent request
+  - `updateParentRequest()` — update parent request
+  - `saveNannyProfile()` — create/update nanny profile
+
+- Data Shapes
+  - `User`
+    - `id`
+    - `role`
+    - `name`
+    - `phone`
+    - `email`
+  - `MatchResult`
+    - `requestId`
+    - `overallAdvice`
+    - `candidates[]`
+  - `MatchCandidate`
+    - `score`
+    - `reasons[]`
+    - `humanExplanation`
+    - `trustBadges[]`
+    - `riskFlags[]`
+    - `nanny`
+
+- UI Labels For Rewrite
+  - Global
+    - `Blizko`
+    - `Подбор рядом`
+    - `Matching nearby`
+    - `Войти`
+    - `Login`
+    - `Главная`
+    - `Home`
+    - `Поиск`
+    - `Search`
+    - `Няням`
+    - `Nannies`
+    - `Кабинет`
+    - `Account`
+    - `Политика конфиденциальности`
+    - `Оферта`
+    - `Admin`
+  - Home
+    - `Найти няню`
+    - `Find a Nanny`
+    - `Стать няней на Blizko`
+    - `ПОЧЕМУ НАМ ДОВЕРЯЮТ`
+    - `WHY TRUST US`
+    - `Проверка профиля`
+    - `Profile review`
+    - `Почему кандидат в shortlist`
+    - `Why someone made the shortlist`
+    - `Поддержка рядом`
+    - `Support nearby`
+    - `Все данные зашифрованы`
+    - `Data encrypted`
+    - `OK`
+  - Parent Search
+    - `Заявка на подбор`
+    - `Find a Nanny`
+    - `С чего начнем поиск?`
+    - `Where should we start?`
+    - `В каком городе вы ищете няню?`
+    - `Which city are you looking in?`
+    - `Определить местоположение`
+    - `Detect location`
+    - `Какой возраст у малыша?`
+    - `What is the child's age?`
+    - `Какой нужен график?`
+    - `What schedule do you need?`
+    - `Финансовые рамки`
+    - `Financial expectations`
+    - `Допустимая цена за час`
+    - `Acceptable hourly rate`
+    - `Бюджет в месяц`
+    - `Monthly budget`
+    - `Делить няню с соседями (Nanny Sharing)`
+    - `Share a nanny with neighbors`
+    - `Осталось 2 шага`
+    - `2 steps left`
+    - `Календарь`
+    - `Календарь бронирования`
+    - `Дата начала`
+    - `Start date`
+    - `Дата окончания`
+    - `End date`
+    - `Выберите удобные окна`
+    - `Select preferred slots`
+    - `Назад`
+    - `Back`
+    - `Остался 1 шаг`
+    - `1 step left`
+    - `Дополнительно`
+    - `Общие параметры`
+    - `Видеонаблюдение`
+    - `Cameras`
+    - `Поездки с няней`
+    - `Travel with nanny`
+    - `Помощь по дому`
+    - `Household help`
+    - `Животные`
+    - `Pets`
+    - `Ночные смены`
+    - `Night shifts`
+    - `Для точного подбора`
+    - `Что важно знать о ребёнке и семье?`
+    - `What should we know about your family?`
+    - `Комментарий или пожелания`
+    - `Comments or wishes`
+    - `Психологический профиль (улучшает мэтчинг)`
+    - `Psychological profile (improves matching)`
+    - `Стиль семьи`
+    - `Family style`
+    - `Как ребёнок реагирует на стресс?`
+    - `How does the child react to stress?`
+    - `Триггеры ребёнка`
+    - `Child triggers`
+    - `Комфортный стиль няни`
+    - `Preferred nanny style`
+    - `Частота сообщений от няни`
+    - `Nanny communication frequency`
+    - `Наши потребности`
+    - `Family needs`
+    - `Стиль общения (PCM)`
+    - `Communication style (PCM)`
+    - `Договоры и документы`
+    - `Загрузить`
+    - `Upload`
+    - `Добавить еще`
+    - `Add more`
+    - `Отправить безопасно`
+    - `Submit safely`
+    - `Сохранить изменения`
+    - `Save Changes`
+  - Nanny Onboarding
+    - `Анкета няни`
+    - `Nanny Profile`
+    - `Давайте знакомиться`
+    - `Let's get to know you`
+    - `Загрузить фото`
+    - `Upload Photo`
+    - `Изменить фото`
+    - `Change Photo`
+    - `Как вас зовут?`
+    - `What is your name?`
+    - `В каком городе вы ищете работу?`
+    - `Which city are you looking to work in?`
+    - `Район`
+    - `District`
+    - `Ближайшее метро`
+    - `Nearest metro`
+    - `Где с вами можно связаться?`
+    - `How can we contact you?`
+    - `Готов(а) работать с двумя семьями поблизости`
+    - `Осталось 3 шага`
+    - `3 steps left`
+    - `Ваш опыт и суперсилы`
+    - `Your experience and superpowers`
+    - `Сколько лет вы работаете с детьми?`
+    - `How many years of experience do you have?`
+    - `Какой график работы вам подходит?`
+    - `What schedule suits you best?`
+    - `На какую ставку вы рассчитываете?`
+    - `What is your expected rate?`
+    - `С детьми какого возраста вы готовы работать?`
+    - `Which ages are you ready to work with?`
+    - `В чем ваша суперсила? (навыки)`
+    - `What are your superpowers? (skills)`
+    - `С какой семьей вам будет комфортно?`
+    - `What kind of family are you comfortable with?`
+    - `Расскажите немного о себе. Какая вы?`
+    - `Tell us a bit about yourself`
+    - `Осталось 2 шага`
+    - `2 steps left`
+    - `Проверка и доверие`
+    - `Подтверждение личности`
+    - `Identity Verification`
+    - `Личность подтверждена`
+    - `Identity Verified`
+    - `Документы`
+    - `Documents`
+    - `Загрузить документ`
+    - `Upload Document`
+    - `Статус quality funnel`
+    - `Quality funnel status`
+    - `Что ещё нужно закрыть:`
+    - `What is still missing:`
+    - `Остался 1 шаг`
+    - `1 step left`
+    - `Психологический профиль`
+    - `Psychological profile`
+    - `Тест: Поведенческий профиль`
+    - `Test: Behavioral Profile`
+    - `Начать тест`
+    - `Start Test`
+    - `Мои суперсилы в общении`
+    - `My communication superpowers`
+    - `Если у ребенка истерика, ваш первый шаг`
+    - `If a child has a tantrum, your first step`
+    - `Ваш стиль дисциплины`
+    - `Your discipline style`
+    - `Ваш стиль режима дня`
+    - `Your routine style`
+    - `Коммуникация с родителями`
+    - `Communication with parents`
+    - `Мои сильные стороны`
+    - `My strengths`
+    - `В чем я хочу развиваться`
+    - `Where I want to grow`
+    - `Отправить безопасно`
+    - `Submit safely`
+    - `Сохранить изменения`
+    - `Save Changes`
+  - Match Results
+    - `Ваш shortlist`
+    - `Your shortlist`
+    - `Кандидат`
+    - `Candidate`
+    - `Балл`
+    - `Fit`
+    - `Скопировано для отправки партнёру`
+    - `Copied for sharing`
+  - Public Profile
+    - `Профиль няни`
+    - `Nanny profile`
+    - `Профиль из shortlist`
+    - `Profile from the shortlist`
+    - `Профиль не найден`
+  - Nanny Landing
+    - `Для нянь`
+    - `For nannies`
+    - `Набираем нянь в Москве`
+    - `Заполнить анкету няни`
+    - `Задать вопрос команде`
+    - `Почему Blizko`
+    - `Как это работает`
+    - `Три шага до доступа к запросам`
+    - `Профиль и доверие`
+    - `Вопросы по анкете или модерации`
+  - Login
+    - `Безопасный вход`
+    - `Продолжим с вашего профиля`
+    - `Открыть вход`
+  - SEO / Legal
+    - `Как мы проверяем нянь`
+    - `5 уровней проверки`
+    - `Найти няню`
+    - `AI-подбор няни по совместимости`
+    - `Технология`
+    - `Как это работает?`
+    - `Попробовать Humanity+`
+  - Dashboards
+    - `Кабинет`
+    - `Dashboard`
+    - `Живые данные`
+    - `Live data`
+    - `Обновить`
+    - `Refresh`
+    - `Открыть анкету няни`
+    - `Open nanny profile`
+    - `Открыть анкету семьи`
+    - `Open family request`
+  - Forbidden
+    - `403`
+    - `Доступ запрещён`

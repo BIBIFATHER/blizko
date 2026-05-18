@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ParentRequest, Language } from '@/core/types';
+import { ParentRequest, Language, DocumentVerification } from '@/core/types';
 import { detectUserLocation } from '@/services/geolocation';
 
 export interface ParentFormData {
@@ -44,8 +44,8 @@ export interface ParentFormContextType {
     requirements: string[];
     setRequirements: React.Dispatch<React.SetStateAction<string[]>>;
 
-    documents: any[];
-    setDocuments: React.Dispatch<React.SetStateAction<any[]>>;
+    documents: DocumentVerification[];
+    setDocuments: React.Dispatch<React.SetStateAction<DocumentVerification[]>>;
 
     // Psychology
     riskProfile: ParentRequest['riskProfile'];
@@ -105,7 +105,7 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
 
     const [selectedSlots, setSelectedSlots] = useState<Record<string, boolean>>({});
     const [requirements, setRequirements] = useState<string[]>(initialData?.requirements || []);
-    const [documents, setDocuments] = useState(initialData?.documents || []);
+    const [documents, setDocuments] = useState<DocumentVerification[]>(initialData?.documents || []);
 
     const [riskProfile, setRiskProfile] = useState<ParentRequest['riskProfile']>({
         priorityStyle: initialData?.riskProfile?.priorityStyle || 'balanced',
@@ -147,8 +147,10 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
     useEffect(() => {
         const q = formData.city.trim();
         if (q.length < 3) {
-            setCitySuggestions([]);
-            return;
+            const resetTimer = setTimeout(() => {
+                setCitySuggestions([]);
+            }, 0);
+            return () => clearTimeout(resetTimer);
         }
 
         const tmr = setTimeout(async () => {
@@ -156,7 +158,7 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
                 const nr = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&limit=5`);
                 const nj = await nr.json().catch(() => []);
                 const list = (Array.isArray(nj) ? nj : [])
-                    .map((x: any) => x?.display_name)
+                    .map((x: { display_name?: string }) => x?.display_name)
                     .filter(Boolean)
                     .slice(0, 5);
 

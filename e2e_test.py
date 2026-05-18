@@ -1,8 +1,10 @@
 from playwright.sync_api import sync_playwright
+import os
 import time
 import sys
 
 def run_tests():
+    base_url = os.getenv("BASE_URL", "http://127.0.0.1:5173")
     print("Starting Playwright E2E Smoke Tests...")
     with sync_playwright() as p:
         # Launch Chromium headless for tests
@@ -11,8 +13,8 @@ def run_tests():
         
         try:
             # 1. Landing Page
-            print("Navigating to http://localhost:5173")
-            page.goto('http://localhost:5173')
+            print(f"Navigating to {base_url}")
+            page.goto(base_url, wait_until='domcontentloaded')
             page.wait_for_load_state('networkidle')
             
             # Check for the primary "Найти няню" CTA
@@ -49,8 +51,9 @@ def run_tests():
 
         except Exception as e:
             print(f"❌ Test Failed: {str(e)}")
-            page.screenshot(path='/tmp/blizko_error.png', full_page=True)
-            print("Saved screenshot to /tmp/blizko_error.png")
+            screenshot_path = os.getenv("E2E_SCREENSHOT_PATH", "/tmp/blizko_error.png")
+            page.screenshot(path=screenshot_path, full_page=True)
+            print(f"Saved screenshot to {screenshot_path}")
             sys.exit(1)
             
         finally:

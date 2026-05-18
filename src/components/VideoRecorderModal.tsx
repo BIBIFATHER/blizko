@@ -26,12 +26,15 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   useEffect(() => {
+    let activeStream: MediaStream | null = null;
+
     const startCamera = async () => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
           audio: true,
         });
+        activeStream = mediaStream;
         setStream(mediaStream);
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
@@ -45,8 +48,8 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
     startCamera();
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+      if (activeStream) {
+        activeStream.getTracks().forEach((track) => track.stop());
       }
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
         mediaRecorderRef.current.stop();

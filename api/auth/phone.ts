@@ -12,7 +12,7 @@ const TEST_PHONE = process.env.TEST_OTP_PHONE || '+79000000000';
 const TEST_CODE = '000000';
 const isTestPhone = (phone: string) => phone === TEST_PHONE;
 
-function normalizePhone(raw: string): string {
+export function normalizePhone(raw: string): string {
   const trimmed = String(raw || '').trim();
   if (!trimmed) return '';
   if (trimmed.startsWith('+')) return `+${trimmed.replace(/[^\d]/g, '')}`;
@@ -22,7 +22,7 @@ function normalizePhone(raw: string): string {
   return `+${digits}`;
 }
 
-function isValidE164(phone: string): boolean {
+export function isValidE164(phone: string): boolean {
   return /^\+[1-9]\d{7,14}$/.test(phone);
 }
 
@@ -38,7 +38,7 @@ type OtpRow = {
 
 const HOUR_MS = 60 * 60 * 1000;
 
-function canSend(now: number, row?: OtpRow | null): { ok: boolean; windowStart: number; sendCount: number } {
+export function canSend(now: number, row?: OtpRow | null): { ok: boolean; windowStart: number; sendCount: number } {
   if (!row) return { ok: true, windowStart: now, sendCount: 0 };
   const windowStart = row.window_start ? new Date(row.window_start).getTime() : now;
   const sendCount = Number(row.send_count || 0);

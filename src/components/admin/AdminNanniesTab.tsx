@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Card, Badge, ProgressBar } from '../UI';
-import { NannyProfile } from '@/core/types';
+import { NannyProfile, Review } from '@/core/types';
 import { getAssessmentSignalLabel } from '@/services/assessment';
 import {
     getNannyReadinessLabel,
@@ -33,7 +33,7 @@ interface AdminNanniesTabProps {
     query: string;
     onlyProblematic: boolean;
     onDataChanged: () => void;
-    logAdminAction: (action: string, meta?: Record<string, any>) => void;
+    logAdminAction: (action: string, meta?: Record<string, unknown>) => void;
 }
 
 export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
@@ -59,11 +59,6 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
         };
     };
 
-    const isProblematicNanny = (n: NannyProfile) => {
-        const f = getNannyFlags(n);
-        return f.noDocs || f.hasRejected || f.hasPending || f.unverified || f.lowConfidence;
-    };
-
     const filteredNannies = useMemo(() => {
         const q = query.trim().toLowerCase();
 
@@ -84,9 +79,12 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
             return true;
         };
 
-        return nannies.filter(
-            (n) => byQuery(n) && (!onlyProblematic || isProblematicNanny(n)) && byIssue(n)
-        );
+        return nannies.filter((n) => {
+            const flags = getNannyFlags(n);
+            const isProblematic =
+                flags.noDocs || flags.hasRejected || flags.hasPending || flags.unverified || flags.lowConfidence;
+            return byQuery(n) && (!onlyProblematic || isProblematic) && byIssue(n);
+        });
     }, [nannies, query, onlyProblematic, issueFilter]);
     const {
         toggleVerified,
@@ -376,15 +374,15 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                         <div className="mt-3 pt-2 border-t border-stone-200/50">
                                             <div className="text-xs font-bold text-stone-500 mb-2">Отзывы ({n.reviews.length})</div>
                                             <div className="space-y-2">
-                                                {n.reviews.map((r: any, idx: number) => (
+                                                {n.reviews.map((r: Review, idx: number) => (
                                                     <div key={idx} className={adminSubsectionPanel}>
                                                         <div className="flex justify-between">
-                                                            <div className="text-xs font-semibold text-stone-700">{r?.author ?? 'Parent'}</div>
-                                                            {typeof r?.rating === 'number' && (
+                                                            <div className="text-xs font-semibold text-stone-700">{r.authorName || 'Parent'}</div>
+                                                            {typeof r.rating === 'number' && (
                                                                 <div className="text-[10px] text-stone-500">★ {r.rating}/5</div>
                                                             )}
                                                         </div>
-                                                        {r?.text && <div className="text-[10px] text-stone-600 mt-1">{r.text}</div>}
+                                                        {r.text && <div className="text-[10px] text-stone-600 mt-1">{r.text}</div>}
                                                     </div>
                                                 ))}
                                             </div>

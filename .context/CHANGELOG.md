@@ -2,6 +2,34 @@
 
 ---
 
+## 2026-05-18 (Mon)
+
+### Done
+
+- ✅ Created `.context/FRONTEND_RELAUNCH_HANDOFF.md` as the shared source of truth for Codex, Claude, Antigravity, and other agents
+- ✅ Captured current frontend relaunch context: Linear project/docs, tired-parent principle, Home direction, Warm Trust palette, Fraunces/Inter typography, preview URLs, and next task order
+- ✅ Documented external-agent preview workflow with Cloudflare Tunnel and Vite `allowedHosts`
+
+### Effect
+
+- Future agent sessions can start from a common project memory instead of reconstructing decisions from chat history
+- Claude and Codex can now stay aligned by reading the same handoff before making or reviewing UI changes
+
+---
+
+## 2026-04-10 (Fri)
+
+### Done
+
+- ✅ Added `.context/BLIZKO_UI_CODEX.md` as the durable UI art-direction system for Blizko
+- ✅ Captured the approved visual direction: editorial typography, paper-layer surfaces, tonal separation, curated coral CTA, and trust-first microcopy rules
+- ✅ Converted one-off design feedback into reusable rules for Lovable, Figma, and implementation work
+
+### Effect
+
+- Future UI work can now be steered by a stable brand codex instead of ad hoc "make it prettier" prompting
+- Blizko now has a shared visual standard that should reduce generic AI-generated UI drift
+
 ## 2026-03-28 (Fri)
 
 ### Done

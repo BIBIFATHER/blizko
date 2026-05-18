@@ -1,8 +1,8 @@
 import React from 'react';
+import { CalendarDays, Clock3 } from 'lucide-react';
 import { useParentForm } from './ParentFormProvider';
 import { Button, Input } from '../../UI';
 import { AvailabilityCalendar } from '../../AvailabilityCalendar';
-import { t } from '@/core/i18n/translations';
 import { Language } from '@/core/types';
 
 interface Props {
@@ -10,7 +10,6 @@ interface Props {
 }
 
 export const Step2_Calendar: React.FC<Props> = ({ lang }) => {
-    const text = t[lang];
     const {
         formData, setFormData,
         selectedSlots, setSelectedSlots,
@@ -23,13 +22,50 @@ export const Step2_Calendar: React.FC<Props> = ({ lang }) => {
     };
 
     return (
-        <div className="animate-fade-in space-y-6">
-            <div className="section-label">
-                Календарь
+        <div className="animate-fade-in space-y-6 pb-24">
+            <div className="wizard-hero-card">
+                <div className="wizard-hero-copy">
+                    <div className="wizard-kicker">
+                        <Clock3 size={14} />
+                        {lang === 'ru' ? 'Шаг 2. Ритм семьи' : 'Step 2. Family rhythm'}
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="wizard-section-title">
+                            {lang === 'ru' ? 'Когда вам нужна помощь' : 'When you need help'}
+                        </h3>
+                        <p className="wizard-section-body">
+                            {lang === 'ru'
+                                ? 'Чем точнее график, тем меньше случайных рекомендаций. Выберите даты и окна, которые действительно подходят семье.'
+                                : 'The clearer your timing, the less random the recommendations. Choose dates and windows that really fit your family.'}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="wizard-inline-proof">
+                    <div className="wizard-inline-proof-icon">
+                        <CalendarDays size={16} />
+                    </div>
+                    <div>
+                        <div className="wizard-inline-proof-title">
+                            {lang === 'ru' ? 'Можно отметить несколько сценариев' : 'You can mark several scenarios'}
+                        </div>
+                        <div className="wizard-inline-proof-body">
+                            {lang === 'ru'
+                                ? 'Например, будни днём и отдельные вечерние окна. Это помогает shortlist быть реалистичнее.'
+                                : 'For example, weekday daytime and separate evening windows. This helps keep the shortlist realistic.'}
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div className="bg-white/60 backdrop-blur-md border border-white/60 shadow-sm rounded-3xl p-4 sm:p-5 space-y-4">
-                <div className="text-sm font-semibold text-stone-700">Календарь бронирования</div>
+            <div className="wizard-block space-y-4">
+                <div className="section-label">
+                    {lang === 'ru' ? 'Календарь' : 'Calendar'}
+                </div>
+
+                <div className="text-sm font-semibold text-stone-700">
+                    {lang === 'ru' ? 'Календарь бронирования' : 'Availability calendar'}
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Input
                         label={lang === 'ru' ? 'Дата начала' : 'Start date'}
@@ -58,7 +94,7 @@ export const Step2_Calendar: React.FC<Props> = ({ lang }) => {
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>
                 <Button type="button" className="flex-1" onClick={nextStep} pulse={true}>
-                    {lang === 'ru' ? 'Остался 1 шаг' : '1 step left'}
+                    {lang === 'ru' ? 'Продолжить к профилю семьи' : 'Continue to family profile'}
                 </Button>
             </div>
         </div>

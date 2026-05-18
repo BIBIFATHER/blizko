@@ -8,6 +8,14 @@ const STORAGE_KEY_NANNIES = 'blizko_nannies';
 const STORAGE_KEY_PENDING_PARENTS = 'blizko_parents_pending_sync';
 const STORAGE_KEY_PENDING_NANNIES = 'blizko_nannies_pending_sync';
 
+type StorageEntity = ParentRequest | NannyProfile;
+type StorageRow<T extends StorageEntity> = {
+  id?: string;
+  user_id?: string | null;
+  payload?: Partial<T>;
+  created_at?: string;
+};
+
 const safeJsonParse = <T>(value: string, fallback: T): T => {
   try {
     const parsed = JSON.parse(value) as T;
@@ -128,7 +136,7 @@ async function getCurrentUserIdentity(): Promise<Partial<Pick<User, 'id' | 'name
   };
 }
 
-async function remoteGet(table: 'parents' | 'nannies'): Promise<any[] | null> {
+async function remoteGet(table: 'parents' | 'nannies'): Promise<Array<StorageRow<StorageEntity>> | null> {
   try {
     if (!supabase) return null;
     // For nannies: read from nannies_public view (PII stripped)
@@ -147,7 +155,7 @@ async function remoteGet(table: 'parents' | 'nannies'): Promise<any[] | null> {
 }
 
 // Owner reads their own full nanny profile (includes PII for editing)
-async function remoteGetOwnNanny(): Promise<any | null> {
+async function remoteGetOwnNanny(): Promise<StorageRow<NannyProfile> | null> {
   try {
     if (!supabase) return null;
     const userId = await getCurrentUserId();
@@ -166,7 +174,7 @@ async function remoteGetOwnNanny(): Promise<any | null> {
   }
 }
 
-async function remoteGetOwnParents(): Promise<any[] | null> {
+async function remoteGetOwnParents(): Promise<Array<StorageRow<ParentRequest>> | null> {
   try {
     if (!supabase) return null;
     const userId = await getCurrentUserId();
@@ -185,7 +193,7 @@ async function remoteGetOwnParents(): Promise<any[] | null> {
   }
 }
 
-async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<any | null> {
+async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<StorageRow<StorageEntity> | null> {
   try {
     if (!supabase) return null;
 
@@ -202,7 +210,10 @@ async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<
   }
 }
 
-async function remoteSave(table: 'parents' | 'nannies', item: any): Promise<any | null> {
+async function remoteSave<T extends StorageEntity>(
+  table: 'parents' | 'nannies',
+  item: T,
+): Promise<T | null> {
   try {
     if (!supabase) return null;
     const userId = await getCurrentUserId();
@@ -221,7 +232,7 @@ async function remoteSave(table: 'parents' | 'nannies', item: any): Promise<any 
       .single();
 
     if (error) return null;
-    return data?.payload ?? item;
+    return (data?.payload as T | undefined) ?? item;
   } catch {
     return null;
   }
@@ -263,7 +274,7 @@ async function remoteClear(table: 'parents' | 'nannies', testOnly = false): Prom
   }
 }
 
-const fromRow = <T extends { id: string; createdAt: number }>(row: any): T => {
+const fromRow = <T extends { id: string; createdAt: number }>(row: StorageRow<T>): T => {
   const payload = row?.payload ?? {};
   const createdAt = payload?.createdAt ?? (row?.created_at ? new Date(row.created_at).getTime() : Date.now());
   return {

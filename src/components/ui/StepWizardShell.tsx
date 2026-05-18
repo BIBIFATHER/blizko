@@ -31,37 +31,42 @@ export const StepWizardShell: React.FC<StepWizardShellProps> = ({
   const { direction, stepKey } = useStepTransition(currentStep);
 
   return (
-    <div className="animate-slide-up relative">
-      <div className="mb-5 flex items-center justify-between">
-        <button
-          className="text-stone-400 hover:text-stone-700 -ml-2 flex items-center gap-1.5 rounded-xl p-2 transition-colors hover:bg-stone-50 active:bg-stone-100"
-          onClick={onBack}
-          type="button"
-        >
-          <ArrowLeft size={20} />
-          <span className="text-sm font-medium">{backLabel}</span>
-        </button>
-      </div>
-
-      <div className="mb-5">
-        <h2 className="text-2xl font-semibold text-stone-800">{stepTitle}</h2>
-        <div className="mt-3 flex items-center justify-between text-sm font-medium">
-          <span className="text-amber-700">{stepHint}</span>
-          <span className="text-stone-400">
-            {currentStep} / {totalSteps}
-          </span>
+    <div className="animate-slide-up relative form-shell px-4 sm:px-0">
+      <div className="wizard-shell surface-panel rounded-[2rem] px-5 py-5 sm:px-8 sm:py-7">
+        <div className="mb-5 flex items-center justify-between">
+          <button
+            className="text-stone-400 hover:text-stone-700 -ml-2 flex items-center gap-1.5 rounded-xl p-2 transition-colors hover:bg-stone-50 active:bg-stone-100"
+            onClick={onBack}
+            type="button"
+          >
+            <ArrowLeft size={20} />
+            <span className="text-sm font-medium">{backLabel}</span>
+          </button>
         </div>
-      </div>
 
-      {progress}
-
-      {lockedNotice}
-
-      <form className={formClassName} onSubmit={(e) => e.preventDefault()}>
-        <div key={stepKey} className={direction === "back" ? "step-enter-back" : "step-enter"}>
-          {children}
+        <div className="mb-6 space-y-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="wizard-step-chip">
+              <span className="wizard-step-dot" />
+              <span>{stepHint}</span>
+            </div>
+            <span className="step-badge">
+              {currentStep} / {totalSteps}
+            </span>
+          </div>
+          <h2 className="wizard-step-title">{stepTitle}</h2>
         </div>
-      </form>
+
+        {progress}
+
+        {lockedNotice}
+
+        <form className={formClassName} onSubmit={(e) => e.preventDefault()}>
+          <div key={stepKey} className={direction === "back" ? "step-enter-back" : "step-enter"}>
+            {children}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

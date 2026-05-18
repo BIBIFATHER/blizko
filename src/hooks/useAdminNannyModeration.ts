@@ -11,7 +11,7 @@ import { useAdminWorkflowUI } from '@/components/admin/adminWorkflowUI';
 interface UseAdminNannyModerationParams {
     filteredNannies: NannyProfile[];
     onDataChanged: () => void;
-    logAdminAction: (action: string, meta?: Record<string, any>) => void;
+    logAdminAction: (action: string, meta?: Record<string, unknown>) => void;
 }
 
 export const useAdminNannyModeration = ({

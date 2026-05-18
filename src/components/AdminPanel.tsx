@@ -93,7 +93,9 @@ const AdminPanelContent: React.FC<{
   };
 
   useEffect(() => {
-    loadData();
+    queueMicrotask(() => {
+      void loadData();
+    });
   }, []);
 
   const formatActionLabel = (entry: AdminActionEntry) => {

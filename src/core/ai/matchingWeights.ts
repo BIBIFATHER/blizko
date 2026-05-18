@@ -79,7 +79,7 @@ export async function getWeights(): Promise<MatchingWeights> {
     const overrides: Partial<MatchingWeights> = {};
     for (const row of data) {
       if (row.factor in DEFAULT_WEIGHTS) {
-        (overrides as any)[row.factor] = row.weight;
+        overrides[row.factor as keyof MatchingWeights] = row.weight;
       }
     }
 

@@ -321,13 +321,15 @@ export default function App() {
         </Suspense>
       </main>
 
-      <AppFooter
-        lang={lang}
-        user={effectiveUser}
-        isAdmin={isAdmin}
-        onBecomeNanny={() => navigate('/become-nanny')}
-        onOpenAdmin={() => setAdminOpen(true)}
-      />
+      {currentPath !== '/' && (
+        <AppFooter
+          lang={lang}
+          user={effectiveUser}
+          isAdmin={isAdmin}
+          onBecomeNanny={() => navigate('/become-nanny')}
+          onOpenAdmin={() => setAdminOpen(true)}
+        />
+      )}
 
       {/* PWA Install Modal - Controlled by App state */}
       <InstallPwaModal

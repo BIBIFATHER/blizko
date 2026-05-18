@@ -10,15 +10,19 @@ interface HomeProps {
 }
 
 const ru = {
-  headline: 'Поиск вашей няни начинается тут',
   cta: 'Начать',
   photoAlt: 'Няня читает книгу ребёнку дома',
+  line1: 'Поиск',
+  line2: 'вашей няни',
+  line3: 'начинается тут',
 };
 
 const en = {
-  headline: 'Your nanny search starts here',
   cta: 'Start',
   photoAlt: 'A nanny reading a book to a child at home',
+  line1: 'Your',
+  line2: 'nanny search',
+  line3: 'starts here',
 };
 
 const heroImage =
@@ -68,13 +72,31 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
         </div>
 
         <div className="relative z-10 pb-1">
-          <h1 className="font-display text-[2.75rem] font-medium leading-[1.08] tracking-[-0.015em] text-[#1C2B2D] sm:text-[3.2rem]">
-            {copy.headline}
+          <h1 className="flex flex-col">
+            <span
+              className="animate-fade-up font-display text-[1.5rem] font-normal leading-tight tracking-[-0.01em] text-[#1C2B2D]/50"
+              style={{ animationDelay: '0ms' }}
+            >
+              {copy.line1}
+            </span>
+            <span
+              className="animate-fade-up font-display text-[3.6rem] font-semibold leading-[0.95] tracking-[-0.025em] text-[#1C2B2D] sm:text-[4.2rem]"
+              style={{ animationDelay: '80ms' }}
+            >
+              {copy.line2}
+            </span>
+            <span
+              className="animate-fade-up font-display text-[1.5rem] font-normal leading-tight tracking-[-0.01em] text-[#1C2B2D]/50"
+              style={{ animationDelay: '160ms' }}
+            >
+              {copy.line3}
+            </span>
           </h1>
           <button
             type="button"
             onClick={() => startRequest()}
-            className="mt-5 flex min-h-[4.25rem] w-full items-center justify-between rounded-full bg-[#2A6B6E] py-2 pl-6 pr-2 text-lg font-semibold text-white shadow-[0_20px_48px_rgba(42,107,110,0.22)] transition hover:bg-[#235B5E] active:scale-[0.97]"
+            className="animate-fade-up mt-6 flex min-h-[4.25rem] w-full items-center justify-between rounded-full bg-[#2A6B6E] py-2 pl-6 pr-2 text-lg font-semibold text-white shadow-[0_20px_48px_rgba(42,107,110,0.22)] transition-all duration-200 hover:bg-[#235B5E] active:scale-[0.96] active:shadow-[0_6px_18px_rgba(42,107,110,0.14)]"
+            style={{ animationDelay: '280ms' }}
           >
             <span>{copy.cta}</span>
             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#2A6B6E]">

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Card, Badge, ProgressBar, StatusIndicator } from './UI';
-import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2, ArrowRight } from 'lucide-react';
+import { Sparkles, CheckCircle, Info, BrainCircuit, Search, Loader2 } from 'lucide-react';
 import { SubmissionResult, Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { supabase } from '@/services/supabase';
@@ -387,7 +387,6 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Button onClick={onHome}>
-            <ArrowRight size={16} />
             {text.successNextCta}
           </Button>
           <Button onClick={onHome} variant="outline">

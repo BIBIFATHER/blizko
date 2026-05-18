@@ -84,7 +84,7 @@ export const CuratorsNote: React.FC<CuratorsNoteProps> = ({
     <span className="absolute top-3.5 left-5 text-[11px] font-semibold uppercase tracking-[0.1em] text-amber-600/70">
       Заметка куратора
     </span>
-    <blockquote className="font-serif italic text-stone-700 leading-relaxed text-[15px]">
+    <blockquote className="font-display italic text-stone-700 leading-relaxed text-[15px]">
       {children}
     </blockquote>
     {author && (

@@ -1,225 +1,88 @@
-import React, { Suspense, lazy, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Badge } from './UI';
-import { ShieldCheck, Heart, Users, X, ChevronRight, Sparkles, Star, Clock } from 'lucide-react';
+import { ArrowRight, Share2, UserRound } from 'lucide-react';
 import { Language } from '@/core/types';
-import { t } from '@/core/i18n/translations';
-import type { ModalMode } from './CompatibilityModal';
-
-const CompatibilityModal = lazy(() =>
-  import('./CompatibilityModal').then((module) => ({ default: module.CompatibilityModal }))
-);
 
 interface HomeProps {
   lang: Language;
+  onShare?: () => void;
+  onOpenAccount?: () => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ lang }) => {
+const ru = {
+  headline: 'Поиск вашей няни начинается тут',
+  cta: 'Начать',
+  photoAlt: 'Няня читает книгу ребёнку дома',
+};
+
+const en = {
+  headline: 'Your nanny search starts here',
+  cta: 'Start',
+  photoAlt: 'A nanny reading a book to a child at home',
+};
+
+const heroImage =
+  'https://images.unsplash.com/photo-1713942590283-59867d5e3f8d?auto=format&fit=crop&w=900&q=84';
+
+export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
   const navigate = useNavigate();
-  const onFindNanny = () => navigate('/find-nanny');
-  const onBecomeNanny = () => navigate('/become-nanny');
-  const text = t[lang];
-  const [activeTrust, setActiveTrust] = useState<null | { title: string; desc: string; detail: string; icon: React.ReactNode; colorClass: string; bgClass: string }>(null);
-  const [deepDiveMode, setDeepDiveMode] = useState<ModalMode | null>(null);
+  const copy = lang === 'ru' ? ru : en;
 
-  const trustBlocks = [
-    {
-      id: 'trust1',
-      title: text.trust1Title,
-      desc: text.trust1Desc,
-      detail: text.trust1Detail,
-      icon: <ShieldCheck size={22} />,
-      colorClass: 'bg-green-100 text-green-700',
-      bgClass: 'bg-green-50'
-    },
-    {
-      id: 'trust2',
-      title: text.trust2Title,
-      desc: text.trust2Desc,
-      detail: text.trust2Detail,
-      icon: <Users size={22} />,
-      colorClass: 'bg-sky-100 text-sky-700',
-      bgClass: 'bg-sky-50'
-    },
-    {
-      id: 'trust3',
-      title: text.trust3Title,
-      desc: text.trust3Desc,
-      detail: text.trust3Detail,
-      icon: <Heart size={22} />,
-      colorClass: 'bg-amber-100 text-amber-700',
-      bgClass: 'bg-amber-50'
-    }
-  ];
-
-  const handleBlockClick = (block: typeof trustBlocks[0]) => {
-    if (block.id === 'trust2') {
-      setDeepDiveMode('compatibility');
-    } else if (block.id === 'trust1') {
-      setDeepDiveMode('verification');
-    } else if (block.id === 'trust3') {
-      setDeepDiveMode('support');
-    } else {
-      setActiveTrust(block);
-    }
+  const startRequest = (starterPrompt?: string) => {
+    navigate('/find-nanny', { state: starterPrompt ? { starterPrompt } : undefined });
   };
-
-  const getPoints = (text: string) => {
-    if (text.includes('\n')) {
-      return text.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-    }
-    return text.split('. ').filter(s => s.trim().length > 0).map(s => s.trim().endsWith('.') ? s : s + '.');
-  };
-
-  // Trust signals — concrete service guarantees
-  const socialProof = lang === 'ru'
-    ? [
-      { icon: <ShieldCheck size={14} />, label: 'Проверка профилей' },
-      { icon: <Star size={14} />, label: 'AI + человек' },
-      { icon: <Clock size={14} />, label: '< 24ч ответ' },
-    ]
-    : [
-      { icon: <ShieldCheck size={14} />, label: 'Profile checks' },
-      { icon: <Star size={14} />, label: 'AI + human' },
-      { icon: <Clock size={14} />, label: '< 24h response' },
-    ];
 
   return (
-    <>
-      <div className="flex flex-col min-h-full animate-fade-in space-y-8 pb-10">
-        <div className="text-center space-y-5 pt-10 sm:pt-12 bg-linear-to-br from-amber-50/80 via-white to-sky-50/70 border border-stone-100 rounded-3xl p-6 sm:p-8 shadow-sm">
-          <div className="text-3xl sm:text-4xl font-semibold text-stone-900 tracking-tight font-display">
-            Blizko
-          </div>
-          <div className="space-y-3">
-            <p className="text-base sm:text-lg font-semibold text-stone-800">
-              {lang === 'ru' ? 'Технология ' : 'Technology '}
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100/80 text-amber-700 font-semibold shadow-sm">
-                Humanity+
-              </span>
-            </p>
-            <p className="text-stone-500/90 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
-              {lang === 'ru'
-                ? 'AI анализирует стиль воспитания, подход и совместимость. Подбор с первого дня.'
-                : 'AI analyzes parenting style, approach and compatibility. Matching from day one.'}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-center gap-3 pt-1">
-            {socialProof.map((item, i) => (
-              <div key={i} className="flex items-center gap-1 text-[11px] text-stone-400 font-medium">
-                <span className="text-amber-500">{item.icon}</span>
-                {item.label}
-              </div>
-            ))}
-          </div>
+    <div className="mx-auto flex min-h-full w-full max-w-[30rem] flex-col bg-[#F9F6F2] px-5 pb-5 pt-5 text-[#1C2B2D] sm:max-w-[34rem] sm:rounded-[2.4rem] sm:shadow-[0_24px_70px_rgba(28,43,45,0.12)]">
+      <section className="relative flex min-h-[calc(100vh-2.5rem)] flex-col overflow-hidden">
+        <div className="absolute left-0 right-0 top-0 z-20 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={onShare}
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2A6B6E] text-white shadow-[0_12px_28px_rgba(42,107,110,0.18)] transition hover:bg-[#235B5E] active:scale-[0.97]"
+            aria-label={lang === 'ru' ? 'Поделиться приложением' : 'Share app'}
+          >
+            <Share2 size={19} strokeWidth={1.8} />
+          </button>
+          <button
+            type="button"
+            onClick={onOpenAccount}
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-[#1C2B2D]/10 bg-[#EFF3F2] text-[#1C2B2D] shadow-[0_10px_24px_rgba(28,43,45,0.08)] transition hover:bg-white active:scale-[0.97]"
+            aria-label={lang === 'ru' ? 'Войти в кабинет' : 'Open account'}
+          >
+            <UserRound size={20} strokeWidth={1.8} />
+          </button>
         </div>
 
-        <div className="space-y-3">
-          <Button onClick={onFindNanny} pulse>
-            <Sparkles size={18} />
-            {text.findNanny}
-          </Button>
-          <Button variant="secondary" onClick={onBecomeNanny}>
-            {lang === 'ru' ? 'Стать няней на Blizko' : 'Become a nanny on Blizko'}
-          </Button>
-        </div>
-
-        <div className="space-y-5">
-          <h2 className="text-center text-stone-400/80 text-xs uppercase tracking-[0.25em] font-semibold">
-            {text.whyTrust}
-          </h2>
-
-          <div className="grid gap-3">
-            {trustBlocks.map((block, index) => (
-              <Card
-                key={block.id}
-                onClick={() => handleBlockClick(block)}
-                className="animate-fade-up flex items-start gap-3 sm:gap-4 py-4 sm:py-5 cursor-pointer hover-lift active:scale-[0.99] group border-transparent hover:border-stone-100/70"
-                role="button"
-                tabIndex={0}
-                style={{ animationDelay: `${index * 100 + 200}ms` }}
-              >
-                <div className={`${block.colorClass} p-2.5 rounded-2xl transition-transform group-hover:scale-110 ring-1 ring-white/70 shadow-sm`}>
-                  {block.icon}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-semibold text-stone-800 leading-snug">
-                    {block.title}
-                  </h3>
-                  <p className="text-sm text-stone-500 leading-relaxed mt-0.5">
-                    {block.desc}
-                  </p>
-                </div>
-                <ChevronRight size={18} className="text-stone-300 group-hover:text-stone-500 transition-colors mt-1" />
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <Badge variant="trust">
-            {lang === 'ru' ? 'Все данные зашифрованы' : 'Data encrypted'}
-          </Badge>
-        </div>
-      </div>
-
-      {/* Deep Dive Modal */}
-      {deepDiveMode && (
-        <Suspense fallback={null}>
-          <CompatibilityModal
-            onClose={() => setDeepDiveMode(null)}
-            onAction={() => {
-              setDeepDiveMode(null);
-              onFindNanny();
-            }}
-            lang={lang}
-            mode={deepDiveMode}
+        <div className="relative flex flex-1 items-center justify-center pt-2">
+          <div className="absolute inset-x-[-26%] top-[8%] h-[68%] rounded-full bg-[#EFF3F2]" />
+          <div className="absolute left-3 top-[18%] h-16 w-16 rounded-full bg-[#7FA99B]/45" />
+          <div className="absolute right-0 top-[10%] h-9 w-9 rounded-full bg-[#C4744A]" />
+          <div className="absolute bottom-[22%] right-8 h-14 w-14 rounded-full bg-[#D4E2DE]" />
+          <img
+            src={heroImage}
+            alt={copy.photoAlt}
+            className="relative z-10 h-[22.5rem] w-full max-w-[22rem] rounded-[11rem_11rem_2.2rem_2.2rem] border-[6px] border-white object-cover object-[50%_42%] shadow-[0_28px_60px_rgba(28,43,45,0.18)] sm:h-[25.5rem] sm:max-w-[24rem]"
+            loading="eager"
           />
-        </Suspense>
-      )}
-
-      {/* Standard Trust Details Modal */}
-      {activeTrust && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-stone-900/30 backdrop-blur-md animate-fade-in">
-          <div className="bg-white w-full max-w-sm rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.12)] relative animate-pop-in flex flex-col max-h-[85vh] overflow-hidden border border-white/50">
-            <button
-              onClick={() => setActiveTrust(null)}
-              className="absolute top-4 right-4 z-10 bg-stone-50 hover:bg-stone-100 p-2 rounded-full text-stone-400 transition-colors"
-            >
-              <X size={20} />
-            </button>
-
-            <div className="flex-1 overflow-y-auto p-8 pt-12 no-scrollbar">
-              <div className="flex flex-col items-center text-center mb-8">
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center ${activeTrust.colorClass} mb-5 shadow-sm`}>
-                  {React.cloneElement(activeTrust.icon as React.ReactElement, { size: 36, strokeWidth: 2 })}
-                </div>
-                <h3 className="text-2xl font-bold text-stone-800 leading-tight px-2">
-                  {activeTrust.title}
-                </h3>
-              </div>
-
-              <div className="space-y-5">
-                {getPoints(activeTrust.detail).map((point, index) => (
-                  <div key={index} className="flex gap-4 items-start animate-fade-in" style={{ animationDelay: `${index * 50 + 100}ms` }}>
-                    <div className="mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-300 shadow-sm" />
-                    <p className="text-stone-600 text-[15px] leading-relaxed whitespace-pre-line">
-                      {point}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="p-6 pt-2 bg-linear-to-t from-white via-white to-transparent">
-              <Button onClick={() => setActiveTrust(null)} className="w-full rounded-2xl py-4 shadow-lg hover:shadow-xl bg-stone-900 text-white hover:bg-stone-800">
-                OK
-              </Button>
-            </div>
-          </div>
         </div>
-      )}
-    </>
+
+        <div className="relative z-10 pb-1">
+          <h1 className="font-display text-[2.75rem] font-medium leading-[1.08] tracking-[-0.015em] text-[#1C2B2D] sm:text-[3.2rem]">
+            {copy.headline}
+          </h1>
+          <button
+            type="button"
+            onClick={() => startRequest()}
+            className="mt-5 flex min-h-[4.25rem] w-full items-center justify-between rounded-full bg-[#2A6B6E] py-2 pl-6 pr-2 text-lg font-semibold text-white shadow-[0_20px_48px_rgba(42,107,110,0.22)] transition hover:bg-[#235B5E] active:scale-[0.97]"
+          >
+            <span>{copy.cta}</span>
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#2A6B6E]">
+              <ArrowRight size={24} strokeWidth={1.9} />
+            </span>
+          </button>
+        </div>
+      </section>
+    </div>
   );
 };

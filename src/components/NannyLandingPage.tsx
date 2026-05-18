@@ -73,7 +73,7 @@ export const NannyLandingPage: React.FC = () => {
 
                             <div className="cta-column max-w-xl">
                                 <Button onClick={() => navigate('/become-nanny')} className="max-w-sm">
-                                    Заполнить анкету няни <ArrowRight size={18} />
+                                    Заполнить анкету няни
                                 </Button>
                                 <a
                                     href="mailto:nanny@blizko.app"
@@ -240,7 +240,7 @@ export const NannyLandingPage: React.FC = () => {
 
                         <div className="w-full md:w-[320px]">
                             <Button onClick={() => navigate('/become-nanny')}>
-                                Заполнить анкету няни <ArrowRight size={18} />
+                                Заполнить анкету няни
                             </Button>
                         </div>
                     </div>

@@ -57,7 +57,7 @@ export const Input: React.FC<InputProps> = ({
   ...props
 }) => (
   <div className="mb-4">
-    <label className="ml-1 mb-2 block text-[13px] font-semibold uppercase tracking-[0.08em] text-stone-500/90">
+    <label className="ml-1 mb-2 block text-[13px] font-semibold tracking-[0.01em] text-stone-500/90">
       {label}
     </label>
     <input
@@ -89,7 +89,7 @@ export const Textarea: React.FC<TextareaProps> = ({
   ...props
 }) => (
   <div className="mb-4">
-    <label className="ml-1 mb-2 block text-[13px] font-semibold uppercase tracking-[0.08em] text-stone-500/90">
+    <label className="ml-1 mb-2 block text-[13px] font-semibold tracking-[0.01em] text-stone-500/90">
       {label}
     </label>
     <textarea
@@ -382,7 +382,7 @@ export const Select: React.FC<SelectProps> = ({
 
   return (
     <div className="mb-4">
-      <label className="ml-1 mb-2 block text-[13px] font-semibold uppercase tracking-[0.08em] text-stone-500/90">
+      <label className="ml-1 mb-2 block text-[13px] font-semibold tracking-[0.01em] text-stone-500/90">
         {label}
       </label>
       <select

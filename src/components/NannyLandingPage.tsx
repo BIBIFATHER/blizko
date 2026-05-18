@@ -81,7 +81,7 @@ export const NannyLandingPage: React.FC = () => {
                                 >
                                     Задать вопрос команде <ChevronRight size={16} />
                                 </a>
-                                <p className="text-sm text-stone-500">
+                                <p className="text-sm text-[#1C2B2D]/50">
                                     Анкета бесплатно. Активация профиля 5 000 ₽ только после одобрения. Без ежемесячной подписки.
                                 </p>
                             </div>
@@ -89,15 +89,15 @@ export const NannyLandingPage: React.FC = () => {
 
                         <div className="relative z-10 grid gap-3">
                             <div className="hero-stat">
-                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Входной порог</p>
+                                <p className="text-xs font-semibold tracking-[0.01em] text-[#1C2B2D]/50">Входной порог</p>
                                 <div className="mt-3 flex items-start justify-between gap-4">
                                     <div>
-                                        <p className="text-3xl font-semibold text-stone-950">24-48 ч</p>
-                                        <p className="mt-2 text-sm leading-6 text-stone-600">
+                                        <p className="text-3xl font-semibold text-[#1C2B2D]">24-48 ч</p>
+                                        <p className="mt-2 text-sm leading-6 text-[#1C2B2D]/65">
                                             Обычно столько занимает ручная проверка анкеты и документов перед допуском.
                                         </p>
                                     </div>
-                                    <div className="proof-icon-wrap bg-emerald-50 text-emerald-700">
+                                    <div className="proof-icon-wrap bg-[#EFF3F2] text-[#2A6B6E]">
                                         <ShieldCheck size={20} />
                                     </div>
                                 </div>
@@ -105,25 +105,25 @@ export const NannyLandingPage: React.FC = () => {
 
                             <div className="grid gap-3 sm:grid-cols-2">
                                 <div className="hero-stat">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Комиссия</p>
-                                    <p className="mt-3 text-2xl font-semibold text-stone-950">{SERVICE_COMMISSION_PERCENT}%</p>
-                                    <p className="mt-2 text-sm leading-6 text-stone-600">Списывается только после фактического выхода в семью.</p>
+                                    <p className="text-xs font-semibold tracking-[0.01em] text-[#1C2B2D]/50">Комиссия</p>
+                                    <p className="mt-3 text-2xl font-semibold text-[#1C2B2D]">{SERVICE_COMMISSION_PERCENT}%</p>
+                                    <p className="mt-2 text-sm leading-6 text-[#1C2B2D]/65">Списывается только после фактического выхода в семью.</p>
                                 </div>
                                 <div className="hero-stat">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Активация</p>
-                                    <p className="mt-3 text-2xl font-semibold text-stone-950">5 000 ₽</p>
-                                    <p className="mt-2 text-sm leading-6 text-stone-600">Единоразово после одобрения анкеты, когда вы готовы брать заказы.</p>
+                                    <p className="text-xs font-semibold tracking-[0.01em] text-[#1C2B2D]/50">Активация</p>
+                                    <p className="mt-3 text-2xl font-semibold text-[#1C2B2D]">5 000 ₽</p>
+                                    <p className="mt-2 text-sm leading-6 text-[#1C2B2D]/65">Единоразово после одобрения анкеты, когда вы готовы брать заказы.</p>
                                 </div>
                             </div>
 
                             <Card className="p-5">
                                 <div className="flex items-start gap-3">
-                                    <div className="proof-icon-wrap bg-amber-100/80 text-amber-700">
+                                    <div className="proof-icon-wrap bg-[#C4744A]/10 text-[#C4744A]">
                                         <BadgeCheck size={18} />
                                     </div>
                                     <div className="space-y-2">
-                                        <p className="text-sm font-semibold text-stone-900">Понятный вход без лишнего шума</p>
-                                        <p className="text-sm leading-6 text-stone-600">
+                                        <p className="text-sm font-semibold text-[#1C2B2D]">Понятный вход без лишнего шума</p>
+                                        <p className="text-sm leading-6 text-[#1C2B2D]/65">
                                             До первого отклика вы уже понимаете район, график и формат помощи. Это экономит силы и снижает процент случайных диалогов.
                                         </p>
                                     </div>
@@ -148,12 +148,12 @@ export const NannyLandingPage: React.FC = () => {
                         {benefits.map((b, i) => (
                             <Card key={i} className="h-full p-5">
                                 <div className="flex h-full flex-col gap-4">
-                                    <div className="proof-icon-wrap bg-stone-100 text-stone-700">
+                                    <div className="proof-icon-wrap bg-[#EFF3F2] text-[#2A6B6E]">
                                         {b.icon}
                                     </div>
                                     <div className="space-y-2">
-                                        <h3 className="text-lg font-semibold text-stone-900">{b.title}</h3>
-                                        <p className="text-sm leading-7 text-stone-600">{b.desc}</p>
+                                        <h3 className="text-lg font-semibold text-[#1C2B2D]">{b.title}</h3>
+                                        <p className="text-sm leading-7 text-[#1C2B2D]/65">{b.desc}</p>
                                     </div>
                                 </div>
                             </Card>
@@ -175,14 +175,14 @@ export const NannyLandingPage: React.FC = () => {
                             <Card key={s.num} className="h-full p-5">
                                 <div className="flex h-full flex-col gap-5">
                                     <div className="flex items-center justify-between">
-                                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--cloud-honey-solid)]/25 text-lg font-semibold text-stone-900">
+                                        <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#2A6B6E]/10 text-lg font-semibold text-[#2A6B6E]">
                                             {s.num}
                                         </span>
-                                        <ArrowRight size={18} className="text-stone-300" />
+                                        <ArrowRight size={18} className="text-[#1C2B2D]/20" />
                                     </div>
                                     <div className="space-y-2">
-                                        <h3 className="text-lg font-semibold text-stone-900">{s.title}</h3>
-                                        <p className="text-sm leading-7 text-stone-600">{s.desc}</p>
+                                        <h3 className="text-lg font-semibold text-[#1C2B2D]">{s.title}</h3>
+                                        <p className="text-sm leading-7 text-[#1C2B2D]/65">{s.desc}</p>
                                     </div>
                                 </div>
                             </Card>
@@ -203,10 +203,10 @@ export const NannyLandingPage: React.FC = () => {
                         <Card className="p-5">
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="proof-icon-wrap bg-emerald-50 text-emerald-700">
+                                    <div className="proof-icon-wrap bg-[#EFF3F2] text-[#2A6B6E]">
                                         <CheckCircle size={18} />
                                     </div>
-                                    <p className="text-sm font-semibold text-stone-900">Что обычно подтверждаем на входе</p>
+                                    <p className="text-sm font-semibold text-[#1C2B2D]">Что обычно подтверждаем на входе</p>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     <span className="trust-badge">Паспорт</span>
@@ -214,7 +214,7 @@ export const NannyLandingPage: React.FC = () => {
                                     <span className="trust-badge trust-badge-warning">Справка</span>
                                     <span className="trust-badge">Ручная модерация</span>
                                 </div>
-                                <p className="text-sm leading-7 text-stone-600">
+                                <p className="text-sm leading-7 text-[#1C2B2D]/65">
                                     Если по документам или анкете нужно уточнение, команда Blizko пишет аккуратно и по делу, без лишней бюрократии.
                                 </p>
                             </div>
@@ -225,7 +225,7 @@ export const NannyLandingPage: React.FC = () => {
                 <section className="form-footer-rail p-6 md:p-8">
                     <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
                         <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-stone-700">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-[#1C2B2D]/70">
                                 <Phone size={16} />
                                 Вопросы по анкете или модерации
                             </div>
@@ -233,7 +233,7 @@ export const NannyLandingPage: React.FC = () => {
                             <p className="section-body max-w-2xl">
                                 Анкета занимает около 5 минут. После модерации вы сами решите, когда активировать профиль и выходить на запросы.
                             </p>
-                            <a href="mailto:nanny@blizko.app" className="text-sm font-semibold text-stone-700 underline decoration-[color:var(--cloud-border-strong)] underline-offset-4">
+                            <a href="mailto:nanny@blizko.app" className="text-sm font-semibold text-[#2A6B6E] underline decoration-[#2A6B6E]/30 underline-offset-4 hover:decoration-[#2A6B6E]">
                                 nanny@blizko.app
                             </a>
                         </div>
@@ -247,7 +247,7 @@ export const NannyLandingPage: React.FC = () => {
                 </section>
 
                 <footer className="pb-10 pt-2 text-center">
-                    <p className="text-xs text-stone-400">
+                    <p className="text-xs text-[#1C2B2D]/35">
                         © 2026 Blizko. Данные профиля обрабатываются бережно и только в рамках работы сервиса.
                     </p>
                 </footer>

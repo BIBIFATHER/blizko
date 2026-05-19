@@ -20,6 +20,21 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
+## Release Hygiene
+
+Before saying "готово", "можно пушить", "релиз готов", "deployed", or "ready", follow `.context/CODEX_RELEASE_PROTOCOL.md`.
+
+Minimum gate:
+
+- run `git status --short`
+- explain all dirty product files
+- inspect `package.json` / lockfile changes
+- do not add CLI tools such as `vercel` as runtime dependencies
+- run test/build/lint checks appropriate to the changed files
+- if deploy happened, report deploy URL/id and the commit hash that was deployed
+
+If any product file is dirty or any dependency change is unexplained, do not call the release ready.
+
 ## Memory
 
 You wake up fresh each session. These files are your continuity:

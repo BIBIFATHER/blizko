@@ -18,10 +18,10 @@ const defaultDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const defaultSlots = ['08–10', '10–12', '12–14', '14–16', '16–18', '18–20'];
 
 const statusClass = (status?: SlotStatus) => {
-  if (status === 'selected') return 'bg-emerald-200 text-emerald-900 border-emerald-200';
-  if (status === 'reserved') return 'bg-amber-200 text-amber-900 border-amber-200';
-  if (status === 'busy') return 'bg-stone-300 text-stone-600 border-stone-300';
-  return 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50';
+  if (status === 'selected') return 'bg-[#2A6B6E] text-white border-[#2A6B6E]';
+  if (status === 'reserved') return 'bg-[#C4744A]/20 text-[#C4744A] border-[#C4744A]/30';
+  if (status === 'busy') return 'bg-stone-200 text-stone-400 border-stone-200';
+  return 'bg-white border-stone-200 text-stone-400 hover:bg-[#EFF3F2]';
 };
 
 export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
@@ -47,11 +47,11 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         {subtitle && <div className="text-xs text-stone-500">{subtitle}</div>}
       </div>
 
-      <div className="grid grid-cols-[56px_1fr] gap-2 text-[11px]">
+      <div className="grid grid-cols-[40px_1fr] gap-1.5 text-[11px]">
         <div></div>
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-0.5">
           {days.map((d) => (
-            <div key={d} className="text-center text-stone-400 font-semibold">
+            <div key={d} className="text-center text-stone-400 font-semibold text-[10px]">
               {d}
             </div>
           ))}
@@ -59,8 +59,8 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
         {slots.map((slot, slotIdx) => (
           <React.Fragment key={slot}>
-            <div className="text-[10px] text-stone-400 flex items-center justify-end pr-1">{slot}</div>
-            <div className="grid grid-cols-7 gap-1">
+            <div className="text-[9px] text-stone-400 flex items-center justify-end pr-0.5 leading-tight">{slot}</div>
+            <div className="grid grid-cols-7 gap-0.5">
               {days.map((_, dayIdx) => {
                 const status = grid[dayIdx][slotIdx];
                 const key = `${dayIdx}-${slotIdx}`;
@@ -69,8 +69,8 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                     key={key}
                     type="button"
                     onClick={() => !readonly && onToggle && onToggle(dayIdx, slotIdx)}
-                    className={`h-8 rounded-lg border text-[10px] font-semibold transition-colors ${statusClass(status)} ${readonly ? 'cursor-default' : 'active:scale-95'}`}
-                    title={status === 'busy' ? 'занято' : status === 'reserved' ? 'резерв' : status === 'selected' ? 'свободно' : 'свободно'}
+                    className={`h-9 rounded-md border text-[10px] font-semibold transition-colors ${statusClass(status)} ${readonly ? 'cursor-default' : 'active:scale-95'}`}
+                    title={status === 'busy' ? 'занято' : status === 'reserved' ? 'резерв' : status === 'selected' ? 'выбрано' : 'свободно'}
                   >
                     {status === 'busy' ? '✕' : status === 'reserved' ? 'Р' : status === 'selected' ? '✓' : ''}
                   </button>
@@ -84,9 +84,9 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       {legend && (
         <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-stone-500">
           <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-white border border-stone-200" /> свободно</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-200" /> выбрано</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200" /> резерв</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-stone-300" /> занято</span>
+          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-[#2A6B6E]" /> выбрано</span>
+          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-[#C4744A]/20" /> резерв</span>
+          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-stone-200" /> занято</span>
         </div>
       )}
     </Card>

@@ -41,7 +41,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
 
             {/* Photo Upload Block */}
             <div className="flex justify-center mb-6">
-                <label className="relative cursor-pointer group">
+                <label className="relative cursor-pointer group flex flex-col items-center">
                     <div className={`w-32 h-32 rounded-full overflow-hidden flex items-center justify-center transition-all shadow-cloud-soft bg-white/40 backdrop-blur-sm border-2 ${photo ? 'border-amber-300' : 'border-amber-100/50'}`}>
                         {photo ? (
                             <img src={photo} alt="Profile" className="w-full h-full object-cover shadow-inner" />

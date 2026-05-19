@@ -7,6 +7,7 @@ import { Step1_FamilyStory } from './Step1_FamilyStory';
 import { Step2_Calendar } from './Step2_Calendar';
 import { Step3_FamilyProfile } from './Step3_FamilyProfile';
 import { ParentOfferModal } from '../../ParentOfferModal';
+import { ParentSummaryModal } from '../../ParentSummaryModal';
 import { StepWizardShell } from '../../ui/StepWizardShell';
 
 interface ParentFormWrapperProps {
@@ -19,6 +20,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
     const navigate = useNavigate();
     const text = t[lang];
     const [loading, setLoading] = useState(false);
+    const [showSummary, setShowSummary] = useState(false);
     const [showOffer, setShowOffer] = useState(false);
 
     const {
@@ -56,7 +58,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
     };
 
     const handleFinalSubmit = () => {
-        setShowOffer(true);
+        setShowSummary(true);
     };
 
     const submitData = async () => {
@@ -130,6 +132,16 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
                 {currentStep === 2 && <Step2_Calendar lang={lang} />}
                 {currentStep === 3 && <Step3_FamilyProfile lang={lang} onFinalSubmit={handleFinalSubmit} loading={loading} />}
             </StepWizardShell>
+
+            {showSummary && (
+                <ParentSummaryModal
+                    lang={lang}
+                    formData={formData}
+                    advanced={advanced}
+                    onConfirm={() => { setShowSummary(false); setShowOffer(true); }}
+                    onClose={() => setShowSummary(false)}
+                />
+            )}
 
             {showOffer && (
                 <ParentOfferModal

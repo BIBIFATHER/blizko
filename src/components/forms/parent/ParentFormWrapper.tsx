@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ParentRequest, Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { ParentFormProvider, useParentForm } from './ParentFormProvider';
-import { Step1_Requirements } from './Step1_Requirements';
+import { Step1_FamilyStory } from './Step1_FamilyStory';
 import { Step2_Calendar } from './Step2_Calendar';
 import { Step3_FamilyProfile } from './Step3_FamilyProfile';
 import { ParentOfferModal } from '../../ParentOfferModal';
@@ -64,7 +64,9 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
         setLoading(true);
 
         try {
-            const budget = `за час: ${formData.budgetHourly || '—'}; за месяц: ${formData.budgetMonthly || '—'}`;
+            const budget = formData.budgetHourly
+                ? `за час: ${formData.budgetHourly}; за месяц: ${formData.budgetMonthly || '—'}`
+                : '—';
             const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
             const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
             const analysisNotes = formData.analysisNotes?.trim()
@@ -116,7 +118,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
                 )}
                 stepHint={
                     <>
-                        {currentStep === 1 && (lang === 'ru' ? 'Начнем с главного' : 'Let\'s start with basics')}
+                        {currentStep === 1 && (lang === 'ru' ? 'Расскажите о семье' : 'Tell us about your family')}
                         {currentStep === 2 && (lang === 'ru' ? 'Отличный старт! Теперь график' : 'Great start! Now schedule')}
                         {currentStep === 3 && (lang === 'ru' ? 'Почти готово! Профиль семьи' : 'Almost there! Family profile')}
                     </>
@@ -124,7 +126,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
                 stepTitle={isEditing ? (lang === 'ru' ? 'Редактирование заявки' : 'Edit Request') : text.pFormTitle}
                 totalSteps={totalSteps}
             >
-                {currentStep === 1 && <Step1_Requirements lang={lang} />}
+                {currentStep === 1 && <Step1_FamilyStory lang={lang} />}
                 {currentStep === 2 && <Step2_Calendar lang={lang} />}
                 {currentStep === 3 && <Step3_FamilyProfile lang={lang} onFinalSubmit={handleFinalSubmit} loading={loading} />}
             </StepWizardShell>

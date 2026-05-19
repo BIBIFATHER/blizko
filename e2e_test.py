@@ -31,14 +31,14 @@ def run_tests():
             time.sleep(1) # wait for animation
             
             # 2. Parent Form Step 1
-            city_input = page.locator('input[placeholder*="например, Хамовники"]')
+            city_input = page.locator('input[placeholder*="Хамовники"]')
             if city_input.is_visible():
                 city_input.fill('Москва, Хамовники')
             else:
                 print("⚠️ City input not found, skipping fill")
                 
-            print("Selecting 'Малыши'...")
-            page.locator('text="Малыши (1-3 года)"').click()
+            print("Selecting age chip...")
+            page.locator('text="Тоддлеры (1–3)"').click()
             print("✅ Form interactions working")
 
             # Try navigating through the form

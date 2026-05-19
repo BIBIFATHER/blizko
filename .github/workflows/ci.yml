@@ -72,7 +72,7 @@ jobs:
       - name: Wait for app
         run: |
           for i in $(seq 1 45); do
-            if curl -fsS http://127.0.0.1:5173 > /dev/null; then
+            if curl -fsS http://127.0.0.1:3000 > /dev/null; then
               exit 0
             fi
             sleep 2
@@ -83,6 +83,6 @@ jobs:
 
       - name: Run smoke e2e
         env:
-          BASE_URL: http://127.0.0.1:5173
+          BASE_URL: http://127.0.0.1:3000
           E2E_SCREENSHOT_PATH: /tmp/blizko-e2e-failure.png
         run: python e2e_test.py

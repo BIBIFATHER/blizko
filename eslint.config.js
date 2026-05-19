@@ -97,7 +97,7 @@ export default [
     },
   },
   {
-    ignores: ['dist/**', 'node_modules/**', '*.config.*', 'api/**', 'scripts/**', '.agents/**', '.venv/**', 'sw.js', 'public/sw.js', 'test-dom.js', 'android/**', 'ios/**', 'archive/**', 'cloudflare/**', 'figma-autobot/**', 'stitch-mcp-server/**'],
+    ignores: ['dist/**', 'node_modules/**', '*.config.*', 'api/**', 'scripts/**', '.agents/**', '.claude/**', '.venv/**', 'sw.js', 'public/sw.js', 'test-dom.js', 'android/**', 'ios/**', 'archive/**', 'cloudflare/**', 'figma-autobot/**', 'stitch-mcp-server/**'],
   },
   prettier,
 ];

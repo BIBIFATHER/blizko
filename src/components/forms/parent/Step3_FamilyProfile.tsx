@@ -12,10 +12,27 @@ interface Props {
     loading: boolean;
 }
 
+// Maps display labels to enum values for ChipGroup.
+// ChipGroup stores/returns the label string; we convert at boundary.
+function useEnumChip<T extends string>(
+    options: { label: string; value: T }[],
+    selected: T | undefined,
+    onChange: (value: T) => void,
+) {
+    const selectedLabel = selected ? (options.find(o => o.value === selected)?.label ?? '') : '';
+    return {
+        chipOptions: options.map(o => o.label),
+        chipSelected: selectedLabel ? [selectedLabel] : [],
+        chipOnChange: (labels: string[]) => {
+            const found = options.find(o => o.label === labels[0]);
+            if (found) onChange(found.value);
+        },
+    };
+}
+
 export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, loading }) => {
     const text = t[lang];
     const {
-        formData, setFormData,
         advanced, setAdvanced,
         documents, setDocuments,
         riskProfile, setRiskProfile,
@@ -25,17 +42,62 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
     const [showDocUpload, setShowDocUpload] = useState(false);
     const [showExtras, setShowExtras] = useState(false);
 
-    const setSingleRiskValue = <K extends keyof ParentRiskProfile>(key: K) => (values: string[]) => {
-        const nextValue = values[0];
-        if (!nextValue) return;
-        setRiskProfile((prev) => ({ ...(prev || {}), [key]: nextValue as ParentRiskProfile[K] }));
-    };
+    const ru = lang === 'ru';
 
-    const arrChildTriggers = lang === 'ru'
+    // ── Nanny style ─────────────────────────────────────────────────────────
+    const nannyStyleOpts: { label: string; value: NonNullable<ParentRiskProfile['nannyStylePreference']> }[] = [
+        { label: ru ? 'Мягкая и спокойная' : 'Gentle & calm', value: 'gentle' },
+        { label: ru ? 'Структурная'        : 'Structured',    value: 'strict' },
+        { label: ru ? 'Игровая'            : 'Playful',       value: 'playful' },
+    ];
+    const nannyStyle = useEnumChip(
+        nannyStyleOpts,
+        riskProfile?.nannyStylePreference,
+        (v) => setRiskProfile(prev => ({ ...(prev ?? {}), nannyStylePreference: v })),
+    );
+
+    // ── Family style (optional) ──────────────────────────────────────────────
+    const familyStyleOpts: { label: string; value: NonNullable<ParentRiskProfile['familyStyle']> }[] = [
+        { label: ru ? 'Мягкий, эмпатичный'       : 'Gentle, empathetic',    value: 'warm' },
+        { label: ru ? 'Структурный, с правилами'  : 'Structured, rules-based', value: 'structured' },
+        { label: ru ? 'Баланс'                    : 'Balanced',              value: 'balanced' },
+    ];
+    const familyStyle = useEnumChip(
+        familyStyleOpts,
+        riskProfile?.familyStyle,
+        (v) => setRiskProfile(prev => ({ ...(prev ?? {}), familyStyle: v })),
+    );
+
+    // ── Child stress (optional) ──────────────────────────────────────────────
+    const childStressOpts: { label: string; value: NonNullable<ParentRiskProfile['childStress']> }[] = [
+        { label: ru ? 'Ищет поддержку' : 'Seeks support',  value: 'cry' },
+        { label: ru ? 'Замыкается'     : 'Withdraws',      value: 'withdraw' },
+        { label: ru ? 'Злится'         : 'Gets angry',     value: 'aggressive' },
+        { label: ru ? 'Истерики'       : 'Tantrums',       value: 'tantrum' },
+    ];
+    const childStress = useEnumChip(
+        childStressOpts,
+        riskProfile?.childStress,
+        (v) => setRiskProfile(prev => ({ ...(prev ?? {}), childStress: v })),
+    );
+
+    // ── Communication preference (optional) ─────────────────────────────────
+    const commPrefOpts: { label: string; value: NonNullable<ParentRiskProfile['communicationPreference']> }[] = [
+        { label: ru ? 'Минимум'          : 'Minimal',        value: 'minimal' },
+        { label: ru ? 'Регулярно (2–3)'  : 'Regular (2–3)',  value: 'regular' },
+        { label: ru ? 'Часто'            : 'Frequent',       value: 'frequent' },
+    ];
+    const commPref = useEnumChip(
+        commPrefOpts,
+        riskProfile?.communicationPreference,
+        (v) => setRiskProfile(prev => ({ ...(prev ?? {}), communicationPreference: v })),
+    );
+
+    const arrChildTriggers = ru
         ? ['Шум', 'Смена режима', 'Новые люди', 'Запреты', 'Усталость']
         : ['Noise', 'Routine changes', 'New people', 'Restrictions', 'Fatigue'];
 
-    const arrNeeds = lang === 'ru'
+    const arrNeeds = ru
         ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность']
         : ['Calm', 'Structure', 'Play', 'Learning', 'Activity'];
 
@@ -45,14 +107,14 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                 <div className="wizard-hero-copy">
                     <div className="wizard-kicker">
                         <HeartHandshake size={14} />
-                        {lang === 'ru' ? 'Шаг 3. Последние детали' : 'Step 3. Final details'}
+                        {ru ? 'Шаг 3. Последние детали' : 'Step 3. Final details'}
                     </div>
                     <div className="space-y-2">
                         <h3 className="wizard-section-title">
-                            {lang === 'ru' ? 'Несколько бытовых моментов' : 'A few practical details'}
+                            {ru ? 'Несколько бытовых моментов' : 'A few practical details'}
                         </h3>
                         <p className="wizard-section-body">
-                            {lang === 'ru'
+                            {ru
                                 ? 'Минимум вопросов, максимум пользы для подбора. Остальное расскажете менеджеру при знакомстве.'
                                 : 'Minimal questions, maximum value for matching. The rest you can tell the manager when you meet.'}
                         </p>
@@ -60,38 +122,38 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                 </div>
             </div>
 
-            {/* Essential matching details — cameras, household, pets, nanny style */}
+            {/* Essential matching details */}
             <section className="wizard-block">
                 <div className="section-label">
-                    {lang === 'ru' ? 'Условия работы' : 'Working conditions'}
+                    {ru ? 'Условия работы' : 'Working conditions'}
                 </div>
 
                 <ChipGroup
-                    label={lang === 'ru' ? 'Видеонаблюдение' : 'Cameras'}
-                    options={lang === 'ru' ? ['Допустимо', 'Нежелательно'] : ['Acceptable', 'Not desired']}
+                    label={ru ? 'Видеонаблюдение' : 'Cameras'}
+                    options={ru ? ['Допустимо', 'Нежелательно'] : ['Acceptable', 'Not desired']}
                     selected={advanced.cameras ? [advanced.cameras] : []}
-                    onChange={(s) => setAdvanced((p) => ({ ...p, cameras: s[0] || '' }))}
+                    onChange={(s) => setAdvanced(p => ({ ...p, cameras: s[0] || '' }))}
                     single
                 />
                 <ChipGroup
-                    label={lang === 'ru' ? 'Помощь по дому' : 'Household help'}
-                    options={lang === 'ru' ? ['Лёгкая', 'Расширенная', 'Не нужна'] : ['Light', 'Extended', 'None']}
+                    label={ru ? 'Помощь по дому' : 'Household help'}
+                    options={ru ? ['Лёгкая', 'Расширенная', 'Не нужна'] : ['Light', 'Extended', 'None']}
                     selected={advanced.household ? [advanced.household] : []}
-                    onChange={(s) => setAdvanced((p) => ({ ...p, household: s[0] || '' }))}
+                    onChange={(s) => setAdvanced(p => ({ ...p, household: s[0] || '' }))}
                     single
                 />
                 <ChipGroup
-                    label={lang === 'ru' ? 'Животные дома' : 'Pets at home'}
-                    options={lang === 'ru' ? ['Есть', 'Нет'] : ['Yes', 'No']}
+                    label={ru ? 'Животные дома' : 'Pets at home'}
+                    options={ru ? ['Есть', 'Нет'] : ['Yes', 'No']}
                     selected={advanced.pets ? [advanced.pets] : []}
-                    onChange={(s) => setAdvanced((p) => ({ ...p, pets: s[0] || '' }))}
+                    onChange={(s) => setAdvanced(p => ({ ...p, pets: s[0] || '' }))}
                     single
                 />
                 <ChipGroup
-                    label={lang === 'ru' ? 'Стиль общения няни' : 'Nanny style'}
-                    options={lang === 'ru' ? ['Мягкая и спокойная', 'Структурная', 'Игровая'] : ['Gentle & calm', 'Structured', 'Playful']}
-                    selected={riskProfile?.nannyStylePreference ? [riskProfile.nannyStylePreference] : []}
-                    onChange={setSingleRiskValue('nannyStylePreference')}
+                    label={ru ? 'Стиль общения няни' : 'Nanny style'}
+                    options={nannyStyle.chipOptions}
+                    selected={nannyStyle.chipSelected}
+                    onChange={nannyStyle.chipOnChange}
                     single
                 />
             </section>
@@ -103,58 +165,58 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     onClick={() => setShowExtras(v => !v)}
                     className="flex w-full items-center justify-between text-sm font-semibold text-stone-600"
                 >
-                    <span>{lang === 'ru' ? 'Дополнительно (необязательно)' : 'More details (optional)'}</span>
+                    <span>{ru ? 'Дополнительно (необязательно)' : 'More details (optional)'}</span>
                     {showExtras ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </button>
 
                 {showExtras && (
                     <div className="mt-5 space-y-1 animate-fade-in">
                         <ChipGroup
-                            label={lang === 'ru' ? 'Поездки с няней' : 'Travel with nanny'}
-                            options={lang === 'ru' ? ['Возможны', 'Не нужны'] : ['Possible', 'Not needed']}
+                            label={ru ? 'Поездки с няней' : 'Travel with nanny'}
+                            options={ru ? ['Возможны', 'Не нужны'] : ['Possible', 'Not needed']}
                             selected={advanced.travel ? [advanced.travel] : []}
-                            onChange={(s) => setAdvanced((p) => ({ ...p, travel: s[0] || '' }))}
+                            onChange={(s) => setAdvanced(p => ({ ...p, travel: s[0] || '' }))}
                             single
                         />
                         <ChipGroup
-                            label={lang === 'ru' ? 'Ночные смены' : 'Night shifts'}
-                            options={lang === 'ru' ? ['Да', 'Иногда', 'Не нужны'] : ['Yes', 'Sometimes', 'Not needed']}
+                            label={ru ? 'Ночные смены' : 'Night shifts'}
+                            options={ru ? ['Да', 'Иногда', 'Не нужны'] : ['Yes', 'Sometimes', 'Not needed']}
                             selected={advanced.night ? [advanced.night] : []}
-                            onChange={(s) => setAdvanced((p) => ({ ...p, night: s[0] || '' }))}
+                            onChange={(s) => setAdvanced(p => ({ ...p, night: s[0] || '' }))}
                             single
                         />
                         <ChipGroup
-                            label={lang === 'ru' ? 'Стиль семьи' : 'Family style'}
-                            options={lang === 'ru' ? ['Мягкий, эмпатичный', 'Структурный, с правилами', 'Баланс'] : ['Gentle, empathetic', 'Structured, rules-based', 'Balanced']}
-                            selected={riskProfile?.familyStyle ? [riskProfile.familyStyle] : []}
-                            onChange={setSingleRiskValue('familyStyle')}
+                            label={ru ? 'Стиль семьи' : 'Family style'}
+                            options={familyStyle.chipOptions}
+                            selected={familyStyle.chipSelected}
+                            onChange={familyStyle.chipOnChange}
                             single
                         />
                         <ChipGroup
-                            label={lang === 'ru' ? 'Реакция ребёнка на стресс' : 'Child stress response'}
-                            options={lang === 'ru' ? ['Ищет поддержку', 'Замыкается', 'Злится', 'Истерики'] : ['Seeks support', 'Withdraws', 'Gets angry', 'Tantrums']}
-                            selected={riskProfile?.childStress ? [riskProfile.childStress] : []}
-                            onChange={setSingleRiskValue('childStress')}
+                            label={ru ? 'Реакция ребёнка на стресс' : 'Child stress response'}
+                            options={childStress.chipOptions}
+                            selected={childStress.chipSelected}
+                            onChange={childStress.chipOnChange}
                             single
                         />
                         <ChipGroup
-                            label={lang === 'ru' ? 'Триггеры ребёнка' : 'Child triggers'}
+                            label={ru ? 'Триггеры ребёнка' : 'Child triggers'}
                             options={arrChildTriggers}
                             selected={riskProfile?.triggers || []}
-                            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), triggers: list }))}
+                            onChange={(list) => setRiskProfile(prev => ({ ...(prev ?? {}), triggers: list }))}
                         />
                         <ChipGroup
-                            label={lang === 'ru' ? 'Частота сообщений от няни' : 'Nanny check-in frequency'}
-                            options={lang === 'ru' ? ['Минимум', 'Регулярно (2–3)', 'Часто'] : ['Minimal', 'Regular (2–3)', 'Frequent']}
-                            selected={riskProfile?.communicationPreference ? [riskProfile.communicationPreference] : []}
-                            onChange={setSingleRiskValue('communicationPreference')}
+                            label={ru ? 'Частота сообщений от няни' : 'Nanny check-in frequency'}
+                            options={commPref.chipOptions}
+                            selected={commPref.chipSelected}
+                            onChange={commPref.chipOnChange}
                             single
                         />
                         <ChipGroup
-                            label={lang === 'ru' ? 'Потребности семьи' : 'Family needs'}
+                            label={ru ? 'Потребности семьи' : 'Family needs'}
                             options={arrNeeds}
                             selected={riskProfile?.needs || []}
-                            onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), needs: list }))}
+                            onChange={(list) => setRiskProfile(prev => ({ ...(prev ?? {}), needs: list }))}
                         />
                     </div>
                 )}
@@ -176,13 +238,13 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     </div>
                     <div className="flex-1">
                         <h3 className="font-semibold text-[#1C2B2D] mb-1">
-                            {lang === 'ru' ? 'Договоры и документы' : 'Contracts & documents'}
+                            {ru ? 'Договоры и документы' : 'Contracts & documents'}
                         </h3>
 
                         {documents.length === 0 && (
                             <>
                                 <p className="text-sm text-[#1C2B2D]/50 mb-3">
-                                    {lang === 'ru'
+                                    {ru
                                         ? 'Загрузите шаблон договора или паспорт для верификации (опционально)'
                                         : 'Upload a contract template or ID for verification (optional)'}
                                 </p>
@@ -192,7 +254,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                                     className="flex items-center gap-2 rounded-lg bg-[#EFF3F2] px-4 py-2 text-sm font-medium text-[#2A6B6E] transition-colors hover:bg-[#2A6B6E]/10"
                                 >
                                     <Upload size={15} />
-                                    {lang === 'ru' ? 'Загрузить' : 'Upload'}
+                                    {ru ? 'Загрузить' : 'Upload'}
                                 </button>
                             </>
                         )}
@@ -201,20 +263,20 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                             <div className="animate-fade-in space-y-2">
                                 <div className="flex items-center gap-2 text-sm font-medium text-[#2A6B6E] mb-2">
                                     <Check size={15} />
-                                    {documents.length} {lang === 'ru' ? 'документов загружено' : 'documents uploaded'}
+                                    {documents.length} {ru ? 'документов загружено' : 'documents uploaded'}
                                 </div>
                                 {documents.map((_, i) => (
                                     <div key={i} className="flex items-center justify-between rounded-lg border border-[#2A6B6E]/10 bg-white/60 p-2">
                                         <span className="text-xs font-semibold text-[#1C2B2D]">
-                                            {lang === 'ru' ? `Документ ${i + 1}` : `Document ${i + 1}`}
+                                            {ru ? `Документ ${i + 1}` : `Document ${i + 1}`}
                                         </span>
                                         <span className="rounded bg-[#EFF3F2] px-1.5 py-0.5 text-[10px] font-bold text-[#2A6B6E]">
-                                            {lang === 'ru' ? 'Загружен' : 'Uploaded'}
+                                            {ru ? 'Загружен' : 'Uploaded'}
                                         </span>
                                     </div>
                                 ))}
                                 <button type="button" onClick={() => setShowDocUpload(true)} className="mt-2 text-xs text-[#2A6B6E] underline underline-offset-2">
-                                    + {lang === 'ru' ? 'Добавить ещё' : 'Add more'}
+                                    + {ru ? 'Добавить ещё' : 'Add more'}
                                 </button>
                             </div>
                         )}
@@ -229,19 +291,19 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
             <div className="sticky-action-rail sticky-footer-fade flex gap-4">
                 <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
-                    {lang === 'ru' ? 'Назад' : 'Back'}
+                    {ru ? 'Назад' : 'Back'}
                 </Button>
                 <Button type="button" className="flex-1" onClick={onFinalSubmit} isLoading={loading} pulse={!loading}>
                     {isEditing
-                        ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes')
-                        : (lang === 'ru' ? 'Отправить заявку' : 'Submit request')}
+                        ? (ru ? 'Сохранить изменения' : 'Save Changes')
+                        : (ru ? 'Отправить заявку' : 'Submit request')}
                 </Button>
             </div>
 
             {showDocUpload && (
                 <DocumentUploadModal
                     onClose={() => setShowDocUpload(false)}
-                    onVerify={(doc) => setDocuments((prev) => [...prev, doc])}
+                    onVerify={(doc) => setDocuments(prev => [...prev, doc])}
                     lang={lang}
                 />
             )}

@@ -1,6 +1,7 @@
 import { supabase, hasSupabaseClient } from './supabase';
 import { getItem, removeItem, setItem } from '@/core/platform/storage';
 import { trackBookingCreated } from './analytics';
+import { recordMatchOutcome } from './matchingFeedback';
 
 // Types
 export interface Booking {
@@ -168,6 +169,11 @@ export async function updateBookingStatus(
         if (remote) {
             upsertLocalBookings([remote]);
             clearPendingBooking(remote.id);
+            // Record hired only after the booking is durably saved remotely.
+            // Avoids a false positive in the learning loop when remote save fails.
+            if ((status === 'confirmed' || status === 'completed') && prev.status !== status) {
+                void recordMatchOutcome(prev.parent_id, prev.nanny_id, 'hired');
+            }
             return remote;
         }
     } catch (e) {

@@ -2,6 +2,30 @@
 
 ---
 
+## 2026-05-19 (Tue)
+
+### Done — RLHF loop: race condition fix, display_position, hired outcome
+
+- ✅ **Race condition removed** — `logWildcardFlag()` удалена. `wildcardId` теперь передаётся в `logShadowScores()` и пишется атомарно в том же upsert-ряду как `explore_flag`. Отдельный UPDATE невозможен до INSERT.
+- ✅ **display_position** — добавлен в `matching_outcomes` (миграция `20260519000001`). Логируется как 1-based позиция кандидата в выдаче **после** ε-greedy, т.е. то, что реально видел пользователь. Нужен для propensity estimation.
+- ✅ **Порядок вызовов** — `applyEpsilonGreedy` теперь вызывается до `logShadowScores`, чтобы позиции были post-greedy, а не pre-greedy.
+- ✅ **Hired outcome** — `updateBookingStatus('confirmed'|'completed')` вызывает `recordMatchOutcome(..., 'hired')`. Повторный вызов безопасен (upsert). Самый сильный сигнал в learning loop теперь записывается.
+- ⚠️ **CRON_SECRET** — должен быть задан в Vercel env, иначе ghosted cron возвращает 401.
+
+### Done — RLHF outcome loop closed end-to-end
+
+- ✅ **Fix 1 (RLS CRITICAL)** — `supabase/migrations/20260519000000_matching_outcomes_update_rls.sql`: UPDATE RLS policy added for authenticated parents on `matching_outcomes`. Without this, upserts in `recordMatchOutcome()` silently failed on existing shadow rows.
+- ✅ **Fix 2 (wildcardId)** — `src/core/ai/shadowScoring.ts`: added `logWildcardFlag(parentId, nannyId)` → sets `explore_flag=true`. `matchingAi.ts`: captures `wildcardId` from `applyEpsilonGreedy` and calls it.
+- ✅ **Fix 3 (UI wiring)** — `MatchResultsScreen.tsx`: open profile → `recordMatchOutcome(..., 'interested')`; new "Не подходит" ghost button → `'rejected'`. parentId from `supabase.auth.getUser()` on mount.
+- ✅ **Fix 4 (ghosted cron)** — `api/cron/ghosted-outcomes.ts` + `vercel.json` cron at `0 3 * * *`. Sets `outcome='ghosted'` for rows with `outcome IS NULL` older than 7 days. `CRON_SECRET` env var required.
+
+### Effect
+
+- Full loop: shown → interested/rejected → hired/ghosted → future weight training
+- ε-greedy wildcards now measurable via `explore_flag`
+
+---
+
 ## 2026-05-18 (Mon)
 
 ### Done

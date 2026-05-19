@@ -6,6 +6,10 @@
  *
  * ε-Greedy: 10% chance to swap position 3 with a "wildcard" from positions 4-8.
  * Prevents filter bubble. Tracks explore_flag for measurement.
+ *
+ * Design note: explore_flag and display_position are written in the same upsert
+ * as the shadow score row to avoid a race condition where logWildcardFlag() could
+ * execute before the INSERT completed.
  */
 
 import { supabase } from '@/services/supabase';
@@ -22,43 +26,48 @@ export interface ScoredCandidate {
 
 /**
  * Log shadow scores to matching_outcomes (fire-and-forget).
- * Records heuristic_score + factor breakdown for top candidates.
- * Does NOT block the matching flow.
+ * Call AFTER applyEpsilonGreedy so display_position reflects what the user saw.
+ * Pass wildcardId so explore_flag is set atomically in the same upsert.
  */
 export function logShadowScores(
   ranked: ScoredCandidate[],
   requestId?: string,
   parentId?: string,
+  wildcardId?: string | null,
 ): void {
-  // Fire-and-forget — no await, no blocking
-  _logShadowScoresAsync(ranked, requestId, parentId).catch(() => {
+  _logShadowScoresAsync(ranked, requestId, parentId, wildcardId).catch(() => {
     // Silent fail — shadow scoring must never break matching
   });
 }
 
 async function _logShadowScoresAsync(
   ranked: ScoredCandidate[],
-  requestId?: string,
+  _requestId?: string,
   parentId?: string,
+  wildcardId?: string | null,
 ): Promise<void> {
   if (!supabase || !parentId || ranked.length === 0) return;
 
-  const rows = ranked.slice(0, 10).map((r) => ({
+  const rows = ranked.slice(0, 10).map((r, index) => ({
     parent_id: parentId,
     nanny_id: r.nanny.id,
     heuristic_score: r.score,
     factors: r.factors || {},
-    weight_snapshot: null, // filled by weight update cron later
+    weight_snapshot: null,  // filled by weight update cron later
     score_at_match: r.score,
+    display_position: index + 1,
+    explore_flag: wildcardId != null && r.nanny.id === wildcardId,
     // outcome left NULL — filled when user acts (hired/rejected/ghosted)
   }));
 
   try {
-    // Use upsert with conflict on (parent_id, nanny_id) to avoid duplicates
-    // within the same session
+    // No ignoreDuplicates — re-impressions of the same nanny by the same parent
+    // update display_position, explore_flag, score_at_match to reflect the latest
+    // context before the outcome decision. outcome is absent from the row object
+    // so Supabase never overwrites it in the UPDATE SET.
     await supabase
       .from('matching_outcomes')
-      .upsert(rows, { onConflict: 'parent_id,nanny_id', ignoreDuplicates: true });
+      .upsert(rows, { onConflict: 'parent_id,nanny_id' });
   } catch {
     // Silent fail
   }
@@ -77,18 +86,15 @@ const EPSILON = 0.10; // 10% exploration rate
 export function applyEpsilonGreedy<T extends { score: number; nanny: { id: string } }>(
   ranked: T[],
 ): { candidates: T[]; wildcardId: string | null } {
-  // Need at least 4 candidates to explore
   if (ranked.length < 4) {
     return { candidates: [...ranked], wildcardId: null };
   }
 
   const roll = Math.random();
   if (roll >= EPSILON) {
-    // Exploit: return as-is
     return { candidates: [...ranked], wildcardId: null };
   }
 
-  // Explore: pick random candidate from positions 3-7 (0-indexed)
   const explorePool = ranked.slice(3, Math.min(8, ranked.length));
   if (explorePool.length === 0) {
     return { candidates: [...ranked], wildcardId: null };
@@ -98,7 +104,6 @@ export function applyEpsilonGreedy<T extends { score: number; nanny: { id: strin
   const wildcard = explorePool[wildcardIdx];
   const result = [...ranked];
 
-  // Swap: move wildcard to position 2 (0-indexed), shift others down
   const originalThird = result[2];
   const wildcardSourceIdx = 3 + wildcardIdx;
   result[2] = wildcard;

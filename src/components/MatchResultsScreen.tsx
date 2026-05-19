@@ -22,6 +22,8 @@ import {
     markMatchFollowUpProfileOpened,
     saveMatchFollowUp,
 } from '@/services/matchFollowUp';
+import { recordMatchOutcome } from '@/services/matchingFeedback';
+import { supabase } from '@/services/supabase';
 import { t } from '@/core/i18n/translations';
 
 /* ─── Accent palette (scoped) ─── */
@@ -76,7 +78,8 @@ const CandidateCard: React.FC<{
     onToggle: () => void;
     onOpenProfile: (nannyId: string, nannyName: string, position: number, score: number, navigateToProfile?: boolean) => void;
     onShareToast: () => void;
-}> = ({ candidate, index, lang, isExpanded, onToggle, onOpenProfile, onShareToast }) => {
+    onReject: (nannyId: string) => void;
+}> = ({ candidate, index, lang, isExpanded, onToggle, onOpenProfile, onShareToast, onReject }) => {
     const text = t[lang];
     const { nanny, score, humanExplanation, trustBadges, riskFlags } = candidate;
 
@@ -346,6 +349,13 @@ const CandidateCard: React.FC<{
                                         {lang === 'ru' ? 'Обсудить' : 'Share'}
                                     </Button>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={() => onReject(nanny.id)}
+                                    className="w-full pt-1 text-center text-xs text-[#9CA3AF] transition-colors hover:text-[#6B7280]"
+                                >
+                                    {lang === 'ru' ? 'Не подходит' : 'Not a match'}
+                                </button>
                             </div>
                         </motion.div>
                     )}
@@ -362,6 +372,14 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
     const { data: matchResult, loading, error } = useMatchResults(lang);
     const [showToast, setShowToast] = useState(false);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [parentId, setParentId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!supabase) return;
+        supabase.auth.getUser().then(({ data }) => {
+            if (data.user) setParentId(data.user.id);
+        });
+    }, []);
 
     const handleShareToast = useCallback(() => {
         setShowToast(true);
@@ -388,10 +406,16 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
         trackNannyCardClick(nannyName || 'unknown', position || 0, score || 0);
         trackMatchProfileOpen(nannyId, position || 0, score || 0);
         markMatchFollowUpProfileOpened(nannyId);
+        if (parentId) recordMatchOutcome(parentId, nannyId, 'interested', undefined, score);
         if (!navigateToProfile) return;
         const slug = slugify(nannyName || nannyId, nannyId);
         navigate(`/nanny/${slug}`);
     };
+
+    const handleRejectCandidate = useCallback((nannyId: string) => {
+        if (parentId) recordMatchOutcome(parentId, nannyId, 'rejected');
+        setExpandedId(null);
+    }, [parentId]);
 
     if (loading) {
         return (
@@ -575,6 +599,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                     )}
                                     onOpenProfile={handleOpenProfile}
                                     onShareToast={handleShareToast}
+                                    onReject={handleRejectCandidate}
                                 />
                             ))}
                         </div>

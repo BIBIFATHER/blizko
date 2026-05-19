@@ -19,8 +19,11 @@ export const findBestMatch = async (
   const w = await getWeights();
   const ranked = rankCandidates(request, candidates, w as MatchingWeights);
 
-  logShadowScores(ranked.slice(0, 10) as ScoredCandidate[], undefined, parentId);
-  const { candidates: greedyRanked } = applyEpsilonGreedy(ranked);
+  // Apply ε-greedy first, then log the post-greedy order as display_position.
+  // wildcardId is passed into logShadowScores so explore_flag is set atomically
+  // in the same upsert row — no separate UPDATE, no race condition.
+  const { candidates: greedyRanked, wildcardId } = applyEpsilonGreedy(ranked);
+  logShadowScores(greedyRanked.slice(0, 10) as ScoredCandidate[], undefined, parentId, wildcardId);
 
   const heuristicFallback = buildHeuristicFallback(greedyRanked, lang);
   const matchResult = await buildMatchResult(greedyRanked, request, lang);

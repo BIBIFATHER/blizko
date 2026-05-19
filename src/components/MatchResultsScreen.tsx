@@ -10,7 +10,7 @@ import { useMatchResults } from '@/hooks/useMatchResults';
 import {
     MessageCircle, ArrowLeft, Sparkles, User,
     AlertTriangle, ShieldAlert, Share2, CheckCheck,
-    Heart, Clock, MapPin, Check, ChevronDown
+    Heart, Clock, MapPin, Check, ChevronDown, ShieldCheck,
 } from 'lucide-react';
 import { MatchCandidate, TrustBadge, Language } from '@/core/types';
 import {
@@ -26,50 +26,54 @@ import { recordMatchOutcome } from '@/services/matchingFeedback';
 import { supabase } from '@/services/supabase';
 import { t } from '@/core/i18n/translations';
 
-/* ─── Accent palette (scoped) ─── */
-const ACCENT = '#6C5CE7';
-const ACCENT_SOFT = '#A29BFE';
-const ACCENT_BG = '#F0EEFF';
+/* ─── Warm Trust palette ─── */
+const PETROL     = '#2A6B6E';
+const PETROL_BG  = '#EFF3F2';
+const SAGE       = '#7FA99B';
 
 interface MatchResultsScreenProps {
     lang: Language;
 }
 
 const TRUST_BADGE_LABELS: Record<TrustBadge, Record<Language, string>> = {
-    verified_docs: { ru: 'Документы ✓', en: 'Docs verified' },
-    verified_moderation: { ru: 'Модерация ✓', en: 'Reviewed' },
-    ai_checked: { ru: 'AI-проверка', en: 'AI-verified' },
-    soft_skills: { ru: 'Soft skills ✓', en: 'Soft skills' },
-    has_reviews: { ru: 'Есть отзывы', en: 'Has reviews' },
+    verified_docs:      { ru: 'Документы ✓',  en: 'Docs verified'  },
+    verified_moderation:{ ru: 'Модерация ✓',  en: 'Reviewed'       },
+    ai_checked:         { ru: 'AI-проверка',  en: 'AI-verified'    },
+    soft_skills:        { ru: 'Soft skills ✓',en: 'Soft skills'    },
+    has_reviews:        { ru: 'Есть отзывы',  en: 'Has reviews'    },
 };
 
 const TRUST_BADGE_ICONS: Record<TrustBadge, string> = {
-    verified_docs: '📋',
-    verified_moderation: '👁️',
-    ai_checked: '🤖',
-    soft_skills: '🧠',
-    has_reviews: '⭐',
+    verified_docs: '📋', verified_moderation: '👁️', ai_checked: '🤖',
+    soft_skills: '🧠', has_reviews: '⭐',
 };
 
-/* ─── Spring config — weighty, no bounce ─── */
+/* Score is internal — parents see a qualitative tier, not a number. */
+function getTier(score: number, lang: Language): string {
+    if (score >= 85) return lang === 'ru' ? 'Сильный вариант'  : 'Strong match';
+    if (score >= 70) return lang === 'ru' ? 'Хороший вариант'  : 'Good match';
+    return               lang === 'ru' ? 'Вариант для диалога' : 'Worth discussing';
+}
+
+/* ─── Spring config ─── */
 const layoutSpring = { type: 'spring' as const, damping: 28, stiffness: 220 };
 const prefersReducedMotion =
     typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-/* ─── Toast notification for copy feedback ─── */
+/* ─── Share toast ─── */
 const ShareToast: React.FC<{ show: boolean; lang: Language }> = ({ show, lang }) => (
     <div
         className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl
-            bg-stone-800 text-white text-sm font-medium shadow-xl
+            bg-[#1C2B2D] text-white text-sm font-medium shadow-xl
             flex items-center gap-2 transition-all duration-300
             ${show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
     >
-        <Check size={16} className="text-green-400" />
+        <Check size={16} className="text-[#7FA99B]" />
         {lang === 'ru' ? 'Скопировано для отправки партнёру' : 'Copied for sharing'}
     </div>
 );
 
-/* ─── Candidate Bento Card — Layout Morphing ─── */
+/* ─── Candidate Card ─── */
 const CandidateCard: React.FC<{
     candidate: MatchCandidate;
     index: number;
@@ -84,52 +88,51 @@ const CandidateCard: React.FC<{
     const { nanny, score, humanExplanation, trustBadges, riskFlags } = candidate;
 
     const initials = (nanny.name || '?')
-        .split(' ')
-        .map(w => w[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase();
+        .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
     const avatarGradients = [
-        'from-[#6C5CE7] to-[#A29BFE]',
+        `from-[${PETROL}] to-[${SAGE}]`,
         'from-[#aab79a] to-[#d3decb]',
         'from-[#b79c82] to-[#dfc5a8]',
     ];
 
+    const tier = getTier(score, lang);
+
     const copyShareLink = useCallback(() => {
         const shareText = lang === 'ru'
-            ? `Смотри, кого ИИ подобрал на Blizko — ${nanny.name} (${score}% совместимости)!\n\n💬 Почему подходит: «${humanExplanation}»\n\n👉 Попробуй сам: ${window.location.origin}`
-            : `Check who AI matched on Blizko — ${nanny.name} (${score}% match)!\n\n💬 Why it works: "${humanExplanation}"\n\n👉 Try it: ${window.location.origin}`;
+            ? `Посмотри, кого Blizko подобрал — ${nanny.name}.\n\n💬 Почему подходит: «${humanExplanation}»\n\n👉 Попробуй сам: ${window.location.origin}`
+            : `Check who Blizko matched — ${nanny.name}.\n\n💬 Why it works: "${humanExplanation}"\n\n👉 Try it: ${window.location.origin}`;
 
         if (navigator.share) {
-            navigator.share({
-                title: `Blizko: ${nanny.name} — ${score}%`,
-                text: shareText,
-                url: window.location.origin,
-            }).catch(() => { /* user cancelled — ok */ });
+            navigator.share({ title: `Blizko: ${nanny.name}`, text: shareText, url: window.location.origin })
+                .catch(() => {});
         } else {
-            navigator.clipboard.writeText(shareText).then(() => {
-                onShareToast();
-            }).catch(console.error);
+            navigator.clipboard.writeText(shareText).then(onShareToast).catch(console.error);
         }
-    }, [nanny, score, humanExplanation, lang, onShareToast]);
+    }, [nanny, humanExplanation, lang, onShareToast]);
 
     const handleOpenProfile = useCallback(() => {
         onOpenProfile(nanny.id, nanny.name || 'unknown', index + 1, score, true);
     }, [index, nanny.id, nanny.name, onOpenProfile, score]);
 
     const hasMeta = !!(nanny.experience || nanny.city || nanny.district);
-    const recommendationCopy =
-        score >= 90
-            ? (lang === 'ru' ? 'Очень высокий уровень совпадения.' : 'Very strong alignment.')
-            : score >= 80
-                ? (lang === 'ru' ? 'Хороший баланс опыта и доверия.' : 'Strong balance of experience and trust.')
-                : (lang === 'ru' ? 'Вариант для аккуратного диалога.' : 'Worth a careful conversation.');
     const contextPills = [
-        nanny.experience ? { icon: <Clock size={12} />, label: nanny.experience } : null,
-        nanny.city || nanny.district ? { icon: <MapPin size={12} />, label: nanny.district || nanny.city || '' } : null,
-        nanny.isNannySharing ? { icon: <Heart size={12} />, label: 'Nanny Sharing' } : null,
+        nanny.experience                      ? { icon: <Clock size={12} />, label: nanny.experience }                 : null,
+        nanny.city || nanny.district          ? { icon: <MapPin size={12} />, label: nanny.district || nanny.city || '' } : null,
+        nanny.isNannySharing                  ? { icon: <Heart size={12} />, label: 'Nanny Sharing' }                   : null,
     ].filter(Boolean) as Array<{ icon: React.ReactNode; label: string }>;
+
+    /* First card gets a subtle breathing glow — position-based, no score exposed */
+    const glowProps = index === 0 && !prefersReducedMotion ? {
+        animate: {
+            boxShadow: [
+                '0 2px 16px -4px rgba(42,107,110,0.06)',
+                '0 0 18px 2px rgba(42,107,110,0.14)',
+                '0 2px 16px -4px rgba(42,107,110,0.06)',
+            ],
+        },
+        transition: { duration: 3.5, repeat: Infinity, ease: 'easeInOut' },
+    } : {};
 
     return (
         <motion.div
@@ -138,27 +141,16 @@ const CandidateCard: React.FC<{
             transition={layoutSpring}
             className="animate-pop-in"
             style={{ animationDelay: `${index * 140 + 200}ms` }}
-            {...(score > 90 && !prefersReducedMotion ? {
-                animate: {
-                    opacity: [0.88, 1, 0.88],
-                    scale: [1, 1.008, 1],
-                    boxShadow: [
-                        '0 2px 16px -4px rgba(108,92,231,0.08)',
-                        '0 0 18px 2px rgba(108,92,231,0.18)',
-                        '0 2px 16px -4px rgba(108,92,231,0.08)',
-                    ],
-                },
-                transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
-            } : {})}
+            {...glowProps}
         >
             <div
                 className={`overflow-hidden rounded-[2rem] bg-white transition-shadow duration-300 ${
                     isExpanded
-                        ? 'shadow-[0_20px_60px_-15px_rgba(108,92,231,0.15)]'
-                        : 'shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_32px_-8px_rgba(108,92,231,0.12)]'
+                        ? 'shadow-[0_20px_60px_-15px_rgba(42,107,110,0.14)]'
+                        : 'shadow-[0_2px_16px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_32px_-8px_rgba(42,107,110,0.10)]'
                 }`}
             >
-                {/* ─── Always-visible header: avatar + name + score ─── */}
+                {/* ─── Always-visible header ─── */}
                 <motion.div
                     layout={!prefersReducedMotion}
                     className="cursor-pointer select-none active:scale-[0.995] transition-transform"
@@ -170,7 +162,7 @@ const CandidateCard: React.FC<{
                             <motion.div
                                 layout={!prefersReducedMotion}
                                 className={`${isExpanded ? 'h-[88px] w-[88px]' : 'h-[72px] w-[72px]'} rounded-[24px] bg-linear-to-br ${avatarGradients[index % 3]} flex items-center justify-center shrink-0 overflow-hidden ring-2 ring-white transition-all duration-300`}
-                                style={{ boxShadow: `0 8px 24px -4px ${ACCENT}30` }}
+                                style={{ boxShadow: `0 8px 24px -4px ${PETROL}28` }}
                             >
                                 {nanny.photo ? (
                                     <img src={nanny.photo} alt={nanny.name} className="h-full w-full object-cover" />
@@ -179,18 +171,23 @@ const CandidateCard: React.FC<{
                                 )}
                             </motion.div>
 
-                            {/* Name + meta */}
+                            {/* Name + tier + meta */}
                             <div className="min-w-0 flex-1 space-y-2.5">
-                                <div className="space-y-1">
+                                <div className="space-y-1.5">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-400">
                                         {lang === 'ru' ? `Кандидат ${index + 1}` : `Candidate ${index + 1}`}
                                     </p>
-                                    <h3 className="text-[1.35rem] font-semibold leading-[1.1] text-[#1A1A2E] sm:text-[1.5rem]">
+                                    <h3 className="text-[1.35rem] font-semibold leading-[1.1] text-[#1C2B2D] sm:text-[1.5rem]">
                                         {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
                                     </h3>
-                                    <p className="text-[13px] leading-5 text-[#6B7280]">
-                                        {recommendationCopy}
-                                    </p>
+                                    {/* Qualitative tier — no numeric score exposed */}
+                                    <span
+                                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold"
+                                        style={{ backgroundColor: PETROL_BG, color: PETROL }}
+                                    >
+                                        <ShieldCheck size={11} />
+                                        {tier}
+                                    </span>
                                 </div>
 
                                 {hasMeta && (
@@ -198,46 +195,25 @@ const CandidateCard: React.FC<{
                                         {contextPills.map((item) => (
                                             <span
                                                 key={item.label}
-                                                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium text-[#6B7280]"
+                                                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium text-stone-500"
                                                 style={{ backgroundColor: '#F8F9FA' }}
                                             >
-                                                <span className="text-[#9CA3AF]">{item.icon}</span>
+                                                <span className="text-stone-400">{item.icon}</span>
                                                 {item.label}
                                             </span>
                                         ))}
                                     </div>
                                 )}
                             </div>
-
-                            {/* Score badge — pulse glow for top candidates */}
-                            <motion.div
-                                className="rounded-[20px] px-4 py-3 text-center text-white shrink-0"
-                                style={{ backgroundColor: ACCENT, boxShadow: `0 4px 20px -4px ${ACCENT}60` }}
-                                {...(score > 90 && !prefersReducedMotion ? {
-                                    animate: {
-                                        boxShadow: [
-                                            `0 4px 20px -4px ${ACCENT}60`,
-                                            `0 4px 32px -2px ${ACCENT}90`,
-                                            `0 4px 20px -4px ${ACCENT}60`,
-                                        ],
-                                    },
-                                    transition: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
-                                } : {})}
-                            >
-                                <div className="text-[1.75rem] font-bold leading-none">{score}</div>
-                                <div className="mt-1 text-[8px] font-bold uppercase tracking-[0.22em] text-white/70">
-                                    {lang === 'ru' ? 'Балл' : 'Fit'}
-                                </div>
-                            </motion.div>
                         </div>
 
-                        {/* Expand chevron hint */}
+                        {/* Expand chevron */}
                         <div className="mt-4 flex items-center justify-center">
                             <motion.div
                                 animate={{ rotate: isExpanded ? 180 : 0 }}
                                 transition={{ duration: 0.3 }}
                                 className="rounded-full p-1"
-                                style={{ color: isExpanded ? ACCENT : '#9CA3AF' }}
+                                style={{ color: isExpanded ? PETROL : '#9CA3AF' }}
                             >
                                 <ChevronDown size={18} />
                             </motion.div>
@@ -245,7 +221,7 @@ const CandidateCard: React.FC<{
                     </div>
                 </motion.div>
 
-                {/* ─── Expanded details — layout morph ─── */}
+                {/* ─── Expanded details ─── */}
                 <AnimatePresence mode="wait">
                     {isExpanded && (
                         <motion.div
@@ -256,23 +232,22 @@ const CandidateCard: React.FC<{
                             className="overflow-hidden"
                         >
                             <div className="space-y-4 px-6 pb-6 sm:px-8 sm:pb-8">
-                                {/* Tonal divider */}
-                                <div className="h-px" style={{ backgroundColor: '#F1F3F5' }} />
+                                <div className="h-px bg-stone-100" />
 
-                                {/* AI explanation */}
-                                <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: '#F8F9FA' }}>
-                                    <div className="mb-2.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">
-                                        <MessageCircle size={12} style={{ color: ACCENT_SOFT }} />
+                                {/* Why it fits — hero of the card */}
+                                <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: '#F9F6F2' }}>
+                                    <div className="mb-2.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
+                                        <MessageCircle size={12} style={{ color: SAGE }} />
                                         {text.shortlistReasonTitle}
                                     </div>
-                                    <p className="text-[14px] leading-7 text-[#374151]">
+                                    <p className="text-[14px] leading-7 text-[#1C2B2D]">
                                         {humanExplanation}
                                     </p>
                                 </div>
 
                                 {/* Trust badges */}
-                                <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: ACCENT_BG }}>
-                                    <div className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: ACCENT }}>
+                                <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: PETROL_BG }}>
+                                    <div className="mb-3 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: PETROL }}>
                                         <CheckCheck size={12} />
                                         {text.shortlistTrustTitle}
                                     </div>
@@ -281,14 +256,14 @@ const CandidateCard: React.FC<{
                                             trustBadges.slice(0, 4).map((badge) => (
                                                 <span
                                                     key={badge}
-                                                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-[#374151] shadow-sm"
+                                                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-medium text-[#1C2B2D] shadow-sm"
                                                 >
                                                     <span className="text-[10px]">{TRUST_BADGE_ICONS[badge]}</span>
                                                     {TRUST_BADGE_LABELS[badge]?.[lang] || badge}
                                                 </span>
                                             ))
                                         ) : (
-                                            <span className="text-[11px] font-medium italic text-[#9CA3AF]">
+                                            <span className="text-[11px] font-medium italic text-stone-400">
                                                 {lang === 'ru' ? 'Базовая проверка уже пройдена' : 'Basic review already passed'}
                                             </span>
                                         )}
@@ -297,8 +272,8 @@ const CandidateCard: React.FC<{
 
                                 {/* Risk flags */}
                                 {riskFlags && riskFlags.length > 0 && (
-                                    <div className="rounded-2xl px-5 py-5" style={{ backgroundColor: '#FFF7ED' }}>
-                                        <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9CA3AF]">
+                                    <div className="rounded-2xl px-5 py-5 bg-amber-50/60">
+                                        <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.15em] text-stone-400">
                                             {text.shortlistRiskTitle}
                                         </span>
                                         <div className="space-y-2">
@@ -308,7 +283,7 @@ const CandidateCard: React.FC<{
                                                     className={`flex items-start gap-2.5 rounded-xl p-3 text-xs leading-relaxed ${
                                                         flag.level === 'critical'
                                                             ? 'bg-red-50/80 text-red-800'
-                                                            : 'bg-amber-50/60 text-amber-900'
+                                                            : 'bg-amber-50/80 text-amber-900'
                                                     }`}
                                                 >
                                                     {flag.level === 'critical'
@@ -333,8 +308,8 @@ const CandidateCard: React.FC<{
                                         onClick={handleOpenProfile}
                                         className="col-span-3 flex min-h-[52px] items-center justify-center gap-2 rounded-2xl text-sm font-semibold text-white transition-all duration-300 active:scale-[0.97] hover:brightness-110"
                                         style={{
-                                            backgroundColor: ACCENT,
-                                            boxShadow: `0 8px 24px -6px ${ACCENT}50`,
+                                            backgroundColor: PETROL,
+                                            boxShadow: `0 8px 24px -6px ${PETROL}50`,
                                         }}
                                     >
                                         <MessageCircle size={16} />
@@ -343,16 +318,16 @@ const CandidateCard: React.FC<{
                                     <Button
                                         variant="outline"
                                         onClick={copyShareLink}
-                                        className="col-span-2 py-3.5! rounded-2xl! border-[#E5E7EB] bg-white text-[#6B7280] shadow-sm hover:bg-[#F8F9FA]"
+                                        className="col-span-2 py-3.5! rounded-2xl! border-stone-200 bg-white text-stone-500 shadow-sm hover:bg-stone-50"
                                     >
-                                        <Share2 size={15} className="text-[#9CA3AF]" />
+                                        <Share2 size={15} className="text-stone-400" />
                                         {lang === 'ru' ? 'Обсудить' : 'Share'}
                                     </Button>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={() => onReject(nanny.id)}
-                                    className="w-full pt-1 text-center text-xs text-[#9CA3AF] transition-colors hover:text-[#6B7280]"
+                                    className="w-full pt-1 text-center text-xs text-stone-400 transition-colors hover:text-stone-600"
                                 >
                                     {lang === 'ru' ? 'Не подходит' : 'Not a match'}
                                 </button>
@@ -390,7 +365,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
         if (matchResult && matchResult.candidates.length > 0) {
             trackMatchingResults(
                 matchResult.candidates.length,
-                matchResult.candidates[0]?.score || 0
+                matchResult.candidates[0]?.score || 0,
             );
             saveMatchFollowUp(matchResult);
         }
@@ -455,7 +430,6 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                     <ArrowLeft size={18} />
                     <span className="text-sm">{lang === 'ru' ? 'Назад' : 'Back'}</span>
                 </button>
-
                 <EmptyState
                     icon={<User size={28} />}
                     title={lang === 'ru' ? 'Пока кандидатов нет' : 'No candidates yet'}
@@ -485,8 +459,8 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                 <div className="eyebrow">
                                     <Sparkles size={14} />
                                     {lang === 'ru'
-                                        ? `Найдено ${matchResult.candidates.length} сильных совпадения`
-                                        : `${matchResult.candidates.length} strong matches found`}
+                                        ? `${matchResult.candidates.length} варианта для знакомства`
+                                        : `${matchResult.candidates.length} candidates to consider`}
                                 </div>
                                 <div className="topbar-chip">
                                     <CheckCheck size={12} />
@@ -513,20 +487,20 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                 {[
                                     {
                                         title: lang === 'ru' ? 'Не бесконечный список' : 'Not an endless list',
-                                        text: lang === 'ru' ? 'Только кандидаты, с которыми есть смысл созваниваться.' : 'Only profiles worth opening and discussing.'
+                                        body:  lang === 'ru' ? 'Только кандидаты, с которыми есть смысл созваниваться.' : 'Only profiles worth opening and discussing.',
                                     },
                                     {
                                         title: lang === 'ru' ? 'Сигналы доверия видны сразу' : 'Trust appears early',
-                                        text: lang === 'ru' ? 'Проверки, отзывы и риски вынесены вверх карточки.' : 'Checks, reviews, and risks are visible before deeper reading.'
+                                        body:  lang === 'ru' ? 'Проверки, отзывы и риски вынесены вверх карточки.' : 'Checks, reviews, and risks are visible before deeper reading.',
                                     },
                                     {
                                         title: lang === 'ru' ? 'Решение без спешки' : 'Decision without rush',
-                                        text: lang === 'ru' ? 'Можно открыть профиль, обсудить и вернуться к shortlist.' : 'Open a profile, discuss it, and come back later.'
+                                        body:  lang === 'ru' ? 'Можно открыть профиль, обсудить и вернуться к shortlist.' : 'Open a profile, discuss it, and come back later.',
                                     },
                                 ].map((item) => (
                                     <div key={item.title} className="rounded-[1.6rem] bg-white/78 px-4 py-4 shadow-cloud-soft">
                                         <p className="text-sm font-semibold text-stone-900">{item.title}</p>
-                                        <p className="mt-2 text-sm leading-6 text-stone-600">{item.text}</p>
+                                        <p className="mt-2 text-sm leading-6 text-stone-600">{item.body}</p>
                                     </div>
                                 ))}
                             </div>
@@ -539,7 +513,9 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                 </p>
                                 <p className="mt-3 text-3xl font-semibold text-stone-950">{matchResult.candidates.length}</p>
                                 <p className="mt-2 text-sm leading-6 text-stone-600">
-                                    {lang === 'ru' ? 'Оставили только профили, которые можно обсуждать без ощущения лотереи.' : 'Only profiles worth discussing without roulette-level uncertainty.'}
+                                    {lang === 'ru'
+                                        ? 'Оставили только профили, которые можно обсуждать без ощущения лотереи.'
+                                        : 'Only profiles worth discussing without roulette-level uncertainty.'}
                                 </p>
                             </div>
 
@@ -547,7 +523,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                 {[
                                     lang === 'ru' ? 'Shortlist' : 'Shortlist',
                                     lang === 'ru' ? 'Проверка' : 'Verification',
-                                    lang === 'ru' ? 'Диалог' : 'Dialogue',
+                                    lang === 'ru' ? 'Диалог'   : 'Dialogue',
                                 ].map((item) => (
                                     <div key={item} className="secondary-card px-3 py-3 text-center text-[11px] font-semibold text-stone-600 sm:text-xs">
                                         {item}
@@ -558,7 +534,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                             <Card className="p-4">
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2 text-sm font-semibold text-stone-800">
-                                        <Heart size={15} className="text-rose-500" />
+                                        <Heart size={15} className="text-rose-400" />
                                         {lang === 'ru' ? 'Решение без давления' : 'Decision without pressure'}
                                     </div>
                                     <p className="text-sm leading-6 text-stone-600">
@@ -579,10 +555,14 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                 {lang === 'ru' ? 'Shortlist' : 'Shortlist'}
                             </p>
                             <p className="mt-2 text-sm leading-6 text-stone-600">
-                                {lang === 'ru' ? 'Сверху идут самые сильные совпадения по запросу, доверию и стилю общения.' : 'Top candidates combine request fit, trust signals, and communication style.'}
+                                {lang === 'ru'
+                                    ? 'Сверху идут самые сильные совпадения по запросу, доверию и стилю общения.'
+                                    : 'Top candidates combine request fit, trust signals, and communication style.'}
                             </p>
                         </div>
-                        <Badge variant="neutral" className="hidden md:inline-flex">{lang === 'ru' ? 'Открывайте профили по одному' : 'Open profiles one by one'}</Badge>
+                        <Badge variant="neutral" className="hidden md:inline-flex">
+                            {lang === 'ru' ? 'Открывайте профили по одному' : 'Open profiles one by one'}
+                        </Badge>
                     </div>
 
                     <LayoutGroup>

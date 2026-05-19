@@ -60,8 +60,8 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                     <div className="text-center mt-3 text-sm text-stone-500 font-medium mb-2">
                         {photo ? text.changePhoto : text.uploadPhoto}
                     </div>
-                    <div className="flex justify-center items-center gap-1.5 text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-3 py-1 rounded-full mx-auto w-fit">
-                        <ShieldCheck size={12} /> {lang === 'ru' ? 'Защищено AES шифрованием' : 'AES Encrypted & Secured'}
+                    <div className="flex justify-center items-center gap-1.5 text-[10px] text-[#2A6B6E] font-semibold bg-[#EFF3F2] px-3 py-1 rounded-full mx-auto w-fit">
+                        <ShieldCheck size={12} /> {lang === 'ru' ? 'Данные защищены и не передаются' : 'Data protected, never shared'}
                     </div>
                 </label>
             </div>
@@ -147,7 +147,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 autoAdvance
             />
 
-            <div className="bg-emerald-50/50 border border-emerald-100/60 rounded-2xl p-4 mt-6 animate-fade-in mb-6">
+            <div className="bg-[#EFF3F2]/60 border border-[#7FA99B]/30 rounded-2xl p-4 mt-6 animate-fade-in mb-6">
                 <div className="flex items-start gap-3">
                     <div className="mt-1">
                         <Checkbox
@@ -166,14 +166,14 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
 
             <div className="sticky-action-rail sticky-footer-fade">
                 {showAhaMoment && !isFormValid && (
-                    <div className="w-full bg-violet-50/70 backdrop-blur-md shadow-cloud-soft border border-violet-100 rounded-2xl p-3 animate-slide-up flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
-                            <Sparkles size={16} className="text-violet-600" />
+                    <div className="w-full bg-[#EFF3F2] shadow-cloud-soft border border-[#7FA99B]/40 rounded-2xl p-3 animate-slide-up flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 rounded-full bg-[#2A6B6E]/10 flex items-center justify-center shrink-0">
+                            <Sparkles size={16} className="text-[#2A6B6E]" />
                         </div>
-                        <div className="text-[11px] text-stone-700 leading-tight">
+                        <div className="text-[11px] text-[#1C2B2D] leading-tight">
                             {lang === 'ru' ?
-                                <span>Вам очень рады! В вашем районе прямо сейчас <strong>28 семей</strong> ищут няню. Переходите к следующему шагу!</span> :
-                                <span>We're excited to have you! There are <strong>28 families</strong> looking for a nanny in your area right now. Proceed to the next step!</span>}
+                                <span>Отлично! Продолжайте — семьи в вашем районе уже могут ждать именно вас.</span> :
+                                <span>Great! Keep going — families in your area may already be looking for someone just like you.</span>}
                         </div>
                     </div>
                 )}
@@ -184,7 +184,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                     disabled={!isFormValid}
                     pulse={isFormValid}
                 >
-                    {lang === 'ru' ? 'Осталось 3 шага' : '3 steps left'}
+                    {lang === 'ru' ? 'Продолжить' : 'Continue'}
                 </Button>
             </div>
         </div >

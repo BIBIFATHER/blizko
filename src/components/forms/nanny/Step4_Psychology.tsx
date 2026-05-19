@@ -38,12 +38,12 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
     return (
         <div className="animate-fade-in space-y-6">
             <div className="section-label">
-                Психологический профиль
+                {lang === 'ru' ? 'Как вы работаете с детьми' : 'How you work with children'}
             </div>
 
-            <Card className={`transition-all duration-300 ${softSkills ? 'bg-amber-50/50 border-amber-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
+            <Card className={`transition-all duration-300 ${softSkills ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full shrink-0 ${softSkills ? 'bg-amber-200 text-amber-700' : 'bg-stone-100 text-stone-400'}`}>
+                    <div className={`p-3 rounded-full shrink-0 ${softSkills ? 'bg-[#7FA99B]/30 text-[#1C2B2D]' : 'bg-stone-100 text-stone-400'}`}>
                         <BrainCircuit size={24} />
                     </div>
                     <div className="flex-1">
@@ -57,7 +57,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                                 <button
                                     type="button"
                                     onClick={() => setShowAssessment(true)}
-                                    className="text-sm font-medium text-amber-700 bg-amber-100 px-4 py-2 rounded-lg hover:bg-amber-200 transition-colors"
+                                    className="text-sm font-medium text-[#2A6B6E] bg-[#EFF3F2] px-4 py-2 rounded-lg hover:bg-[#7FA99B]/20 transition-colors"
                                 >
                                     {text.startTest}
                                 </button>
@@ -66,10 +66,10 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
                         {softSkills && (
                             <div className="animate-fade-in">
-                                <div className="flex items-center gap-2 text-sm text-amber-700 font-medium mb-2">
+                                <div className="flex items-center gap-2 text-sm text-[#2A6B6E] font-medium mb-2">
                                     <Check size={16} /> {text.testCompletedBadge}
                                 </div>
-                                <div className="bg-white/60 p-3 rounded-lg text-xs text-stone-600 italic leading-relaxed border border-amber-100">
+                                <div className="bg-white/60 p-3 rounded-lg text-xs text-stone-600 italic leading-relaxed border border-[#7FA99B]/30">
                                     "{softSkills.familySummary || softSkills.summary}"
                                 </div>
                                 {softSkills.signals?.length > 0 && (
@@ -80,7 +80,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                                             .map((signal) => (
                                                 <span
                                                     key={signal.signal}
-                                                    className="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-[10px] font-medium text-amber-800"
+                                                    className="inline-flex items-center rounded-full bg-[#EFF3F2] px-2 py-1 text-[10px] font-medium text-[#2A6B6E]"
                                                 >
                                                     {getAssessmentSignalLabel(signal.signal, lang)}
                                                 </span>
@@ -98,8 +98,8 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                 </div>
             </Card>
 
-            <div className="bg-amber-50/40 backdrop-blur-md border border-amber-200/50 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
-                <div className="text-sm font-semibold text-amber-900 mb-4">
+            <div className="bg-[#EFF3F2]/60 backdrop-blur-md border border-[#7FA99B]/40 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
+                <div className="text-sm font-semibold text-[#1C2B2D] mb-4">
                     {lang === 'ru' ? 'Мои суперсилы в общении (помогает найти "ту самую" семью)' : 'My communication superpowers (helps find the *right* family)'}
                 </div>
 
@@ -143,7 +143,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                 />
 
                 <ChipGroup
-                    label={lang === 'ru' ? 'Стиль общения (PCM):' : 'Communication style (PCM):'}
+                    label={lang === 'ru' ? 'Стиль общения:' : 'Communication style:'}
                     options={lang === 'ru'
                         ? ['Логика', 'Ценности', 'Эмпатия', 'Легкость', 'Тишина', 'Исполнитель']
                         : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet', 'Action']
@@ -156,7 +156,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                 <div className="space-y-1">
                     <label className="block text-xs text-stone-600">{lang === 'ru' ? 'В чем я хочу развиваться (честно о сложностях)' : 'Where I want to grow (honestly about challenges)'}</label>
                     <input
-                        className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200/50 transition-all shadow-inner"
+                        className="w-full text-sm border border-[#7FA99B]/50 rounded-lg px-3 py-2 bg-white outline-none focus:border-[#2A6B6E] focus:ring-2 focus:ring-[#2A6B6E]/20 transition-all shadow-inner"
                         value={riskProfile?.notBestAt || ''}
                         onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), notBestAt: e.target.value }))}
                         placeholder={lang === 'ru' ? 'Например: мне пока сложно дается выстраивание жестких границ' : 'For example: setting strict boundaries is still hard for me'}

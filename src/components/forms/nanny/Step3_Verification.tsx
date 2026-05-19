@@ -50,9 +50,9 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                 Проверка и доверие
             </div>
 
-            <Card className={`transition-all duration-300 ${isVerified ? 'bg-green-50/50 border-green-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
+            <Card className={`transition-all duration-300 ${isVerified ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full shrink-0 ${isVerified ? 'bg-green-200 text-green-700' : 'bg-stone-100 text-stone-400'}`}>
+                    <div className={`p-3 rounded-full shrink-0 ${isVerified ? 'bg-[#2A6B6E]/15 text-[#2A6B6E]' : 'bg-stone-100 text-stone-400'}`}>
                         <ShieldCheck size={24} />
                     </div>
                     <div className="flex-1">
@@ -70,7 +70,7 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                         )}
 
                         {isVerified && (
-                            <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
+                            <div className="flex items-center gap-2 text-sm text-[#2A6B6E] font-medium">
                                 <Check size={16} /> {text.verifiedBadge}
                             </div>
                         )}
@@ -78,9 +78,9 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                 </div>
             </Card>
 
-            <Card className={`transition-all duration-300 ${documents.length > 0 ? 'bg-sky-50/50 border-sky-200/50 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
+            <Card className={`transition-all duration-300 ${documents.length > 0 ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full shrink-0 ${documents.length > 0 ? 'bg-sky-200 text-sky-700' : 'bg-stone-100 text-stone-400'}`}>
+                    <div className={`p-3 rounded-full shrink-0 ${documents.length > 0 ? 'bg-[#2A6B6E]/15 text-[#2A6B6E]' : 'bg-stone-100 text-stone-400'}`}>
                         <FileText size={24} />
                     </div>
                     <div className="flex-1">
@@ -94,7 +94,7 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                                 <button
                                     type="button"
                                     onClick={() => setShowDocUpload(true)}
-                                    className="text-sm font-medium text-sky-700 bg-sky-100 px-4 py-2 rounded-lg hover:bg-sky-200 transition-colors flex items-center gap-2"
+                                    className="text-sm font-medium text-[#2A6B6E] bg-[#EFF3F2] px-4 py-2 rounded-lg hover:bg-[#7FA99B]/20 transition-colors flex items-center gap-2"
                                 >
                                     <Upload size={16} /> {text.uploadDoc}
                                 </button>
@@ -103,11 +103,11 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
 
                         {documents.length > 0 && (
                             <div className="animate-fade-in space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-sky-700 font-medium mb-2">
+                                <div className="flex items-center gap-2 text-sm text-[#2A6B6E] font-medium mb-2">
                                     <Check size={16} /> {documents.length} {lang === 'ru' ? 'документов загружено' : 'documents uploaded'}
                                 </div>
                                 {documents.map((doc, i) => (
-                                    <div key={i} className="bg-white/60 p-2 rounded-lg flex justify-between items-center border border-sky-100">
+                                    <div key={i} className="bg-white/60 p-2 rounded-lg flex justify-between items-center border border-[#7FA99B]/30">
                                         <div className="flex items-center gap-2">
                                             <span className="text-xs font-bold text-stone-700 uppercase">
                                                 {doc.type === 'passport' ? 'Паспорт' :
@@ -145,7 +145,7 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                                 ))}
 
                                 {resumeNormalized && (
-                                    <div className="bg-white border border-sky-100 rounded-lg p-2 text-xs text-stone-600">
+                                    <div className="bg-white border border-[#7FA99B]/30 rounded-lg p-2 text-xs text-stone-600">
                                         <div className="font-semibold text-stone-700 mb-1">Резюме распознано в едином формате</div>
                                         <div>Имя: {resumeNormalized.fullName || '—'}</div>
                                         <div>Город: {resumeNormalized.city || '—'}</div>
@@ -156,7 +156,7 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                                 <button
                                     type="button"
                                     onClick={() => setShowDocUpload(true)}
-                                    className="text-xs text-sky-600 underline mt-2"
+                                    className="text-xs text-[#2A6B6E] underline mt-2"
                                 >
                                     + {lang === 'ru' ? 'Добавить еще' : 'Add more'}
                                 </button>
@@ -166,21 +166,21 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                 </div>
             </Card>
 
-            <Card className={`transition-all duration-300 ${readinessSnapshot.qualityApproved ? 'bg-emerald-50/60 border-emerald-200/60 shadow-sm' : 'bg-amber-50/50 border-amber-100/60 shadow-sm'}`}>
+            <Card className={`transition-all duration-300 ${readinessSnapshot.qualityApproved ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-[#F9F6F2] border-[#7FA99B]/30 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full shrink-0 ${readinessSnapshot.qualityApproved ? 'bg-emerald-200 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                    <div className={`p-3 rounded-full shrink-0 ${readinessSnapshot.qualityApproved ? 'bg-[#2A6B6E]/15 text-[#2A6B6E]' : 'bg-[#C4744A]/15 text-[#C4744A]'}`}>
                         <Check size={24} />
                     </div>
                     <div className="flex-1">
                         <h3 className="font-semibold text-stone-800 mb-1">
-                            {lang === 'ru' ? 'Статус quality funnel' : 'Quality funnel status'}
+                            {lang === 'ru' ? 'Готовность профиля' : 'Profile readiness'}
                         </h3>
                         <p className="text-sm text-stone-500 mb-3">
-                            {getNannyReadinessLabel(readinessSnapshot, lang)} • Score {readinessSnapshot.qualityScore}/100
+                            {getNannyReadinessLabel(readinessSnapshot, lang)}
                         </p>
 
                         {readinessSnapshot.qualityApproved ? (
-                            <div className="text-xs text-emerald-700 bg-white/70 border border-emerald-100 rounded-lg px-3 py-2">
+                            <div className="text-xs text-[#2A6B6E] bg-white/70 border border-[#7FA99B]/30 rounded-lg px-3 py-2">
                                 {lang === 'ru'
                                     ? 'Профиль уже выглядит готовым к показу семье. Осталось дождаться или пройти финальную ручную проверку.'
                                     : 'Profile already looks ready to be shown to families. Final manual review is the last step.'}
@@ -211,7 +211,7 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>
                 <Button type="button" className="flex-1" onClick={nextStep} pulse={true}>
-                    {lang === 'ru' ? 'Остался 1 шаг' : '1 step left'}
+                    {lang === 'ru' ? 'Продолжить' : 'Continue'}
                 </Button>
             </div>
 

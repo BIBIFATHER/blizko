@@ -2,6 +2,46 @@
 
 ---
 
+## 2026-05-19 (Tue) — QA + Prod deploy
+
+### Done — Release gate passed
+
+- ✅ **CRON_SECRET** — добавлен в Vercel Production env
+- ✅ **Vercel deploy** — задеплоен
+- ✅ **Supabase миграции применены в prod**:
+  - `matching_outcomes_update_rls` — UPDATE RLS policy для authenticated parents (критичный фикс upsert)
+  - `matching_outcomes_display_position` — колонка `display_position INTEGER`
+- ✅ **QA pass 20/20** — все проверки прошли на 390px:
+  - Home: hero, CTA
+  - NannyForm 4 шага: no AES, no fake 28 семей, no AI theater, no countdown CTAs, no PCM jargon, no quality funnel
+  - MatchResultsScreen: no score %, no "ИИ подобрал"
+
+### Effect
+
+- RLHF learning loop полностью замкнут и работает в проде
+- NannyForm соответствует Warm Trust tone guide
+- MatchResultsScreen не показывает числовой score родителю
+
+---
+
+## 2026-05-19 (Tue) — NannyForm tone reframe
+
+### Done — NannyForm: Warm Trust palette + tone cleanup (all 4 steps)
+
+- ✅ **Step1_BasicInfo** — Removed fake "28 семей" social proof from aha-moment banner; rewritten to warm, honest copy. Replaced violet-50/violet-100 aha-moment with Warm Trust (#EFF3F2 / #2A6B6E). Replaced emerald photo security badge with Warm Trust colors + non-jargon copy ("Данные защищены и не передаются"). CTA "Осталось 3 шага" → "Продолжить".
+- ✅ **Step2_Experience** — Removed AI theater copy ("поможет нашему AI найти лучшие совпадения"). About textarea placeholder rewritten from generic "Люблю детей, добрая..." to a real conversational prompt. Hint block → Warm Trust surface. CTA "Осталось 2 шага" → "Продолжить".
+- ✅ **Step3_Verification** — All sky-*/green-* colors → Warm Trust (#EFF3F2 / #2A6B6E / #7FA99B). Removed internal label "Статус quality funnel" → "Готовность профиля". Removed "Score X/100" technical score from parent-facing text. amber/emerald quality card → petrol/copper palette. CTA "Остался 1 шаг" → "Продолжить".
+- ✅ **Step4_Psychology** — amber-50/amber-200 cards → Warm Trust. violet border on "notBestAt" input → petrol. Section label "Психологический профиль" → "Как вы работаете с детьми". PCM jargon removed from chip label → "Стиль общения". Signal chips → #EFF3F2 / #2A6B6E.
+
+### Effect
+
+- No more countdown pressure framing ("Осталось N шагов") — replaced with neutral "Продолжить" across all steps
+- No more fake numbers or AI theater in copy visible to nanny
+- All 4 steps now use the Warm Trust palette consistently
+- Build clean, lint 0 errors
+
+---
+
 ## 2026-05-19 (Tue)
 
 ### Done — RLHF loop: race condition fix, display_position, hired outcome

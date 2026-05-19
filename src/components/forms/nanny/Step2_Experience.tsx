@@ -104,14 +104,14 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
 
             <Textarea
                 label={`${lang === 'ru' ? 'Расскажите немного о себе. Какая вы?' : 'Tell us a bit about yourself'} *`}
-                placeholder={lang === 'ru' ? "Люблю детей, добрая..." : "I love children, kind..."}
+                placeholder={lang === 'ru' ? "Расскажите, что для вас важно в работе с детьми, как вы строите контакт, что даёт вам энергию..." : "Tell us what matters to you, how you connect with children, what gives you energy in this work..."}
                 value={formData.about}
                 onChange={e => setFormData({ ...formData, about: e.target.value })}
                 required
             />
 
-            <div className="bg-white/60 backdrop-blur-sm border border-white/60 shadow-sm rounded-xl p-3 text-sm text-stone-600 mt-6 animate-fade-in">
-                <div>{lang === 'ru' ? 'Это поле поможет нашему AI найти лучшие совпадения именно для вас.' : 'This field helps our AI find best matches specifically for you.'}</div>
+            <div className="bg-[#EFF3F2] border border-[#7FA99B]/30 rounded-xl p-3 text-sm text-[#1C2B2D] mt-6 animate-fade-in">
+                <div>{lang === 'ru' ? 'Этот рассказ помогает семьям понять, подходите ли вы друг другу — ещё до первого звонка.' : 'This helps families understand if you\'re a good fit — even before the first call.'}</div>
             </div>
 
             <div className="sticky-action-rail sticky-footer-fade flex gap-4">
@@ -119,7 +119,7 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>
                 <Button type="button" className="flex-1" onClick={nextStep} disabled={!isFormValid} pulse={isFormValid}>
-                    {lang === 'ru' ? 'Осталось 2 шага' : '2 steps left'}
+                    {lang === 'ru' ? 'Продолжить' : 'Continue'}
                 </Button>
             </div>
         </div>

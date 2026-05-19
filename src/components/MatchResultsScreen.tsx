@@ -91,7 +91,7 @@ const CandidateCard: React.FC<{
         .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
     const avatarGradients = [
-        `from-[${PETROL}] to-[${SAGE}]`,
+        'from-[#2A6B6E] to-[#7FA99B]',
         'from-[#aab79a] to-[#d3decb]',
         'from-[#b79c82] to-[#dfc5a8]',
     ];

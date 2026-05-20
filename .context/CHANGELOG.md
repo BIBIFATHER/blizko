@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-05-20 (Wed) — CI fixes
+
+### Done
+
+- ✅ **e2e_test.py** — локатор `"Малыши (1-3 года)"` → `"Тоддлеры (1–3)"` (чип был переименован в ParentForm, тест не обновили)
+- ✅ **ci.yml: порт** — healthcheck и `BASE_URL` исправлены с 5173 → 3000 (совпадает с `vite.config.ts server.port`)
+- ✅ **ci.yml: actions** — `actions/checkout`, `actions/setup-node` → v5, `actions/setup-python` → v6 (Node.js 24 runtime, убраны deprecation warnings)
+
+### Effect
+
+- CI зелёный без warnings на всех трёх jobs: Lint/Test/Build + Smoke E2E
+
+---
+
 ## 2026-05-19 (Tue) — QA + Prod deploy
 
 ### Done — Release gate passed

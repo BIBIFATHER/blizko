@@ -1,5 +1,6 @@
 from playwright.sync_api import sync_playwright
 import os
+import re
 import time
 import sys
 
@@ -17,15 +18,19 @@ def run_tests():
             page.goto(base_url, wait_until='domcontentloaded')
             page.wait_for_load_state('networkidle')
             
-            # Check for the primary "Найти няню" CTA
-            cta_button = page.locator('text="Найти няню"').first
+            # Check for the primary landing CTA. The product copy may change,
+            # but the smoke should only require that the parent-flow CTA exists.
+            cta_button = page.get_by_role(
+                "button",
+                name=re.compile(r"^(Найти няню|Начать подбор)$")
+            ).first
             if not cta_button.is_visible():
-                raise Exception("CTA button 'Найти няню' not visible on Landing")
+                raise Exception("Primary parent-flow CTA not visible on Landing")
             
             print("✅ Landing page loaded successfully")
             
             # Click CTA
-            print("Clicking 'Найти няню'...")
+            print("Clicking primary parent-flow CTA...")
             cta_button.click()
             page.wait_for_load_state('networkidle')
             time.sleep(1) # wait for animation

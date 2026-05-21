@@ -158,13 +158,13 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
             {/* Age — sets childAge + appends to story */}
             <section className="wizard-block">
                 <div className="section-label">{ru ? 'Возраст ребёнка *' : 'Child age *'}</div>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 gap-2">
                     {ageChips.map(({ label, value, phrase }) => (
                         <button
                             key={value}
                             type="button"
                             onClick={() => selectAge(value, phrase)}
-                            className={`rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95 ${
+                            className={`w-full rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 active:scale-95 ${
                                 formData.childAge === value
                                     ? 'chip-warm shadow-sm'
                                     : 'bg-white/60 backdrop-blur-sm border-stone-200/60 text-stone-600 hover:border-amber-200/60 hover:bg-amber-50/30'
@@ -179,13 +179,13 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
             {/* Schedule — sets schedule + appends to story */}
             <section className="wizard-block">
                 <div className="section-label">{ru ? 'Нужен график *' : 'Schedule needed *'}</div>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-1 gap-2">
                     {schedChips.map(({ label, value, phrase }) => (
                         <button
                             key={value}
                             type="button"
                             onClick={() => selectSchedule(value, phrase)}
-                            className={`rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95 ${
+                            className={`w-full rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 active:scale-95 ${
                                 formData.schedule === value
                                     ? 'chip-warm shadow-sm'
                                     : 'bg-white/60 backdrop-blur-sm border-stone-200/60 text-stone-600 hover:border-amber-200/60 hover:bg-amber-50/30'

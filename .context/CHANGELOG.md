@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-05-21 (Thu) — Footer + RLHF Этап 1 + manifest
+
+### Done
+
+- ✅ **AppFooter скрыт на flow-экранах** — `/find-nanny`, `/become-nanny`, `/match-results` больше не рендерят footer. Одно условие в `App.tsx`. QA 9/9 (390/393/430px): нет перекрытия sticky CTA, нет hscroll.
+- ✅ **RLHF Этап 1** — `api/cron/update-matching-weights.ts`: еженедельный cron (пн 4:00 UTC), читает `matching_outcomes`, нудирует `matching_weights` к факторам, коррелирующим с hired/interested. Guard: пропуск при <50 сигналов. Байесовская сдвижка alpha=N/(N+200), зажим [prior×0.5, prior×2.0].
+- ✅ **manifest.json** — `theme_color` `#6C5CE7` → `#2A6B6E`, `background_color` → `#F9F6F2` (Warm Trust).
+
+### Effect
+
+- Flow-экраны: один путь — без конкурирующей навигации внизу
+- RLHF loop замкнут end-to-end: shown → outcome → weight update
+- PWA theme совпадает с дизайн-системой
+
+---
+
 ## 2026-05-20 (Wed) — CI fixes
 
 ### Done

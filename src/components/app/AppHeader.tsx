@@ -47,7 +47,7 @@ export function AppHeader({
   })();
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 top-safe ${isScrolled ? 'py-2.5' : 'py-3.5'}`}>
+    <div className={`sticky top-0 z-30 transition-all duration-300 pt-safe ${isScrolled ? 'pb-2.5' : 'pb-3.5'}`}>
       <div className="page-frame">
         <div className={`floating-bar app-topbar flex items-center justify-between rounded-[26px] px-3 py-2.5 md:px-5 ${isScrolled ? 'translate-y-0 opacity-100' : 'bg-white/62'}`}>
         <div className="flex min-w-0 items-center gap-2">

@@ -63,7 +63,7 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#F9F6F2] to-transparent" />
 
         {/* Кнопки поверх фото */}
-        <div className="absolute left-0 right-0 top-0 flex items-start justify-between p-5">
+        <div className="absolute left-0 right-0 top-0 flex items-start justify-between px-5 pb-5 pt-[max(1.25rem,env(safe-area-inset-top))]">
           <button
             type="button"
             onClick={onShare}

@@ -10,17 +10,31 @@ interface HomeProps {
 }
 
 const ru = {
-  cta: 'Найти няню',
+  cta: 'Начать подбор',
   photoAlt: 'Няня читает книгу ребёнку дома',
   headlineTop: 'Найдите няню,',
   headlineBottom: 'которой доверяют',
+  trustLine: 'Небольшой shortlist — только те, кто подходит вашей семье',
+  chips: [
+    { label: 'Нужна помощь вечером', prompt: 'нужна помощь вечером' },
+    { label: 'Сложный график', prompt: 'сложный, нестандартный график' },
+    { label: 'Важен мягкий подход', prompt: 'важен мягкий подход к ребёнку' },
+    { label: 'Ребёнок тревожится', prompt: 'ребёнок тревожится при незнакомых людях' },
+  ],
 };
 
 const en = {
-  cta: 'Find a nanny',
+  cta: 'Start matching',
   photoAlt: 'A nanny reading a book to a child at home',
   headlineTop: 'Find a nanny',
   headlineBottom: 'you can trust',
+  trustLine: 'A short shortlist — only those who truly fit your family',
+  chips: [
+    { label: 'Need evening help', prompt: 'need help in the evenings' },
+    { label: 'Complex schedule', prompt: 'complex, non-standard schedule' },
+    { label: 'Gentle approach matters', prompt: 'a gentle approach is very important' },
+    { label: 'Child gets anxious', prompt: 'my child gets anxious with strangers' },
+  ],
 };
 
 const heroImage =
@@ -85,11 +99,36 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
             {copy.headlineBottom}
           </span>
         </h1>
+
+        <p
+          className="animate-fade-up mt-3 text-[0.8125rem] leading-snug text-[#7FA99B]"
+          style={{ animationDelay: '140ms' }}
+        >
+          {copy.trustLine}
+        </p>
+
+        {/* Quick-start chips */}
+        <div
+          className="animate-fade-up mt-4 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ animationDelay: '200ms' }}
+        >
+          {copy.chips.map((chip) => (
+            <button
+              key={chip.label}
+              type="button"
+              onClick={() => startRequest(chip.prompt)}
+              className="flex-shrink-0 rounded-full border border-[#7FA99B]/40 bg-white/70 px-3.5 py-1.5 text-[0.75rem] font-medium text-[#1C2B2D] backdrop-blur-sm transition-colors hover:bg-[#EFF3F2] active:scale-[0.97]"
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+
         <button
           type="button"
           onClick={() => startRequest()}
-          className="animate-fade-up mt-7 flex min-h-[4rem] w-full items-center justify-center rounded-full bg-[#2A6B6E] px-6 text-[1.0625rem] font-semibold tracking-[0.01em] text-white shadow-[0_16px_40px_rgba(42,107,110,0.26)] transition-all duration-200 hover:bg-[#235B5E] active:scale-[0.97] active:shadow-[0_6px_16px_rgba(42,107,110,0.16)]"
-          style={{ animationDelay: '160ms' }}
+          className="animate-fade-up mt-5 flex min-h-[4rem] w-full items-center justify-center rounded-full bg-[#2A6B6E] px-6 text-[1.0625rem] font-semibold tracking-[0.01em] text-white shadow-[0_16px_40px_rgba(42,107,110,0.26)] transition-all duration-200 hover:bg-[#235B5E] active:scale-[0.97] active:shadow-[0_6px_16px_rgba(42,107,110,0.16)]"
+          style={{ animationDelay: '280ms' }}
         >
           {copy.cta}
         </button>

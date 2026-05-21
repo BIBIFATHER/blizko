@@ -14,12 +14,6 @@ const ru = {
   photoAlt: 'Няня читает книгу ребёнку дома',
   headlineTop: 'Найдите няню,',
   headlineBottom: 'которой доверяют',
-  chips: [
-    { label: 'Нужна помощь вечером', prompt: 'нужна помощь вечером' },
-    { label: 'Сложный график', prompt: 'сложный, нестандартный график' },
-    { label: 'Важен мягкий подход', prompt: 'важен мягкий подход к ребёнку' },
-    { label: 'Ребёнок тревожится', prompt: 'ребёнок тревожится при незнакомых людях' },
-  ],
 };
 
 const en = {
@@ -27,12 +21,6 @@ const en = {
   photoAlt: 'A nanny reading a book to a child at home',
   headlineTop: 'Find a nanny',
   headlineBottom: 'you can trust',
-  chips: [
-    { label: 'Need evening help', prompt: 'need help in the evenings' },
-    { label: 'Complex schedule', prompt: 'complex, non-standard schedule' },
-    { label: 'Gentle approach matters', prompt: 'a gentle approach is very important' },
-    { label: 'Child gets anxious', prompt: 'my child gets anxious with strangers' },
-  ],
 };
 
 const heroImage =
@@ -42,12 +30,12 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
   const navigate = useNavigate();
   const copy = lang === 'ru' ? ru : en;
 
-  const startRequest = (starterPrompt?: string) => {
-    navigate('/find-nanny', { state: starterPrompt ? { starterPrompt } : undefined });
+  const startRequest = () => {
+    navigate('/find-nanny');
   };
 
   return (
-    <div className="mx-auto flex min-h-full w-full max-w-[30rem] flex-col overflow-hidden bg-[#F9F6F2] text-[#1C2B2D] sm:max-w-[34rem] sm:rounded-[2.4rem] sm:shadow-[0_24px_70px_rgba(28,43,45,0.12)]">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[30rem] flex-col overflow-hidden bg-[#F9F6F2] text-[#1C2B2D] sm:max-w-[34rem] sm:rounded-[2.4rem] sm:shadow-[0_24px_70px_rgba(28,43,45,0.12)]">
 
       {/* Hero — full-bleed фото с кнопками поверх */}
       <div className="relative h-[28rem] flex-shrink-0 sm:h-[32rem]">
@@ -97,23 +85,6 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
             {copy.headlineBottom}
           </span>
         </h1>
-
-        {/* Quick-start chips */}
-        <div
-          className="animate-fade-up mt-4 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          style={{ animationDelay: '200ms' }}
-        >
-          {copy.chips.map((chip) => (
-            <button
-              key={chip.label}
-              type="button"
-              onClick={() => startRequest(chip.prompt)}
-              className="flex-shrink-0 rounded-full border border-[#7FA99B]/40 bg-white/70 px-3.5 py-1.5 text-[0.75rem] font-medium text-[#1C2B2D] backdrop-blur-sm transition-colors hover:bg-[#EFF3F2] active:scale-[0.97]"
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
 
         <button
           type="button"

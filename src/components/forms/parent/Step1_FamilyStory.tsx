@@ -156,8 +156,8 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
             </div>
 
             {/* Age — sets childAge + appends to story */}
-            <section className="wizard-block">
-                <div className="section-label">{ru ? 'Возраст ребёнка *' : 'Child age *'}</div>
+            <section>
+                <div className="section-label mb-2">{ru ? 'Возраст ребёнка *' : 'Child age *'}</div>
                 <div className="grid grid-cols-1 gap-2">
                     {ageChips.map(({ label, value, phrase }) => (
                         <button
@@ -177,8 +177,8 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
             </section>
 
             {/* Schedule — sets schedule + appends to story */}
-            <section className="wizard-block">
-                <div className="section-label">{ru ? 'Нужен график *' : 'Schedule needed *'}</div>
+            <section>
+                <div className="section-label mb-2">{ru ? 'Нужен график *' : 'Schedule needed *'}</div>
                 <div className="grid grid-cols-1 gap-2">
                     {schedChips.map(({ label, value, phrase }) => (
                         <button

@@ -9,7 +9,6 @@ import { usePwaInstall } from '@/hooks/usePwaInstall';
 import { useParentSubmit } from '@/hooks/useParentSubmit';
 import { useNannySubmit } from '@/hooks/useNannySubmit';
 import { useShareActions } from '@/hooks/useShareActions';
-import { AppHeader } from '@/components/app/AppHeader';
 import { AppFooter } from '@/components/app/AppFooter';
 import { RequireRole } from '@/components/app/RequireRole';
 import { trackAuthModalOpen, trackLanguageSwitch } from '@/services/analytics';
@@ -35,7 +34,11 @@ const ShareModal = lazy(() => import('@/components/ShareModal').then((module) =>
 const RoleDashboard = lazy(() => import('@/components/dashboard/RoleDashboard').then((module) => ({ default: module.RoleDashboard })));
 
 function RouteFallback() {
-  return <div className="flex items-center justify-center py-16 text-sm text-stone-500">Загружаем...</div>;
+  return (
+    <div className="flex min-h-dvh w-full items-center justify-center bg-[#F9F6F2]">
+      <div className="text-sm text-stone-400">·&nbsp;·&nbsp;·</div>
+    </div>
+  );
 }
 
 export default function App() {
@@ -103,15 +106,8 @@ export default function App() {
     platform,
     handleInstallClick,
   } = usePwaInstall();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [shouldLoadSupportChat, setShouldLoadSupportChat] = useState(() => location.pathname !== '/');
   const [shouldOpenSupportChat, setShouldOpenSupportChat] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     const openAuthFromEvent = (event: Event) => {
@@ -244,22 +240,7 @@ export default function App() {
         <div className="cloud-blob cloud-blob-lavender" />
       </div>
 
-      {currentPath !== '/' && (
-        <AppHeader
-          lang={lang}
-          user={effectiveUser}
-          isScrolled={isScrolled}
-          onToggleLanguage={toggleLanguage}
-          onShare={handleShare}
-          onOpenAuth={() => {
-            trackAuthModalOpen('app_header');
-            setAuthOpen(true);
-          }}
-          onOpenProfile={() => setProfileOpen(true)}
-        />
-      )}
-
-      <main className={`app-main-frame flex-1 relative ${currentPath === '/' ? '!pt-0' : ''}`}>
+      <main className="app-main-frame flex-1 relative">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route

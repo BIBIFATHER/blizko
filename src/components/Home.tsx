@@ -14,7 +14,6 @@ const ru = {
   photoAlt: 'Няня читает книгу ребёнку дома',
   headlineTop: 'Найдите няню,',
   headlineBottom: 'которой доверяют',
-  trustLine: 'Небольшой shortlist — только те, кто подходит вашей семье',
   chips: [
     { label: 'Нужна помощь вечером', prompt: 'нужна помощь вечером' },
     { label: 'Сложный график', prompt: 'сложный, нестандартный график' },
@@ -28,7 +27,6 @@ const en = {
   photoAlt: 'A nanny reading a book to a child at home',
   headlineTop: 'Find a nanny',
   headlineBottom: 'you can trust',
-  trustLine: 'A short shortlist — only those who truly fit your family',
   chips: [
     { label: 'Need evening help', prompt: 'need help in the evenings' },
     { label: 'Complex schedule', prompt: 'complex, non-standard schedule' },
@@ -99,13 +97,6 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
             {copy.headlineBottom}
           </span>
         </h1>
-
-        <p
-          className="animate-fade-up mt-3 text-[0.8125rem] leading-snug text-[#7FA99B]"
-          style={{ animationDelay: '140ms' }}
-        >
-          {copy.trustLine}
-        </p>
 
         {/* Quick-start chips */}
         <div

@@ -321,7 +321,10 @@ export default function App() {
         </Suspense>
       </main>
 
-      {currentPath !== '/' && (
+      {currentPath !== '/' &&
+        currentPath !== '/find-nanny' &&
+        currentPath !== '/become-nanny' &&
+        currentPath !== '/match-results' && (
         <AppFooter
           lang={lang}
           user={effectiveUser}

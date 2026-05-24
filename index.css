@@ -1266,6 +1266,20 @@ a {
   cursor: not-allowed;
 }
 
+/* ===== Accessibility: focus-visible ring ===== */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn-honey:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  box-shadow:
+    0 12px 28px rgba(30, 95, 99, 0.18),
+    0 0 0 5px rgba(42, 107, 110, 0.22);
+}
+
 /* ===== Accessibility: reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1275,5 +1289,20 @@ a {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-fade-up,
+  .animate-pop-in,
+  .animate-scale-in,
+  .animate-slide-down {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .btn-honey-pulse {
+    animation: none !important;
   }
 }

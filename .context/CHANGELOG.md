@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-05-24 (Sun) — BLI-17: Accessibility and reduced-motion pass
+
+### Done
+
+- ✅ **Глобальный `:focus-visible` ринг** — `2px solid var(--color-primary)` + `outline-offset: 2px` для всех интерактивных элементов (кнопки, ссылки, чипы).
+- ✅ **`.btn-honey:focus-visible`** — усиленный ринг с box-shadow для главного CTA.
+- ✅ **`prefers-reduced-motion` усилен** — `.animate-fade-in`, `.animate-slide-up`, `.animate-fade-up`, `.animate-pop-in`, `.animate-scale-in`, `.animate-slide-down` сбрасываются в `opacity: 1; transform: none` (без мигания от промежуточных keyframe состояний). `.btn-honey-pulse` также отключён.
+- ✅ **Splash экран** — уже корректно обрабатывал `prefers-reduced-motion` (`animation: none; opacity: 1`).
+- ✅ **Иконочные кнопки** — AppHeader back button имеет `aria-label`. Все форм-чипы — правильные `<button type="button">`.
+- ✅ **`outline-none`** — в публичных компонентах нет голого `outline-none` без замены.
+
+---
+
 ## 2026-05-24 (Sun) — CI: test expectations after brand voice pass
 
 ### Done

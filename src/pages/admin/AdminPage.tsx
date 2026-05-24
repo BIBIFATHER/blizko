@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
-import { LayoutDashboard, Users, Baby, CalendarDays, ScrollText, Trash2, Search, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, Users, Baby, CalendarDays, ScrollText, Trash2, Search, ArrowLeft, Blend } from 'lucide-react';
 import { ParentRequest, NannyProfile } from '@/core/types';
 import { Button } from '@/components/UI';
 import { supabase } from '@/services/supabase';
@@ -11,11 +11,12 @@ import { AdminParentsTab } from '@/components/admin/AdminParentsTab';
 import { AdminNanniesTab } from '@/components/admin/AdminNanniesTab';
 import { AdminBookingsTab } from '@/components/admin/AdminBookingsTab';
 import { AdminJournalTab, AdminActionEntry } from '@/components/admin/AdminJournalTab';
+import { AdminCuratorTab } from '@/components/admin/AdminCuratorTab';
 import { AdminWorkflowEvent, AdminWorkflowUIProvider, useAdminWorkflowUI } from '@/components/admin/adminWorkflowUI';
 import { getAllBookings, updateBookingStatus, Booking } from '@/services/booking';
 import { AnalyticsEventRecord, fetchRemoteAnalyticsEvents, getAnalyticsEvents } from '@/services/analytics';
 
-type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings' | 'journal';
+type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings' | 'curator' | 'journal';
 type AdminJournalRange = '1' | '7' | '30' | 'all';
 
 const ADMIN_PARENTS_SEEN_TS_KEY = 'blizko_admin_parents_seen_ts';
@@ -26,6 +27,7 @@ const NAV_ITEMS: { tab: AdminTab; label: string; icon: React.ComponentType<{ siz
     { tab: 'parents', label: 'Родители', icon: Users },
     { tab: 'nannies', label: 'Няни', icon: Baby },
     { tab: 'bookings', label: 'Бронирования', icon: CalendarDays },
+    { tab: 'curator', label: 'Куратор', icon: Blend },
     { tab: 'journal', label: 'Журнал', icon: ScrollText },
 ];
 
@@ -174,7 +176,7 @@ const AdminPageContent: React.FC<{
 
                 {/* Main content */}
                 <main className="flex-1 overflow-y-auto p-4 md:p-6">
-                    {(activeTab === 'parents' || activeTab === 'nannies') && (
+                    {(activeTab === 'parents' || activeTab === 'nannies' || activeTab === 'curator') && (
                         <div className="flex items-center gap-2 input-glass rounded-2xl px-3 py-2 mb-4 max-w-md">
                             <Search size={16} className="text-stone-400" />
                             <input
@@ -215,6 +217,14 @@ const AdminPageContent: React.FC<{
                                 nannies={nannies}
                                 query={query}
                                 onlyProblematic={onlyProblematic}
+                                onDataChanged={loadData}
+                                logAdminAction={logAdminAction}
+                            />
+                        )}
+                        {activeTab === 'curator' && (
+                            <AdminCuratorTab
+                                parents={parents}
+                                nannies={nannies}
                                 onDataChanged={loadData}
                                 logAdminAction={logAdminAction}
                             />

@@ -227,9 +227,19 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                         >
                                             {n.isVerified ? 'Снять верификацию' : 'Подтвердить профиль'}
                                         </AdminPillButton>
-                                        {n.video && (
-                                            <AdminPillButton className="flex items-center gap-2 justify-center" tone="neutral">
-                                                <PlayCircle size={14} /> Смотреть видео
+                                        {(n.video || n.videoIntro) && (
+                                            <AdminPillButton
+                                                tone="neutral"
+                                                className="flex items-center gap-2 justify-center"
+                                                onClick={n.video
+                                                    ? () => window.open(n.video!, '_blank', 'noopener,noreferrer')
+                                                    : undefined
+                                                }
+                                                disabled={!n.video}
+                                                title={n.video ? 'Открыть видео-интро' : 'Видео загружено, ссылка не сохранена'}
+                                            >
+                                                <PlayCircle size={14} />
+                                                {n.video ? 'Смотреть видео' : 'Видео (нет ссылки)'}
                                             </AdminPillButton>
                                         )}
                                         <AdminPillButton

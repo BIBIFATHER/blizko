@@ -13,7 +13,7 @@ const adminPillToneClasses: Record<AdminPillTone, string> = {
 };
 
 export const adminPillButtonBase =
-    'rounded-full border px-3.5 py-2 text-xs font-semibold transition-all';
+    'rounded-full border px-3.5 py-2 text-xs font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed';
 
 export const adminSectionPanel = 'section-shell rounded-[1.5rem] p-4';
 

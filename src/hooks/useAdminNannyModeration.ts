@@ -91,8 +91,11 @@ export const useAdminNannyModeration = ({
 
     const bulkVerifyVisible = useCallback(async () => {
         if (filteredNannies.length === 0) return;
+        const preview = filteredNannies.slice(0, 5).map((n) => `• ${n.name}`).join('\n');
+        const extra = filteredNannies.length > 5 ? `\n  и ещё ${filteredNannies.length - 5}...` : '';
         const shouldProceed = await confirmAction({
-            message: `Подтвердить профиль у ${filteredNannies.length} анкет?`,
+            message: `Массово подтвердить ${filteredNannies.length} профилей?`,
+            detail: `Будут затронуты:\n${preview}${extra}\n\nДействие проставит isVerified = true для всех видимых анкет.`,
             confirmLabel: 'Подтвердить профили',
         });
         if (!shouldProceed) return;
@@ -122,8 +125,12 @@ export const useAdminNannyModeration = ({
     const bulkSetDocsStatusVisible = useCallback(
         async (status: DocumentVerification['status']) => {
             if (filteredNannies.length === 0) return;
+            const statusLabel = status === 'verified' ? 'подтверждены' : status === 'rejected' ? 'отклонены' : 'на проверке';
+            const preview = filteredNannies.slice(0, 5).map((n) => `• ${n.name}`).join('\n');
+            const extra = filteredNannies.length > 5 ? `\n  и ещё ${filteredNannies.length - 5}...` : '';
             const shouldProceed = await confirmAction({
-                message: `Проставить статус '${status}' для документов у видимых анкет?`,
+                message: `Документы → «${statusLabel}» для ${filteredNannies.length} анкет?`,
+                detail: `Будут затронуты:\n${preview}${extra}\n\nВсе документы у этих анкет получат статус «${statusLabel}».`,
                 confirmLabel: 'Применить массово',
             });
             if (!shouldProceed) {

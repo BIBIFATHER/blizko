@@ -13,6 +13,7 @@ interface AdminToast {
 
 interface ConfirmState {
     message: string;
+    detail?: string;
     confirmLabel?: string;
     cancelLabel?: string;
     resolve: (value: boolean) => void;
@@ -31,6 +32,7 @@ interface PromptState {
 interface AdminWorkflowUIContextValue {
     confirmAction: (params: {
         message: string;
+        detail?: string;
         confirmLabel?: string;
         cancelLabel?: string;
     }) => Promise<boolean>;
@@ -96,15 +98,17 @@ export const AdminWorkflowUIProvider: React.FC<{
     const confirmAction = React.useCallback(
         ({
             message,
+            detail,
             confirmLabel,
             cancelLabel,
         }: {
             message: string;
+            detail?: string;
             confirmLabel?: string;
             cancelLabel?: string;
         }) =>
             new Promise<boolean>((resolve) => {
-                setConfirmState({ message, confirmLabel, cancelLabel, resolve });
+                setConfirmState({ message, detail, confirmLabel, cancelLabel, resolve });
             }),
         []
     );
@@ -177,7 +181,10 @@ export const AdminWorkflowUIProvider: React.FC<{
                 <div className="fixed inset-0 z-[95] flex items-center justify-center bg-stone-900/55 p-4 backdrop-blur-sm">
                     <div className={`${adminModalSurface} w-full max-w-md p-5`}>
                         <div className="eyebrow mb-3">Подтверждение</div>
-                        <p className="text-sm leading-6 text-stone-700">{confirmState.message}</p>
+                        <p className="text-sm font-medium text-stone-800">{confirmState.message}</p>
+                        {confirmState.detail && (
+                            <p className="mt-2 text-xs leading-5 text-stone-500 whitespace-pre-line">{confirmState.detail}</p>
+                        )}
                         <div className="mt-5 flex gap-2">
                             <Button
                                 className="w-auto px-5"

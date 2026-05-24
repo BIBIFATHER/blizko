@@ -17,7 +17,7 @@ const ParentForm = lazy(() => import('@/components/ParentForm').then((module) =>
 const NannyForm = lazy(() => import('@/components/NannyForm').then((module) => ({ default: module.NannyForm })));
 const SuccessScreen = lazy(() => import('@/components/SuccessScreen').then((module) => ({ default: module.SuccessScreen })));
 const MatchResultsScreen = lazy(() => import('@/components/MatchResultsScreen').then((module) => ({ default: module.MatchResultsScreen })));
-const AdminPanel = lazy(() => import('@/components/AdminPanel').then((module) => ({ default: module.AdminPanel })));
+const AdminPage = lazy(() => import('@/pages/admin/AdminPage').then((module) => ({ default: module.AdminPage })));
 const LoginPage = lazy(() => import('@/components/LoginPage').then((module) => ({ default: module.LoginPage })));
 const NannyLandingPage = lazy(() => import('@/components/NannyLandingPage').then((module) => ({ default: module.NannyLandingPage })));
 const NannyPublicProfile = lazy(() => import('@/components/nanny/NannyPublicProfile').then((module) => ({ default: module.NannyPublicProfile })));
@@ -46,7 +46,6 @@ export default function App() {
   const location = useLocation();
   const adminEmails = String(import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map((s: string) => s.trim().toLowerCase()).filter(Boolean);
   const lang: Language = 'ru';
-  const [isAdminOpen, setAdminOpen] = useState(false);
   const {
     user,
     isAuthOpen,
@@ -302,7 +301,15 @@ export default function App() {
               path="/admin"
               element={
                 <RequireRole role="admin" user={effectiveUser} isAdmin={isAdmin}>
-                  <AdminPanel onClose={() => navigate('/')} />
+                  <AdminPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/admin/:tab"
+              element={
+                <RequireRole role="admin" user={effectiveUser} isAdmin={isAdmin}>
+                  <AdminPage />
                 </RequireRole>
               }
             />
@@ -321,7 +328,7 @@ export default function App() {
           user={effectiveUser}
           isAdmin={isAdmin}
           onBecomeNanny={() => navigate('/become-nanny')}
-          onOpenAdmin={() => setAdminOpen(true)}
+          onOpenAdmin={() => navigate('/admin')}
         />
       )}
 
@@ -334,13 +341,6 @@ export default function App() {
         canInstall={!!deferredPrompt}
         lang={lang}
       />
-
-      {/* Overlays / Modals */}
-      {isAdminOpen && isAdmin && (
-        <Suspense fallback={<RouteFallback />}>
-          <AdminPanel onClose={() => setAdminOpen(false)} />
-        </Suspense>
-      )}
 
       {isAuthOpen && (
         <Suspense fallback={<RouteFallback />}>

@@ -69,13 +69,15 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
         }
 
         unsubscribe = subscribeToTicketMessages(tk.id, (m) => {
+          // AI replies are added locally in handleSend; only deliver human_agent
+          // messages via Realtime to avoid duplicates (local temp-id ≠ DB uuid).
+          if (m.sender_type === 'ai_concierge') return;
           setMessages((prev) => {
-            // Avoid duplicates (we already add AI messages optimistically)
             if (prev.some(p => p.id === m.id)) return prev;
             return [...prev, m];
           });
           if (m.sender_type === 'human_agent') {
-            setIsEscalated(false); // Human responded, reset escalation
+            setIsEscalated(false);
           }
         });
       } finally {

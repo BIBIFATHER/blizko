@@ -322,7 +322,8 @@ export default function App() {
       {currentPath !== '/' &&
         currentPath !== '/find-nanny' &&
         currentPath !== '/become-nanny' &&
-        currentPath !== '/match-results' && (
+        currentPath !== '/match-results' &&
+        !currentPath.startsWith('/admin') && (
         <AppFooter
           lang={lang}
           user={effectiveUser}

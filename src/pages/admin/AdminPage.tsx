@@ -107,28 +107,47 @@ const AdminPageContent: React.FC<{
     return (
         <div className="min-h-screen bg-[color:var(--color-bg)] flex flex-col">
             {/* Top bar */}
-            <header className="border-b border-[color:var(--cloud-border)] bg-white/80 backdrop-blur-sm px-4 py-3 flex items-center gap-3">
+            <header className="shrink-0 border-b border-[color:var(--cloud-border)] bg-white/80 backdrop-blur-sm px-4 py-3 flex items-center gap-3">
                 <button
                     type="button"
                     onClick={() => navigate('/')}
-                    className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-800 transition-colors"
+                    className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-800 transition-colors shrink-0"
                 >
-                    <ArrowLeft size={16} /> На сайт
+                    <ArrowLeft size={16} /> <span className="hidden sm:inline">На сайт</span>
                 </button>
                 <div className="flex-1" />
-                <div className="eyebrow hidden sm:block">Operations console</div>
+                <div className="hidden md:block"><div className="eyebrow">Operations console</div></div>
                 <div className="flex gap-2">
-                    <Button onClick={handleClearTest} variant="secondary" className="text-xs px-3 py-1.5 h-auto">
-                        <Trash2 size={13} /> Тестовые
+                    <Button onClick={handleClearTest} variant="secondary" className="text-xs px-2.5 py-1.5 h-auto">
+                        <Trash2 size={13} /> <span className="hidden sm:inline">Тестовые</span>
                     </Button>
-                    <Button onClick={handleClear} variant="secondary" className="text-xs px-3 py-1.5 h-auto">
-                        <Trash2 size={13} /> Очистить всё
+                    <Button onClick={handleClear} variant="secondary" className="text-xs px-2.5 py-1.5 h-auto">
+                        <Trash2 size={13} /> <span className="hidden sm:inline">Очистить всё</span>
                     </Button>
                 </div>
             </header>
 
-            <div className="flex flex-1">
-                {/* Sidebar (desktop) */}
+            {/* Body: sidebar (desktop) + tabs row (mobile) + shared content */}
+            <div className="flex flex-1 min-h-0 flex-col md:flex-row">
+                {/* Mobile tabs row */}
+                <div className="md:hidden shrink-0 border-b border-[color:var(--cloud-border)] bg-white/70 flex overflow-x-auto gap-1 px-3 py-2">
+                    {NAV_ITEMS.map(({ tab: t, label }) => (
+                        <NavLink
+                            key={t}
+                            to={t === 'overview' ? '/admin' : `/admin/${t}`}
+                            end={t === 'overview'}
+                            onClick={t === 'parents' ? markParentsAsSeen : undefined}
+                            className={({ isActive }) =>
+                                `shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-stone-900 text-white border-stone-900' : 'bg-white/70 text-stone-700 border-stone-200/80 hover:bg-white'}`
+                            }
+                        >
+                            {label}
+                            {t === 'parents' && unseenParentsCount > 0 && ` (${unseenParentsCount})`}
+                        </NavLink>
+                    ))}
+                </div>
+
+                {/* Desktop sidebar */}
                 <nav className="hidden md:flex flex-col w-52 shrink-0 border-r border-[color:var(--cloud-border)] bg-white/60 pt-6 pb-10 gap-1 px-3">
                     <div className="px-2 mb-4">
                         <h1 className="text-lg font-semibold text-stone-900">Админ-панель</h1>
@@ -153,27 +172,8 @@ const AdminPageContent: React.FC<{
                     ))}
                 </nav>
 
-                {/* Mobile top tabs */}
-                <div className="md:hidden w-full border-b border-[color:var(--cloud-border)] bg-white/70 flex overflow-x-auto gap-1 px-3 py-2 absolute top-[53px] left-0 z-10">
-                    {NAV_ITEMS.map(({ tab: t, label }) => (
-                        <NavLink
-                            key={t}
-                            to={t === 'overview' ? '/admin' : `/admin/${t}`}
-                            end={t === 'overview'}
-                            onClick={t === 'parents' ? markParentsAsSeen : undefined}
-                            className={({ isActive }) =>
-                                `shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-stone-900 text-white border-stone-900' : 'bg-white/70 text-stone-700 border-stone-200/80 hover:bg-white'}`
-                            }
-                        >
-                            {label}
-                            {t === 'parents' && unseenParentsCount > 0 && ` (${unseenParentsCount})`}
-                        </NavLink>
-                    ))}
-                </div>
-
                 {/* Main content */}
-                <main className="flex-1 overflow-y-auto p-4 md:p-6 mt-10 md:mt-0">
-                    {/* Search bar */}
+                <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     {(activeTab === 'parents' || activeTab === 'nannies') && (
                         <div className="flex items-center gap-2 input-glass rounded-2xl px-3 py-2 mb-4 max-w-md">
                             <Search size={16} className="text-stone-400" />
@@ -280,7 +280,7 @@ export const AdminPage: React.FC = () => {
 
     useEffect(() => { void loadFeed('replace'); }, [loadFeed, journalRange]);
 
-    const logAdminAction = (action: string, meta?: Record<string, unknown>) => {
+    const logAdminAction = React.useCallback((action: string, meta?: Record<string, unknown>) => {
         try {
             const items = JSON.parse(getItem(ADMIN_ACTIONS_KEY) || '[]');
             const next = [{ action, meta, at: Date.now() }, ...items];
@@ -288,9 +288,9 @@ export const AdminPage: React.FC = () => {
             setActionFeed(next.slice(0, 12));
             void createAdminAction(action, meta);
         } catch { /* ignore */ }
-    };
+    }, []);
 
-    const logWorkflowEvent = (event: AdminWorkflowEvent) => {
+    const logWorkflowEvent = React.useCallback((event: AdminWorkflowEvent) => {
         try {
             const items = JSON.parse(getItem(ADMIN_ACTIONS_KEY) || '[]');
             const entry: AdminActionEntry = {
@@ -305,7 +305,7 @@ export const AdminPage: React.FC = () => {
             setActionFeed(next.slice(0, 12));
             void createAdminAction(`workflow_${event.kind}`, { kind: event.kind, message: event.message });
         } catch { /* ignore */ }
-    };
+    }, []);
 
     return (
         <AdminWorkflowUIProvider onWorkflowEvent={logWorkflowEvent}>

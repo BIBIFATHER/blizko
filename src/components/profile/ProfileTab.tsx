@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, ProgressBar, Badge } from '../UI';
+import { Button, ProgressBar, Badge } from '../UI';
 import { AvailabilityCalendar, SlotStatus } from '../AvailabilityCalendar';
 import {
-    User as UserIcon, LogOut, Calendar, Wallet, Star,
-    ShieldCheck, Edit, Lock, Phone, Mail, BadgeCheck, LifeBuoy, X, Clock,
+    User as UserIcon, LogOut, Calendar, Star,
+    ShieldCheck, Edit, Phone, Mail, BadgeCheck, LifeBuoy, X, Clock,
 } from 'lucide-react';
 import { Language, User, NannyProfile, ParentRequest } from '@/core/types';
 import { t } from '@/core/i18n/translations';
@@ -12,7 +12,6 @@ import { notifyAdminResubmitted } from '@/services/notifications';
 import { supabase } from '@/services/supabase';
 import { getNannyReadinessSnapshot } from '@/services/nannyReadiness';
 import { getItem, setItem } from '@/core/platform/storage';
-import { ReferralWidget } from '../referral/ReferralWidget';
 
 interface ProfileTabProps {
     user: User;
@@ -41,18 +40,21 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     const [phoneVerifyLoading, setPhoneVerifyLoading] = useState(false);
     const [phoneVerifyError, setPhoneVerifyError] = useState('');
 
-    // Nanny-specific
+    // Nanny calendar
     const [showCalendar, setShowCalendar] = useState(false);
     const [calendarSlots, setCalendarSlots] = useState<Record<string, SlotStatus>>({});
-    const [isRegistrationPaid] = useState(false);
 
-    const earnedTotal = Number((myNannyProfile as NannyProfile & { bookingStats?: { earnedTotal?: number } } | undefined)?.bookingStats?.earnedTotal || 0);
     const nannyReadiness = myNannyProfile ? getNannyReadinessSnapshot(myNannyProfile) : null;
     const nannyReviewCount = myNannyProfile?.reviews?.length || 0;
     const nannyAverageRating = nannyReviewCount > 0
-        ? (myNannyProfile!.reviews!.reduce((sum, review) => sum + review.rating, 0) / nannyReviewCount).toFixed(1)
+        ? (myNannyProfile!.reviews!.reduce((sum, r) => sum + r.rating, 0) / nannyReviewCount).toFixed(1)
         : null;
-    const nannyCompletedHours = Number((myNannyProfile as NannyProfile & { bookingStats?: { completedHours?: number } } | undefined)?.bookingStats?.completedHours || 0) || null;
+    const nannyCompletedHours = Number(
+        (myNannyProfile as NannyProfile & { bookingStats?: { completedHours?: number } } | undefined)
+            ?.bookingStats?.completedHours || 0
+    ) || null;
+    const hasNannyStats = nannyAverageRating !== null || nannyCompletedHours !== null || nannyReviewCount > 0;
+
     const latestParentRequest = myParentRequests[0];
     const parentProfileProgress = latestParentRequest
         ? Math.round((
@@ -62,21 +64,21 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                 latestParentRequest.schedule,
                 latestParentRequest.budget,
                 latestParentRequest.comment,
-            ].filter(Boolean).length + (latestParentRequest.requirements?.length ? 1 : 0) + (latestParentRequest.documents?.length ? 1 : 0)
+            ].filter(Boolean).length
+            + (latestParentRequest.requirements?.length ? 1 : 0)
+            + (latestParentRequest.documents?.length ? 1 : 0)
         ) / 7 * 100)
         : 0;
 
     useEffect(() => {
         const load = async () => {
             if (isNanny) {
-                const myProfile = await getMyNannyProfile(user);
-                setMyNannyProfile(myProfile);
+                setMyNannyProfile(await getMyNannyProfile(user));
             } else {
-                const requests = await getMyParentRequests(user);
-                setMyParentRequests(requests);
+                setMyParentRequests(await getMyParentRequests(user));
             }
         };
-        load();
+        void load();
         try {
             const raw = getItem(PARENT_MODERATION_SEEN_KEY);
             if (raw) setModerationSeenMap(JSON.parse(raw));
@@ -92,7 +94,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
             if (phoneE164) setPhoneInput(phoneE164);
             if (phoneVerified) setPhoneStep('verified');
         };
-        loadPhoneMeta();
+        void loadPhoneMeta();
     }, [user.phone]);
 
     const sendPhoneCode = async () => {
@@ -153,7 +155,6 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         window.dispatchEvent(new CustomEvent('blizko:open-support-chat'));
     };
 
-    // Parent helpers
     const parentStatusLabel = (status?: ParentRequest['status']) => {
         if (status === 'payment_pending') return 'Ожидает оплаты';
         if (status === 'in_review') return 'На проверке';
@@ -193,220 +194,238 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     const handleResubmit = async (id: string) => {
         const updated = await resubmitParentRequest(id);
         if (updated) await notifyAdminResubmitted(updated);
-        const requests = await getMyParentRequests(user);
-        setMyParentRequests(requests);
+        setMyParentRequests(await getMyParentRequests(user));
     };
 
     const hasAnyNewModeration = myParentRequests.some((req) => hasNewModerationUpdate(req));
 
     return (
         <>
-            <div className="animate-fade-in space-y-6 text-center">
-                {/* Profile Header */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 relative">
-                    <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center mb-4 border-4 border-white shadow-lg relative ${isNanny ? 'bg-amber-100 text-amber-600' : 'bg-sky-100 text-sky-600'} overflow-hidden`}>
+            <div className="animate-fade-in space-y-4 text-center">
+
+                {/* Profile header */}
+                <div className="section-shell rounded-[1.5rem] p-5">
+                    <div className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-3 border-4 border-white shadow-md relative ${isNanny ? 'bg-amber-100 text-amber-600' : 'bg-sky-100 text-sky-600'} overflow-hidden`}>
                         {myNannyProfile?.photo ? (
                             <img src={myNannyProfile.photo} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
-                            <UserIcon size={40} />
+                            <UserIcon size={36} />
                         )}
                         {isNanny && myNannyProfile?.isVerified && (
-                            <div className="absolute bottom-0 right-0 bg-green-500 border-2 border-white w-6 h-6 rounded-full flex items-center justify-center text-white" title="Verified">
-                                <ShieldCheck size={12} />
+                            <div className="absolute bottom-0 right-0 bg-green-500 border-2 border-white w-5 h-5 rounded-full flex items-center justify-center text-white">
+                                <ShieldCheck size={10} />
                             </div>
                         )}
                     </div>
 
-                    <h3 className="text-xl font-bold text-stone-800">{user.name || 'User'}</h3>
-                    {user.id && (
-                        <div className="mt-1 inline-flex items-center gap-1.5 bg-stone-100 text-stone-700 px-2 py-1 rounded-md text-[11px] font-mono" title="User ID">
-                            ID: {user.id}
-                        </div>
-                    )}
+                    <h3 className="text-lg font-bold text-stone-800">{user.name || 'Профиль'}</h3>
 
                     <div className="flex flex-col items-center gap-1.5 mt-2">
                         {user.phone && (
-                            <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-2 py-1 rounded-md text-xs font-medium">
-                                <Phone size={12} /> {user.phone} <BadgeCheck size={12} fill="currentColor" className="text-green-500" />
+                            <div className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-2 py-1 rounded-lg text-xs font-medium">
+                                <Phone size={11} /> {user.phone} <BadgeCheck size={11} fill="currentColor" className="text-green-500" />
                             </div>
                         )}
                         {user.email && (
-                            <div className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 px-2 py-1 rounded-md text-xs font-medium">
-                                <Mail size={12} /> {user.email} <BadgeCheck size={12} fill="currentColor" className="text-sky-500" />
+                            <div className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 px-2 py-1 rounded-lg text-xs font-medium">
+                                <Mail size={11} /> {user.email}
                             </div>
                         )}
                     </div>
 
-                    {/* Phone verification */}
-                    <div className="mt-4 border-t border-stone-100 pt-4 text-left">
-                        <div className="text-xs font-semibold text-stone-600 mb-2">Подтверждение телефона</div>
-                        {phoneStep === 'verified' ? (
-                            <Badge variant="trust">Телефон подтвержден</Badge>
-                        ) : (
-                            <div className="space-y-2">
-                                <input type="tel" value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} placeholder="+7 999 000-00-00" className="w-full text-sm bg-stone-50 border border-stone-200 rounded-lg px-3 py-2" />
-                                {phoneStep === 'code' && (
-                                    <input type="text" value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="Код из SMS" className="w-full text-sm bg-stone-50 border border-stone-200 rounded-lg px-3 py-2" />
-                                )}
-                                {phoneVerifyError && <div className="text-[11px] text-red-500">{phoneVerifyError}</div>}
-                                {phoneStep !== 'code' ? (
-                                    <button onClick={sendPhoneCode} disabled={phoneVerifyLoading || !phoneInput.trim()} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-stone-900 text-white hover:bg-stone-700 disabled:opacity-50">
-                                        {phoneVerifyLoading ? 'Отправка...' : 'Отправить код'}
-                                    </button>
-                                ) : (
-                                    <button onClick={verifyPhoneCode} disabled={phoneVerifyLoading || phoneCode.length < 4} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50">
-                                        {phoneVerifyLoading ? 'Проверка...' : 'Подтвердить код'}
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {isNanny && (
-                        <div className="flex justify-center gap-4 border-t border-stone-100 pt-4 mt-4">
-                            <div className="text-center">
-                                <div className="text-lg font-bold text-stone-800 flex items-center justify-center gap-1">
-                                    {nannyAverageRating || '—'} {nannyAverageRating && <Star size={12} className="fill-amber-400 text-amber-400" />}
+                    {/* Nanny stats — only when there's real data */}
+                    {isNanny && hasNannyStats && (
+                        <div className="flex justify-center gap-5 border-t border-stone-100 pt-4 mt-4">
+                            {nannyAverageRating && (
+                                <div className="text-center">
+                                    <div className="text-base font-bold text-stone-800 flex items-center justify-center gap-1">
+                                        {nannyAverageRating} <Star size={11} className="fill-amber-400 text-amber-400" />
+                                    </div>
+                                    <div className="text-[10px] text-stone-400 uppercase">{text.statRating}</div>
                                 </div>
-                                <div className="text-[10px] text-stone-400 uppercase">{text.statRating}</div>
-                            </div>
-                            <div className="w-px bg-stone-100" />
-                            <div className="text-center">
-                                <div className="text-lg font-bold text-stone-800">{nannyCompletedHours ?? '—'}</div>
-                                <div className="text-[10px] text-stone-400 uppercase">{text.statHours}</div>
-                            </div>
-                            <div className="w-px bg-stone-100" />
-                            <div className="text-center">
-                                <div className="text-lg font-bold text-stone-800">{nannyReviewCount}</div>
-                                <div className="text-[10px] text-stone-400 uppercase">{text.statReviews}</div>
-                            </div>
+                            )}
+                            {nannyCompletedHours !== null && (
+                                <>
+                                    {nannyAverageRating && <div className="w-px bg-stone-100" />}
+                                    <div className="text-center">
+                                        <div className="text-base font-bold text-stone-800">{nannyCompletedHours}</div>
+                                        <div className="text-[10px] text-stone-400 uppercase">{text.statHours}</div>
+                                    </div>
+                                </>
+                            )}
+                            {nannyReviewCount > 0 && (
+                                <>
+                                    <div className="w-px bg-stone-100" />
+                                    <div className="text-center">
+                                        <div className="text-base font-bold text-stone-800">{nannyReviewCount}</div>
+                                        <div className="text-[10px] text-stone-400 uppercase">{text.statReviews}</div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
 
                 {/* Nanny key data */}
                 {isNanny && myNannyProfile && (
-                    <Card className="p-4! bg-white border border-stone-100 text-left">
-                        <div className="text-xs font-semibold text-stone-500 uppercase mb-2">Ключевые данные</div>
+                    <div className="section-shell rounded-[1.5rem] p-4 text-left">
+                        <div className="eyebrow mb-2">Ключевые данные</div>
                         <div className="space-y-1 text-sm text-stone-700">
                             <div>Город: {myNannyProfile.city || '—'}</div>
-                            <div>Опыт: {myNannyProfile.experience || '—'} {myNannyProfile.experience ? 'лет' : ''}</div>
+                            <div>Опыт: {myNannyProfile.experience ? `${myNannyProfile.experience} лет` : '—'}</div>
                             <div>График: {myNannyProfile.schedule || '—'}</div>
                             <div>Ставка: {myNannyProfile.expectedRate || '—'}</div>
                         </div>
-                    </Card>
+                    </div>
                 )}
 
-                {/* Progress — Goal-Gradient */}
-                <div className="bg-white p-4 rounded-2xl border border-stone-100 text-left">
+                {/* Profile progress */}
+                <div className="section-shell rounded-[1.5rem] p-4 text-left">
                     <ProgressBar
                         value={isNanny ? (nannyReadiness?.completionRatio || 0) : parentProfileProgress}
                         showPercent
-                        label={lang === 'ru' ? 'Прогресс профиля' : 'Profile progress'}
+                        label={lang === 'ru' ? 'Готовность профиля' : 'Profile progress'}
                     />
                     <div className="mt-2 text-[11px] text-stone-500">
                         {isNanny
                             ? (nannyReadiness?.missingFields.length
                                 ? `Не хватает: ${nannyReadiness.missingFields.join(', ')}.`
                                 : 'Профиль заполнен и готов к следующему шагу проверки.')
-                            : 'Добавьте документы и заполните ключевые поля, чтобы ускорить подбор.'}
+                            : 'Заполните ключевые поля — это ускорит подбор.'}
                     </div>
                 </div>
 
-                {/* Nanny actions */}
-                {isNanny && (
-                    <>
-                        <Button onClick={() => onEditProfile && onEditProfile(myNannyProfile)} className="bg-amber-100 text-amber-900 hover:bg-amber-200">
-                            <Edit size={16} /> {myNannyProfile ? (lang === 'ru' ? 'Редактировать анкету' : 'Edit Profile') : (lang === 'ru' ? 'Заполнить анкету' : 'Fill Profile')}
-                        </Button>
-                        <Button onClick={() => setShowCalendar(true)} className="bg-sky-100 text-sky-800 hover:bg-sky-200">
-                            <Calendar size={16} /> {lang === 'ru' ? 'Календарь занятости' : 'Availability Calendar'}
-                        </Button>
-                        <Card className={`p-5! text-white flex justify-between items-center shadow-lg transition-colors ${!isRegistrationPaid ? 'bg-stone-800 shadow-stone-200' : 'bg-[#6C2586] shadow-purple-200'}`}>
-                            <div className="text-left">
-                                <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-1">
-                                    {!isRegistrationPaid ? text.regFeeLabel : text.nannyWallet}
-                                </p>
-                                <p className="text-2xl font-bold">
-                                    {!isRegistrationPaid ? '5 000 ₽' : `${earnedTotal.toLocaleString('ru-RU')} ₽`}
-                                </p>
-                            </div>
-                            {!isRegistrationPaid ? (
-                                <button onClick={openSupportChat} className="bg-white hover:bg-stone-200 text-stone-900 px-4 py-2 rounded-xl transition-all text-xs font-bold flex flex-col items-center gap-1">
-                                    <Lock size={16} /> {text.payRegistration}
+                {/* Phone verification */}
+                {phoneStep !== 'verified' && (
+                    <div className="section-shell rounded-[1.5rem] p-4 text-left">
+                        <div className="eyebrow mb-3">Подтверждение телефона</div>
+                        <div className="space-y-2">
+                            <input
+                                type="tel"
+                                value={phoneInput}
+                                onChange={(e) => setPhoneInput(e.target.value)}
+                                placeholder="+7 999 000-00-00"
+                                className="w-full text-sm bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 outline-none focus:border-stone-400"
+                            />
+                            {phoneStep === 'code' && (
+                                <input
+                                    type="text"
+                                    value={phoneCode}
+                                    onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                    placeholder="Код из SMS"
+                                    className="w-full text-sm bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 outline-none focus:border-stone-400"
+                                />
+                            )}
+                            {phoneVerifyError && <div className="text-[11px] text-red-500">{phoneVerifyError}</div>}
+                            {phoneStep !== 'code' ? (
+                                <button
+                                    onClick={() => void sendPhoneCode()}
+                                    disabled={phoneVerifyLoading || !phoneInput.trim()}
+                                    className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-stone-900 text-white hover:bg-stone-700 disabled:opacity-50"
+                                >
+                                    {phoneVerifyLoading ? 'Отправка...' : 'Отправить код'}
                                 </button>
                             ) : (
-                                <button onClick={openSupportChat} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl transition-all text-xs font-bold flex flex-col items-center gap-1 border border-white/30">
-                                    <Wallet size={16} /> {text.payCommission}
+                                <button
+                                    onClick={() => void verifyPhoneCode()}
+                                    disabled={phoneVerifyLoading || phoneCode.length < 4}
+                                    className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50"
+                                >
+                                    {phoneVerifyLoading ? 'Проверка...' : 'Подтвердить код'}
                                 </button>
                             )}
-                        </Card>
-                        {!isRegistrationPaid && (
-                            <p className="text-xs text-stone-400 -mt-4">
-                                {lang === 'ru' ? 'Для начала работы необходимо оплатить единоразовый взнос.' : 'To start working, you must pay a one-time fee.'}
-                            </p>
-                        )}
-                    </>
+                        </div>
+                    </div>
+                )}
+                {phoneStep === 'verified' && (
+                    <div className="flex items-center justify-center">
+                        <Badge variant="trust">Телефон подтверждён</Badge>
+                    </div>
+                )}
+
+                {/* Nanny actions */}
+                {isNanny && (
+                    <div className="flex flex-col gap-3">
+                        <Button onClick={() => onEditProfile && onEditProfile(myNannyProfile)}>
+                            <Edit size={16} /> {myNannyProfile
+                                ? (lang === 'ru' ? 'Редактировать анкету' : 'Edit Profile')
+                                : (lang === 'ru' ? 'Заполнить анкету' : 'Fill Profile')}
+                        </Button>
+                        <Button variant="secondary" onClick={() => setShowCalendar(true)}>
+                            <Calendar size={16} /> {lang === 'ru' ? 'Календарь занятости' : 'Availability Calendar'}
+                        </Button>
+                    </div>
                 )}
 
                 {/* Parent requests */}
                 {!isNanny && (
-                    <div className="text-left space-y-4">
-                        <h4 className="text-xs font-bold text-stone-400 uppercase tracking-widest">{text.myApplications}</h4>
+                    <div className="text-left space-y-3">
+                        <div className="eyebrow">{text.myApplications}</div>
                         {myParentRequests.length === 0 ? (
-                            <Card className="p-4! bg-white border border-stone-100">
+                            <div className="section-shell rounded-[1.5rem] p-4">
                                 <div className="text-sm text-stone-500">У вас пока нет заявок</div>
-                                <div className="text-[11px] text-stone-400 mt-1">Создайте заявку, чтобы получить подбор и статус в кабинете.</div>
-                            </Card>
+                                <div className="text-[11px] text-stone-400 mt-1">Создайте заявку, чтобы начать подбор.</div>
+                            </div>
                         ) : (
                             <div className="space-y-2">
                                 {hasAnyNewModeration && (
-                                    <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 flex items-center justify-between gap-2">
+                                    <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 flex items-center justify-between gap-2">
                                         <div className="text-xs text-amber-700 font-medium">Есть новое решение модерации</div>
-                                        <button onClick={markModerationAsSeen} className="text-[11px] px-2 py-1 rounded bg-amber-100 text-amber-700 hover:bg-amber-200">Прочитано</button>
+                                        <button onClick={markModerationAsSeen} className="text-[11px] px-2 py-1 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200">Прочитано</button>
                                     </div>
                                 )}
                                 {myParentRequests.map((req) => {
-                                    const lastAdminStatusEvent = [...(req.changeLog || [])].reverse().find((e) => e.type === 'status_changed' && e.by === 'admin');
+                                    const lastAdminEvent = [...(req.changeLog || [])].reverse().find((e) => e.type === 'status_changed' && e.by === 'admin');
                                     return (
-                                        <Card key={req.id} className="p-4! bg-white border border-stone-100 space-y-3">
+                                        <div key={req.id} className="section-shell rounded-[1.5rem] p-4 space-y-3">
                                             <div className="flex items-start gap-3">
-                                                <div className="bg-stone-50 p-2.5 rounded-xl text-stone-400 shadow-sm shrink-0"><Clock size={20} /></div>
+                                                <div className="bg-stone-100 p-2 rounded-xl text-stone-400 shrink-0"><Clock size={18} /></div>
                                                 <div className="min-w-0">
-                                                    <div className="text-sm font-semibold text-stone-700 flex items-center gap-2 flex-wrap">
+                                                    <div className="flex items-center gap-2 flex-wrap">
                                                         <Badge variant={req.status === 'approved' ? 'trust' : req.status === 'rejected' ? 'status' : 'info'}>
                                                             {parentStatusLabel(req.status)}
                                                         </Badge>
-                                                        {hasNewModerationUpdate(req) && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">Новое</span>}
+                                                        {hasNewModerationUpdate(req) && (
+                                                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">Новое</span>
+                                                        )}
                                                     </div>
-                                                    <div className="text-xs text-stone-400 mt-1">Создана: {formatRuDate(req.createdAt)} • заявка {req.id.slice(0, 4).toUpperCase()}</div>
-                                                    <div className="text-[11px] text-stone-500">Статус: {parentStatusLabel(req.status)}</div>
-                                                    {req.status === 'in_review' && <div className="mt-1 text-[11px] text-stone-500">{lang === 'ru' ? 'Обычно 24–48ч' : 'Typically 24–48h'}</div>}
+                                                    <div className="text-xs text-stone-400 mt-1">
+                                                        {formatRuDate(req.createdAt)} · #{req.id.slice(0, 4).toUpperCase()}
+                                                    </div>
+                                                    {req.status === 'in_review' && (
+                                                        <div className="mt-1 text-[11px] text-stone-500">Обычно 24–48 ч</div>
+                                                    )}
                                                     {req.status === 'rejected' && (
                                                         <div className="mt-1 text-[11px] text-red-600">
                                                             Причина: {parentRejectReasonLabel(req.rejectionInfo?.reasonCode)}
                                                             {req.rejectionInfo?.reasonText ? ` — ${req.rejectionInfo.reasonText}` : ''}
                                                         </div>
                                                     )}
-                                                    {lastAdminStatusEvent && <div className="mt-1 text-[11px] text-stone-500">Обновлено модерацией: {new Date(lastAdminStatusEvent.at).toLocaleString()}</div>}
+                                                    {lastAdminEvent && (
+                                                        <div className="mt-1 text-[11px] text-stone-400">
+                                                            Обновлено: {new Date(lastAdminEvent.at).toLocaleString('ru-RU')}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="flex flex-wrap gap-2">
                                                 <button
                                                     onClick={() => onEditParentRequest && onEditParentRequest(req)}
                                                     disabled={req.status === 'approved'}
-                                                    title={req.status === 'approved' ? 'Одобренную заявку редактировать нельзя' : 'Редактировать заявку'}
-                                                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${req.status === 'approved' ? 'bg-stone-100 text-stone-400 cursor-not-allowed' : 'bg-sky-100 text-sky-700 hover:bg-sky-200'}`}
+                                                    className={`text-xs font-semibold px-3 py-1.5 rounded-xl ${req.status === 'approved' ? 'bg-stone-100 text-stone-400 cursor-not-allowed' : 'bg-sky-100 text-sky-700 hover:bg-sky-200'}`}
                                                 >
                                                     Редактировать
                                                 </button>
                                                 {req.status === 'rejected' && (
-                                                    <button onClick={() => handleResubmit(req.id)} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200">
+                                                    <button
+                                                        onClick={() => void handleResubmit(req.id)}
+                                                        className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-amber-100 text-amber-700 hover:bg-amber-200"
+                                                    >
                                                         Отправить повторно
                                                     </button>
                                                 )}
                                             </div>
-                                        </Card>
+                                        </div>
                                     );
                                 })}
                             </div>
@@ -414,15 +433,15 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                     </div>
                 )}
 
-                {/* Referral Widget */}
-                <ReferralWidget userId={user.id || 'guest'} userName={user.name || 'Пользователь'} />
-
-                <Button variant="outline" onClick={openSupportChat} className="w-full border-sky-100 text-sky-700 hover:bg-sky-50 hover:border-sky-200">
-                    <LifeBuoy size={18} /> Связаться с поддержкой
-                </Button>
-                <Button variant="outline" onClick={onLogout} className="w-full text-red-500 border-red-100 hover:bg-red-50 hover:border-red-200">
-                    <LogOut size={18} /> {text.logout}
-                </Button>
+                {/* Support + logout */}
+                <div className="flex flex-col gap-3 pt-1">
+                    <Button variant="outline" onClick={openSupportChat} className="w-full">
+                        <LifeBuoy size={16} /> Связаться с поддержкой
+                    </Button>
+                    <Button variant="outline" onClick={onLogout} className="w-full text-red-500 border-red-100 hover:bg-red-50 hover:border-red-200">
+                        <LogOut size={16} /> {text.logout}
+                    </Button>
+                </div>
             </div>
 
             {/* Calendar modal */}
@@ -431,17 +450,19 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                     <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
                         <div className="p-4 border-b border-stone-100 flex items-center justify-between">
                             <div>
-                                <div className="text-sm font-semibold text-stone-800">Календарь занятости няни</div>
+                                <div className="text-sm font-semibold text-stone-800">Календарь занятости</div>
                                 <div className="text-xs text-stone-500">Отмечайте приоритетные окна и занятые слоты</div>
                             </div>
                             <button onClick={() => setShowCalendar(false)} className="p-2 rounded-full hover:bg-stone-100"><X size={16} /></button>
                         </div>
-                        <div className="p-4 space-y-3">
-                            <div className="grid grid-cols-2 gap-2 text-[11px] text-stone-600">
-                                <div className="bg-stone-50 border border-stone-200 rounded-lg p-2">Подтверждение T‑24ч: ✅</div>
-                                <div className="bg-stone-50 border border-stone-200 rounded-lg p-2">Подтверждение T‑3–4ч: ⏳</div>
-                            </div>
-                            <AvailabilityCalendar title="Сетка недели" subtitle="Клик — сменить статус (резерв → занято → свободно)" statusMap={calendarSlots} onToggle={toggleCalendarSlot} legend />
+                        <div className="p-4">
+                            <AvailabilityCalendar
+                                title="Сетка недели"
+                                subtitle="Клик — сменить статус"
+                                statusMap={calendarSlots}
+                                onToggle={toggleCalendarSlot}
+                                legend
+                            />
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,24 @@
 
 ---
 
+## 2026-05-24 (Sun) — ProfileTab: удаление мёртвого кода и редизайн
+
+### Deleted
+
+- ✅ **`src/components/referral/ReferralWidget.tsx`** — хардкод «0 приглашений / 0 бонусов», бэкенда нет
+- ✅ **`src/services/referral.ts`** — localStorage-заглушка без реального бэкенда
+
+### Changed (`src/components/profile/ProfileTab.tsx`)
+
+- Удалены: `ReferralWidget`, платёжная карточка (`isRegistrationPaid`), UUID-чип «User ID», импорты `Wallet`/`Lock`
+- Дизайн: все карточки переведены на `section-shell rounded-[1.5rem]` (единый токен)
+- Верификация телефона вынесена в отдельный `section-shell`-блок
+- Статистика няни показывается только при наличии реальных данных (`hasNannyStats`)
+- Карточки запросов родителей → `section-shell rounded-[1.5rem]` вместо `Card p-4!`
+- Асинхронные вызовы (`sendPhoneCode`, `verifyPhoneCode`, `handleResubmit`) правильно помечены `void`
+
+---
+
 ## 2026-05-24 (Sun) — BLI-20: Supabase RLS smoke audit
 
 ### Findings

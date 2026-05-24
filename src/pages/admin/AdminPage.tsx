@@ -222,6 +222,8 @@ const AdminPageContent: React.FC<{
                         {activeTab === 'bookings' && (
                             <AdminBookingsTab
                                 bookings={bookings}
+                                parents={parents}
+                                nannies={nannies}
                                 onStatusChange={async (id, status) => {
                                     await updateBookingStatus(id, status);
                                     logAdminAction('booking_status_change', { id, status });

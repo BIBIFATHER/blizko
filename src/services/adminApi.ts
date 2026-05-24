@@ -101,6 +101,32 @@ export async function fetchAdminActions(params?: {
   };
 }
 
+export async function adminSendNotification(params: {
+  to: string;
+  subject: string;
+  text: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  const headers = await getAdminHeaders();
+  if (!headers) return { ok: false, error: 'Нет авторизации' };
+
+  const response = await fetch('/api/notify', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      event: 'user.parent_request_status_changed',
+      to: params.to,
+      subject: params.subject,
+      text: params.text,
+    }),
+  });
+  const payload = await parseJsonSafe(response);
+  if (!response.ok) {
+    return { ok: false, error: payload?.error || `Ошибка ${response.status}` };
+  }
+  if (payload?.skipped) return { ok: false, error: 'Получатель не задан' };
+  return { ok: true };
+}
+
 export async function createAdminAction(
   action: string,
   meta?: Record<string, unknown>,

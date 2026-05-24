@@ -5,7 +5,9 @@ import { X, ChevronDown } from 'lucide-react';
 import { AdminDocumentPreviewModal, AdminPillButton, adminModalHeader, adminModalSurface, adminSubsectionPanel } from './adminPrimitives';
 import { AdminPreviewDoc } from './adminModerationUtils';
 import { useAdminParentModeration, RejectReasonCode, rejectReasonLabelMap } from '@/hooks/useAdminParentModeration';
-import { adminUpdateParentRequest } from '@/services/adminApi';
+import { useAdminWorkflowUI } from './adminWorkflowUI';
+import { adminUpdateParentRequest, adminSendNotification } from '@/services/adminApi';
+import { notifyUserStatusChanged } from '@/services/notifications';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
 
@@ -105,10 +107,17 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
     const [editingNotes, setEditingNotes] = useState(false);
     const [notesState, setNotesState] = useState('');
+    const [notifySubject, setNotifySubject] = useState('');
+    const [notifyText, setNotifyText] = useState('');
+    const [notifyBusy, setNotifyBusy] = useState(false);
 
     useEffect(() => {
         setNotesState(selectedParent?.analysisNotes ?? '');
         setEditingNotes(false);
+        const statusLabel = parentStatusLabel(selectedParent?.status);
+        setNotifySubject(`Статус вашей заявки: ${statusLabel}`);
+        setNotifyText('');
+        setNotifyBusy(false);
     }, [selectedParent?.id]);
 
     const { updateParentStatus, rejectParent } = useAdminParentModeration({
@@ -116,6 +125,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         selectedParent,
         setSelectedParent,
     });
+    const { reportSuccess, reportError } = useAdminWorkflowUI();
 
     const filteredParents = React.useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -139,6 +149,35 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     const handleRejectConfirm = async (parent: ParentRequest, code: RejectReasonCode, text: string) => {
         setRejectingId(null);
         await rejectParent(parent, code, text);
+    };
+
+    const handleResendStatus = async () => {
+        if (!selectedParent?.requesterEmail) return;
+        setNotifyBusy(true);
+        try {
+            await notifyUserStatusChanged(selectedParent);
+            reportSuccess('Уведомление о статусе отправлено.');
+        } catch {
+            reportError('Не удалось отправить уведомление.');
+        } finally {
+            setNotifyBusy(false);
+        }
+    };
+
+    const handleSendCustom = async () => {
+        if (!selectedParent?.requesterEmail) return;
+        const subject = notifySubject.trim();
+        const text = notifyText.trim();
+        if (!subject || !text) return;
+        setNotifyBusy(true);
+        const result = await adminSendNotification({ to: selectedParent.requesterEmail, subject, text });
+        setNotifyBusy(false);
+        if (result.ok) {
+            reportSuccess('Сообщение отправлено.');
+            setNotifyText('');
+        } else {
+            reportError(result.error ?? 'Ошибка отправки.');
+        }
     };
 
     const handleSaveNotes = async () => {
@@ -364,6 +403,48 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                     </div>
                                 </div>
                             )}
+
+                            <div className={adminSubsectionPanel}>
+                                <div className="text-xs text-stone-500 mb-2">Уведомления</div>
+                                {selectedParent.requesterEmail ? (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="text-xs text-stone-600 font-mono truncate max-w-[14rem]">
+                                                {selectedParent.requesterEmail}
+                                            </span>
+                                            <AdminPillButton
+                                                tone="neutral"
+                                                className="px-2.5 py-1 text-[10px] shrink-0"
+                                                disabled={notifyBusy}
+                                                onClick={handleResendStatus}
+                                            >
+                                                Повторить уведомление о статусе
+                                            </AdminPillButton>
+                                        </div>
+                                        <input
+                                            value={notifySubject}
+                                            onChange={(e) => setNotifySubject(e.target.value)}
+                                            placeholder="Тема письма"
+                                            className="w-full input-glass rounded-xl px-3 py-2 text-xs"
+                                        />
+                                        <textarea
+                                            value={notifyText}
+                                            onChange={(e) => setNotifyText(e.target.value)}
+                                            placeholder="Текст сообщения..."
+                                            className="w-full input-glass rounded-xl px-3 py-2 text-xs min-h-[60px] resize-none"
+                                        />
+                                        <AdminPillButton
+                                            tone="dark"
+                                            disabled={notifyBusy || !notifySubject.trim() || !notifyText.trim()}
+                                            onClick={handleSendCustom}
+                                        >
+                                            {notifyBusy ? 'Отправка...' : 'Отправить сообщение'}
+                                        </AdminPillButton>
+                                    </div>
+                                ) : (
+                                    <div className="text-xs text-stone-400 italic">Email родителя не задан</div>
+                                )}
+                            </div>
 
                             <div className={adminSubsectionPanel}>
                                 <div className="flex items-center justify-between mb-1.5">

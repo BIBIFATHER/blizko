@@ -116,7 +116,7 @@ describe("buildMatchResult", () => {
       "has_reviews",
       "ai_checked",
     ]);
-    expect(result.overallAdvice).toContain("3 кандидата");
+    expect(result.overallAdvice).toContain("3 няни");
   });
 
   it("falls back to deterministic explanation when ai result is unusable", async () => {
@@ -159,7 +159,7 @@ describe("buildHeuristicFallback", () => {
     expect(buildHeuristicFallback([], "en")).toEqual({
       matchScore: 72,
       recommendations: [
-        "No exact candidates found in the current database",
+        "No exact matches found in the current database",
         "Broaden requirements or budget to increase matches",
         "Add more details for schedule and responsibilities",
       ],
@@ -172,7 +172,7 @@ describe("buildHeuristicFallback", () => {
     expect(result).toEqual({
       matchScore: 88,
       recommendations: [
-        "Лучший текущий матч: Nanny n1 (88%)",
+        "Лучший текущий вариант: Nanny n1 (88%)",
         "Есть релевантный опыт",
         "Проведите короткое пробное знакомство и сверку графика",
       ],

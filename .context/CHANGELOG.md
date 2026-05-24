@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-05-24 (Sun) — CI: test expectations after brand voice pass
+
+### Done
+
+- ✅ **Unit tests fixed** — `matchingAiResult.test.ts` ожидания обновлены под BLI-19 vocabulary: `няни`, `вариант`, `matches` вместо старых `кандидат/матч`.
+- ✅ **Smoke E2E fixed** — `e2e_test.py` теперь проходит актуальный story-first ParentForm: textarea → `Малыши` → `Продолжить`.
+
+### Effect
+
+- GitHub Actions quality failure на run `26359085953` устранён локально.
+- Smoke E2E больше не сломается после прохождения quality job.
+
+---
+
 ## 2026-05-24 (Sun) — BLI-13: NannyPublicProfile trust architecture
 
 ### Done

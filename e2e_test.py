@@ -35,19 +35,18 @@ def run_tests():
             page.wait_for_load_state('networkidle')
             time.sleep(1) # wait for animation
             
-            # 2. Parent Form Step 1
-            city_input = page.locator('input[placeholder*="Хамовники"]')
-            if city_input.is_visible():
-                city_input.fill('Москва, Хамовники')
-            else:
-                print("⚠️ City input not found, skipping fill")
-                
+            # 2. Parent Form Step 1: story-first flow.
+            story_input = page.locator('textarea').first
+            if not story_input.is_visible():
+                raise Exception("Family story textarea not visible on Step 1")
+            story_input.fill("Нужна няня для дочки 2 лет несколько раз в неделю, важен спокойный и мягкий подход.")
+
             print("Selecting age chip...")
-            page.locator('text="Тоддлеры (1–3)"').click()
+            page.get_by_role("button", name=re.compile(r"Малыши")).click()
             print("✅ Form interactions working")
 
             # Try navigating through the form
-            next_button = page.locator('button', has_text="Далее").first
+            next_button = page.get_by_role("button", name=re.compile(r"^(Продолжить|Continue)$")).first
             if next_button.is_visible():
                 next_button.click()
                 print("✅ Next button clicked")

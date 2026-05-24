@@ -2,6 +2,41 @@
 
 ---
 
+## 2026-05-24 (Sun) — BLI-20: Supabase RLS smoke audit
+
+### Findings
+
+- ⚠️ **`nannies_public` view**: GRANT был только `authenticated`, не `anon`.
+  Анонимные родители не могли читать список нянь — потенциальный product-баг.
+- ✅ `nannies` raw table: только owner + service_role — ок.
+- ✅ `parents`: только owner + service_role — ок.
+- ✅ `admin_actions`, `analytics_events`, `payments`: service_role only — ок.
+
+### Fixed
+
+- ✅ **`supabase/migrations/20260524000000_rls_smoke_fixes.sql`**:
+  - `GRANT SELECT ON nannies_public TO anon`
+  - Пересоздаёт view с `security_invoker = false` (explicit)
+  - Idempotent `ALTER TABLE … ENABLE ROW LEVEL SECURITY`
+    для `analytics_events`, `admin_actions`, `payments`
+- ✅ **`scripts/check_nannies_rls.sh`** — добавлены
+  `check_service_only` проверки для `admin_actions`,
+  `analytics_events`, `payments` (anon + authenticated).
+
+### How to run smoke tests
+
+Нужен прямой URL Supabase проекта (не через CF Worker):
+
+```bash
+SUPABASE_URL="https://<project>.supabase.co" \
+ANON_KEY="<anon_key>" \
+USER_JWT="<session_token>" \
+OWNER_USER_ID="<user_id>" \
+bash scripts/check_nannies_rls.sh
+```
+
+---
+
 ## 2026-05-24 (Sun) — BLI-27: Документы и фото нянь → Supabase Storage
 
 ### Done

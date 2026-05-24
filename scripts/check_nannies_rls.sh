@@ -197,5 +197,49 @@ else
   echo "WARN: USER_JWT not provided, skipping authenticated checks"
 fi
 
+# -------------------------------------------------------
+# Service-only tables: anon and authenticated must get 0 rows
+# -------------------------------------------------------
+check_service_only() {
+  local table="$1"
+  local token="$2"
+  local role_label="$3"
+
+  request "so_${table}_${role_label}" "/rest/v1/${table}?select=id&limit=1" "$token"
+  local status
+  status="$(cat "$tmp_dir/so_${table}_${role_label}.status")"
+  echo "HTTP ${status}"
+  if [[ "$have_jq" -eq 1 ]]; then
+    local count
+    count="$(jq 'if type == "array" then length else 0 end' "$tmp_dir/so_${table}_${role_label}.json" 2>/dev/null || echo 0)"
+    if [[ "$count" -gt 0 ]]; then
+      echo "FAIL: ${role_label} can read rows from ${table}"
+      exit 1
+    fi
+  else
+    if grep -q '"id"' "$tmp_dir/so_${table}_${role_label}.json" 2>/dev/null; then
+      echo "FAIL: ${role_label} may be reading rows from ${table}"
+      exit 1
+    fi
+  fi
+  echo "OK: ${role_label} cannot read ${table}"
+}
+
+echo
+echo "== Service-only tables (anon) =="
+for svc_table in admin_actions analytics_events payments; do
+  echo -n "  ${svc_table}: "
+  check_service_only "$svc_table" "$ANON_KEY" "anon"
+done
+
+if [[ -n "$USER_JWT" ]]; then
+  echo
+  echo "== Service-only tables (authenticated) =="
+  for svc_table in admin_actions analytics_events payments; do
+    echo -n "  ${svc_table}: "
+    check_service_only "$svc_table" "$USER_JWT" "auth"
+  done
+fi
+
 echo
 echo "OK: nannies RLS smoke test passed"

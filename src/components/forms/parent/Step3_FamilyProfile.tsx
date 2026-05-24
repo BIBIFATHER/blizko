@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useParentForm } from './ParentFormProvider';
-import { Button, ChipGroup, Card } from '../../UI';
+import { Button, ChipGroup, Card, RangeSlider, Checkbox } from '../../UI';
 import { DocumentUploadModal } from '../../DocumentUploadModal';
 import { t } from '@/core/i18n/translations';
 import { Language, ParentRiskProfile } from '@/core/types';
-import { Check, ChevronDown, ChevronUp, FileText, HeartHandshake, Upload } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, FileText, HeartHandshake, Sparkles, Upload } from 'lucide-react';
 
 interface Props {
     lang: Language;
@@ -33,9 +33,11 @@ function useEnumChip<T extends string>(
 export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, loading }) => {
     const text = t[lang];
     const {
+        formData, setFormData,
         advanced, setAdvanced,
         documents, setDocuments,
         riskProfile, setRiskProfile,
+        requirements, setRequirements,
         prevStep, isEditing
     } = useParentForm();
 
@@ -73,7 +75,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
         { label: ru ? 'Ищет поддержку' : 'Seeks support',  value: 'cry' },
         { label: ru ? 'Замыкается'     : 'Withdraws',      value: 'withdraw' },
         { label: ru ? 'Злится'         : 'Gets angry',     value: 'aggressive' },
-        { label: ru ? 'Истерики'       : 'Tantrums',       value: 'tantrum' },
+        { label: ru ? 'Бурно реагирует' : 'Tantrums',       value: 'tantrum' },
     ];
     const childStress = useEnumChip(
         childStressOpts,
@@ -102,7 +104,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
         : ['Calm', 'Structure', 'Play', 'Learning', 'Activity'];
 
     return (
-        <div className="animate-fade-in space-y-6 pb-24">
+        <div className="animate-fade-in space-y-6 pb-32">
             <div className="wizard-hero-card">
                 <div className="wizard-hero-copy">
                     <div className="wizard-kicker">
@@ -111,15 +113,64 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                     </div>
                     <div className="space-y-2">
                         <h3 className="wizard-section-title">
-                            {ru ? 'Несколько бытовых моментов' : 'A few practical details'}
+                            {ru ? 'Ещё несколько деталей' : 'A few more details'}
                         </h3>
                         <p className="wizard-section-body">
                             {ru
-                                ? 'Минимум вопросов, максимум пользы для подбора. Остальное расскажете менеджеру при знакомстве.'
-                                : 'Minimal questions, maximum value for matching. The rest you can tell the manager when you meet.'}
+                                ? 'Вы рассказали главное. Осталось пара моментов — и мы начнём поиск.'
+                                : 'You\'ve shared the essentials. Just a couple more things — then we\'ll start the search.'}
                         </p>
                     </div>
                 </div>
+            </div>
+
+            {/* Бюджет */}
+            <section className="wizard-block">
+                <div className="section-label mb-3">
+                    {ru ? 'Финансовые рамки' : 'Budget'}
+                </div>
+                <div className="flex flex-col gap-3">
+                    <RangeSlider
+                        label={ru ? 'Цена за час' : 'Hourly rate'}
+                        min={ru ? 300 : 10}
+                        max={ru ? 1500 : 50}
+                        step={ru ? 50 : 1}
+                        value={
+                            (formData.budgetHourly.match(/\d+/g) || [ru ? 600 : 20, ru ? 800 : 30]).map(Number).slice(0, 2) as [number, number]
+                        }
+                        onChange={(val) => setFormData(p => ({ ...p, budgetHourly: ru ? `${val[0]} - ${val[1]} ₽/час` : `${val[0]} - ${val[1]} $/hour` }))}
+                        formatValue={(val) => ru ? `${val} ₽` : `$${val}`}
+                    />
+                    <RangeSlider
+                        label={ru ? 'Бюджет в месяц' : 'Monthly budget'}
+                        min={ru ? 50000 : 1000}
+                        max={ru ? 300000 : 8000}
+                        step={ru ? 10000 : 100}
+                        value={
+                            (formData.budgetMonthly.match(/\d+/g) || [ru ? 120000 : 2500, ru ? 180000 : 4000]).map(Number).slice(0, 2) as [number, number]
+                        }
+                        onChange={(val) => setFormData(p => ({ ...p, budgetMonthly: ru ? `${val[0]} - ${val[1]} ₽/мес` : `${val[0]} - ${val[1]} $/month` }))}
+                        formatValue={(val) => ru ? `${Math.round(val / 1000)}k ₽` : `$${val}`}
+                    />
+                    <div className="wizard-trust-pill">
+                        <Sparkles size={12} />
+                        {ru ? 'Прозрачные условия без скрытых комиссий' : 'Transparent terms, no hidden fees'}
+                    </div>
+                </div>
+            </section>
+
+            {/* Nanny sharing */}
+            <div className="wizard-sharing-card">
+                <Checkbox
+                    label={ru ? 'Делить няню с соседями (Nanny Sharing)' : 'Share a nanny with neighbors'}
+                    checked={formData.isNannySharing}
+                    onChange={(checked) => setFormData(p => ({ ...p, isNannySharing: checked }))}
+                />
+                <p className="text-xs leading-relaxed text-stone-500 sm:pl-9">
+                    {ru
+                        ? 'Шеринг — это как каршеринг, только для нянь. Вы делите часы няни с семьёй поблизости и экономите до 50% стоимости.'
+                        : 'Share a nanny with a nearby family and save up to 50% on costs.'}
+                </p>
             </div>
 
             {/* Essential matching details */}
@@ -130,7 +181,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
                 <ChipGroup
                     label={ru ? 'Видеонаблюдение' : 'Cameras'}
-                    options={ru ? ['Допустимо', 'Нежелательно'] : ['Acceptable', 'Not desired']}
+                    options={ru ? ['Да, ок', 'Лучше без камер'] : ['Yes, fine', 'Prefer without']}
                     selected={advanced.cameras ? [advanced.cameras] : []}
                     onChange={(s) => setAdvanced(p => ({ ...p, cameras: s[0] || '' }))}
                     single
@@ -171,6 +222,12 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
 
                 {showExtras && (
                     <div className="mt-5 space-y-1 animate-fade-in">
+                        <ChipGroup
+                            label={ru ? 'Важно для семьи' : 'What matters most'}
+                            options={text.reqOptions}
+                            selected={requirements}
+                            onChange={setRequirements}
+                        />
                         <ChipGroup
                             label={ru ? 'Поездки с няней' : 'Travel with nanny'}
                             options={ru ? ['Возможны', 'Не нужны'] : ['Possible', 'Not needed']}
@@ -245,8 +302,8 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                             <>
                                 <p className="text-sm text-[#1C2B2D]/50 mb-3">
                                     {ru
-                                        ? 'Загрузите шаблон договора или паспорт для верификации (опционально)'
-                                        : 'Upload a contract template or ID for verification (optional)'}
+                                        ? 'Договор или документы для менеджера — по желанию'
+                                        : 'Contract template or documents for the manager — optional'}
                                 </p>
                                 <button
                                     type="button"
@@ -296,7 +353,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
                 <Button type="button" className="flex-1" onClick={onFinalSubmit} isLoading={loading} pulse={!loading}>
                     {isEditing
                         ? (ru ? 'Сохранить изменения' : 'Save Changes')
-                        : (ru ? 'Отправить заявку' : 'Submit request')}
+                        : (ru ? 'Начать поиск' : 'Start search')}
                 </Button>
             </div>
 

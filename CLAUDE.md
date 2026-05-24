@@ -14,6 +14,7 @@ Use global memory for durable preferences, values, and cross-project rules. Use 
 
 Before code changes, read only the smallest relevant set:
 
+- `BOOTSTRAP.md`
 - `CLAUDE.md`
 - `README.md`
 - `.context/DNA.md`
@@ -72,6 +73,7 @@ Do not load the whole Obsidian/global memory vault or the whole repository unles
 - Keep repo-specific technical memory in `.context/`.
 - Put architecture decisions in Markdown ADRs under `docs/adr/` when the decision affects auth, data, deployment, matching, payments, or core UI architecture.
 - Keep global memory changes in `/Users/anton/Documents/Claude-Memory`, not in this repository.
+- Resume every restart from `BOOTSTRAP.md`, then the active daily memory files, then `MEMORY.md`.
 
 ## Commands
 

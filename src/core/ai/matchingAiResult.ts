@@ -28,7 +28,7 @@ function buildHumanExplanationFallback(
   _request: MatchingRequest,
   lang: Language
 ): string {
-  const name = ranked.nanny.name || (lang === "ru" ? "Кандидат" : "Candidate");
+  const name = ranked.nanny.name || (lang === "ru" ? "Няня" : "Nanny");
   const nanny = ranked.nanny;
   const parts: string[] = [];
 
@@ -65,7 +65,7 @@ async function buildHumanExplanationAI(
   request: MatchingRequest,
   lang: Language
 ): Promise<string> {
-  const name = ranked.nanny.name || "Кандидат";
+  const name = ranked.nanny.name || "Няня";
   const fallback = buildHumanExplanationFallback(ranked, request, lang);
 
   try {
@@ -118,11 +118,11 @@ export async function buildMatchResult(
   const overallAdvice =
     lang === "ru"
       ? candidates.length > 0
-        ? `Мы подобрали ${candidates.length} ${pluralizeRu(candidates.length, ["кандидат", "кандидата", "кандидатов"])} для вашей семьи. Напишите понравившейся няне — это ни к чему не обязывает.`
-        : "Пока кандидатов нет, но мы расширим поиск. Попробуйте скорректировать бюджет или график."
+        ? `Мы подобрали ${candidates.length} ${pluralizeRu(candidates.length, ["няню", "няни", "нянь"])} для вашей семьи. Напишите понравившейся — это ни к чему не обязывает.`
+        : "Пока нянь нет, но мы расширим поиск. Попробуйте скорректировать бюджет или график."
       : candidates.length > 0
-        ? `We found ${candidates.length} candidate${candidates.length === 1 ? "" : "s"} for your family. Message the one you like — no obligation.`
-        : "No candidates yet, but we'll expand the search. Try adjusting your budget or schedule.";
+        ? `We found ${candidates.length} nann${candidates.length === 1 ? "y" : "ies"} for your family. Message the one you like — no obligation.`
+        : "No matches yet, but we'll expand the search. Try adjusting your budget or schedule.";
 
   return { candidates, overallAdvice };
 }
@@ -137,12 +137,12 @@ export function buildHeuristicFallback(
       recommendations:
         lang === "ru"
           ? [
-              "В базе пока нет кандидатов с точным совпадением",
+              "В базе пока нет нянь с точным совпадением",
               "Расширьте требования или бюджет для большего выбора",
               "Добавьте детали по графику и обязанностям",
             ]
           : [
-              "No exact candidates found in the current database",
+              "No exact matches found in the current database",
               "Broaden requirements or budget to increase matches",
               "Add more details for schedule and responsibilities",
             ],
@@ -157,12 +157,12 @@ export function buildHeuristicFallback(
     recommendations:
       lang === "ru"
         ? [
-            `Лучший текущий матч: ${top.nanny.name || "кандидат"} (${score}%)`,
+            `Лучший текущий вариант: ${top.nanny.name || "няня"} (${score}%)`,
             top.reasons[0] || "Проверьте опыт по вашему возрасту ребёнка",
             "Проведите короткое пробное знакомство и сверку графика",
           ]
         : [
-            `Best current match: ${top.nanny.name || "candidate"} (${score}%)`,
+            `Best current match: ${top.nanny.name || "nanny"} (${score}%)`,
             top.reasons[0] || "Validate relevant childcare experience",
             "Run a short trial meeting and confirm schedule fit",
           ],

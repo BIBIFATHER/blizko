@@ -1,64 +1,58 @@
 import React, { useRef } from 'react';
-import { MapPin, Lock, ShieldCheck, Sparkles } from 'lucide-react';
+import { ShieldCheck, Sparkles } from 'lucide-react';
 import { useParentForm } from './ParentFormProvider';
-import { Button, Input } from '../../UI';
+import { Button } from '../../UI';
 import { Language } from '@/core/types';
 
 interface Props {
     lang: Language;
 }
 
-// Chips that populate childAge (for matching) AND append to the story
 const AGE_CHIPS = {
     ru: [
-        { label: 'Груднички (0–1)', value: 'Груднички (0-1)', phrase: 'у нас грудничок' },
-        { label: 'Тоддлеры (1–3)', value: 'Тоддлеры (1-3)',  phrase: 'ребёнку 1–3 года' },
-        { label: 'Дошкольники (3–6)', value: 'Дошкольники (3-6)', phrase: 'ребёнок дошкольного возраста' },
-        { label: 'Школьники (7+)', value: 'Школьники (7+)',  phrase: 'школьник 7+ лет' },
+        { label: 'Груднички (0–1)', value: 'Груднички (0-1)' },
+        { label: 'Малыши (1–3)',    value: 'Тоддлеры (1-3)' },
+        { label: 'Дошкольники (3–6)', value: 'Дошкольники (3-6)' },
+        { label: 'Школьники (7+)', value: 'Школьники (7+)' },
     ],
     en: [
-        { label: 'Infants (0–1)',   value: 'Infants (0-1)',    phrase: 'our child is an infant' },
-        { label: 'Toddlers (1–3)', value: 'Toddlers (1-3)',   phrase: 'our child is a toddler' },
-        { label: 'Preschool (3–6)', value: 'Preschool (3-6)', phrase: 'our child is preschool age' },
-        { label: 'School (7+)',    value: 'School (7+)',      phrase: 'school-age child 7+' },
+        { label: 'Infants (0–1)',    value: 'Infants (0-1)' },
+        { label: 'Toddlers (1–3)',   value: 'Toddlers (1-3)' },
+        { label: 'Preschool (3–6)', value: 'Preschool (3-6)' },
+        { label: 'School (7+)',     value: 'School (7+)' },
     ],
 };
 
-// Chips that populate schedule (for matching) AND append to the story
 const SCHEDULE_CHIPS = {
     ru: [
-        { label: 'Дневной',      value: 'День',               phrase: 'нужна днём' },
-        { label: 'Ночной',       value: 'Ночь',               phrase: 'нужна на ночь' },
-        { label: 'Круглосуточно', value: 'Присмотр 24 часа',  phrase: 'нужен присмотр 24 часа' },
+        { label: 'Дневной',       value: 'День' },
+        { label: 'Ночной',        value: 'Ночь' },
+        { label: 'Круглосуточно', value: 'Присмотр 24 часа' },
     ],
     en: [
-        { label: 'Daytime',     value: 'Day',          phrase: 'daytime care needed' },
-        { label: 'Nighttime',   value: 'Night',        phrase: 'nighttime care needed' },
-        { label: '24-hour',     value: '24-hour care', phrase: '24-hour care needed' },
+        { label: 'Daytime',  value: 'Day' },
+        { label: 'Nighttime', value: 'Night' },
+        { label: '24-hour',  value: '24-hour care' },
     ],
 };
 
-// Freeform extras — only append to story, no structured field
-const EXTRA_CHIPS = {
+// Эмоциональные/ситуативные чипы — только добавляют в рассказ (BLI-7)
+const STORY_CHIPS = {
     ru: [
-        { label: '3 дня в нед.',      phrase: '3 раза в неделю' },
-        { label: 'Каждый день',       phrase: 'каждый день' },
-        { label: 'Только утром',      phrase: 'только утром' },
-        { label: 'Вечером',           phrase: 'вечером после садика' },
-        { label: 'Опыт с грудничками', phrase: 'нужен опыт с грудничками' },
-        { label: 'Монтессори',        phrase: 'желателен монтессори подход' },
-        { label: 'Английский',        phrase: 'знание английского приветствуется' },
-        { label: 'С поездками',       phrase: 'готова ездить с семьёй' },
+        { label: 'Нужна помощь вечером',  phrase: 'нужна помощь вечером' },
+        { label: 'Сложный график',         phrase: 'у нас непростой и меняющийся график' },
+        { label: 'Важен мягкий подход',    phrase: 'очень важен мягкий и терпеливый характер' },
+        { label: 'Ребёнок тревожится',     phrase: 'ребёнок тревожный, нужен спокойный человек' },
+        { label: 'Нужен опыт с малышами',  phrase: 'нужен опыт с детьми до 3 лет' },
+        { label: 'Важны рекомендации',     phrase: 'важны проверенные рекомендации' },
     ],
     en: [
-        { label: '3x/week',       phrase: '3 days per week' },
-        { label: 'Daily',         phrase: 'every day' },
-        { label: 'Mornings',      phrase: 'mornings only' },
-        { label: 'Afterschool',   phrase: 'after school pickup' },
-        { label: 'Infant exp.',   phrase: 'experience with infants required' },
-        { label: 'Montessori',    phrase: 'Montessori approach preferred' },
-        { label: 'English',       phrase: 'English-speaking preferred' },
-        { label: 'Travel',        phrase: 'willing to travel with the family' },
+        { label: 'Help needed evenings',  phrase: 'need help in the evenings' },
+        { label: 'Irregular schedule',    phrase: 'we have a complex and changing schedule' },
+        { label: 'Gentle approach',       phrase: 'a gentle and patient personality is very important' },
+        { label: 'Child gets anxious',    phrase: 'our child gets anxious easily, we need a calm person' },
+        { label: 'Infant experience',     phrase: 'experience with children under 3 is essential' },
+        { label: 'References required',   phrase: 'verified references are important' },
     ],
 };
 
@@ -70,56 +64,38 @@ function appendPhrase(current: string, phrase: string): string {
 }
 
 export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
-    const {
-        formData, setFormData,
-        citySuggestions,
-        showCitySuggestions, setShowCitySuggestions,
-        detectingLocation, detectLocation,
-        nextStep,
-    } = useParentForm();
-
+    const { formData, setFormData, nextStep } = useParentForm();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const ru = lang === 'ru';
 
-    const selectAge = (value: string, phrase: string) => {
-        setFormData(prev => ({
-            ...prev,
-            childAge: value,
-            comment: appendPhrase(prev.comment, phrase),
-        }));
+    const toggleStoryChip = (phrase: string) => {
+        setFormData(prev => {
+            const already = prev.extraPhrases.includes(phrase);
+            return {
+                ...prev,
+                extraPhrases: already
+                    ? prev.extraPhrases.filter(p => p !== phrase)
+                    : [...prev.extraPhrases, phrase],
+                comment: already ? prev.comment : appendPhrase(prev.comment, phrase),
+            };
+        });
         textareaRef.current?.focus();
     };
 
-    const selectSchedule = (value: string, phrase: string) => {
-        setFormData(prev => ({
-            ...prev,
-            schedule: value,
-            comment: appendPhrase(prev.comment, phrase),
-        }));
-        textareaRef.current?.focus();
-    };
+    const selectAge = (value: string) =>
+        setFormData(prev => ({ ...prev, childAge: prev.childAge === value ? '' : value }));
 
-    const appendExtra = (phrase: string) => {
-        setFormData(prev => ({ ...prev, comment: appendPhrase(prev.comment, phrase) }));
-        textareaRef.current?.focus();
-    };
+    const selectSchedule = (value: string) =>
+        setFormData(prev => ({ ...prev, schedule: prev.schedule === value ? '' : value }));
 
-    const isFormValid =
-        formData.comment.trim().length >= 20 &&
-        formData.city.trim() !== '' &&
-        formData.childAge.trim() !== '' &&
-        formData.schedule.trim() !== '';
+    const isFormValid = formData.comment.trim().length >= 20;
 
     const placeholder = ru
-        ? 'Например: нам нужна няня для дочки 2 лет, 3–4 раза в неделю с утра. Важен опыт с детьми до 3 лет и спокойный характер...'
-        : 'For example: we need a nanny for our 2-year-old daughter, 3–4 mornings a week. Experience with toddlers and a calm personality are important...';
-
-    const ageChips     = AGE_CHIPS[lang];
-    const schedChips   = SCHEDULE_CHIPS[lang];
-    const extraChips   = EXTRA_CHIPS[lang];
+        ? 'Например: нам нужна няня для дочки 2 лет, 3–4 раза в неделю с утра. Важен опыт с малышами и спокойный характер...'
+        : 'For example: we need a nanny for our 2-year-old, 3–4 mornings a week. Experience with toddlers and a calm personality matter most...';
 
     return (
-        <div className="animate-fade-in space-y-6 relative pb-24">
+        <div className="animate-fade-in space-y-6 relative pb-32">
             <div className="wizard-hero-card">
                 <div className="wizard-hero-copy">
                     <div className="wizard-kicker">
@@ -128,12 +104,12 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
                     </div>
                     <div className="space-y-2">
                         <h3 className="wizard-section-title">
-                            {ru ? 'Расскажите о вашей семье' : 'Tell us about your family'}
+                            {ru ? 'Расскажите, что сейчас нужно семье' : 'Tell us what your family needs'}
                         </h3>
                         <p className="wizard-section-body">
                             {ru
-                                ? 'Несколько фраз о ребёнке, графике и ожиданиях — и команда Blizko сразу понимает, кого вы ищете. Используйте подсказки ниже.'
-                                : 'A few sentences about your child, schedule, and expectations — and the Blizko team knows exactly who to find. Use the hints below.'}
+                                ? 'Несколько фраз — и куратор сразу поймёт контекст. Просто расскажите своими словами.'
+                                : 'A few sentences and the curator will understand. Just tell us in your own words.'}
                         </p>
                     </div>
                 </div>
@@ -144,26 +120,83 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
                     </div>
                     <div>
                         <div className="wizard-inline-proof-title">
-                            {ru ? 'Ваша история остаётся приватной' : 'Your story stays private'}
+                            {ru ? 'Куратор прочитает лично' : 'A curator reads this personally'}
                         </div>
                         <div className="wizard-inline-proof-body">
                             {ru
-                                ? 'Личные данные видит только команда Blizko. Няне передаётся только то, что вы разрешаете.'
-                                : 'Personal details are visible only to the Blizko team. Only what you allow is shared with nannies.'}
+                                ? 'Ваш рассказ видит только команда Blizko. Няне передаётся только то, что вы разрешаете.'
+                                : 'Your story is visible only to the Blizko team. Only what you allow is shared with nannies.'}
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Age — sets childAge + appends to story */}
+            {/* Textarea — главный элемент */}
+            <section className="wizard-block">
+                <label className="ml-1 mb-2 block text-[13px] font-semibold tracking-[0.01em] text-stone-500/90">
+                    {ru ? 'Расскажите о ситуации *' : 'Describe your situation *'}
+                </label>
+                <div className="relative">
+                    <textarea
+                        ref={textareaRef}
+                        value={formData.comment}
+                        onChange={e => setFormData(prev => ({ ...prev, comment: e.target.value }))}
+                        placeholder={placeholder}
+                        rows={5}
+                        className={`input-glass min-h-[130px] w-full resize-none px-4 py-3.5 text-stone-800 placeholder:text-stone-400/70 leading-relaxed ${
+                            isFormValid ? 'input-success' : ''
+                        }`}
+                    />
+                    {formData.comment.trim().length > 0 && !isFormValid && (
+                        <p className="mt-1.5 ml-1 text-xs text-stone-400">
+                            {ru
+                                ? `Ещё ${20 - formData.comment.trim().length} симв.`
+                                : `${20 - formData.comment.trim().length} more chars`}
+                        </p>
+                    )}
+                </div>
+
+                {/* Story chips — добавляют в textarea */}
+                <div className="mt-4 space-y-2">
+                    <p className="ml-1 text-xs font-medium text-stone-400">
+                        {ru ? 'Быстро добавить в рассказ:' : 'Quick add to your story:'}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        {STORY_CHIPS[lang].map(({ label, phrase }) => {
+                            const active = formData.extraPhrases.includes(phrase);
+                            return (
+                                <button
+                                    key={label}
+                                    type="button"
+                                    onClick={() => toggleStoryChip(phrase)}
+                                    className={`rounded-full border px-3.5 py-1.5 text-xs font-medium backdrop-blur-sm transition-all duration-200 active:scale-95 ${
+                                        active
+                                            ? 'chip-warm border-transparent'
+                                            : 'border-stone-200/60 bg-white/60 text-stone-600 hover:border-amber-200/60 hover:bg-amber-50/50'
+                                    }`}
+                                >
+                                    {active ? '✓ ' : '+ '}{label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* Возраст — опционально, помогает с матчингом */}
             <section>
-                <div className="section-label mb-2">{ru ? 'Возраст ребёнка *' : 'Child age *'}</div>
-                <div className="grid grid-cols-1 gap-2">
-                    {ageChips.map(({ label, value, phrase }) => (
+                <div className="section-label mb-2">
+                    {ru ? 'Возраст ребёнка' : 'Child age'}
+                    <span className="ml-1 text-stone-400 font-normal text-xs">
+                        {ru ? '(необязательно)' : '(optional)'}
+                    </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                    {AGE_CHIPS[lang].map(({ label, value }) => (
                         <button
                             key={value}
                             type="button"
-                            onClick={() => selectAge(value, phrase)}
+                            onClick={() => selectAge(value)}
                             className={`w-full rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 active:scale-95 ${
                                 formData.childAge === value
                                     ? 'chip-warm shadow-sm'
@@ -176,15 +209,20 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
                 </div>
             </section>
 
-            {/* Schedule — sets schedule + appends to story */}
+            {/* График — опционально */}
             <section>
-                <div className="section-label mb-2">{ru ? 'Нужен график *' : 'Schedule needed *'}</div>
+                <div className="section-label mb-2">
+                    {ru ? 'Нужен график' : 'Schedule needed'}
+                    <span className="ml-1 text-stone-400 font-normal text-xs">
+                        {ru ? '(необязательно)' : '(optional)'}
+                    </span>
+                </div>
                 <div className="grid grid-cols-1 gap-2">
-                    {schedChips.map(({ label, value, phrase }) => (
+                    {SCHEDULE_CHIPS[lang].map(({ label, value }) => (
                         <button
                             key={value}
                             type="button"
-                            onClick={() => selectSchedule(value, phrase)}
+                            onClick={() => selectSchedule(value)}
                             className={`w-full rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 active:scale-95 ${
                                 formData.schedule === value
                                     ? 'chip-warm shadow-sm'
@@ -197,106 +235,6 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
                 </div>
             </section>
 
-            {/* Main freeform textarea */}
-            <section className="wizard-block">
-                <label className="ml-1 mb-2 block text-[13px] font-semibold tracking-[0.01em] text-stone-500/90">
-                    {ru ? 'О семье и пожеланиях *' : 'About your family and needs *'}
-                </label>
-
-                <div className="relative">
-                    <textarea
-                        ref={textareaRef}
-                        value={formData.comment}
-                        onChange={e => setFormData(prev => ({ ...prev, comment: e.target.value }))}
-                        placeholder={placeholder}
-                        rows={5}
-                        className={`input-glass min-h-[130px] w-full resize-none px-4 py-3.5 text-stone-800 placeholder:text-stone-400/70 leading-relaxed ${
-                            formData.comment.trim().length >= 20 ? 'input-success' : ''
-                        }`}
-                    />
-                    {formData.comment.trim().length > 0 && formData.comment.trim().length < 20 && (
-                        <p className="mt-1.5 ml-1 text-xs text-stone-400">
-                            {ru
-                                ? `Ещё ${20 - formData.comment.trim().length} симв.`
-                                : `${20 - formData.comment.trim().length} more chars`}
-                        </p>
-                    )}
-                </div>
-
-                {/* Extra prompt chips — append to story only */}
-                <div className="mt-4 space-y-2">
-                    <p className="ml-1 text-xs font-medium text-stone-400">
-                        {ru ? 'Добавить в описание:' : 'Add to description:'}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                        {extraChips.map(({ label, phrase }) => (
-                            <button
-                                key={label}
-                                type="button"
-                                onClick={() => appendExtra(phrase)}
-                                className="rounded-full border border-stone-200/60 bg-white/60 px-3.5 py-1.5 text-xs font-medium text-stone-600 backdrop-blur-sm transition-all duration-200 hover:border-amber-200/60 hover:bg-amber-50/50 active:scale-95"
-                            >
-                                + {label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* City — needed for geographic matching */}
-            <section className="wizard-block">
-                <div className="section-label">{ru ? 'Район поиска' : 'Location'}</div>
-
-                <div className="relative">
-                    <Input
-                        label={`${ru ? 'Город или район' : 'City or district'} *`}
-                        placeholder={ru ? 'Москва, Хамовники' : 'New York, Brooklyn'}
-                        value={formData.city}
-                        onChange={e => {
-                            setFormData(prev => ({ ...prev, city: e.target.value }));
-                            setShowCitySuggestions(true);
-                        }}
-                        required
-                        autoAdvance
-                    />
-
-                    {showCitySuggestions && citySuggestions.length > 0 && (
-                        <div className="wizard-suggestion-panel animate-slide-down">
-                            {citySuggestions.map((s, i) => (
-                                <button
-                                    key={`${s}-${i}`}
-                                    type="button"
-                                    onClick={() => {
-                                        setFormData(prev => ({ ...prev, city: s }));
-                                        setShowCitySuggestions(false);
-                                    }}
-                                    className="w-full text-left rounded-xl px-3 py-2 text-sm text-stone-700 transition-colors hover:bg-stone-50"
-                                >
-                                    {s}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    <button
-                        type="button"
-                        onClick={() => detectLocation(lang)}
-                        disabled={detectingLocation}
-                        className="btn-location mt-2"
-                    >
-                        <MapPin size={13} />
-                        {detectingLocation
-                            ? (ru ? 'Определяем...' : 'Detecting...')
-                            : (ru ? 'Определить местоположение' : 'Detect location')}
-                    </button>
-
-                    <div className="wizard-note mt-3">
-                        <Lock size={12} className="text-amber-700 mt-0.5 shrink-0" />
-                        <span>{ru ? 'Ваш точный адрес видим только менеджеру.' : 'Your exact address is visible only to the manager.'}</span>
-                    </div>
-                </div>
-            </section>
-
             <div className="sticky-action-rail sticky-footer-fade">
                 <Button
                     type="button"
@@ -306,15 +244,7 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
                 >
                     {ru ? 'Продолжить' : 'Continue'}
                 </Button>
-                {!isFormValid && (formData.childAge === '' || formData.schedule === '') && formData.comment.trim().length >= 20 && (
-                    <p className="mt-2 text-center text-xs text-stone-400">
-                        {ru
-                            ? `Выберите ${formData.childAge === '' ? 'возраст' : ''}${formData.childAge === '' && formData.schedule === '' ? ' и ' : ''}${formData.schedule === '' ? 'график' : ''}`
-                            : `Select ${formData.childAge === '' ? 'age' : ''}${formData.childAge === '' && formData.schedule === '' ? ' and ' : ''}${formData.schedule === '' ? 'schedule' : ''}`}
-                    </p>
-                )}
             </div>
-
         </div>
     );
 };

@@ -114,7 +114,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
                     <>
                         {currentStep === 1 && (lang === 'ru' ? 'Давайте знакомиться!' : 'Let\'s get acquainted!')}
                         {currentStep === 2 && (lang === 'ru' ? 'Отлично! Теперь про ваш опыт' : 'Great! Now your experience')}
-                        {currentStep === 3 && (lang === 'ru' ? 'Позитивные отзывы — залог успеха' : 'Positive reviews are key')}
+                        {currentStep === 3 && (lang === 'ru' ? 'Почти готово! Последний шаг' : 'Almost done! Last step')}
                         {currentStep === 4 && (lang === 'ru' ? 'Финальный штрих: ваши суперсилы' : 'Final touch: your superpowers')}
                     </>
                 }

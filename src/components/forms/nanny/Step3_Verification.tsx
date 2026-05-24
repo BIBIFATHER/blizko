@@ -45,10 +45,15 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
     };
 
     return (
-        <div className="animate-fade-in space-y-6">
+        <div className="animate-fade-in space-y-6 pb-32">
             <div className="section-label">
-                Проверка и доверие
+                {lang === 'ru' ? 'Оформляем профиль' : 'Setting up your profile'}
             </div>
+            <p className="text-sm text-stone-500 -mt-3">
+                {lang === 'ru'
+                    ? 'Почти всё готово. Загрузите документы — и профиль появится в поиске.'
+                    : 'Almost done. Upload documents — and your profile will appear in search.'}
+            </p>
 
             <Card className={`transition-all duration-300 ${isVerified ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
@@ -65,7 +70,9 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
 
                         {!isVerified && (
                             <div className="text-xs text-stone-400 bg-stone-50 px-3 py-2 rounded-lg border border-stone-100">
-                                Верификация через Госуслуги временно недоступна.
+                                {lang === 'ru'
+                                    ? 'Верификация личности доступна после регистрации — менеджер поможет с этим шагом.'
+                                    : 'Identity verification is available after registration — the manager will help with this step.'}
                             </div>
                         )}
 
@@ -85,7 +92,7 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                     </div>
                     <div className="flex-1">
                         <h3 className="font-semibold text-stone-800 mb-1">
-                            {text.docsTitle} *
+                            {text.docsTitle}
                         </h3>
 
                         {documents.length === 0 && (
@@ -182,13 +189,13 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                         {readinessSnapshot.qualityApproved ? (
                             <div className="text-xs text-[#2A6B6E] bg-white/70 border border-[#7FA99B]/30 rounded-lg px-3 py-2">
                                 {lang === 'ru'
-                                    ? 'Профиль уже выглядит готовым к показу семье. Осталось дождаться или пройти финальную ручную проверку.'
-                                    : 'Profile already looks ready to be shown to families. Final manual review is the last step.'}
+                                    ? 'Команда Blizko проверит профиль в течение 24 часов.'
+                                    : 'The Blizko team will review your profile within 24 hours.'}
                             </div>
                         ) : (
                             <div className="space-y-2">
                                 <div className="text-xs font-semibold text-stone-600">
-                                    {lang === 'ru' ? 'Что ещё нужно закрыть:' : 'What is still missing:'}
+                                    {lang === 'ru' ? 'Чтобы профиль увидели семьи:' : 'For families to see your profile:'}
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {readinessSnapshot.missingFields.map((item) => (

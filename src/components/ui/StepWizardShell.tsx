@@ -31,8 +31,8 @@ export const StepWizardShell: React.FC<StepWizardShellProps> = ({
   const { direction, stepKey } = useStepTransition(currentStep);
 
   return (
-    <div className="animate-slide-up relative form-shell px-4 sm:px-0">
-      <div className="wizard-shell surface-panel rounded-[2rem] px-5 py-5 sm:px-8 sm:py-7">
+    <div className="animate-slide-up relative w-full">
+      <div className="w-full px-4 sm:px-6 py-5">
         <div className="mb-5 flex items-center justify-between">
           <button
             className="text-stone-400 hover:text-stone-700 -ml-2 flex items-center gap-1.5 rounded-xl p-2 transition-colors hover:bg-stone-50 active:bg-stone-100"

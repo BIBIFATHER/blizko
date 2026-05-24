@@ -414,16 +414,16 @@ function buildFamilySummary(
 ): string {
   const leadByStyle: Record<SoftSkillsProfile['dominantStyle'], Record<Language, string>> = {
     Empathetic: {
-      ru: 'По ответам анкеты кандидат чаще выбирает мягкий контакт, спокойную поддержку ребёнка и бережную деэскалацию.',
-      en: 'Based on the questionnaire, the candidate more often chooses gentle connection, calm support, and careful de-escalation.',
+      ru: 'По ответам анкеты няня чаще выбирает мягкий контакт, спокойную поддержку ребёнка и бережную деэскалацию.',
+      en: 'Based on the questionnaire, this nanny more often chooses gentle connection, calm support, and careful de-escalation.',
     },
     Structured: {
-      ru: 'По ответам анкеты кандидат комфортнее работает в понятном режиме, заранее выстраивает переходы и опирается на договорённости с семьёй.',
-      en: 'Based on the questionnaire, the candidate appears more comfortable with clear routines, transitions, and family agreements.',
+      ru: 'По ответам анкеты няня комфортнее работает в понятном режиме, заранее выстраивает переходы и опирается на договорённости с семьёй.',
+      en: 'Based on the questionnaire, this nanny is more comfortable with clear routines, transitions, and family agreements.',
     },
     Balanced: {
-      ru: 'По ответам анкеты кандидат обычно сочетает спокойную поддержку ребёнка с понятными границами и предсказуемой организацией дня.',
-      en: 'Based on the questionnaire, the candidate usually combines calm support with clear boundaries and predictable routines.',
+      ru: 'По ответам анкеты няня обычно сочетает спокойную поддержку ребёнка с понятными границами и предсказуемой организацией дня.',
+      en: 'Based on the questionnaire, this nanny usually combines calm support with clear boundaries and predictable routines.',
     },
   };
 

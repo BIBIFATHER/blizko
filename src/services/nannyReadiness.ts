@@ -81,7 +81,7 @@ function getMissingFields(input: NannyReadinessInput, hasResume: boolean, hasTru
   if (!input.about) missing.push('о себе');
   if (!input.childAges || input.childAges.length === 0) missing.push('возраст детей');
   if (!hasResume) missing.push('резюме');
-  if (!hasTrustDocs) missing.push('документы доверия');
+  if (!hasTrustDocs) missing.push('рекомендации');
   if (!hasVerifiedTrust) missing.push('проверка/верификация');
 
   return missing;
@@ -97,7 +97,7 @@ export function getNannyReadinessSnapshot(input: NannyReadinessInput): NannyRead
   const profile = buildProfileForScoring(input);
   const qualityScore = getQualityScore(profile);
 
-  const coreReady = missingFields.filter((field) => !['резюме', 'документы доверия', 'проверка/верификация'].includes(field)).length === 0;
+  const coreReady = missingFields.filter((field) => !['резюме', 'рекомендации', 'проверка/верификация'].includes(field)).length === 0;
   const readyForReview = coreReady && hasResume && hasTrustDocs;
   const qualityApproved = readyForReview && hasVerifiedTrust && qualityScore >= 70;
 

@@ -27,10 +27,7 @@ export const detectUserLocation = async (lang: Language): Promise<GeolocationRes
                     // Use OpenStreetMap Nominatim for reverse geocoding
                     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=${lang}`;
                     const r = await fetch(url, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'User-Agent': 'BlizkoApp/1.0' // Best practice for Nominatim
-                        }
+                        headers: { 'Accept': 'application/json' },
                     });
 
                     if (!r.ok) throw new Error('Geocoding service error');

@@ -175,7 +175,7 @@ const CandidateCard: React.FC<{
                             <div className="min-w-0 flex-1 space-y-2.5">
                                 <div className="space-y-1.5">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-400">
-                                        {lang === 'ru' ? `Кандидат ${index + 1}` : `Candidate ${index + 1}`}
+                                        {lang === 'ru' ? `Вариант ${index + 1}` : `Option ${index + 1}`}
                                     </p>
                                     <h3 className="text-[1.35rem] font-semibold leading-[1.1] text-[#1C2B2D] sm:text-[1.5rem]">
                                         {nanny.name || (lang === 'ru' ? 'Няня' : 'Nanny')}
@@ -313,7 +313,7 @@ const CandidateCard: React.FC<{
                                         }}
                                     >
                                         <MessageCircle size={16} />
-                                        {lang === 'ru' ? 'Открыть профиль' : 'Open profile'}
+                                        {lang === 'ru' ? 'Познакомиться' : 'Meet this nanny'}
                                     </button>
                                     <Button
                                         variant="outline"
@@ -432,7 +432,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                 </button>
                 <EmptyState
                     icon={<User size={28} />}
-                    title={lang === 'ru' ? 'Пока кандидатов нет' : 'No candidates yet'}
+                    title={lang === 'ru' ? 'Пока нянь нет' : 'No matches yet'}
                     description={text.shortlistEmptyDesc}
                     actionLabel={lang === 'ru' ? 'Изменить запрос' : 'Edit request'}
                     onAction={() => navigate('/find-nanny')}
@@ -458,9 +458,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                             <div className="flex flex-wrap items-center gap-2">
                                 <div className="eyebrow">
                                     <Sparkles size={14} />
-                                    {lang === 'ru'
-                                        ? `${matchResult.candidates.length} варианта для знакомства`
-                                        : `${matchResult.candidates.length} candidates to consider`}
+                                    {lang === 'ru' ? 'Подборка куратора' : 'Curated by Blizko'}
                                 </div>
                                 <div className="topbar-chip">
                                     <CheckCheck size={12} />
@@ -469,8 +467,10 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                             </div>
 
                             <div className="space-y-3">
-                                <h1 className="max-w-[12ch] text-[2.35rem] leading-[0.96] text-stone-950 sm:max-w-3xl sm:text-4xl md:text-6xl">
-                                    {text.shortlistHeroTitle}
+                                <h1 className="max-w-[14ch] text-[2.35rem] leading-[1.05] text-stone-950 sm:max-w-3xl sm:text-4xl md:text-6xl">
+                                    {lang === 'ru'
+                                        ? `Куратор подобрал ${matchResult.candidates.length} ${matchResult.candidates.length === 1 ? 'вариант' : matchResult.candidates.length < 5 ? 'варианта' : 'вариантов'} для вашей семьи`
+                                        : `Your curator found ${matchResult.candidates.length} ${matchResult.candidates.length === 1 ? 'match' : 'matches'} for your family`}
                                 </h1>
                                 <p className="max-w-2xl text-sm leading-7 text-stone-600 md:text-base">
                                     {text.shortlistHeroSubtitle}
@@ -487,7 +487,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                 {[
                                     {
                                         title: lang === 'ru' ? 'Не бесконечный список' : 'Not an endless list',
-                                        body:  lang === 'ru' ? 'Только кандидаты, с которыми есть смысл созваниваться.' : 'Only profiles worth opening and discussing.',
+                                        body:  lang === 'ru' ? 'Только те, с кем есть смысл познакомиться.' : 'Only profiles worth opening and discussing.',
                                     },
                                     {
                                         title: lang === 'ru' ? 'Сигналы доверия видны сразу' : 'Trust appears early',
@@ -495,7 +495,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                     },
                                     {
                                         title: lang === 'ru' ? 'Решение без спешки' : 'Decision without rush',
-                                        body:  lang === 'ru' ? 'Можно открыть профиль, обсудить и вернуться к shortlist.' : 'Open a profile, discuss it, and come back later.',
+                                        body:  lang === 'ru' ? 'Можно открыть профиль, обсудить и вернуться к списку.' : 'Open a profile, discuss it, and come back later.',
                                     },
                                 ].map((item) => (
                                     <div key={item.title} className="rounded-[1.6rem] bg-white/78 px-4 py-4 shadow-cloud-soft">
@@ -509,7 +509,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                         <div className="relative z-10 grid gap-3">
                             <div className="hero-stat">
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                                    {lang === 'ru' ? 'Shortlist' : 'Shortlist'}
+                                    {lang === 'ru' ? 'Подборка' : 'Your options'}
                                 </p>
                                 <p className="mt-3 text-3xl font-semibold text-stone-950">{matchResult.candidates.length}</p>
                                 <p className="mt-2 text-sm leading-6 text-stone-600">
@@ -521,7 +521,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
 
                             <div className="grid grid-cols-3 gap-2">
                                 {[
-                                    lang === 'ru' ? 'Shortlist' : 'Shortlist',
+                                    lang === 'ru' ? 'Подборка' : 'Options',
                                     lang === 'ru' ? 'Проверка' : 'Verification',
                                     lang === 'ru' ? 'Диалог'   : 'Dialogue',
                                 ].map((item) => (
@@ -539,8 +539,8 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                                     </div>
                                     <p className="text-sm leading-6 text-stone-600">
                                         {lang === 'ru'
-                                            ? 'Можно открыть профиль, обсудить детали с партнёром и вернуться к shortlist позже.'
-                                            : 'You can review a profile, discuss it with your partner, and return to the shortlist later.'}
+                                            ? 'Можно открыть профиль, обсудить детали с партнёром и вернуться к списку позже.'
+                                            : 'You can review a profile, discuss it with your partner, and come back to the list later.'}
                                     </p>
                                 </div>
                             </Card>
@@ -552,12 +552,12 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
                     <div className="mb-5 flex items-center justify-between gap-3">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
-                                {lang === 'ru' ? 'Shortlist' : 'Shortlist'}
+                                {lang === 'ru' ? 'Подборка' : 'Your options'}
                             </p>
                             <p className="mt-2 text-sm leading-6 text-stone-600">
                                 {lang === 'ru'
-                                    ? 'Сверху идут самые сильные совпадения по запросу, доверию и стилю общения.'
-                                    : 'Top candidates combine request fit, trust signals, and communication style.'}
+                                    ? 'Куратор поставил сначала тех, кто точнее всего совпал по запросу, доверию и стилю.'
+                                    : 'The curator ordered these by how closely each fits your request, trust signals, and style.'}
                             </p>
                         </div>
                         <Badge variant="neutral" className="hidden md:inline-flex">
@@ -567,7 +567,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
 
                     <LayoutGroup>
                         <div className="space-y-6">
-                            {matchResult.candidates.map((candidate, index) => (
+                            {matchResult.candidates.slice(0, 3).map((candidate, index) => (
                                 <CandidateCard
                                     key={candidate.nanny.id}
                                     candidate={candidate}

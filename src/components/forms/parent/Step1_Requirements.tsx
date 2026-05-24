@@ -24,7 +24,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
     const showAhaMoment = formData.city.trim() !== '' && formData.childAge.trim() !== '';
 
     return (
-        <div className="animate-fade-in space-y-6 relative pb-24">
+        <div className="animate-fade-in space-y-6 relative pb-32">
             <div className="wizard-hero-card">
                 <div className="wizard-hero-copy">
                     <div className="wizard-kicker">
@@ -37,8 +37,8 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
                         </h3>
                         <p className="wizard-section-body">
                             {lang === 'ru'
-                                ? 'Сначала фиксируем город, возраст ребёнка, график и комфортный бюджет. Это создаст понятную базу для shortlist, а не случайный поиск.'
-                                : 'We start with city, child age, schedule, and budget to build a clear shortlist instead of random browsing.'}
+                                ? 'Сначала фиксируем город, возраст ребёнка, график и комфортный бюджет — чтобы куратор понял, кого именно искать.'
+                                : 'We start with city, child age, schedule, and budget — so the curator knows exactly what to look for.'}
                         </p>
                     </div>
                 </div>

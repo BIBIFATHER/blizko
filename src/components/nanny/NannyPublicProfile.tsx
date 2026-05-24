@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, Users, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, Users, ArrowRight, MessageCircle } from 'lucide-react';
 import { NannyProfile, Language } from '@/core/types';
 import { idFromSlug } from '@/core/utils/slugify';
 import { getAssessmentSignalLabel } from '@/services/assessment';
@@ -11,11 +11,10 @@ interface NannyPublicProfileProps {
   lang: Language;
 }
 
-// Trust badge display config
 const BADGE_CONFIG = {
-  verified_moderation: { icon: Award, label: 'Модерация пройдена', color: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
-  soft_skills: { icon: Heart, label: 'Soft skills оценены', color: 'text-rose-700 bg-rose-50 border-rose-100' },
-  has_reviews: { icon: Users, label: 'Есть отзывы', color: 'text-amber-700 bg-amber-50 border-amber-100' },
+  verified_moderation: { icon: ShieldCheck, label: 'Профиль проверен', color: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
+  soft_skills: { icon: Heart, label: 'Характер и стиль изучены', color: 'text-rose-700 bg-rose-50 border-rose-100' },
+  has_reviews: { icon: Users, label: 'Есть отзывы семей', color: 'text-amber-700 bg-amber-50 border-amber-100' },
 };
 
 const DEFAULT_OG_IMAGE = 'https://www.blizko.app/icons/icon-512.png';
@@ -28,7 +27,6 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
   const [nanny, setNanny] = useState<NannyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
 
   const nannyId = slug ? idFromSlug(slug) : null;
   const isMockProfile = useMemo(() => {
@@ -159,32 +157,23 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
     );
   }
 
+  const firstName = nanny.name.split(' ')[0];
   const avgRating = nanny.reviews?.length
     ? (nanny.reviews.reduce((s, r) => s + r.rating, 0) / nanny.reviews.length).toFixed(1)
     : null;
+
   const trustSignals = [
     nanny.isVerified
-      ? {
-          icon: ShieldCheck,
-          label: BADGE_CONFIG.verified_moderation.label,
-          className: 'bg-emerald-50 text-emerald-800',
-        }
+      ? { icon: ShieldCheck, label: BADGE_CONFIG.verified_moderation.label, className: 'bg-emerald-50 text-emerald-800' }
       : null,
     nanny.softSkills
-      ? {
-          icon: Heart,
-          label: BADGE_CONFIG.soft_skills.label,
-          className: 'bg-rose-50 text-rose-800',
-        }
+      ? { icon: Heart, label: BADGE_CONFIG.soft_skills.label, className: 'bg-rose-50 text-rose-800' }
       : null,
     nanny.reviews && nanny.reviews.length > 0
-      ? {
-          icon: Users,
-          label: BADGE_CONFIG.has_reviews.label,
-          className: 'bg-amber-50 text-amber-800',
-        }
+      ? { icon: Users, label: BADGE_CONFIG.has_reviews.label, className: 'bg-amber-50 text-amber-800' }
       : null,
   ].filter(Boolean) as Array<{ icon: React.ComponentType<{ size?: number; className?: string }>; label: string; className: string }>;
+
   const quickFacts = [
     nanny.district || nanny.city
       ? { icon: MapPin, label: nanny.district ? `${nanny.district}, ${nanny.city}` : nanny.city }
@@ -196,6 +185,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
       ? { icon: Award, label: `${nanny.expectedRate}${lang === 'ru' ? ' / час' : ' / hour'}` }
       : null,
   ].filter(Boolean) as Array<{ icon: React.ComponentType<{ size?: number; className?: string }>; label: string }>;
+
   const seoTitle = `${nanny.name} — ${lang === 'ru' ? `Няня в ${nanny.city}` : `Nanny in ${nanny.city}`} | Blizko`;
   const seoDescription = nanny.about?.trim()
     ? nanny.about.slice(0, 150)
@@ -315,13 +305,13 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
             )}
 
             <div className="rounded-[1.8rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(246,243,238,0.96))] px-4 py-4 shadow-cloud-soft">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
-                  {text.profileOpenWhyTitle}
-                </p>
-                <p className="mt-3 text-sm leading-7 text-stone-600">
-                  {text.profileOpenWhyBody}
-                </p>
-              </div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
+                {text.profileOpenWhyTitle}
+              </p>
+              <p className="mt-3 text-sm leading-7 text-stone-600">
+                {text.profileOpenWhyBody}
+              </p>
+            </div>
 
             {nanny.expectedRate && (
               <div className="hero-stat">
@@ -338,7 +328,44 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
         </div>
       </section>
 
-      {/* ===== 2. Reviews (moved UP — strongest proof signal) ===== */}
+      {/* ===== 2. About ===== */}
+      {nanny.about && (
+        <section className="section-shell mb-4 p-5">
+          <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
+            {text.profileAboutTitle}
+          </div>
+          <p className="text-sm text-stone-700 leading-7" itemProp="description">{nanny.about}</p>
+        </section>
+      )}
+
+      {/* ===== 3. Character and work style ===== */}
+      {nanny.softSkills && (
+        <section className="section-shell mb-4 p-5">
+          <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
+            {text.profileStyleTitle}
+          </div>
+          <p className="text-sm text-stone-700 leading-7">
+            {nanny.softSkills.familySummary || nanny.softSkills.summary}
+          </p>
+          {nanny.softSkills.signals?.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {nanny.softSkills.signals
+                .filter((signal) => signal.direction === 'positive')
+                .slice(0, 3)
+                .map((signal) => (
+                  <span
+                    key={signal.signal}
+                    className="rounded-full bg-rose-50 px-3 py-1.5 text-[11px] font-semibold text-rose-700"
+                  >
+                    {getAssessmentSignalLabel(signal.signal, lang)}
+                  </span>
+                ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ===== 4. Reviews (strong social proof) ===== */}
       {nanny.reviews && nanny.reviews.length > 0 && (
         <section className="section-shell mb-4 p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
@@ -374,94 +401,47 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
         </section>
       )}
 
-      {/* ===== Expand details — Crouton progressive disclosure ===== */}
-      {(nanny.about || nanny.softSkills || nanny.skills?.length > 0 || nanny.childAges?.length > 0) && (
-        <>
-          <button
-            type="button"
-            onClick={() => setShowDetails(!showDetails)}
-            className="mb-4 flex w-full items-center justify-center gap-2 rounded-[18px] border border-[color:var(--cloud-border)] bg-white/75 px-4 py-3 text-sm font-medium text-stone-500 transition-colors hover:bg-white"
-          >
-            <span>{showDetails ? text.profileDetailsHide : text.profileDetailsToggle}</span>
-            {showDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
+      {/* ===== 5. What to discuss at first meeting ===== */}
+      <section className="section-shell mb-4 p-5">
+        <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
+          {text.profileDiscussTitle}
+        </div>
+        <p className="text-sm text-stone-700 leading-7">{text.profileDiscussBody}</p>
+      </section>
 
-          {showDetails && (
-            <div className="space-y-4 animate-fade-in mb-4">
-              {/* About */}
-              {nanny.about && (
-                <section className="section-shell p-5">
-                  <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
-                    {text.profileAboutTitle}
-                  </div>
-                  <p className="text-sm text-stone-700 leading-7" itemProp="description">{nanny.about}</p>
-                </section>
-              )}
-
-              {/* Work Style */}
-              {nanny.softSkills && (
-                <section className="section-shell p-5">
-                  <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
-                    {text.profileStyleTitle}
-                  </div>
-                  <p className="text-sm text-stone-700 leading-7">
-                    {nanny.softSkills.familySummary || nanny.softSkills.summary}
-                  </p>
-                  {nanny.softSkills.signals?.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {nanny.softSkills.signals
-                        .filter((signal) => signal.direction === 'positive')
-                        .slice(0, 3)
-                        .map((signal) => (
-                          <span
-                            key={signal.signal}
-                            className="rounded-full bg-rose-50 px-3 py-1.5 text-[11px] font-semibold text-rose-700"
-                          >
-                            {getAssessmentSignalLabel(signal.signal, lang)}
-                          </span>
-                        ))}
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {/* Skills + Child Ages */}
-              {(nanny.skills?.length > 0 || nanny.childAges?.length > 0) && (
-                <section className="section-shell space-y-4 p-5">
-                  {nanny.skills?.length > 0 && (
-                    <div>
-                      <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
-                        {text.profileSkillsTitle}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {nanny.skills.map((skill) => (
-                          <span key={skill} className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-semibold text-stone-700">
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {nanny.childAges?.length > 0 && (
-                    <div>
-                      <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
-                        {text.profileAgesTitle}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {nanny.childAges.map((age) => (
-                          <span key={age} className="rounded-full bg-amber-50 px-3 py-1.5 text-[11px] font-semibold text-amber-800">
-                            {age}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </section>
-              )}
+      {/* ===== 6. Skills + Child Ages ===== */}
+      {(nanny.skills?.length > 0 || nanny.childAges?.length > 0) && (
+        <section className="section-shell mb-4 space-y-4 p-5">
+          {nanny.skills?.length > 0 && (
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
+                {text.profileSkillsTitle}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {nanny.skills.map((skill) => (
+                  <span key={skill} className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
-        </>
+
+          {nanny.childAges?.length > 0 && (
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
+                {text.profileAgesTitle}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {nanny.childAges.map((age) => (
+                  <span key={age} className="rounded-full bg-amber-50 px-3 py-1.5 text-[11px] font-semibold text-amber-800">
+                    {age}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
       )}
 
       {/* ===== CTA — sticky on mobile ===== */}
@@ -472,10 +452,11 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
             className="flex items-center justify-center gap-2 bg-stone-900 text-white py-3.5 rounded-full text-sm font-semibold hover:bg-stone-800 active:scale-[0.97] transition-all w-full"
           >
             <ArrowRight size={16} />
-            {lang === 'ru' ? 'Начать подбор' : 'Start matching'}
+            {lang === 'ru' ? `Познакомиться с ${firstName}` : `Meet ${firstName}`}
           </Link>
-          <div className="text-center text-[11px] text-stone-400">
-            {lang === 'ru' ? 'Бесплатно для родителей' : 'Free for parents'}
+          <div className="flex items-center justify-center gap-1.5 text-center text-[11px] text-stone-400">
+            <MessageCircle size={11} />
+            {lang === 'ru' ? 'Куратор поможет организовать встречу' : 'The curator will arrange the introduction'}
           </div>
         </div>
       </div>

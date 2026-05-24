@@ -92,7 +92,7 @@ export const BlizkoNotifications = {
     matchFound: (count: number) =>
         sendLocalNotification(
             '🎉 Найдены подходящие няни!',
-            `Мы подобрали ${count} ${pluralizeRu(count, ['кандидат', 'кандидата', 'кандидатов'])} для вашей семьи. Посмотрите результаты.`,
+            `Мы подобрали ${count} ${pluralizeRu(count, ['няню', 'няни', 'нянь'])} для вашей семьи. Посмотрите результаты.`,
             { url: '/match-results', tag: 'match-found' }
         ),
 

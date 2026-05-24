@@ -128,7 +128,7 @@ const VERIFICATION_DATA = {
     {
       id: 'v2',
       title: "Документы и читаемость файлов",
-      text: "Сначала проверяем, что документы читаются, относятся к профилю и помогают семье понять уровень подготовки кандидата.",
+      text: "Сначала проверяем, что документы читаются, относятся к профилю и помогают семье понять уровень подготовки няни.",
       bg: "bg-linear-to-b from-teal-50 to-cyan-50",
       icon: <FileSearch size={60} className="text-cyan-500" />
     },
@@ -216,7 +216,7 @@ const COMPATIBILITY_DATA = {
     {
       id: 1,
       title: "Подбор, который проще объяснить.",
-      text: "Мы собираем не только анкетные поля, но и наблюдаемые сигналы по графику, опыту и стилю общения — чтобы shortlist был понятнее.",
+      text: "Мы собираем не только анкетные поля, но и наблюдаемые сигналы по графику, опыту и стилю общения — чтобы подборка была понятнее.",
       bg: "bg-linear-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },
@@ -245,8 +245,8 @@ const COMPATIBILITY_DATA = {
         },
         {
           icon: <Fingerprint size={20} className="text-emerald-600" />,
-          title: "Shortlist",
-          desc: "Система помогает собрать сильные совпадения и объяснить, почему кандидат оказался в списке."
+          title: "Подборка",
+          desc: "Куратор собирает сильные совпадения и объясняет, почему именно эта няня подошла."
         },
       ]
     },
@@ -262,7 +262,7 @@ const COMPATIBILITY_DATA = {
     {
       id: 1,
       title: "Matching that is easier to explain.",
-      text: "We collect not only form fields, but also observable signals around schedule, experience, and communication style so the shortlist feels clearer.",
+      text: "We collect not only form fields, but also observable signals around schedule, experience, and communication style so your options feel clearer.",
       bg: "bg-linear-to-b from-amber-50 to-orange-50",
       icon: <Smile size={60} className="text-amber-400" />
     },

@@ -47,6 +47,13 @@ Curated long-term memory for the main Blizko workspace.
 - `vercel` CLI auth is working, but this repo is not locally linked via `.vercel/project.json`.
 - `linear` auth is currently working and should no longer be treated as unresolved.
 
+## Resume Protocol
+
+- On every restart, read `BOOTSTRAP.md` first.
+- Then read `SOUL.md`, `USER.md`, `MEMORY.md`, and the latest `memory/YYYY-MM-DD.md` files for today and yesterday.
+- Resume from the last unfinished task recorded in memory instead of asking the user to restate the thread.
+- When the session changes direction, update the relevant daily memory file immediately so the next restart has a clean handoff.
+
 ## Product Delivery Snapshot
 
 - `npm test` passes.

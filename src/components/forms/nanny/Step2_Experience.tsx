@@ -21,10 +21,15 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
     const isFormValid = formData.experience.trim() !== '' && formData.schedule.trim() !== '' && formData.expectedRate.trim() !== '' && formData.about.trim() !== '';
 
     return (
-        <div className="animate-fade-in space-y-6">
+        <div className="animate-fade-in space-y-6 pb-32">
             <div className="section-label">
-                {lang === 'ru' ? 'Ваш опыт и суперсилы' : 'Your experience and superpowers'}
+                {lang === 'ru' ? 'Ваш опыт и то, что вас отличает' : 'Your experience and what makes you stand out'}
             </div>
+            <p className="text-sm text-stone-500 mb-2">
+                {lang === 'ru'
+                    ? 'Вы уже познакомились с нами — теперь расскажите семьям, что вы умеете.'
+                    : 'You\'ve introduced yourself — now tell families what you can do.'}
+            </p>
 
             <Input
                 label={`${lang === 'ru' ? 'Сколько лет вы работаете с детьми?' : 'How many years of experience do you have?'} *`}
@@ -59,12 +64,13 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
             />
 
             <ChipGroup
-                label={lang === 'ru' ? 'В чем ваша суперсила? (навыки)' : 'What are your superpowers? (skills)'}
+                label={lang === 'ru' ? 'Ваши сильные стороны' : 'Your strengths'}
                 options={text.skillOptions}
                 selected={skills}
                 onChange={setSkills}
             />
 
+            <div className="border-t border-stone-100 my-2" />
             <div className="section-label">{lang === 'ru' ? 'С какой семьей вам будет комфортно?' : 'What kind of family are you comfortable with?'}</div>
             <ChipGroup
                 label={lang === 'ru' ? 'Видеонаблюдение' : 'Cameras'}
@@ -89,7 +95,7 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
             />
             <ChipGroup
                 label={lang === 'ru' ? 'Животные в доме' : 'Pets'}
-                options={lang === 'ru' ? ['Ок', 'Аллергия / Нет'] : ['Ok', 'Allergy / No']}
+                options={lang === 'ru' ? ['Готова', 'Аллергия / нет'] : ['Ready', 'Allergy / No']}
                 selected={advanced.pets ? [advanced.pets] : []}
                 onChange={(s) => setAdvanced((p) => ({ ...p, pets: s[0] || '' }))}
                 single
@@ -103,7 +109,7 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
             />
 
             <Textarea
-                label={`${lang === 'ru' ? 'Расскажите немного о себе. Какая вы?' : 'Tell us a bit about yourself'} *`}
+                label={`${lang === 'ru' ? 'Расскажите о себе — что важно вам в работе с детьми?' : 'Tell us about yourself — what matters to you when working with children?'} *`}
                 placeholder={lang === 'ru' ? "Расскажите, что для вас важно в работе с детьми, как вы строите контакт, что даёт вам энергию..." : "Tell us what matters to you, how you connect with children, what gives you energy in this work..."}
                 value={formData.about}
                 onChange={e => setFormData({ ...formData, about: e.target.value })}

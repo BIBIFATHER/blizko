@@ -418,6 +418,10 @@ a {
   min-width: 0;
 }
 
+.app-main-frame.flow-frame {
+  padding-bottom: 0;
+}
+
 .app-main-frame > * {
   min-width: 0;
 }
@@ -1197,10 +1201,13 @@ a {
 }
 
 .sticky-action-rail {
-  position: sticky;
-  bottom: calc(var(--sab) + 0.5rem);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 20;
-  padding-top: 1rem;
+  padding: 1rem 1rem calc(var(--sab) + 0.75rem);
+  background: linear-gradient(to top, rgba(249, 246, 241, 1) 70%, rgba(249, 246, 241, 0));
 }
 
 .wizard-aha-card {

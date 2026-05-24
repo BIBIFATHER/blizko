@@ -123,7 +123,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-[#1C2B2D]">
               {isMatching
-                ? (lang === 'ru' ? 'Готовим shortlist' : 'Building your shortlist')
+                ? (lang === 'ru' ? 'Готовим варианты' : 'Preparing your options')
                 : (lang === 'ru' ? 'Подтверждаем оплату' : 'Confirming payment')}
             </h3>
             <p className="text-sm leading-relaxed text-[#1C2B2D]/55">
@@ -173,12 +173,12 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           </div>
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold leading-snug text-[#1C2B2D]">
-              {lang === 'ru' ? 'Заявка передана куратору' : 'Request sent to your curator'}
+              {lang === 'ru' ? 'Спасибо. Мы поняли контекст.' : 'Thank you. We got the picture.'}
             </h2>
             <p className="text-sm leading-relaxed text-[#1C2B2D]/60">
               {lang === 'ru'
-                ? 'Мы разобрались в контексте вашей семьи. Куратор посмотрит заявку и подготовит shortlist.'
-                : 'We understood your family\'s context. The curator will review your request and prepare a shortlist.'}
+                ? 'Куратор посмотрит заявку и подберёт 2–3 варианта для вашей семьи.'
+                : "The curator will review your request and prepare 2–3 options for your family."}
             </p>
           </div>
         </div>
@@ -228,13 +228,9 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           <Button onClick={onHome} pulse>
             {lang === 'ru' ? 'Понятно, вернуться на главную' : 'Got it, back to home'}
           </Button>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="py-2 text-sm text-[#1C2B2D]/50 transition-colors hover:text-[#1C2B2D]"
-          >
-            {lang === 'ru' ? 'Вернуться и отредактировать заявку' : 'Go back and edit request'}
-          </button>
+          <p className="text-xs text-center text-[#1C2B2D]/35">
+            {lang === 'ru' ? 'Можно вернуться позже — заявка сохранена.' : 'You can come back later — your request is saved.'}
+          </p>
         </div>
 
       </div>

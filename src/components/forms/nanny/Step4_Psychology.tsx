@@ -36,10 +36,15 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
     };
 
     return (
-        <div className="animate-fade-in space-y-6">
+        <div className="animate-fade-in space-y-6 pb-32">
             <div className="section-label">
                 {lang === 'ru' ? 'Как вы работаете с детьми' : 'How you work with children'}
             </div>
+            <p className="text-sm text-stone-500 -mt-3">
+                {lang === 'ru'
+                    ? 'Последний шаг — самый важный. Здесь семьи поймут, подходите ли вы друг другу.'
+                    : 'The last step — the most important one. This is where families understand if you\'re the right fit.'}
+            </p>
 
             <Card className={`transition-all duration-300 ${softSkills ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
                 <div className="flex items-start gap-4">
@@ -100,7 +105,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
             <div className="bg-[#EFF3F2]/60 backdrop-blur-md border border-[#7FA99B]/40 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
                 <div className="text-sm font-semibold text-[#1C2B2D] mb-4">
-                    {lang === 'ru' ? 'Мои суперсилы в общении (помогает найти "ту самую" семью)' : 'My communication superpowers (helps find the *right* family)'}
+                    {lang === 'ru' ? 'Как я общаюсь' : 'How I communicate'}
                 </div>
 
                 <ChipGroup
@@ -113,7 +118,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
 
                 <ChipGroup
                     label={lang === 'ru' ? 'Ваш стиль дисциплины:' : 'Your discipline style:'}
-                    options={lang === 'ru' ? ['Мягкая, поддерживающая', 'Структурная, с правилами', 'Строгая'] : ['Gentle, supportive', 'Structured, rules-based', 'Strict']}
+                    options={lang === 'ru' ? ['Мягкая', 'Структурная', 'Строгая'] : ['Gentle', 'Structured', 'Strict']}
                     selected={riskProfile?.disciplineStyle ? [riskProfile.disciplineStyle] : []}
                     onChange={setSingleRiskValue('disciplineStyle')}
                     single
@@ -145,8 +150,8 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                 <ChipGroup
                     label={lang === 'ru' ? 'Стиль общения:' : 'Communication style:'}
                     options={lang === 'ru'
-                        ? ['Логика', 'Ценности', 'Эмпатия', 'Легкость', 'Тишина', 'Исполнитель']
-                        : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet', 'Action']
+                        ? ['Логика', 'Ценности', 'Эмпатия', 'Лёгкость', 'Тихое присутствие', 'Действую, меньше слов']
+                        : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet presence', 'Action over words']
                     }
                     selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
                     onChange={setSingleRiskValue('pcmType')}
@@ -169,7 +174,7 @@ export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading
                     {lang === 'ru' ? 'Назад' : 'Back'}
                 </Button>
                 <Button type="button" className="flex-1" onClick={onFinalSubmit} isLoading={loading} pulse={true}>
-                    {isEditing ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : (lang === 'ru' ? 'Отправить безопасно' : 'Submit safely')}
+                    {isEditing ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : (lang === 'ru' ? 'Отправить анкету' : 'Submit profile')}
                 </Button>
             </div>
 

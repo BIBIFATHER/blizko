@@ -159,6 +159,24 @@ export default function App() {
     return () => window.clearTimeout(timeoutId);
   }, [shouldLoadSupportChat, shouldOpenSupportChat]);
 
+  // Remove HTML splash screen after minimum display time
+  useEffect(() => {
+    const splash = document.getElementById('blizko-splash');
+    if (!splash) return;
+
+    const splashStart: number = (window as { __splashStart?: number }).__splashStart ?? Date.now();
+    const minDuration = 2200;
+    const elapsed = Date.now() - splashStart;
+    const delay = Math.max(0, minDuration - elapsed);
+
+    const exitTimer = window.setTimeout(() => {
+      splash.classList.add('splash-exiting');
+      window.setTimeout(() => splash.remove(), 450);
+    }, delay);
+
+    return () => window.clearTimeout(exitTimer);
+  }, []);
+
   const toggleLanguage = () => {
     setLang(prev => {
       const next = prev === 'ru' ? 'en' : 'ru';
@@ -240,7 +258,7 @@ export default function App() {
         <div className="cloud-blob cloud-blob-lavender" />
       </div>
 
-      <main className="app-main-frame flex-1 relative">
+      <main className={`app-main-frame flex-1 relative${currentPath === '/find-nanny' || currentPath === '/become-nanny' || currentPath === '/match-results' ? ' flow-frame' : ''}`}>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route

@@ -9,6 +9,7 @@ export interface ParentFormData {
     budgetHourly: string;
     budgetMonthly: string;
     comment: string;
+    extraPhrases: string[];
     dateFrom: string;
     dateTo: string;
     analysisNotes: string;
@@ -57,6 +58,7 @@ export interface ParentFormContextType {
     showCitySuggestions: boolean;
     setShowCitySuggestions: React.Dispatch<React.SetStateAction<boolean>>;
     detectingLocation: boolean;
+    locationError: string;
     detectLocation: (lang: Language) => Promise<void>;
 
     // Computed / Actions
@@ -89,6 +91,7 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
         budgetHourly: parsedBudget.hourly || (lang === 'ru' ? '600 - 800 ₽/час' : '20 - 30 $/hour'),
         budgetMonthly: parsedBudget.monthly || (lang === 'ru' ? '120000 - 180000 ₽/мес' : '2500 - 4000 $/month'),
         comment: initialData?.comment || '',
+        extraPhrases: [],
         dateFrom: '',
         dateTo: '',
         analysisNotes: '',
@@ -123,22 +126,25 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
     const [citySuggestions, setCitySuggestions] = useState<string[]>([]);
     const [showCitySuggestions, setShowCitySuggestions] = useState(false);
     const [detectingLocation, setDetectingLocation] = useState(false);
+    const [locationError, setLocationError] = useState('');
 
     const nextStep = () => setStep(s => Math.min(s + 1, totalSteps));
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
     const detectLocation = async (lang: Language) => {
         setDetectingLocation(true);
+        setLocationError('');
         const result = await detectUserLocation(lang);
 
         if (result.success) {
             const value = [result.city, result.district].filter(Boolean).join(', ');
-            setFormData((prev) => ({ ...prev, city: value || prev.city }));
-            if (!value) {
-                alert(lang === 'ru' ? 'Не удалось определить город/район автоматически' : 'Could not detect city/district automatically');
+            if (value) {
+                setFormData((prev) => ({ ...prev, city: value }));
+            } else {
+                setLocationError(lang === 'ru' ? 'Не удалось определить город — введите вручную' : 'Could not detect city — please type it manually');
             }
-        } else if (result.error) {
-            alert(result.error);
+        } else {
+            setLocationError(result.error ?? (lang === 'ru' ? 'Ошибка геолокации' : 'Geolocation error'));
         }
 
         setDetectingLocation(false);
@@ -182,7 +188,7 @@ export const ParentFormProvider: React.FC<{ children: ReactNode; initialData?: P
             riskProfile, setRiskProfile,
             citySuggestions, setCitySuggestions,
             showCitySuggestions, setShowCitySuggestions,
-            detectingLocation, detectLocation,
+            detectingLocation, locationError, detectLocation,
             isEditing: !!initialData,
             initialDataId: initialData?.id,
             initialDataStatus: initialData?.status

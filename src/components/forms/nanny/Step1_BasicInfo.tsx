@@ -36,7 +36,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
     const showAhaMoment = formData.name.trim() !== '' && formData.city.trim() !== '';
 
     return (
-        <div className="animate-fade-in space-y-6 relative pb-24">
+        <div className="animate-fade-in space-y-6 relative pb-32">
             <div className="section-label">{lang === 'ru' ? 'Давайте знакомиться' : 'Let\'s get to know you'}</div>
 
             {/* Photo Upload Block */}
@@ -151,7 +151,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 <div className="flex items-start gap-3">
                     <div className="mt-1">
                         <Checkbox
-                            label={lang === 'ru' ? 'Готов(а) работать с двумя семьями поблизости' : 'Ready to work with two nearby families'}
+                            label={lang === 'ru' ? 'Готова работать с двумя семьями поблизости' : 'Ready to work with two nearby families'}
                             checked={formData.isNannySharing}
                             onChange={(checked) => setFormData({ ...formData, isNannySharing: checked })}
                         />
@@ -159,8 +159,8 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                 </div>
                 <p className="text-xs text-stone-500 mt-2 pl-9">
                     {lang === 'ru'
-                        ? 'Nanny Sharing: работа у двух семей в одном районе (до 3 км). Гарантирует полную занятость и стабильный доход.'
-                        : 'Work with two families in the same area. Guarantees full-time employment and stable income.'}
+                        ? 'Nanny Sharing: работа у двух семей в одном районе (до 3 км). Может обеспечить полную занятость и стабильный доход.'
+                        : 'Work with two families in the same area. Can provide full-time employment and stable income.'}
                 </p>
             </div>
 
@@ -172,7 +172,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
                         </div>
                         <div className="text-[11px] text-[#1C2B2D] leading-tight">
                             {lang === 'ru' ?
-                                <span>Отлично! Продолжайте — семьи в вашем районе уже могут ждать именно вас.</span> :
+                                <span>Отлично! Продолжайте — в вашем районе ищут именно такого человека.</span> :
                                 <span>Great! Keep going — families in your area may already be looking for someone just like you.</span>}
                         </div>
                     </div>

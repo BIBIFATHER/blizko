@@ -2,6 +2,87 @@
 
 ---
 
+## 2026-05-24 (Sun) — BLI-13: NannyPublicProfile trust architecture
+
+### Done
+
+- ✅ **Убран collapsible** — About, Work Style, Skills+Ages теперь всегда видны, не скрыты под toggle.
+- ✅ **Новый раздел "Что обсудить при знакомстве"** — static copy куратора о первой встрече (ru+en).
+- ✅ **CTA переработан** — "Начать подбор" → "Познакомиться с [firstName]" + подпись "Куратор поможет организовать встречу".
+- ✅ **Badge labels** — "Модерация пройдена" → "Профиль проверен"; "Soft skills оценены" → "Характер и стиль изучены"; "Есть отзывы" → "Есть отзывы семей".
+- ✅ **profileOpenWhyTitle/Body** — переписано с meta-UX-описания на куратора-голос: "Почему именно эта няня".
+- ✅ **profileStyleTitle** — "Стиль работы с детьми" → "Характер и стиль работы".
+- ✅ **profileSkillsTitle** — "Навыки" → "Навыки и занятия".
+- ✅ **Порядок секций**: Hero → About → Work Style → Reviews → "Что обсудить" → Skills+Ages → CTA.
+
+---
+
+## 2026-05-24 (Sun) — BLI-12: MatchResults as curated shortlist
+
+### Done
+
+- ✅ **h1 динамический** — "Куратор подобрал N вариантов для вашей семьи" (ru) / "Your curator found N matches for your family" (en), вместо статичного заголовка.
+- ✅ **Ограничение до 3 карточек** — `candidates.slice(0, 3)`.
+- ✅ **CTA** — "Открыть профиль" → "Познакомиться" / "Meet this nanny".
+- ✅ **Eyebrow** — "Подборка куратора" / "Curated by Blizko".
+- ✅ **Текст секции** — курatorский голос: "Куратор поставил сначала тех, кто точнее всего совпал...".
+
+---
+
+## 2026-05-24 (Sun) — BLI-19: Brand Voice copy pass
+
+### Done
+
+- ✅ **translations.ts** — убраны все "shortlist", "кандидат", "Humanity+" из пользовательских строк. `heroSubtitle`, `homeProofChips`, `trust2Title/Detail`, `explainText`, `shortlist*`, `parentEtaLine`, `successDesc`, `recsTitle`, `successMatchingTitle`, `successProcessingNote` — полный перевод на язык куратора (RU + EN).
+- ✅ **SuccessScreen.tsx** — "Готовим shortlist" → "Готовим варианты"; subtitle "подготовит 2–3 варианта".
+- ✅ **CompatibilityModal.tsx** — "shortlist" → "подборка"; "кандидат" → "няня"; "Shortlist" → "Подборка".
+- ✅ **MatchResultsScreen.tsx** — "Кандидат N" → "Вариант N"; "Shortlist" → "Подборка/Your options"; "вернуться к shortlist" → "вернуться к списку"; hardcoded "Пока кандидатов нет" → "Пока нянь нет".
+- ✅ **AppHeader.tsx** — "/match-results" title "Ваш shortlist" → "Подборка от куратора".
+- ✅ **Step1_Requirements.tsx** — описание "для shortlist" → "куратор понял, кого именно искать".
+- ✅ **Step2_Calendar.tsx** — "список кандидатов" → "куратор найдёт подходящий вариант".
+- ✅ **matchingAiResult.ts** — "Кандидат/Candidate" → "Няня/Nanny"; pluralize "кандидатов" → "нянь"; overallAdvice и рекомендации.
+- ✅ **pushNotifications.ts** — "кандидатов" → "нянь".
+- ✅ **assessment.ts** — поведенческие описания "кандидат" → "няня".
+- ✅ **SeoPages.tsx** — schema "кандидат попал в shortlist" → "эта няня подошла".
+- ✅ **LegalPages.tsx** — "shortlist" → "2–3 подходящих варианта".
+
+---
+
+## 2026-05-24 (Sun) — BLI-7/8: ParentForm story flow + budget
+
+### Done
+
+- ✅ **BLI-7 Step1_FamilyStory** — textarea + story chips (6 эмоц. фраз) + опциональные чипы возраста и графика. City удалён из Step 1.
+- ✅ **BLI-7 Step2_Calendar** — Город перенесён в Step 2 (с Nominatim autocomplete и GPS кнопкой). `locationError` выводится inline (alert убран).
+- ✅ **Геолокация починена** — удалён запрещённый `User-Agent` заголовок, `alert()` заменён на inline state.
+- ✅ **BLI-8 Step3_FamilyProfile** — добавлены RangeSlider бюджета (hourly + monthly), Nanny Sharing toggle, requirements chips в collapsed extras. Все поля из старого Step1_Requirements теперь присутствуют в flow.
+
+---
+
+## 2026-05-23 (Sat) — Animated splash screen + Blizko logo mark
+
+### Done
+
+- ✅ **Logo SVG** — `public/logo.svg`: two overlapping circles (teal #2A6B6E + copper #C4744A) on warm paper background `#F9F6F2`, rounded-rect format, ready for icon export.
+- ✅ **Inline HTML splash** — `index.html`: pure CSS/HTML splash renders before React boots. Left circle slides in from left (delay 0.25s), right from right (delay 0.45s), wordmark fades up (delay 0.95s). `prefers-reduced-motion` respected.
+- ✅ **React exit hook** — `App.tsx` `useEffect`: tracks `window.__splashStart` (set at page load), waits minimum 2200ms, then adds `splash-exiting` class (0.45s fade), removes element. Verified correct timing in production build (exits at ~2.2s from app load for fast users, or whenever React mounts for slow connections).
+
+---
+
+## 2026-05-22 (Fri) — Full-width forms + fixed CTA + chip UX
+
+### Done
+
+- ✅ **StepWizardShell полная ширина** — все шаги (включая 1-й) теперь без карточного контейнера, `w-full px-4 py-5`. Home не затронут.
+- ✅ **Кнопка «Продолжить» fixed** — `position: fixed; bottom: 0` + градиент-фейд. `pb-32` (128px) в каждом step-компоненте обеспечивает скролл последнего элемента выше кнопки. `flow-frame` обнуляет лишний `padding-bottom` у `app-main-frame` на flow-экранах.
+- ✅ **Чипы не пишут в textarea** — `selectAge` / `selectSchedule` только устанавливают структурированные поля. Extra-чипы — toggle с визуальным выделением, фразы уходят в `extraPhrases[]` и добавляются к description при сабмите в блоке `[Пожелания]`.
+
+### Effect
+
+- Форма на телефоне: полная ширина, кнопка всегда видна внизу, textarea чистая для пользовательского ввода.
+
+---
+
 ## 2026-05-21 (Thu) — Footer + RLHF Этап 1 + manifest
 
 ### Done

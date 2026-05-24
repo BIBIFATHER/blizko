@@ -30,7 +30,7 @@ export function AppHeader({
   const screenTitle = (() => {
     if (pathname === '/') return 'Blizko';
     if (pathname === '/find-nanny') return lang === 'ru' ? 'Запрос семьи' : 'Family request';
-    if (pathname === '/match-results') return lang === 'ru' ? 'Ваш shortlist' : 'Your shortlist';
+    if (pathname === '/match-results') return lang === 'ru' ? 'Подборка от куратора' : 'Your options';
     if (pathname.startsWith('/nanny/')) return lang === 'ru' ? 'Профиль няни' : 'Nanny profile';
     if (pathname === '/become-nanny') return lang === 'ru' ? 'Анкета няни' : 'Nanny profile form';
     if (pathname === '/for-nannies') return lang === 'ru' ? 'Для нянь' : 'For nannies';

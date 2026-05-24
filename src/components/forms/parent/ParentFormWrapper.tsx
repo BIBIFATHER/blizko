@@ -69,10 +69,26 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
             const budget = formData.budgetHourly
                 ? `за час: ${formData.budgetHourly}; за месяц: ${formData.budgetMonthly || '—'}`
                 : '—';
-            const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Помощь по дому: ${advanced.household}; Дом.животные: ${advanced.pets}; Ночь: ${advanced.night}`;
-            const calendarNotes = `\n\n[Календарь]\nДиапазон: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}\nСлоты: ${summarizeSlots() || '—'}`;
-            const analysisNotes = formData.analysisNotes?.trim()
-                ? `\n\n[Для анализа]\n${formData.analysisNotes.trim()}`
+
+            // Structured summary → comment (curator reads this first)
+            const structured: string[] = [];
+            if (formData.childAge) structured.push(`Возраст: ${formData.childAge}`);
+            if (formData.schedule) structured.push(`График: ${formData.schedule}`);
+            if (formData.budgetHourly) structured.push(`Бюджет: ${budget}`);
+            if (formData.city) structured.push(`Город: ${formData.city}`);
+            const slots = summarizeSlots();
+            if (formData.dateFrom || formData.dateTo || slots) {
+                structured.push(`Период: ${formData.dateFrom || '—'} → ${formData.dateTo || '—'}${slots ? ` | Слоты: ${slots}` : ''}`);
+            }
+
+            const advancedNotes = `\n\n[Доп. условия]\nКамеры: ${advanced.cameras}; Дом: ${advanced.household}; Животные: ${advanced.pets}; Ночь: ${advanced.night}; Поездки: ${advanced.travel}`;
+
+            // Freeform story + extra phrases → [Для анализа] (AI / curator deep read)
+            const storyParts: string[] = [];
+            if (formData.comment?.trim()) storyParts.push(formData.comment.trim());
+            if (formData.extraPhrases.length > 0) storyParts.push(`Пожелания: ${formData.extraPhrases.join(', ')}`);
+            const analysisBlock = storyParts.length > 0
+                ? `\n\n[Для анализа]\n${storyParts.join('\n')}`
                 : '';
 
             await onSubmit({
@@ -82,7 +98,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
                 childAge: formData.childAge,
                 schedule: formData.schedule,
                 budget,
-                comment: `${formData.comment || ''}${advancedNotes}${calendarNotes}${analysisNotes}`.trim(),
+                comment: `${structured.join('\n')}${advancedNotes}${analysisBlock}`.trim(),
                 requirements,
                 documents,
                 riskProfile,
@@ -122,7 +138,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
                     <>
                         {currentStep === 1 && (lang === 'ru' ? 'Расскажите о семье' : 'Tell us about your family')}
                         {currentStep === 2 && (lang === 'ru' ? 'Отличный старт! Теперь график' : 'Great start! Now schedule')}
-                        {currentStep === 3 && (lang === 'ru' ? 'Почти готово! Профиль семьи' : 'Almost there! Family profile')}
+                        {currentStep === 3 && (lang === 'ru' ? 'Почти готово! Бюджет и условия' : 'Almost there! Budget & conditions')}
                     </>
                 }
                 stepTitle={isEditing ? (lang === 'ru' ? 'Редактирование заявки' : 'Edit Request') : text.pFormTitle}

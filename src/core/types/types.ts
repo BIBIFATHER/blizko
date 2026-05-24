@@ -58,6 +58,7 @@ export interface ParentRequest {
   rejectionInfo?: RejectionInfo;
   changeLog?: ParentChangeEvent[];
   isNannySharing?: boolean;
+  analysisNotes?: string;
 }
 
 export type SoftSkillTrait = 'empathy' | 'stability' | 'responsibility' | 'structure';

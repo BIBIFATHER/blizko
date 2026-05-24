@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Badge } from '../UI';
 import { ParentRequest } from '@/core/types';
 import { X, ChevronDown } from 'lucide-react';
 import { AdminDocumentPreviewModal, AdminPillButton, adminModalHeader, adminModalSurface, adminSubsectionPanel } from './adminPrimitives';
 import { AdminPreviewDoc } from './adminModerationUtils';
 import { useAdminParentModeration, RejectReasonCode, rejectReasonLabelMap } from '@/hooks/useAdminParentModeration';
+import { adminUpdateParentRequest } from '@/services/adminApi';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
 
@@ -102,6 +103,13 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     const [selectedParent, setSelectedParent] = useState<ParentRequest | null>(null);
     const [rejectingId, setRejectingId] = useState<string | null>(null);
     const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
+    const [editingNotes, setEditingNotes] = useState(false);
+    const [notesState, setNotesState] = useState('');
+
+    useEffect(() => {
+        setNotesState(selectedParent?.analysisNotes ?? '');
+        setEditingNotes(false);
+    }, [selectedParent?.id]);
 
     const { updateParentStatus, rejectParent } = useAdminParentModeration({
         onDataChanged,
@@ -131,6 +139,20 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     const handleRejectConfirm = async (parent: ParentRequest, code: RejectReasonCode, text: string) => {
         setRejectingId(null);
         await rejectParent(parent, code, text);
+    };
+
+    const handleSaveNotes = async () => {
+        if (!selectedParent) return;
+        const updated = await adminUpdateParentRequest({
+            id: selectedParent.id,
+            changes: { analysisNotes: notesState.trim() || undefined },
+            note: 'Заметки куратора обновлены',
+        });
+        if (updated) {
+            setSelectedParent(updated);
+            onDataChanged();
+        }
+        setEditingNotes(false);
     };
 
     return (
@@ -202,6 +224,11 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                 )}
                                 {p.comment && (
                                     <div className="text-xs text-stone-500 mt-2 italic">"{p.comment}"</div>
+                                )}
+                                {p.analysisNotes && (
+                                    <div className="mt-2 rounded-[1rem] border border-amber-100/80 bg-amber-50/50 px-3 py-2 text-xs text-amber-800">
+                                        <span className="font-semibold mr-1">Заметка:</span>{p.analysisNotes}
+                                    </div>
                                 )}
 
                                 {rejectingId !== p.id && (
@@ -337,6 +364,52 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                     </div>
                                 </div>
                             )}
+
+                            <div className={adminSubsectionPanel}>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <div className="text-xs text-stone-500">Заметки куратора</div>
+                                    {!editingNotes && (
+                                        <AdminPillButton
+                                            tone="neutral"
+                                            className="px-2.5 py-1 text-[10px]"
+                                            onClick={() => setEditingNotes(true)}
+                                        >
+                                            {selectedParent.analysisNotes ? 'Изменить' : 'Добавить'}
+                                        </AdminPillButton>
+                                    )}
+                                </div>
+                                {editingNotes ? (
+                                    <div className="space-y-2">
+                                        <textarea
+                                            value={notesState}
+                                            onChange={(e) => setNotesState(e.target.value)}
+                                            className="w-full input-glass rounded-xl px-3 py-2 text-xs min-h-[80px] resize-none"
+                                            placeholder="Заметки после анализа анкеты..."
+                                            autoFocus
+                                        />
+                                        <div className="flex gap-2">
+                                            <AdminPillButton tone="success" onClick={handleSaveNotes}>
+                                                Сохранить
+                                            </AdminPillButton>
+                                            <AdminPillButton
+                                                tone="neutral"
+                                                onClick={() => {
+                                                    setEditingNotes(false);
+                                                    setNotesState(selectedParent.analysisNotes ?? '');
+                                                }}
+                                            >
+                                                Отмена
+                                            </AdminPillButton>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-xs text-stone-700">
+                                        {selectedParent.analysisNotes
+                                            ? selectedParent.analysisNotes
+                                            : <span className="text-stone-400 italic">Нет заметок</span>}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

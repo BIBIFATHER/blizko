@@ -2,6 +2,17 @@
 
 ---
 
+## 2026-05-24 (Sun) — BLI-31: analysisNotes в карточке родителя
+
+### Done
+
+- ✅ **`ParentRequest.analysisNotes?: string`** — добавлено поле в тип.
+- ✅ **Карточка в списке** — если `analysisNotes` задан, показывается янтарный блок «Заметка: ...».
+- ✅ **Детальная модалка** — секция «Заметки куратора» с inline-редактированием: textarea + кнопки «Сохранить» / «Отмена».
+- ✅ **Сохранение** — через `adminUpdateParentRequest`, после сохранения обновляется `selectedParent` и вызывается `onDataChanged`.
+
+---
+
 ## 2026-05-24 (Sun) — BLI-18: Release gate passed
 
 ### Done

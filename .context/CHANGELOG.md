@@ -2,6 +2,31 @@
 
 ---
 
+## 2026-05-24 (Sun) — BLI-27: Документы и фото нянь → Supabase Storage
+
+### Done
+
+- ✅ **`src/services/storageUpload.ts`** — новый сервис: `uploadDocumentFile` и
+  `uploadPhotoFile`. Загружают в бакеты `nanny-documents` и `nanny-photos`.
+  Graceful fallback: если Supabase недоступен — возвращает `null`, компонент
+  сам решает что делать.
+- ✅ **`DocumentUploadModal`** — параллельный вызов `analyzeDocument` +
+  `uploadDocumentFile`; `fileDataUrl` — permanent Storage URL.
+  Fallback на `objectUrl` если Storage off.
+- ✅ **`Step1_BasicInfo`** — `handlePhotoUpload` стал async; пробует
+  `uploadPhotoFile`, fallback на `readAsDataURL` (base64) если недоступен.
+- ✅ **`.env.example`** — добавлены `VITE_SUPABASE_DOCS_BUCKET` и
+  `VITE_SUPABASE_PHOTOS_BUCKET`.
+
+### Что создать в Supabase Dashboard
+
+Нужно создать два публичных бакета вручную (или через миграцию):
+
+- `nanny-documents` — public, mime: image/\*, application/pdf
+- `nanny-photos` — public, mime: image/\*
+
+---
+
 ## 2026-05-24 (Sun) — BLI-39: Убрать платёжный гейт (временно бесплатно)
 
 ### Done

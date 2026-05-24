@@ -4,6 +4,7 @@ import { useNannyForm } from './NannyFormProvider';
 import { Button, Input, Checkbox } from '../../UI';
 import { t } from '@/core/i18n/translations';
 import { Language } from '@/core/types';
+import { uploadPhotoFile } from '@/services/storageUpload';
 
 interface Props {
     lang: Language;
@@ -20,16 +21,22 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
         nextStep
     } = useNannyForm();
 
-    const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                if (ev.target?.result) {
-                    setPhoto(ev.target.result as string);
-                }
-            };
-            reader.readAsDataURL(e.target.files[0]);
+    const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || !e.target.files[0]) return;
+        const file = e.target.files[0];
+
+        const storageUrl = await uploadPhotoFile(file);
+        if (storageUrl) {
+            setPhoto(storageUrl);
+            return;
         }
+
+        // Fallback to base64 if Storage unavailable.
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            if (ev.target?.result) setPhoto(ev.target.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const isFormValid = formData.name.trim() !== '' && formData.city.trim() !== '' && formData.contact.trim() !== '';

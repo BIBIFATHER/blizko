@@ -4,6 +4,7 @@ import { X, UploadCloud, CheckCircle, FileText, ShieldCheck } from 'lucide-react
 import { Language, DocumentVerification } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { analyzeDocument } from '@/core/ai/documentAi';
+import { uploadDocumentFile } from '@/services/storageUpload';
 
 interface DocumentUploadModalProps {
   onClose: () => void;
@@ -25,16 +26,20 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
     setFileName(file.name);
     setStep('processing');
 
-    // Use an object URL for immediate preview/attachment (fast + reliable for MVP).
-    const objectUrl = URL.createObjectURL(file);
+    const [analyzed, storageUrl] = await Promise.all([
+      analyzeDocument(file, docType, lang),
+      uploadDocumentFile(file, docType),
+    ]);
 
-    const analyzed = await analyzeDocument(file, docType, lang);
+    // Prefer permanent Storage URL; fall back to object URL if Storage unavailable.
+    const fileDataUrl = storageUrl ?? URL.createObjectURL(file);
+
     const doc: DocumentVerification = {
       ...analyzed,
       type: docType,
       verifiedAt: Date.now(),
       fileName: file.name,
-      fileDataUrl: objectUrl,
+      fileDataUrl,
     };
 
     onVerify(doc);

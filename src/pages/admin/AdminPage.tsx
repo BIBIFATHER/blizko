@@ -264,6 +264,13 @@ export const AdminPage: React.FC = () => {
     const [actionFeedHasMore, setActionFeedHasMore] = useState(false);
     const [actionFeedLoading, setActionFeedLoading] = useState(false);
     const [journalRange, setJournalRange] = useState<AdminJournalRange>('7');
+    const [currentAdminId, setCurrentAdminId] = useState<string | null>(null);
+
+    useEffect(() => {
+        supabase?.auth.getSession().then(({ data }) => {
+            setCurrentAdminId(data.session?.user?.id ?? null);
+        });
+    }, []);
 
     const loadFeed = React.useCallback(async (mode: 'replace' | 'append' = 'replace', beforeAt?: number | null) => {
         setActionFeedLoading(true);
@@ -295,12 +302,12 @@ export const AdminPage: React.FC = () => {
     const logAdminAction = React.useCallback((action: string, meta?: Record<string, unknown>) => {
         try {
             const items = JSON.parse(getItem(ADMIN_ACTIONS_KEY) || '[]');
-            const next = [{ action, meta, at: Date.now() }, ...items];
+            const next = [{ action, meta, at: Date.now(), adminId: currentAdminId }, ...items];
             setItem(ADMIN_ACTIONS_KEY, JSON.stringify(next.slice(0, 200)));
             setActionFeed(next.slice(0, 12));
             void createAdminAction(action, meta);
         } catch { /* ignore */ }
-    }, []);
+    }, [currentAdminId]);
 
     const logWorkflowEvent = React.useCallback((event: AdminWorkflowEvent) => {
         try {
@@ -311,13 +318,14 @@ export const AdminPage: React.FC = () => {
                 kind: event.kind,
                 message: event.message,
                 meta: { kind: event.kind, message: event.message },
+                adminId: currentAdminId,
             };
             const next = [entry, ...items];
             setItem(ADMIN_ACTIONS_KEY, JSON.stringify(next.slice(0, 200)));
             setActionFeed(next.slice(0, 12));
             void createAdminAction(`workflow_${event.kind}`, { kind: event.kind, message: event.message });
         } catch { /* ignore */ }
-    }, []);
+    }, [currentAdminId]);
 
     return (
         <AdminWorkflowUIProvider onWorkflowEvent={logWorkflowEvent}>

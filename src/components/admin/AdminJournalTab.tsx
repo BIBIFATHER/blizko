@@ -76,7 +76,7 @@ export const AdminJournalTab: React.FC<Props> = ({
             return true;
         }).filter((entry) => {
             if (!q) return true;
-            return [entry.action, entry.message, formatActionLabel(entry), JSON.stringify(entry.meta || {}), entry.id]
+            return [entry.action, entry.message, formatActionLabel(entry), JSON.stringify(entry.meta || {}), entry.id, entry.adminId]
                 .filter(Boolean).join(' ').toLowerCase().includes(q);
         });
     }, [actionFeed, journalFilter, journalQuery]);
@@ -120,7 +120,7 @@ export const AdminJournalTab: React.FC<Props> = ({
                 <input
                     value={journalQuery}
                     onChange={(e) => setJournalQuery(e.target.value)}
-                    placeholder="Поиск по действию, ID, сообщению..."
+                    placeholder="Поиск по действию, ID, admin:... или сообщению"
                     className="bg-transparent outline-none text-sm w-full"
                 />
             </div>
@@ -131,7 +131,7 @@ export const AdminJournalTab: React.FC<Props> = ({
                 <div className="space-y-2">
                     {filtered.map((entry, i) => (
                         <div key={`${entry.action}-${entry.at}-${i}`} className="flex items-start justify-between gap-3 rounded-[1rem] border border-stone-200/70 bg-white/75 px-3 py-2">
-                            <div>
+                            <div className="flex-1 min-w-0">
                                 <div className={`text-sm font-medium ${entry.kind === 'error' ? 'text-red-700' : entry.kind === 'success' ? 'text-green-700' : 'text-stone-700'}`}>
                                     {formatActionLabel(entry)}
                                 </div>
@@ -139,8 +139,15 @@ export const AdminJournalTab: React.FC<Props> = ({
                                     <div className="mt-1 text-[11px] text-stone-500">{formatActionMeta(entry)}</div>
                                 )}
                             </div>
-                            <div className="text-[11px] text-stone-400 whitespace-nowrap">
-                                {new Date(entry.at).toLocaleString()}
+                            <div className="shrink-0 flex flex-col items-end gap-1">
+                                <div className="text-[11px] text-stone-400 whitespace-nowrap">
+                                    {new Date(entry.at).toLocaleString()}
+                                </div>
+                                {entry.adminId && (
+                                    <div className="text-[10px] font-mono text-stone-400 bg-stone-100/80 rounded px-1.5 py-0.5 whitespace-nowrap" title={entry.adminId}>
+                                        admin:{entry.adminId.slice(0, 8)}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}

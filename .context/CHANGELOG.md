@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-05-24 (Sun) — BLI-34: Журнал аудита с adminId
+
+### Done
+
+- ✅ **`AdminPage`** — получает `currentAdminId` из Supabase-сессии при монтировании.
+- ✅ **Локальные записи** — `logAdminAction` и `logWorkflowEvent` теперь включают
+  `adminId` в кеш localStorage.
+- ✅ **Серверные записи** — `admin_id` уже сохранялся в `admin_actions`,
+  теперь отображается.
+- ✅ **`AdminJournalTab`** — каждая строка показывает `admin:xxxxxxxx` (первые 8 символов
+  UUID); `title` содержит полный ID; adminId добавлен в поиск.
+
+---
+
 ## 2026-05-24 (Sun) — BLI-33: Отправка уведомлений из админки
 
 ### Done

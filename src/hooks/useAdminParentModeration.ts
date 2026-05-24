@@ -7,14 +7,14 @@ import { notifyUserStatusChanged } from '@/services/notifications';
 import { useAdminWorkflowUI } from '@/components/admin/adminWorkflowUI';
 
 type ParentWorkflowStatus = NonNullable<ParentRequest['status']>;
-type RejectReasonCode =
+export type RejectReasonCode =
     | 'profile_incomplete'
     | 'docs_missing'
     | 'budget_invalid'
     | 'contact_invalid'
     | 'other';
 
-const rejectReasonLabelMap: Record<RejectReasonCode, string> = {
+export const rejectReasonLabelMap: Record<RejectReasonCode, string> = {
     profile_incomplete: 'Анкета заполнена не полностью',
     docs_missing: 'Не хватает документов',
     budget_invalid: 'Некорректный бюджет',
@@ -26,18 +26,12 @@ interface UseAdminParentModerationParams {
     onDataChanged: () => void;
     selectedParent: ParentRequest | null;
     setSelectedParent: Dispatch<SetStateAction<ParentRequest | null>>;
-    rejectReasonCode: RejectReasonCode;
-    rejectReasonText: string;
-    setRejectReasonText: Dispatch<SetStateAction<string>>;
 }
 
 export const useAdminParentModeration = ({
     onDataChanged,
     selectedParent,
     setSelectedParent,
-    rejectReasonCode,
-    rejectReasonText,
-    setRejectReasonText,
 }: UseAdminParentModerationParams) => {
     const { promptForReason, reportError, reportSuccess } = useAdminWorkflowUI();
 
@@ -73,24 +67,17 @@ export const useAdminParentModeration = ({
     );
 
     const rejectParent = useCallback(
-        async (parent: ParentRequest) => {
-            let reasonText = rejectReasonText.trim();
+        async (parent: ParentRequest, reasonCode: RejectReasonCode, reasonText: string) => {
+            let finalText = reasonText.trim();
 
-            if (reasonText.length < 8) {
-                const promptedReason = await promptForReason({
+            if (finalText.length < 8) {
+                const prompted = await promptForReason({
                     promptText: 'Добавьте комментарий к отклонению анкеты (минимум 8 символов):',
-                    defaultValue:
-                        'Пожалуйста, дополните анкету и исправьте замечания модератора',
-                    invalidMessage:
-                        'Укажи комментарий минимум 8 символов, чтобы пользователь понял что исправить.',
+                    defaultValue: 'Пожалуйста, дополните анкету и исправьте замечания модератора',
+                    invalidMessage: 'Укажи комментарий минимум 8 символов, чтобы пользователь понял что исправить.',
                 });
-
-                if (!promptedReason) return null;
-                reasonText = promptedReason;
-            }
-
-            if (reasonText !== rejectReasonText) {
-                setRejectReasonText(reasonText);
+                if (!prompted) return null;
+                finalText = prompted;
             }
 
             const updated = await adminUpdateParentRequest({
@@ -98,13 +85,13 @@ export const useAdminParentModeration = ({
                 changes: {
                     status: 'rejected',
                     rejectionInfo: {
-                        reasonCode: rejectReasonCode,
-                        reasonText,
+                        reasonCode,
+                        reasonText: finalText,
                         rejectedAt: Date.now(),
                         rejectedBy: 'admin',
                     },
                 },
-                note: `Отклонено: ${rejectReasonLabelMap[rejectReasonCode]}. ${reasonText}`,
+                note: `Отклонено: ${rejectReasonLabelMap[reasonCode]}. ${finalText}`,
                 forceStatusEvent: true,
             });
 
@@ -114,26 +101,13 @@ export const useAdminParentModeration = ({
             }
 
             await notifyUserStatusChanged(updated);
-            setRejectReasonText('');
             onDataChanged();
             syncSelectedParent(parent.id, updated);
             reportSuccess('Заявка отклонена с комментарием модератора.');
             return updated;
         },
-        [
-            onDataChanged,
-            promptForReason,
-            rejectReasonCode,
-            rejectReasonText,
-            reportError,
-            reportSuccess,
-            setRejectReasonText,
-            syncSelectedParent,
-        ]
+        [onDataChanged, promptForReason, reportError, reportSuccess, syncSelectedParent]
     );
 
-    return {
-        updateParentStatus,
-        rejectParent,
-    };
+    return { updateParentStatus, rejectParent };
 };

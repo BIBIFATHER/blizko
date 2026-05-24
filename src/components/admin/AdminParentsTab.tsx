@@ -1,19 +1,96 @@
 import React, { useState } from 'react';
 import { Card, Badge } from '../UI';
 import { ParentRequest } from '@/core/types';
-import { X } from 'lucide-react';
-import { AdminDocumentPreviewModal, AdminPillButton, adminModalHeader, adminModalSurface, adminSectionPanel, adminSubsectionPanel } from './adminPrimitives';
+import { X, ChevronDown } from 'lucide-react';
+import { AdminDocumentPreviewModal, AdminPillButton, adminModalHeader, adminModalSurface, adminSubsectionPanel } from './adminPrimitives';
 import { AdminPreviewDoc } from './adminModerationUtils';
-import { useAdminParentModeration } from '@/hooks/useAdminParentModeration';
+import { useAdminParentModeration, RejectReasonCode, rejectReasonLabelMap } from '@/hooks/useAdminParentModeration';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
-type RejectReasonCode = 'profile_incomplete' | 'docs_missing' | 'budget_invalid' | 'contact_invalid' | 'other';
 
 interface AdminParentsTabProps {
     parents: ParentRequest[];
     query: string;
     onDataChanged: () => void;
 }
+
+const REJECT_REASONS: RejectReasonCode[] = [
+    'profile_incomplete',
+    'docs_missing',
+    'budget_invalid',
+    'contact_invalid',
+    'other',
+];
+
+function parentStatusLabel(status?: ParentRequest['status']) {
+    if (status === 'payment_pending') return 'Ожидает оплаты';
+    if (status === 'in_review') return 'На проверке';
+    if (status === 'approved') return 'Одобрена';
+    if (status === 'rejected') return 'Отклонена';
+    return 'Новая';
+}
+
+interface RejectInlineFormProps {
+    onConfirm: (code: RejectReasonCode, text: string) => void;
+    onCancel: () => void;
+}
+
+const RejectInlineForm: React.FC<RejectInlineFormProps> = ({ onConfirm, onCancel }) => {
+    const [code, setCode] = useState<RejectReasonCode>('profile_incomplete');
+    const [text, setText] = useState('');
+    const canSubmit = text.trim().length >= 8;
+
+    return (
+        <div className="mt-3 rounded-[1.25rem] border border-red-100/80 bg-red-50/60 p-3 space-y-2.5">
+            <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold text-red-700">Причина отклонения</span>
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    className="rounded-full p-1 hover:bg-red-100/60 text-red-400"
+                    aria-label="Отмена"
+                >
+                    <X size={13} />
+                </button>
+            </div>
+
+            <div className="relative">
+                <select
+                    value={code}
+                    onChange={(e) => setCode(e.target.value as RejectReasonCode)}
+                    className="w-full appearance-none input-glass rounded-xl border-red-200/80 px-3 py-2 pr-8 text-xs"
+                >
+                    {REJECT_REASONS.map((r) => (
+                        <option key={r} value={r}>{rejectReasonLabelMap[r]}</option>
+                    ))}
+                </select>
+                <ChevronDown size={13} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-stone-400" />
+            </div>
+
+            <input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Комментарий для семьи (минимум 8 символов)"
+                className="w-full input-glass rounded-xl border-red-200/80 px-3 py-2 text-xs"
+                autoFocus
+            />
+
+            <div className="flex items-center gap-2">
+                <AdminPillButton
+                    onClick={() => onConfirm(code, text)}
+                    disabled={!canSubmit}
+                    tone="danger"
+                    className={!canSubmit ? 'opacity-40 cursor-not-allowed' : ''}
+                >
+                    Подтвердить отклонение
+                </AdminPillButton>
+                <AdminPillButton onClick={onCancel} tone="neutral">
+                    Отмена
+                </AdminPillButton>
+            </div>
+        </div>
+    );
+};
 
 export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     parents,
@@ -23,16 +100,13 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     const [parentStatusFilter, setParentStatusFilter] = useState<ParentStatusFilter>('all');
     const [onlyNeedsAction, setOnlyNeedsAction] = useState(true);
     const [selectedParent, setSelectedParent] = useState<ParentRequest | null>(null);
-    const [rejectReasonCode, setRejectReasonCode] = useState<RejectReasonCode>('profile_incomplete');
-    const [rejectReasonText, setRejectReasonText] = useState('');
+    const [rejectingId, setRejectingId] = useState<string | null>(null);
     const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
+
     const { updateParentStatus, rejectParent } = useAdminParentModeration({
         onDataChanged,
         selectedParent,
         setSelectedParent,
-        rejectReasonCode,
-        rejectReasonText,
-        setRejectReasonText,
     });
 
     const filteredParents = React.useMemo(() => {
@@ -54,12 +128,9 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         });
     }, [parents, query, parentStatusFilter, onlyNeedsAction]);
 
-    const parentStatusLabel = (status?: ParentRequest['status']) => {
-        if (status === 'payment_pending') return 'Ожидает оплаты';
-        if (status === 'in_review') return 'На проверке';
-        if (status === 'approved') return 'Одобрена';
-        if (status === 'rejected') return 'Отклонена';
-        return 'Новая';
+    const handleRejectConfirm = async (parent: ParentRequest, code: RejectReasonCode, text: string) => {
+        setRejectingId(null);
+        await rejectParent(parent, code, text);
     };
 
     return (
@@ -67,40 +138,35 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
             <section>
                 <div className="mb-4 flex items-center justify-between gap-3">
                     <div>
-                        <h3 className="text-stone-500 font-bold uppercase text-xs">
-                            Заявки родителей
-                        </h3>
-                        <div className="mt-1 text-sm text-stone-600">
-                            {filteredParents.length} в текущем срезе
-                        </div>
+                        <h3 className="text-stone-500 font-bold uppercase text-xs">Заявки родителей</h3>
+                        <div className="mt-1 text-sm text-stone-600">{filteredParents.length} в текущем срезе</div>
                     </div>
                     <Badge variant={onlyNeedsAction ? 'warning' : 'neutral'}>
                         {onlyNeedsAction ? 'Только action-needed' : 'Все заявки'}
                     </Badge>
                 </div>
 
-                <div className={`${adminSectionPanel} mb-3`}>
+                <div className="rounded-[1.5rem] border border-[color:var(--cloud-border)] bg-white/60 p-3 mb-3">
                     <div className="mb-3 flex flex-wrap gap-2">
-                    {([
-                        ['all', 'Все'],
-                        ['new', 'Новые'],
-                        ['in_review', 'На проверке'],
-                        ['resubmitted', 'Повторно отправленные'],
-                        ['approved', 'Одобрены'],
-                        ['rejected', 'Отклонены'],
-                    ] as const).map(([key, label]) => (
-                        <AdminPillButton
-                            key={key}
-                            onClick={() => setParentStatusFilter(key)}
-                            active={parentStatusFilter === key}
-                            tone="neutral"
-                        >
-                            {label}
-                        </AdminPillButton>
-                    ))}
+                        {([
+                            ['all', 'Все'],
+                            ['new', 'Новые'],
+                            ['in_review', 'На проверке'],
+                            ['resubmitted', 'Повторно отправленные'],
+                            ['approved', 'Одобрены'],
+                            ['rejected', 'Отклонены'],
+                        ] as const).map(([key, label]) => (
+                            <AdminPillButton
+                                key={key}
+                                onClick={() => setParentStatusFilter(key)}
+                                active={parentStatusFilter === key}
+                                tone="neutral"
+                            >
+                                {label}
+                            </AdminPillButton>
+                        ))}
                     </div>
-
-                    <label className="mb-3 inline-flex items-center gap-2 rounded-full border border-stone-200/70 bg-white/70 px-3 py-2 text-xs text-stone-700">
+                    <label className="inline-flex items-center gap-2 rounded-full border border-stone-200/70 bg-white/70 px-3 py-2 text-xs text-stone-700">
                         <input
                             type="checkbox"
                             checked={onlyNeedsAction}
@@ -108,32 +174,6 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                         />
                         Только требуют действия
                     </label>
-
-                    <div className="rounded-[1.25rem] border border-red-100/80 bg-red-50/70 p-3 space-y-2">
-                        <div className="flex items-center justify-between gap-3">
-                            <div className="text-xs font-semibold text-red-700">Причина отклонения</div>
-                            <Badge variant="danger">Нужно объяснение семье</Badge>
-                        </div>
-                    <div className="flex flex-wrap gap-2">
-                        <select
-                            value={rejectReasonCode}
-                            onChange={(e) => setRejectReasonCode(e.target.value as RejectReasonCode)}
-                            className="input-glass min-h-[40px] rounded-full border-red-200/80 px-3 py-2 text-xs"
-                        >
-                            <option value="profile_incomplete">Анкета заполнена не полностью</option>
-                            <option value="docs_missing">Не хватает документов</option>
-                            <option value="budget_invalid">Некорректный бюджет</option>
-                            <option value="contact_invalid">Некорректные контакты</option>
-                            <option value="other">Другая причина</option>
-                        </select>
-                        <input
-                            value={rejectReasonText}
-                            onChange={(e) => setRejectReasonText(e.target.value)}
-                            placeholder="Комментарий для пользователя"
-                            className="input-glass min-h-[40px] min-w-[220px] flex-1 rounded-full border-red-200/80 px-3 py-2 text-xs"
-                        />
-                    </div>
-                </div>
                 </div>
 
                 {filteredParents.length === 0 ? (
@@ -152,9 +192,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="text-sm font-semibold text-stone-800">
-                                    {p.city} • {p.childAge}
-                                </div>
+                                <div className="text-sm font-semibold text-stone-800">{p.city} • {p.childAge}</div>
                                 <div className="text-sm text-stone-600 mt-1">График: {p.schedule}</div>
                                 <div className="text-sm text-stone-600">Бюджет: {p.budget}</div>
                                 {!!p.requirements?.length && (
@@ -166,35 +204,32 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                                     <div className="text-xs text-stone-500 mt-2 italic">"{p.comment}"</div>
                                 )}
 
-                                <div className="mt-3 flex flex-wrap gap-2">
-                                    <AdminPillButton
-                                        onClick={() => updateParentStatus(p, 'in_review')}
-                                        tone="warm"
-                                    >
-                                        На проверку
-                                    </AdminPillButton>
-                                    <AdminPillButton
-                                        onClick={() => updateParentStatus(p, 'approved')}
-                                        tone="success"
-                                    >
-                                        Одобрить
-                                    </AdminPillButton>
-                                    <AdminPillButton
-                                        onClick={() => rejectParent(p)}
-                                        disabled={rejectReasonText.trim().length < 8}
-                                        title={rejectReasonText.trim().length < 8 ? 'Добавь комментарий (минимум 8 символов)' : 'Отклонить с причиной'}
-                                        tone="danger"
-                                        className={rejectReasonText.trim().length < 8 ? 'bg-red-50 text-red-300 border-red-100 cursor-not-allowed hover:bg-red-50' : ''}
-                                    >
-                                        Отклонить
-                                    </AdminPillButton>
-                                    <AdminPillButton
-                                        onClick={() => setSelectedParent(p)}
-                                        tone="neutral"
-                                    >
-                                        Открыть анкету
-                                    </AdminPillButton>
-                                </div>
+                                {rejectingId !== p.id && (
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        <AdminPillButton onClick={() => updateParentStatus(p, 'in_review')} tone="warm">
+                                            На проверку
+                                        </AdminPillButton>
+                                        <AdminPillButton onClick={() => updateParentStatus(p, 'approved')} tone="success">
+                                            Одобрить
+                                        </AdminPillButton>
+                                        <AdminPillButton
+                                            onClick={() => setRejectingId(p.id)}
+                                            tone="danger"
+                                        >
+                                            Отклонить
+                                        </AdminPillButton>
+                                        <AdminPillButton onClick={() => setSelectedParent(p)} tone="neutral">
+                                            Открыть анкету
+                                        </AdminPillButton>
+                                    </div>
+                                )}
+
+                                {rejectingId === p.id && (
+                                    <RejectInlineForm
+                                        onConfirm={(code, text) => handleRejectConfirm(p, code, text)}
+                                        onCancel={() => setRejectingId(null)}
+                                    />
+                                )}
                             </Card>
                         ))}
                     </div>

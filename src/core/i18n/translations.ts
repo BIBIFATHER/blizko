@@ -245,23 +245,6 @@ export const t = {
     payForBooking: 'Оплатить',
     paidStatus: 'Оплачено',
 
-    // Payment (Tochka)
-    payTitle: 'Оплата через Точку',
-    payAmount: 'Сумма к оплате',
-    tochkaBank: 'Точка Банк',
-    methodCard: 'Картой банка',
-    methodSBP: 'СБП (QR)',
-    openTochkaApp: 'Открыть приложение Точка',
-    cardNumber: 'Номер карты',
-    cardExpiry: 'MM/YY',
-    cardCVC: 'CVC',
-    sbpHint: 'Для оплаты без комиссии отсканируйте QR-код в приложении вашего банка.',
-    payAction: 'Оплатить',
-    paySuccess: 'Оплата прошла успешно',
-    payProcessing: 'Обработка в Точка Банк...',
-    payFeeNote: 'Итоговая сумма включает комиссию сервиса.',
-    payRefundNote: 'Отмена и возврат — по правилам оферты.',
-    payRetryNote: 'Если оплата не прошла, попробуйте ещё раз.',
 
     // Nanny Offer / Agreement
     offerTitle: 'Сотрудничество с платформой «Близко»',
@@ -595,23 +578,6 @@ This does not create absolute guarantees, but it helps the family see what shoul
     payForBooking: 'Pay',
     paidStatus: 'Paid',
 
-    // Payment (Tochka)
-    payTitle: 'Pay via Tochka',
-    payAmount: 'Amount',
-    tochkaBank: 'Tochka Bank',
-    methodCard: 'Credit Card',
-    methodSBP: 'FPS (SBP)',
-    openTochkaApp: 'Open Tochka App',
-    cardNumber: 'Card Number',
-    cardExpiry: 'MM/YY',
-    cardCVC: 'CVC',
-    sbpHint: 'Scan the QR code in your bank app to pay without commission.',
-    payAction: 'Pay',
-    paySuccess: 'Payment Successful',
-    payProcessing: 'Processing in Tochka Bank...',
-    payFeeNote: 'Final amount includes service fees.',
-    payRefundNote: 'Cancellations and refunds follow the offer terms.',
-    payRetryNote: 'If payment fails, try again.',
 
     // Nanny Offer / Agreement
     offerTitle: 'Cooperation with "Blizko"',

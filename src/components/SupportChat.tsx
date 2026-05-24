@@ -62,8 +62,8 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
             ticket_id: tk.id,
             sender_type: 'ai_concierge',
             text: lang === 'ru'
-              ? 'Привет! 👋 Я — AI-помощник Blizko. Спрашивайте что угодно о подборе няни, верификации или работе сервиса. Если понадобится человек — я сразу позову Антона.'
-              : 'Hi! 👋 I\'m the Blizko AI assistant. Ask me anything about nanny matching, verification, or how the service works. If you need a human — I\'ll connect you with Anton right away.',
+              ? 'Привет! 👋 Это Команда Blizko. Спрашивайте что угодно о подборе няни, верификации или работе сервиса. Если понадобится живой человек — Антон сразу подключится.'
+              : 'Hi! 👋 This is the Blizko team. Ask us anything about nanny matching, verification, or how the service works. If you need a human — Anton will join right away.',
             created_at: new Date().toISOString(),
           }]);
         }
@@ -193,7 +193,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
   const getSenderInfo = (msg: SupportMessage) => {
     switch (msg.sender_type) {
       case 'ai_concierge':
-        return { label: 'AI Concierge', icon: <Sparkles size={12} className="text-amber-500" />, bubbleClass: 'bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 text-stone-700 rounded-tl-sm' };
+        return { label: 'Команда Blizko', icon: <Sparkles size={12} className="text-amber-500" />, bubbleClass: 'bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 text-stone-700 rounded-tl-sm' };
       case 'human_agent':
         return { label: 'Антон', icon: <UserCheck size={12} className="text-green-500" />, bubbleClass: 'bg-linear-to-br from-green-50 to-emerald-50 border border-green-100 text-stone-700 rounded-tl-sm' };
       default:
@@ -212,7 +212,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
               <Sparkles size={18} />
             </div>
             <div>
-              <span className="font-bold block text-sm tracking-wide">AI Concierge</span>
+              <span className="font-bold block text-sm tracking-wide">Команда Blizko</span>
               <span className="text-[10px] text-stone-400 uppercase tracking-wider">
                 {isEscalated
                   ? (lang === 'ru' ? '🔴 Антон подключается...' : '🔴 Anton is joining...')

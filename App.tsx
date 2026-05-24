@@ -11,7 +11,7 @@ import { useNannySubmit } from '@/hooks/useNannySubmit';
 import { useShareActions } from '@/hooks/useShareActions';
 import { AppFooter } from '@/components/app/AppFooter';
 import { RequireRole } from '@/components/app/RequireRole';
-import { trackAuthModalOpen, trackLanguageSwitch } from '@/services/analytics';
+import { trackAuthModalOpen } from '@/services/analytics';
 
 const ParentForm = lazy(() => import('@/components/ParentForm').then((module) => ({ default: module.ParentForm })));
 const NannyForm = lazy(() => import('@/components/NannyForm').then((module) => ({ default: module.NannyForm })));
@@ -45,7 +45,7 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const adminEmails = String(import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map((s: string) => s.trim().toLowerCase()).filter(Boolean);
-  const [lang, setLang] = useState<Language>('ru');
+  const lang: Language = 'ru';
   const [isAdminOpen, setAdminOpen] = useState(false);
   const {
     user,
@@ -176,14 +176,6 @@ export default function App() {
 
     return () => window.clearTimeout(exitTimer);
   }, []);
-
-  const toggleLanguage = () => {
-    setLang(prev => {
-      const next = prev === 'ru' ? 'en' : 'ru';
-      trackLanguageSwitch(next);
-      return next;
-    });
-  };
 
   const handleEditProfile = (profile?: NannyProfile) => {
     setProfileOpen(false);

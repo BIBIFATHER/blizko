@@ -2,6 +2,18 @@
 
 ---
 
+## 2026-05-24 (Sun) — BLI-18: Release gate passed
+
+### Done
+
+- ✅ **`npm run build`** — чистая сборка, 0 ошибок.
+- ✅ **`npm run lint`** — 0 ошибок (устранён unused `toggleLanguage` + `setLang` в App.tsx).
+- ✅ **`npm test`** — 44/44 тестов прошли.
+- ✅ **Smoke routes (локально)**: `/`, `/find-nanny`, `/success`, `/match-results`, `/nanny/:slug?mock=1` — все 5/5.
+- ✅ **Vercel preview** — `blizko-3-6qpjg4jws-blizkos-projects.vercel.app` — 4/4 маршрутов.
+
+---
+
 ## 2026-05-24 (Sun) — BLI-17: Accessibility and reduced-motion pass
 
 ### Done

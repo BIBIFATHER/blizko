@@ -1,13 +1,16 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { setCors } from './_cors.js';
+import { rateLimit } from './_rate-limit.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  setCors(req.headers.origin, res);
 
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+
+  const rl = rateLimit(req, { max: 20, prefix: 'geocode' });
+  if (!rl.ok) return res.status(429).json({ error: 'Too many requests' });
 
   const q = String(req.query.q || '').trim();
   if (!q || q.length < 2) return res.status(200).json({ items: [] });

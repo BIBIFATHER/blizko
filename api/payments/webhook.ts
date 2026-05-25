@@ -1,11 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDbPool } from '../_db.js';
+import { rateLimit } from '../_rate-limit.js';
 import { activatePaidParentRequest, isAllowedPaymentStatus, verifyPaymentWithYooKassa } from './_shared.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const rl = rateLimit(req, { max: 30, prefix: 'yk-webhook' });
+  if (!rl.ok) return res.status(429).json({ error: 'Too many requests' });
 
   try {
     const { event, object } = req.body || {};

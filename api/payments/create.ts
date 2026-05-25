@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { ParentRequest } from '../../src/core/types/types.js';
 import { setCors } from '../_cors.js';
 import { verifyBearerUser } from '../_auth.js';
+import { rateLimit } from '../_rate-limit.js';
 import { getDbPool } from '../_db.js';
 import { MATCHING_FEE_RUB } from './_shared.js';
 
@@ -105,6 +106,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const rl = rateLimit(req, { max: 5, prefix: 'payments-create' });
+  if (!rl.ok) return res.status(429).json({ error: 'Too many requests' });
 
   const verifiedUser = await verifyBearerUser(req);
   if (!verifiedUser) {

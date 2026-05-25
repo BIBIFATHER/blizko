@@ -13,7 +13,7 @@ import { StepWizardShell } from '../../ui/StepWizardShell';
 import { trackCTA, trackNannyFormStarted, trackNannyFormStep, trackNannyOfferShown, trackNannyOfferAccepted } from '@/services/analytics';
 
 interface NannyFormWrapperProps {
-    onSubmit: (data: Partial<NannyProfile>) => void;
+    onSubmit: (data: Partial<NannyProfile>) => void | Promise<void>;
     lang: Language;
     initialData?: NannyProfile;
 }
@@ -70,12 +70,12 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
         }
     };
 
-    const submitData = (pdConsentAt?: string) => {
+    const submitData = async (pdConsentAt?: string) => {
         setLoading(true);
-        setTimeout(() => {
+        try {
             const advancedNotes = `\n\n[Предпочтения]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Дом. задачи: ${advanced.household}; Животные: ${advanced.pets}; Ночь: ${advanced.night}`;
 
-            onSubmit({
+            await onSubmit({
                 id: initialDataId,
                 ...formData,
                 about: `${formData.about || ''}${advancedNotes}`.trim(),
@@ -89,8 +89,9 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
                 riskProfile,
                 ...(pdConsentAt ? { pdConsentAt } : {}),
             });
+        } finally {
             setLoading(false);
-        }, 600);
+        }
     };
 
     const handleOfferAccept = () => {

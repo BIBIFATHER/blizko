@@ -62,7 +62,6 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
     };
 
     const submitData = async () => {
-        setShowOffer(false);
         setLoading(true);
 
         try {

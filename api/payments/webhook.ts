@@ -67,6 +67,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
-    return res.status(200).json({ received: true, ignored: 'internal_error' });
+    // Return 5xx so YooKassa retries. A DB/activation failure after capture must not
+    // be reported as success, otherwise a paid request never activates. The handler is
+    // idempotent (activatePaidParentRequest no-ops once activated), so retries are safe.
+    return res.status(500).json({ error: 'internal_error' });
   }
 }

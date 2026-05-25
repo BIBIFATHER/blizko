@@ -30,7 +30,12 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
         return;
       }
 
-      await sendToWebhook(updated);
+      if (updated.sync === 'error') {
+        alert('Не удалось сохранить изменения. Проверьте соединение и попробуйте ещё раз.');
+        return;
+      }
+
+      await sendToWebhook(updated.item);
       navigate('/');
       return;
     }
@@ -40,8 +45,14 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
       requesterId: user?.id,
       requesterEmail: user?.email,
     });
-    await sendToWebhook(saved);
-    await notifyAdminNewRequest(saved);
+
+    if (saved.sync === 'error') {
+      alert('Не удалось отправить заявку. Проверьте соединение и попробуйте ещё раз.');
+      return;
+    }
+
+    await sendToWebhook(saved.item);
+    await notifyAdminNewRequest(saved.item);
     trackFormSubmit('parent');
 
     const allNannies = await getNannyProfiles();
@@ -54,6 +65,6 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
       navigate('/success', { state: { result: aiMatchResult } });
     }
 
-    return { savedId: saved.id };
+    return { savedId: saved.item.id };
   };
 }

@@ -16,6 +16,9 @@ type StorageRow<T extends StorageEntity> = {
   created_at?: string;
 };
 
+export type SyncStatus = 'synced' | 'pending' | 'error';
+export type SaveResult<T> = { item: T; sync: SyncStatus };
+
 const safeJsonParse = <T>(value: string, fallback: T): T => {
   try {
     const parsed = JSON.parse(value) as T;
@@ -210,14 +213,19 @@ async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<
   }
 }
 
+type RemoteSaveResult<T> =
+  | { sync: 'synced'; item: T }
+  | { sync: 'pending' }
+  | { sync: 'error' };
+
 async function remoteSave<T extends StorageEntity>(
   table: 'parents' | 'nannies',
   item: T,
-): Promise<T | null> {
+): Promise<RemoteSaveResult<T>> {
   try {
-    if (!supabase) return null;
+    if (!supabase) return { sync: 'pending' };
     const userId = await getCurrentUserId();
-    if (!userId) return null;
+    if (!userId) return { sync: 'pending' };
 
     const row = {
       id: item.id,
@@ -231,21 +239,21 @@ async function remoteSave<T extends StorageEntity>(
       .select('id,payload,created_at')
       .single();
 
-    if (error) return null;
-    return (data?.payload as T | undefined) ?? item;
+    if (error) return { sync: 'error' };
+    return { sync: 'synced', item: (data?.payload as T | undefined) ?? item };
   } catch {
-    return null;
+    return { sync: 'error' };
   }
 }
 
-async function saveWithFallback(table: 'parents', item: ParentRequest): Promise<ParentRequest>;
-async function saveWithFallback(table: 'nannies', item: NannyProfile): Promise<NannyProfile>;
+async function saveWithFallback(table: 'parents', item: ParentRequest): Promise<SaveResult<ParentRequest>>;
+async function saveWithFallback(table: 'nannies', item: NannyProfile): Promise<SaveResult<NannyProfile>>;
 async function saveWithFallback(
   table: 'parents' | 'nannies',
   item: ParentRequest | NannyProfile,
-): Promise<ParentRequest | NannyProfile> {
+): Promise<SaveResult<ParentRequest | NannyProfile>> {
   const remote = await remoteSave(table, item);
-  const canonical = (remote as ParentRequest | NannyProfile) || item;
+  const canonical = (remote.sync === 'synced' ? remote.item : item) as ParentRequest | NannyProfile;
 
   if (table === 'parents') {
     syncLocalItem(table, canonical as ParentRequest);
@@ -253,13 +261,13 @@ async function saveWithFallback(
     syncLocalItem(table, canonical as NannyProfile);
   }
 
-  if (remote) {
+  if (remote.sync === 'synced') {
     clearPendingSync(table, canonical.id);
   } else {
     markPendingSync(table, canonical.id);
   }
 
-  return canonical;
+  return { item: canonical, sync: remote.sync };
 }
 
 async function remoteClear(table: 'parents' | 'nannies', testOnly = false): Promise<boolean> {
@@ -286,7 +294,7 @@ const fromRow = <T extends { id: string; createdAt: number }>(row: StorageRow<T>
 
 export const saveParentRequest = async (
   data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'>
-): Promise<ParentRequest> => {
+): Promise<SaveResult<ParentRequest>> => {
   const now = Date.now();
   const newRequest: ParentRequest = {
     ...data,
@@ -304,7 +312,7 @@ export const saveParentRequest = async (
 export const updateParentRequest = async (
   data: Partial<ParentRequest> & { id: string },
   options?: { actor?: 'user' | 'admin'; note?: string; allowApprovedEdit?: boolean; forceStatusEvent?: boolean }
-): Promise<ParentRequest | null> => {
+): Promise<SaveResult<ParentRequest> | null> => {
   const existing = getLocalParents();
   const localPrev = existing.find((p) => p.id === data.id);
   const remotePrev = localPrev ? null : await remoteGetById('parents', data.id);
@@ -334,7 +342,7 @@ export const updateParentRequest = async (
   return saveWithFallback('parents', updated);
 };
 
-export const resubmitParentRequest = async (id: string): Promise<ParentRequest | null> => {
+export const resubmitParentRequest = async (id: string): Promise<SaveResult<ParentRequest> | null> => {
   const existing = getLocalParents();
   const localPrev = existing.find((p) => p.id === id);
   const remotePrev = localPrev ? null : await remoteGetById('parents', id);
@@ -355,7 +363,7 @@ export const resubmitParentRequest = async (id: string): Promise<ParentRequest |
   return saveWithFallback('parents', updated);
 };
 
-export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<NannyProfile> => {
+export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<SaveResult<NannyProfile>> => {
   const existing = getLocalNannies();
   const currentUserId = await getCurrentUserId();
 

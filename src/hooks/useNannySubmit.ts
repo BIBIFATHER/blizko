@@ -23,10 +23,16 @@ export function useNannySubmit({ navigate, lang }: NannySubmitDeps) {
   return async function handleNannySubmit(data: Partial<NannyProfile>) {
     const isEdit = Boolean(data.id);
     const saved = await saveNannyProfile(data);
-    await sendToWebhook(saved);
+
+    if (saved.sync === 'error') {
+      alert('Не удалось сохранить анкету. Проверьте соединение и попробуйте ещё раз.');
+      return;
+    }
+
+    await sendToWebhook(saved.item);
     trackFormSubmit('nanny');
 
-    const readiness = getNannyReadinessSnapshot(saved);
+    const readiness = getNannyReadinessSnapshot(saved.item);
     if (readiness.qualityApproved) {
       trackNannyReadyForMatch(readiness.qualityScore);
     }
@@ -36,6 +42,6 @@ export function useNannySubmit({ navigate, lang }: NannySubmitDeps) {
       return;
     }
 
-    navigate('/success', { state: { result: generateNannyRegistrationResult(lang, saved) } });
+    navigate('/success', { state: { result: generateNannyRegistrationResult(lang, saved.item) } });
   };
 }

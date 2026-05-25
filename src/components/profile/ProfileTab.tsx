@@ -193,7 +193,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     };
     const handleResubmit = async (id: string) => {
         const updated = await resubmitParentRequest(id);
-        if (updated) await notifyAdminResubmitted(updated);
+        if (updated && updated.sync !== 'error') await notifyAdminResubmitted(updated.item);
         setMyParentRequests(await getMyParentRequests(user));
     };
 

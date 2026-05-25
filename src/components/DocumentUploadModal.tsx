@@ -14,7 +14,7 @@ interface DocumentUploadModalProps {
 
 export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClose, onVerify, lang }) => {
   const text = t[lang];
-  const [step, setStep] = useState<'select' | 'processing' | 'result'>('select');
+  const [step, setStep] = useState<'select' | 'processing' | 'result' | 'error'>('select');
   const [docType, setDocType] = useState<DocumentVerification['type']>('other');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -26,20 +26,24 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
     setFileName(file.name);
     setStep('processing');
 
-    const [analyzed, storageUrl] = await Promise.all([
+    const [analyzed, upload] = await Promise.all([
       analyzeDocument(file, docType, lang),
       uploadDocumentFile(file, docType),
     ]);
 
-    // Prefer permanent Storage URL; fall back to object URL if Storage unavailable.
-    const fileDataUrl = storageUrl ?? URL.createObjectURL(file);
+    // Identity documents must land in the protected bucket. No silent fallback to an
+    // ephemeral object URL / base64 — a failed upload is surfaced, not reported as success.
+    if (!upload.ok) {
+      setStep('error');
+      return;
+    }
 
     const doc: DocumentVerification = {
       ...analyzed,
       type: docType,
       verifiedAt: Date.now(),
       fileName: file.name,
-      fileDataUrl,
+      fileDataUrl: upload.url,
     };
 
     onVerify(doc);
@@ -146,6 +150,25 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({ onClos
             </div>
 
             <Button onClick={onClose}>OK</Button>
+          </div>
+        )}
+
+        {step === 'error' && (
+          <div className="p-6 flex-1 flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-4">
+              <X size={34} />
+            </div>
+            <h3 className="text-xl font-bold text-stone-800 mb-1">
+              {lang === 'ru' ? 'Не удалось загрузить документ' : 'Document upload failed'}
+            </h3>
+            <p className="text-stone-500 text-sm mb-6 max-w-[260px]">
+              {lang === 'ru'
+                ? 'Документ не был сохранён в защищённое хранилище. Проверьте соединение и попробуйте ещё раз.'
+                : 'The document was not saved to secure storage. Check your connection and try again.'}
+            </p>
+            <Button onClick={() => { setFileName(null); setStep('select'); }}>
+              {lang === 'ru' ? 'Попробовать снова' : 'Try again'}
+            </Button>
           </div>
         )}
     </ModalShell>

@@ -15,8 +15,12 @@ async function getCurrentUserId(): Promise<string> {
   return data.user?.id || 'anon';
 }
 
-export async function uploadDocumentFile(file: File, docType: string): Promise<string | null> {
-  if (!supabase) return null;
+export type UploadResult =
+  | { ok: true; url: string }
+  | { ok: false; reason: 'disabled' | 'error' };
+
+export async function uploadDocumentFile(file: File, docType: string): Promise<UploadResult> {
+  if (!supabase) return { ok: false, reason: 'disabled' };
   try {
     const userId = await getCurrentUserId();
     const ext = file.name.split('.').pop() || 'bin';
@@ -28,18 +32,20 @@ export async function uploadDocumentFile(file: File, docType: string): Promise<s
 
     if (error) {
       console.warn('Document upload error:', error.message);
-      return null;
+      return { ok: false, reason: 'error' };
     }
 
     const { data } = supabase.storage.from(DOCS_BUCKET).getPublicUrl(filePath);
-    return data?.publicUrl ?? null;
-  } catch {
-    return null;
+    if (!data?.publicUrl) return { ok: false, reason: 'error' };
+    return { ok: true, url: data.publicUrl };
+  } catch (e) {
+    console.warn('Document upload exception:', e instanceof Error ? e.message : e);
+    return { ok: false, reason: 'error' };
   }
 }
 
-export async function uploadPhotoFile(file: File): Promise<string | null> {
-  if (!supabase) return null;
+export async function uploadPhotoFile(file: File): Promise<UploadResult> {
+  if (!supabase) return { ok: false, reason: 'disabled' };
   try {
     const userId = await getCurrentUserId();
     const ext = file.name.split('.').pop() || 'jpg';
@@ -51,12 +57,14 @@ export async function uploadPhotoFile(file: File): Promise<string | null> {
 
     if (error) {
       console.warn('Photo upload error:', error.message);
-      return null;
+      return { ok: false, reason: 'error' };
     }
 
     const { data } = supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(filePath);
-    return data?.publicUrl ?? null;
-  } catch {
-    return null;
+    if (!data?.publicUrl) return { ok: false, reason: 'error' };
+    return { ok: true, url: data.publicUrl };
+  } catch (e) {
+    console.warn('Photo upload exception:', e instanceof Error ? e.message : e);
+    return { ok: false, reason: 'error' };
   }
 }

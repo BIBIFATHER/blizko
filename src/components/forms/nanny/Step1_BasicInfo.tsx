@@ -25,13 +25,13 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
         if (!e.target.files || !e.target.files[0]) return;
         const file = e.target.files[0];
 
-        const storageUrl = await uploadPhotoFile(file);
-        if (storageUrl) {
-            setPhoto(storageUrl);
+        const upload = await uploadPhotoFile(file);
+        if (upload.ok) {
+            setPhoto(upload.url);
             return;
         }
 
-        // Fallback to base64 if Storage unavailable.
+        // Profile photo (not an identity document) may fall back to base64 if Storage is unavailable.
         const reader = new FileReader();
         reader.onload = (ev) => {
             if (ev.target?.result) setPhoto(ev.target.result as string);

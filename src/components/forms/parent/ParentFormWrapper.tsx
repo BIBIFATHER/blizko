@@ -103,6 +103,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
                 documents,
                 riskProfile,
                 isNannySharing: formData.isNannySharing,
+                pdConsentAt: new Date().toISOString(),
             });
         } catch (e) {
             console.error('Submit error:', e);

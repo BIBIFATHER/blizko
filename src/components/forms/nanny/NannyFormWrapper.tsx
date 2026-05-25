@@ -70,7 +70,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
         }
     };
 
-    const submitData = () => {
+    const submitData = (pdConsentAt?: string) => {
         setLoading(true);
         setTimeout(() => {
             const advancedNotes = `\n\n[Предпочтения]\nКамеры: ${advanced.cameras}; Поездки: ${advanced.travel}; Дом. задачи: ${advanced.household}; Животные: ${advanced.pets}; Ночь: ${advanced.night}`;
@@ -87,6 +87,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
                 documents,
                 resumeNormalized,
                 riskProfile,
+                ...(pdConsentAt ? { pdConsentAt } : {}),
             });
             setLoading(false);
         }, 600);
@@ -95,7 +96,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
     const handleOfferAccept = () => {
         setShowOffer(false);
         trackNannyOfferAccepted();
-        submitData();
+        submitData(new Date().toISOString());
     };
 
     return (

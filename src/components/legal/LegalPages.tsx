@@ -58,7 +58,7 @@ export const OfertaPage: React.FC = () => {
                     <section className="section-shell p-5">
                         <h2 className="font-semibold text-stone-800 mb-2 text-base">3. Стоимость и порядок оплаты</h2>
                         <p>Стоимость услуг определяется действующим тарифным планом, опубликованным на сайте blizko.app/pricing.</p>
-                        <p className="mt-2">Оплата производится через платёжный сервис ЮKassa (ООО НКО «ЮМани»). Blizko использует сервис «Безопасная сделка» для защиты платежей: средства зачисляются и удерживаются до подтверждения факта оказания услуги.</p>
+                        <p className="mt-2">Оплата производится через платёжный сервис T-Bank Касса (АО «Тинькофф Банк»). Blizko использует сервис «Безопасная сделка» для защиты платежей: средства зачисляются и удерживаются до подтверждения факта оказания услуги.</p>
                     </section>
 
                     <section className="section-shell p-5">
@@ -285,7 +285,7 @@ export const SafeDealPage: React.FC = () => {
                     <div className="section-shell p-5">
                         <h2 className="font-semibold text-stone-800 mb-2 text-base">Как это работает</h2>
                         <ol className="space-y-2 list-decimal list-inside text-stone-600">
-                            <li>Родитель вносит депозит через ЮKassa</li>
+                            <li>Родитель вносит депозит через T-Bank Касса</li>
                             <li>Средства <strong>замораживаются</strong> на 14 дней</li>
                             <li>Няня приступает к работе</li>
                             <li>После подтверждения — средства выплачиваются няне</li>
@@ -295,7 +295,7 @@ export const SafeDealPage: React.FC = () => {
 
                     <div className="section-shell p-5">
                         <h2 className="font-semibold text-stone-800 mb-3 text-base">1. Условия предоставления услуги</h2>
-                        <p>Сервис «Безопасная сделка» предоставляется через платёжный агрегатор ЮKassa (ООО НКО «ЮМани», лицензия ЦБ РФ). Blizko выступает агрегатором и технической площадкой.</p>
+                        <p>Сервис «Безопасная сделка» предоставляется через платёжный сервис T-Bank Касса (АО «Тинькофф Банк», лицензия ЦБ РФ). Blizko выступает агрегатором и технической площадкой.</p>
                         <p className="mt-2">Участники сделки: <strong>Покупатель</strong> (семья/родитель) и <strong>Исполнитель</strong> (няня).</p>
                         <p className="mt-2">Срок заморозки средств: <strong>14 дней</strong> с момента оплаты (по соглашению сторон может быть изменён от 1 до 90 дней).</p>
                     </div>
@@ -340,14 +340,14 @@ export const SafeDealPage: React.FC = () => {
                             </div>
                             <div className="flex gap-3">
                                 <span className="text-amber-500 mt-0.5">!</span>
-                                <p><strong>Споры:</strong> разбираются службой поддержки Blizko. При необходимости привлекается медиатор ЮKassa.</p>
+                                <p><strong>Споры:</strong> разбираются службой поддержки Blizko. При необходимости привлекается служба поддержки T-Bank.</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="section-shell p-5">
                         <h2 className="font-semibold text-stone-800 mb-3 text-base">6. Технический провайдер</h2>
-                        <p>Платёжный сервис обеспечивает <strong>ООО НКО «ЮМани»</strong> (бренд ЮKassa), имеющее лицензию Банка России на осуществление переводов денежных средств. Blizko не хранит данные банковских карт.</p>
+                        <p>Платёжный сервис обеспечивает <strong>АО «Тинькофф Банк»</strong> (бренд T-Bank Касса), имеющее лицензию Банка России на осуществление банковских операций. Blizko не хранит данные банковских карт.</p>
                     </div>
 
                     <div className="section-shell p-5 text-center">
@@ -427,7 +427,7 @@ export const PrivacyPage: React.FC = () => {
 
                     <div className="section-shell p-5">
                         <h2 className="font-semibold text-stone-800 mb-2 text-base">4. Хранение и защита</h2>
-                        <p>Данные хранятся на серверах Supabase (ЕС и Россия). Передача данных третьим лицам ограничена случаями, необходимыми для работы сервиса, включая платёжную обработку через ЮKassa.</p>
+                        <p>Данные хранятся на серверах Supabase (ЕС). Передача данных третьим лицам ограничена случаями, необходимыми для работы сервиса, включая платёжную обработку через T-Bank Касса.</p>
                     </div>
 
                     <div className="section-shell p-5">

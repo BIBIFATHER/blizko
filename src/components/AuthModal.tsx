@@ -283,13 +283,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
       <div className="p-5 sm:p-8 pt-4 sm:pt-8 relative">
         <div className="mb-6">
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="eyebrow">{lang === 'ru' ? 'Вход в Blizko' : 'Access Blizko'}</div>
-            <div className="topbar-chip">
-              <Lock size={12} />
-              {lang === 'ru' ? 'Безопасно' : 'Secure'}
-            </div>
-          </div>
           <h3 className="text-[1.8rem] sm:text-[2.25rem] leading-[0.98] font-display font-semibold text-stone-900 pr-12">
             {step === 'success' ? (lang === 'ru' ? 'Успешно!' : 'Success!') : text.authTitle}
           </h3>

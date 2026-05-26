@@ -283,9 +283,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
       <div className="p-5 sm:p-8 pt-4 sm:pt-8 relative">
         <div className="mb-6">
-          <h3 className="text-[1.8rem] sm:text-[2.25rem] leading-[0.98] font-display font-semibold text-stone-900 pr-12">
+          <h2 className="text-[1.8rem] sm:text-[2.25rem] leading-[0.98] font-display font-semibold text-stone-900 pr-12">
             {step === 'success' ? (lang === 'ru' ? 'Успешно!' : 'Success!') : text.authTitle}
-          </h3>
+          </h2>
           <p className="text-stone-500 text-sm mt-2 leading-relaxed max-w-sm">
             {step === 'method' &&
               (lang === 'ru'

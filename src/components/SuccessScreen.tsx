@@ -157,9 +157,9 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EFF3F2] text-[#1C2B2D]/40">
             <Info size={28} />
           </div>
-          <h2 className="text-xl font-semibold text-[#1C2B2D]">
+          <h1 className="text-xl font-semibold text-[#1C2B2D]">
             {lang === 'ru' ? 'Страница недоступна напрямую' : 'Page not accessible directly'}
-          </h2>
+          </h1>
           <p className="text-sm leading-relaxed text-[#1C2B2D]/55">
             {lang === 'ru'
               ? 'Вернитесь на главную и заполните заявку заново.'
@@ -183,9 +183,9 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
             <CheckCircle size={36} strokeWidth={1.75} />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-semibold leading-snug text-[#1C2B2D]">
+            <h1 className="text-2xl font-semibold leading-snug text-[#1C2B2D]">
               {lang === 'ru' ? 'Спасибо. Мы поняли контекст.' : 'Thank you. We got the picture.'}
-            </h2>
+            </h1>
             <p className="text-sm leading-relaxed text-[#1C2B2D]/60">
               {lang === 'ru'
                 ? 'Куратор посмотрит заявку и подберёт 2–3 варианта для вашей семьи.'

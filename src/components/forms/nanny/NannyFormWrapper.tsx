@@ -114,18 +114,6 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
         currentStep={currentStep}
         onBack={onBack}
         progress={<ProgressBar className="mb-6" value={(currentStep / totalSteps) * 100} />}
-        stepHint={
-          <>
-            {currentStep === 1 &&
-              (lang === 'ru' ? 'Давайте знакомиться!' : "Let's get acquainted!")}
-            {currentStep === 2 &&
-              (lang === 'ru' ? 'Отлично! Теперь про ваш опыт' : 'Great! Now your experience')}
-            {currentStep === 3 &&
-              (lang === 'ru' ? 'Почти готово! Последний шаг' : 'Almost done! Last step')}
-            {currentStep === 4 &&
-              (lang === 'ru' ? 'Финальный штрих: ваши суперсилы' : 'Final touch: your superpowers')}
-          </>
-        }
         stepTitle={
           isEditing ? (lang === 'ru' ? 'Редактирование профиля' : 'Edit Profile') : text.nFormTitle
         }

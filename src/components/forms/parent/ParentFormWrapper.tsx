@@ -148,18 +148,6 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
             />
           </div>
         }
-        stepHint={
-          <>
-            {currentStep === 1 &&
-              (lang === 'ru' ? 'Расскажите о семье' : 'Tell us about your family')}
-            {currentStep === 2 &&
-              (lang === 'ru' ? 'Отличный старт! Теперь график' : 'Great start! Now schedule')}
-            {currentStep === 3 &&
-              (lang === 'ru'
-                ? 'Почти готово! Бюджет и условия'
-                : 'Almost there! Budget & conditions')}
-          </>
-        }
         stepTitle={
           isEditing ? (lang === 'ru' ? 'Редактирование заявки' : 'Edit Request') : text.pFormTitle
         }

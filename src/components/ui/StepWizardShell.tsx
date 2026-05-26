@@ -11,7 +11,6 @@ interface StepWizardShellProps {
   lockedNotice?: React.ReactNode;
   onBack: () => void;
   progress: React.ReactNode;
-  stepHint: React.ReactNode;
   stepTitle: React.ReactNode;
   totalSteps: number;
 }
@@ -24,7 +23,6 @@ export const StepWizardShell: React.FC<StepWizardShellProps> = ({
   lockedNotice,
   onBack,
   progress,
-  stepHint,
   stepTitle,
   totalSteps,
 }) => {
@@ -45,13 +43,9 @@ export const StepWizardShell: React.FC<StepWizardShellProps> = ({
         </div>
 
         <div className="mb-6 space-y-3">
-          <div className="flex items-center justify-between gap-4">
-            <div className="wizard-step-chip">
-              <span className="wizard-step-dot" />
-              <span>{stepHint}</span>
-            </div>
+          <div className="flex justify-end">
             <span className="step-badge">
-              {currentStep} / {totalSteps}
+              {currentStep}/{totalSteps}
             </span>
           </div>
           <h2 className="wizard-step-title">{stepTitle}</h2>

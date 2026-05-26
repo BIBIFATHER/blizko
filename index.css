@@ -1024,6 +1024,7 @@ a {
   font-size: 0.7rem;
   font-weight: 600;
   color: #78716c;
+  white-space: nowrap;
 }
 
 .wizard-shell {

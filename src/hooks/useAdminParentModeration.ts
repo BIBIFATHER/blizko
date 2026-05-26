@@ -57,10 +57,14 @@ export const useAdminParentModeration = ({
                 return null;
             }
 
-            await notifyUserStatusChanged(updated);
+            const notified = await notifyUserStatusChanged(updated);
             onDataChanged();
             syncSelectedParent(parent.id, updated);
-            reportSuccess(`Статус заявки обновлён: ${status}.`);
+            if (notified) {
+                reportSuccess(`Статус заявки обновлён: ${status}.`);
+            } else {
+                reportError(`Статус обновлён: ${status}, но уведомление семье не доставлено. Отправьте вручную.`);
+            }
             return updated;
         },
         [onDataChanged, reportError, reportSuccess, syncSelectedParent]
@@ -100,10 +104,14 @@ export const useAdminParentModeration = ({
                 return null;
             }
 
-            await notifyUserStatusChanged(updated);
+            const notified = await notifyUserStatusChanged(updated);
             onDataChanged();
             syncSelectedParent(parent.id, updated);
-            reportSuccess('Заявка отклонена с комментарием модератора.');
+            if (notified) {
+                reportSuccess('Заявка отклонена с комментарием модератора.');
+            } else {
+                reportError('Заявка отклонена, но уведомление семье не доставлено. Отправьте вручную.');
+            }
             return updated;
         },
         [onDataChanged, promptForReason, reportError, reportSuccess, syncSelectedParent]

@@ -261,7 +261,8 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
       );
 
       return json(res, 200, { items: result.rows.map(toAnalyticsRecord), days, source: 'postgres' });
-    } catch {
+    } catch (e) {
+      console.error('analytics GET: postgres query failed, falling back:', e);
       const items = await fetchAnalyticsViaSupabase(days);
       if (items) return json(res, 200, { items, days, source: 'security_audit_log' });
       return json(res, 200, { items: [], days, source: 'disabled' });
@@ -295,7 +296,8 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
       );
 
       return json(res, 201, { ok: true, source: 'postgres' });
-    } catch {
+    } catch (e) {
+      console.error('analytics POST: postgres insert failed, falling back:', e);
       const saved = await saveAnalyticsViaSupabase(record, verifiedUser?.id || null);
       if (saved) return json(res, 201, { ok: true, source: 'security_audit_log' });
       return json(res, 202, { ok: false, skipped: 'analytics_store_unavailable' });

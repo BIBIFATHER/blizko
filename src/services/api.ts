@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 // Универсальная отправка событий уведомлений
-export const sendToWebhook = async (payload: Record<string, unknown>): Promise<void> => {
+export const sendToWebhook = async (payload: Record<string, unknown>): Promise<boolean> => {
   try {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (supabase) {
@@ -26,8 +26,11 @@ export const sendToWebhook = async (payload: Record<string, unknown>): Promise<v
     if (!r.ok) {
       const err = await r.text().catch(() => '');
       console.warn('notify failed:', r.status, err);
+      return false;
     }
+    return true;
   } catch (e) {
     console.warn('notify error:', e);
+    return false;
   }
 };

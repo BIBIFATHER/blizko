@@ -1,8 +1,8 @@
 import { ParentRequest } from '@/core/types';
 import { sendToWebhook } from './api';
 
-export const notifyAdminNewRequest = async (req: ParentRequest) => {
-  await sendToWebhook({
+export const notifyAdminNewRequest = async (req: ParentRequest): Promise<boolean> => {
+  return sendToWebhook({
     channel: 'telegram',
     event: 'admin.new_parent_request',
     subject: 'Новая заявка родителя',
@@ -14,8 +14,8 @@ export const notifyAdminNewRequest = async (req: ParentRequest) => {
   });
 };
 
-export const notifyAdminResubmitted = async (req: ParentRequest) => {
-  await sendToWebhook({
+export const notifyAdminResubmitted = async (req: ParentRequest): Promise<boolean> => {
+  return sendToWebhook({
     channel: 'telegram',
     event: 'admin.parent_request_resubmitted',
     subject: 'Заявка отправлена повторно',
@@ -27,8 +27,8 @@ export const notifyAdminResubmitted = async (req: ParentRequest) => {
   });
 };
 
-export const notifyUserStatusChanged = async (req: ParentRequest) => {
-  if (!req.requesterEmail) return;
+export const notifyUserStatusChanged = async (req: ParentRequest): Promise<boolean> => {
+  if (!req.requesterEmail) return false;
 
   const statusMap: Record<string, string> = {
     payment_pending: 'Ожидает оплаты',
@@ -44,7 +44,7 @@ export const notifyUserStatusChanged = async (req: ParentRequest) => {
     ? ` Причина: ${req.rejectionInfo.reasonText}`
     : '';
 
-  await sendToWebhook({
+  return sendToWebhook({
     event: 'user.parent_request_status_changed',
     to: req.requesterEmail,
     subject: `Статус заявки: ${statusLabel}`,

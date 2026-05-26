@@ -395,6 +395,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
     if (loading) {
         return (
             <div className="page-frame animate-fade-in py-4 pb-14 md:py-8">
+                <h1 className="sr-only">{lang === 'ru' ? 'Подбираем няню для вашей семьи' : 'Finding a nanny for your family'}</h1>
                 <div className="section-stack space-y-6">
                     <Skeleton className="h-8 w-48 rounded-full" />
                     <SkeletonNannyCard />
@@ -408,6 +409,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
     if (error) {
         return (
             <div className="page-frame animate-fade-in py-6">
+                <h1 className="sr-only">{lang === 'ru' ? 'Результаты подбора няни' : 'Nanny match results'}</h1>
                 <button
                     onClick={() => navigate('/')}
                     className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800"
@@ -423,6 +425,7 @@ export const MatchResultsScreen: React.FC<MatchResultsScreenProps> = ({ lang }) 
     if (!matchResult || matchResult.candidates.length === 0) {
         return (
             <div className="page-frame animate-fade-in py-6">
+                <h1 className="sr-only">{lang === 'ru' ? 'Результаты подбора няни' : 'Nanny match results'}</h1>
                 <button
                     onClick={() => navigate('/')}
                     className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[color:var(--cloud-border)] bg-white/75 px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-800"

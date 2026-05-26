@@ -113,6 +113,7 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
 
     return (
         <>
+            <h1 className="sr-only">{lang === 'ru' ? 'Заявка на подбор няни' : 'Nanny request'}</h1>
             <StepWizardShell
                 backLabel={text.back}
                 currentStep={currentStep}

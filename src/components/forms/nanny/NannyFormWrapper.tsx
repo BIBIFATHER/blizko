@@ -102,6 +102,7 @@ const NannyFormContent: React.FC<NannyFormWrapperProps> = ({ onSubmit, lang }) =
 
     return (
         <>
+            <h1 className="sr-only">{lang === 'ru' ? 'Анкета няни' : 'Nanny profile'}</h1>
             <StepWizardShell
                 backLabel={text.back}
                 currentStep={currentStep}

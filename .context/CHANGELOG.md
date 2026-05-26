@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-05-26 (Tue) — DEV DEBT: vite proxy мисроутит весь /api в AI worker
+
+### Tech debt (dev-experience, prod НЕ затронут)
+
+- `vite.config.ts` server.proxy: `'/api'` → `https://ai-proxy.blizko-ai.workers.dev`
+  ловит **все** `/api/*` в dev → не-AI эндпоинты (data/notify/payments/auth/nannies)
+  мисроутятся в AI-воркер.
+  - Симптомы в dev: `POST /api/data?resource=analytics` → 400 `{"error":"Empty prompt"}`;
+    `GET /api/nannies?id=...` → 405.
+  - **Prod не затронут:** vite-прокси только в dev; в проде `/api/*` идёт в реальные
+    serverless-функции (`api/data.ts`, `api/nannies.ts` существуют и работают).
+- **Решение позже (отдельно):** сузить прокси — только AI-роут на ai-proxy, остальной
+  `/api/*` на `vercel dev` или задеплоенный preview. Не делать сейчас.
+
+---
+
 ## 2026-05-24 (Sun) — ProfileTab: удаление мёртвого кода и редизайн
 
 ### Deleted

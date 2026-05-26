@@ -1,5 +1,5 @@
 // Blizko Service Worker — Push Notifications + Offline Cache
-const CACHE_NAME = 'blizko-v1';
+const CACHE_NAME = 'blizko-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Assets to pre-cache for offline support

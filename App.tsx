@@ -196,7 +196,7 @@ export default function App() {
     if (currentPath === '/find-nanny') {
       return {
         title: lang === 'ru' ? 'Найти няню в Москве | Заявка в Blizko' : 'Find a nanny in Moscow | Blizko request',
-        description: lang === 'ru' ? 'Оставьте заявку и получите небольшой shortlist с модерацией профилей и понятными причинами выбора.' : 'Submit your request and receive a small shortlist with moderated profiles and clear reasons for each choice.',
+        description: lang === 'ru' ? 'Оставьте заявку и получите подборку из 2–3 проверенных нянь с понятными причинами выбора.' : 'Submit your request and receive a small shortlist with moderated profiles and clear reasons for each choice.',
         canonical: 'https://blizko.app/find-nanny',
         robots: 'noindex, nofollow',
       };
@@ -227,7 +227,7 @@ export default function App() {
     }
     return {
       title: lang === 'ru' ? 'Blizko — спокойный подбор няни для семьи' : 'Blizko — calmer nanny search for families',
-      description: lang === 'ru' ? 'Blizko помогает пройти путь от тревожного поиска к shortlist из 2-3 кандидатов с модерацией профилей и понятными причинами выбора.' : 'Blizko helps families move from anxious searching to a shortlist of 2-3 candidates with profile moderation and clear reasons for each choice.',
+      description: lang === 'ru' ? 'Blizko помогает пройти путь от тревожного поиска к подборке из 2–3 проверенных нянь с понятными причинами выбора.' : 'Blizko helps families move from anxious searching to a shortlist of 2-3 candidates with profile moderation and clear reasons for each choice.',
       canonical: 'https://blizko.app',
       robots: 'index, follow',
     };

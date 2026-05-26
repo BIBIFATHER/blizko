@@ -149,7 +149,15 @@ const ParentFormContent: React.FC<ParentFormWrapperProps> = ({ onSubmit, lang })
           </div>
         }
         stepTitle={
-          isEditing ? (lang === 'ru' ? 'Редактирование заявки' : 'Edit Request') : text.pFormTitle
+          isEditing
+            ? lang === 'ru'
+              ? 'Редактирование заявки'
+              : 'Edit Request'
+            : currentStep === 2
+              ? text.pFormTitleStep2
+              : currentStep === 3
+                ? text.pFormTitleStep3
+                : text.pFormTitle
         }
         totalSteps={totalSteps}
       >

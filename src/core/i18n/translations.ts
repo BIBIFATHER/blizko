@@ -76,6 +76,8 @@ export const t = {
     // Parent Form
     back: 'Назад',
     pFormTitle: 'Расскажите о семье',
+    pFormTitleStep2: 'Ритм вашей семьи',
+    pFormTitleStep3: 'Бюджет и пожелания',
     pFormSubtitle: 'Опишите вашу идеальную няню',
     cityLabel: 'Город и район',
     childAgeLabel: 'Возраст ребёнка',
@@ -447,6 +449,8 @@ This does not create absolute guarantees, but it helps the family see what shoul
     // Parent Form
     back: 'Back',
     pFormTitle: 'Tell us about your family',
+    pFormTitleStep2: "Your family's rhythm",
+    pFormTitleStep3: 'Budget & preferences',
     pFormSubtitle: 'Describe your ideal nanny',
     cityLabel: 'City and District',
     childAgeLabel: "Child's Age",

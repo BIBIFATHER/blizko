@@ -80,7 +80,7 @@ function createNanny(id: string, overrides: Partial<NannyProfile> = {}): NannyPr
         verifiedAt: Date.now(),
       },
     ],
-    reviews: [{ rating: 5, author: "Parent", comment: "great", createdAt: Date.now() }],
+    reviews: [{ id: "r1", authorName: "Parent", rating: 5, text: "great", date: Date.now() }],
     isNannySharing: true,
     ...overrides,
   };

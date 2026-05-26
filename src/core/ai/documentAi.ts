@@ -119,7 +119,17 @@ Return JSON with:
       return await demoFallback('empty-response');
     }
 
-    const result = safeJsonParse(responseText);
+    // Boundary cast: внешний AI-ответ — неполный JSON неизвестной формы.
+    // Узкое приведение к ожидаемым опциональным полям безопасно: ниже все поля
+    // читаются с дефолтами (|| 0, || '...', || undefined).
+    const result = safeJsonParse(responseText) as {
+      status?: string;
+      confidence?: number;
+      notes?: string;
+      docNumber?: string;
+      expiry?: string;
+      normalizedResume?: unknown;
+    } | null;
     if (!result) {
       return await demoFallback('invalid-json');
     }

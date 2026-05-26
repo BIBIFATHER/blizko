@@ -139,6 +139,8 @@ async function getCurrentUserIdentity(): Promise<Partial<Pick<User, 'id' | 'name
   };
 }
 
+async function remoteGet(table: 'parents'): Promise<Array<StorageRow<ParentRequest>> | null>;
+async function remoteGet(table: 'nannies'): Promise<Array<StorageRow<NannyProfile>> | null>;
 async function remoteGet(table: 'parents' | 'nannies'): Promise<Array<StorageRow<StorageEntity>> | null> {
   try {
     if (!supabase) return null;
@@ -196,6 +198,8 @@ async function remoteGetOwnParents(): Promise<Array<StorageRow<ParentRequest>> |
   }
 }
 
+async function remoteGetById(table: 'parents', id: string): Promise<StorageRow<ParentRequest> | null>;
+async function remoteGetById(table: 'nannies', id: string): Promise<StorageRow<NannyProfile> | null>;
 async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<StorageRow<StorageEntity> | null> {
   try {
     if (!supabase) return null;
@@ -282,8 +286,8 @@ async function remoteClear(table: 'parents' | 'nannies', testOnly = false): Prom
   }
 }
 
-const fromRow = <T extends { id: string; createdAt: number }>(row: StorageRow<T>): T => {
-  const payload = row?.payload ?? {};
+const fromRow = <T extends StorageEntity>(row: StorageRow<T>): T => {
+  const payload = (row?.payload ?? {}) as Partial<T>;
   const createdAt = payload?.createdAt ?? (row?.created_at ? new Date(row.created_at).getTime() : Date.now());
   return {
     ...payload,

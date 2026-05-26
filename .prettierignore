@@ -1,4 +1,28 @@
+# Build output / deps
 dist
 node_modules
 package-lock.json
 *.n8n
+
+# Agent / tooling workspaces (not product code)
+.claude/
+.agents/
+.agent/
+.venv/
+.context/
+AGENT_PROFILES/
+agents/
+
+# Memory & docs (never auto-format)
+memory/
+docs/
+archive/
+output/
+ops/
+
+# Generated / vendored / platform artifacts
+android/
+ios/
+public/
+cloudflare/
+stitch-mcp-server/

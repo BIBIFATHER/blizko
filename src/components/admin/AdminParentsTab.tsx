@@ -118,7 +118,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         setNotifySubject(`Статус вашей заявки: ${statusLabel}`);
         setNotifyText('');
         setNotifyBusy(false);
-    }, [selectedParent?.id]);
+    }, [selectedParent?.id, selectedParent?.status, selectedParent?.analysisNotes]);
 
     const { updateParentStatus, rejectParent } = useAdminParentModeration({
         onDataChanged,

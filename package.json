@@ -16,6 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
+    "release:gate": "bash scripts/release-gate.sh",
     "format": "prettier --write '**/*.{ts,tsx,js,json,css,md}'",
     "format:check": "prettier --check '**/*.{ts,tsx,js,json,css,md}'",
     "seed": "node scripts/importHhNannies.js",

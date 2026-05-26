@@ -170,13 +170,16 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         const text = notifyText.trim();
         if (!subject || !text) return;
         setNotifyBusy(true);
-        const result = await adminSendNotification({ to: selectedParent.requesterEmail, subject, text });
-        setNotifyBusy(false);
-        if (result.ok) {
-            reportSuccess('Сообщение отправлено.');
-            setNotifyText('');
-        } else {
-            reportError(result.error ?? 'Ошибка отправки.');
+        try {
+            const result = await adminSendNotification({ to: selectedParent.requesterEmail, subject, text });
+            if (result.ok) {
+                reportSuccess('Сообщение отправлено.');
+                setNotifyText('');
+            } else {
+                reportError(result.error ?? 'Ошибка отправки.');
+            }
+        } finally {
+            setNotifyBusy(false);
         }
     };
 

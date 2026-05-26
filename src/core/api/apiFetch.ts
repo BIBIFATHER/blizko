@@ -19,14 +19,14 @@ interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
 
 export async function apiFetch<T = unknown>(
   url: string,
-  options: ApiFetchOptions = {}
+  options: ApiFetchOptions = {},
 ): Promise<{ ok: boolean; status: number; data: T }> {
   const { body, headers: customHeaders, ...rest } = options;
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...getTmaHeaders(), // Auto-inject TMA initData
-    ...(customHeaders as Record<string, string> || {}),
+    ...((customHeaders as Record<string, string>) || {}),
   };
 
   const fetchOptions: RequestInit = {
@@ -39,7 +39,7 @@ export async function apiFetch<T = unknown>(
   }
 
   const res = await fetch(url, fetchOptions);
-  const data = await res.json().catch(() => ({} as T));
+  const data = await res.json().catch(() => ({}) as T);
 
   return { ok: res.ok, status: res.status, data };
 }
@@ -50,7 +50,7 @@ export async function apiFetch<T = unknown>(
 export async function apiPost<T = unknown>(
   url: string,
   body: Record<string, unknown>,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
 ): Promise<{ ok: boolean; status: number; data: T }> {
   return apiFetch<T>(url, { method: 'POST', body, headers });
 }

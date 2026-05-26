@@ -11,13 +11,7 @@ type AppFooterProps = {
   onOpenAdmin: () => void;
 };
 
-export function AppFooter({
-  lang,
-  user,
-  isAdmin,
-  onBecomeNanny,
-  onOpenAdmin,
-}: AppFooterProps) {
+export function AppFooter({ lang, user, isAdmin, onBecomeNanny, onOpenAdmin }: AppFooterProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const pathname = location.pathname;
@@ -28,10 +22,7 @@ export function AppFooter({
       key: 'home',
       label: lang === 'ru' ? 'Главная' : 'Home',
       icon: House,
-      active:
-        pathname === '/' ||
-        pathname === '/match-results' ||
-        pathname.startsWith('/nanny/'),
+      active: pathname === '/' || pathname === '/match-results' || pathname.startsWith('/nanny/'),
       onClick: () => navigate('/'),
     },
     {
@@ -50,7 +41,7 @@ export function AppFooter({
     },
     {
       key: 'profile',
-      label: user ? (lang === 'ru' ? 'Кабинет' : 'Account') : (lang === 'ru' ? 'Вход' : 'Login'),
+      label: user ? (lang === 'ru' ? 'Кабинет' : 'Account') : lang === 'ru' ? 'Вход' : 'Login',
       icon: User,
       active: pathname === '/login' || pathname.includes('dashboard'),
       onClick: () => navigate(user ? profilePath : '/login'),
@@ -87,9 +78,13 @@ export function AppFooter({
             {lang === 'ru' ? 'Стать няней' : 'Become a nanny'}
           </button>
           <span className="text-stone-300">·</span>
-          <a href="/privacy" className="underline hover:text-stone-500">Политика конфиденциальности</a>
+          <a href="/privacy" className="underline hover:text-stone-500">
+            Политика конфиденциальности
+          </a>
           <span className="text-stone-300">·</span>
-          <a href="/oferta" className="underline hover:text-stone-500">Оферта</a>
+          <a href="/oferta" className="underline hover:text-stone-500">
+            Оферта
+          </a>
           {user?.email && isAdmin && (
             <>
               <span className="text-stone-300">·</span>

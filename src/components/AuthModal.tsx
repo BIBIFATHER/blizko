@@ -46,7 +46,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     if (lower.includes('invalid login credentials')) {
       return 'Неверные данные для входа.';
     }
-    if (lower.includes('supabase client is not configured') || lower.includes('supabase не настроен')) {
+    if (
+      lower.includes('supabase client is not configured') ||
+      lower.includes('supabase не настроен')
+    ) {
       return 'Сервис авторизации временно не настроен. Попробуйте позже.';
     }
     if (lower.includes('invalid') && lower.includes('otp')) {
@@ -124,7 +127,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     }
 
     if (!supabase) {
-      throw new Error(lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured');
+      throw new Error(
+        lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured',
+      );
     }
 
     const email = contactValue.trim();
@@ -177,7 +182,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     }
 
     if (!supabase) {
-      throw new Error(lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured');
+      throw new Error(
+        lang === 'ru' ? 'Supabase не настроен в клиенте' : 'Supabase client is not configured',
+      );
     }
 
     const email = contactValue.trim();
@@ -287,12 +294,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
             {step === 'success' ? (lang === 'ru' ? 'Успешно!' : 'Success!') : text.authTitle}
           </h3>
           <p className="text-stone-500 text-sm mt-2 leading-relaxed max-w-sm">
-            {step === 'method' && (lang === 'ru' ? 'Выберите роль и удобный способ входа.' : 'Choose your role and preferred sign-in method.')}
+            {step === 'method' &&
+              (lang === 'ru'
+                ? 'Выберите роль и удобный способ входа.'
+                : 'Choose your role and preferred sign-in method.')}
             {step === 'otp' &&
               (lang === 'ru' ? `Код отправлен на ${contactValue}` : `Code sent to ${contactValue}`)}
             {step === 'email_wait' &&
-              (lang === 'ru' ? `Мы отправили ссылку на ${contactValue}. Подтвердите вход в письме.` : `We sent a sign-in link to ${contactValue}. Confirm it from your email.`)}
-            {step === 'success' && (lang === 'ru' ? 'Переходим в профиль...' : 'Redirecting to profile...')}
+              (lang === 'ru'
+                ? `Мы отправили ссылку на ${contactValue}. Подтвердите вход в письме.`
+                : `We sent a sign-in link to ${contactValue}. Confirm it from your email.`)}
+            {step === 'success' &&
+              (lang === 'ru' ? 'Переходим в профиль...' : 'Redirecting to profile...')}
           </p>
         </div>
 
@@ -302,25 +315,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               <button
                 type="button"
                 onClick={() => setRole('parent')}
-                className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'parent'
-                  ? 'bg-white border border-sky-200 text-sky-900 shadow-sm'
-                  : 'bg-transparent text-stone-500'
-                  }`}
+                className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${
+                  role === 'parent'
+                    ? 'bg-white border border-sky-200 text-sky-900 shadow-sm'
+                    : 'bg-transparent text-stone-500'
+                }`}
               >
                 <Baby size={20} />
                 <span className="text-xs font-semibold">{text.roleParent}</span>
               </button>
-                <button
-                  type="button"
-                  onClick={() => setRole('nanny')}
-                  className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${role === 'nanny'
+              <button
+                type="button"
+                onClick={() => setRole('nanny')}
+                className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${
+                  role === 'nanny'
                     ? 'bg-white border border-amber-200 text-amber-900 shadow-sm'
                     : 'bg-transparent text-stone-500'
-                    }`}
-                >
-                  <Briefcase size={20} />
-                  <span className="text-xs font-semibold">{text.roleNanny}</span>
-                </button>
+                }`}
+              >
+                <Briefcase size={20} />
+                <span className="text-xs font-semibold">{text.roleNanny}</span>
+              </button>
             </div>
 
             <div className="surface-panel rounded-[22px] p-1 flex border-white/70 shadow-none">
@@ -332,8 +347,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                     setContactValue('');
                     setError('');
                   }}
-                  className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                    }`}
+                  className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${
+                    method === 'phone' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                  }`}
                 >
                   <Phone size={14} /> Phone
                 </button>
@@ -345,20 +361,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                   setContactValue('');
                   setError('');
                 }}
-                className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
-                  }`}
+                className={`flex-1 py-2.5 text-[11px] font-bold uppercase rounded-[18px] transition-all flex items-center justify-center gap-2 ${
+                  method === 'email' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'
+                }`}
               >
                 <Mail size={14} /> Email
               </button>
             </div>
 
             {!phoneAuthEnabled && (
-              <p className="text-[11px] text-stone-500 -mt-2">{lang === 'ru' ? 'Вход по телефону скоро будет доступен.' : 'Phone auth will be available soon.'}</p>
+              <p className="text-[11px] text-stone-500 -mt-2">
+                {lang === 'ru'
+                  ? 'Вход по телефону скоро будет доступен.'
+                  : 'Phone auth will be available soon.'}
+              </p>
             )}
 
             <div className="surface-panel rounded-[28px] p-4 sm:p-5">
               <Input
-                label={method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'}
+                label={
+                  method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'
+                }
                 type={method === 'phone' ? 'tel' : 'email'}
                 placeholder={method === 'phone' ? '+7 999 000-00-00' : 'hello@example.com'}
                 value={contactValue}
@@ -376,12 +399,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               />
             </div>
 
-            {error && <p className="rounded-2xl border border-amber-100 bg-amber-50/90 p-3 text-center text-xs font-medium text-amber-700">{error}</p>}
+            {error && (
+              <p className="rounded-2xl border border-amber-100 bg-amber-50/90 p-3 text-center text-xs font-medium text-amber-700">
+                {error}
+              </p>
+            )}
 
             <Button type="submit" isLoading={loading} className="mt-1">
               {method === 'email'
-                ? (lang === 'ru' ? 'Получить ссылку' : 'Get login link')
-                : (lang === 'ru' ? 'Получить код' : 'Get Code')}
+                ? lang === 'ru'
+                  ? 'Получить ссылку'
+                  : 'Get login link'
+                : lang === 'ru'
+                  ? 'Получить код'
+                  : 'Get Code'}
               <ArrowRight size={18} />
             </Button>
           </form>
@@ -413,7 +444,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               />
             </div>
 
-            {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
+            {error && (
+              <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">
+                {error}
+              </p>
+            )}
 
             <Button type="submit" isLoading={loading} disabled={otp.length < 4}>
               {lang === 'ru' ? 'Подтвердить' : 'Verify'}
@@ -460,7 +495,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                 : 'Open your email and tap the confirmation link. You will be signed in automatically.'}
             </div>
 
-            {error && <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">{error}</p>}
+            {error && (
+              <p className="text-xs text-amber-700 text-center font-medium bg-amber-50 mx-auto w-fit px-4 py-2 rounded-full border border-amber-100">
+                {error}
+              </p>
+            )}
 
             <div className="text-center">
               {timer > 0 ? (

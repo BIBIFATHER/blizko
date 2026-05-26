@@ -2,9 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Card, Badge } from '../UI';
 import { ParentRequest } from '@/core/types';
 import { X, ChevronDown } from 'lucide-react';
-import { AdminDocumentPreviewModal, AdminPillButton, adminModalHeader, adminModalSurface, adminSubsectionPanel } from './adminPrimitives';
+import {
+  AdminDocumentPreviewModal,
+  AdminPillButton,
+  adminModalHeader,
+  adminModalSurface,
+  adminSubsectionPanel,
+} from './adminPrimitives';
 import { AdminPreviewDoc } from './adminModerationUtils';
-import { useAdminParentModeration, RejectReasonCode, rejectReasonLabelMap } from '@/hooks/useAdminParentModeration';
+import {
+  useAdminParentModeration,
+  RejectReasonCode,
+  rejectReasonLabelMap,
+} from '@/hooks/useAdminParentModeration';
 import { useAdminWorkflowUI } from './adminWorkflowUI';
 import { adminUpdateParentRequest, adminSendNotification } from '@/services/adminApi';
 import { notifyUserStatusChanged } from '@/services/notifications';
@@ -12,493 +22,558 @@ import { notifyUserStatusChanged } from '@/services/notifications';
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
 
 interface AdminParentsTabProps {
-    parents: ParentRequest[];
-    query: string;
-    onDataChanged: () => void;
+  parents: ParentRequest[];
+  query: string;
+  onDataChanged: () => void;
 }
 
 const REJECT_REASONS: RejectReasonCode[] = [
-    'profile_incomplete',
-    'docs_missing',
-    'budget_invalid',
-    'contact_invalid',
-    'other',
+  'profile_incomplete',
+  'docs_missing',
+  'budget_invalid',
+  'contact_invalid',
+  'other',
 ];
 
 function parentStatusLabel(status?: ParentRequest['status']) {
-    if (status === 'payment_pending') return 'Ожидает оплаты';
-    if (status === 'in_review') return 'На проверке';
-    if (status === 'approved') return 'Одобрена';
-    if (status === 'rejected') return 'Отклонена';
-    return 'Новая';
+  if (status === 'payment_pending') return 'Ожидает оплаты';
+  if (status === 'in_review') return 'На проверке';
+  if (status === 'approved') return 'Одобрена';
+  if (status === 'rejected') return 'Отклонена';
+  return 'Новая';
 }
 
 interface RejectInlineFormProps {
-    onConfirm: (code: RejectReasonCode, text: string) => void;
-    onCancel: () => void;
+  onConfirm: (code: RejectReasonCode, text: string) => void;
+  onCancel: () => void;
 }
 
 const RejectInlineForm: React.FC<RejectInlineFormProps> = ({ onConfirm, onCancel }) => {
-    const [code, setCode] = useState<RejectReasonCode>('profile_incomplete');
-    const [text, setText] = useState('');
-    const canSubmit = text.trim().length >= 8;
+  const [code, setCode] = useState<RejectReasonCode>('profile_incomplete');
+  const [text, setText] = useState('');
+  const canSubmit = text.trim().length >= 8;
 
-    return (
-        <div className="mt-3 rounded-[1.25rem] border border-red-100/80 bg-red-50/60 p-3 space-y-2.5">
-            <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold text-red-700">Причина отклонения</span>
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="rounded-full p-1 hover:bg-red-100/60 text-red-400"
-                    aria-label="Отмена"
-                >
-                    <X size={13} />
-                </button>
-            </div>
+  return (
+    <div className="mt-3 rounded-[1.25rem] border border-red-100/80 bg-red-50/60 p-3 space-y-2.5">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-semibold text-red-700">Причина отклонения</span>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-full p-1 hover:bg-red-100/60 text-red-400"
+          aria-label="Отмена"
+        >
+          <X size={13} />
+        </button>
+      </div>
 
-            <div className="relative">
-                <select
-                    value={code}
-                    onChange={(e) => setCode(e.target.value as RejectReasonCode)}
-                    className="w-full appearance-none input-glass rounded-xl border-red-200/80 px-3 py-2 pr-8 text-xs"
-                >
-                    {REJECT_REASONS.map((r) => (
-                        <option key={r} value={r}>{rejectReasonLabelMap[r]}</option>
-                    ))}
-                </select>
-                <ChevronDown size={13} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-stone-400" />
-            </div>
+      <div className="relative">
+        <select
+          value={code}
+          onChange={(e) => setCode(e.target.value as RejectReasonCode)}
+          className="w-full appearance-none input-glass rounded-xl border-red-200/80 px-3 py-2 pr-8 text-xs"
+        >
+          {REJECT_REASONS.map((r) => (
+            <option key={r} value={r}>
+              {rejectReasonLabelMap[r]}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          size={13}
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-stone-400"
+        />
+      </div>
 
-            <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Комментарий для семьи (минимум 8 символов)"
-                className="w-full input-glass rounded-xl border-red-200/80 px-3 py-2 text-xs"
-                autoFocus
-            />
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Комментарий для семьи (минимум 8 символов)"
+        className="w-full input-glass rounded-xl border-red-200/80 px-3 py-2 text-xs"
+        autoFocus
+      />
 
-            <div className="flex items-center gap-2">
-                <AdminPillButton
-                    onClick={() => onConfirm(code, text)}
-                    disabled={!canSubmit}
-                    tone="danger"
-                    className={!canSubmit ? 'opacity-40 cursor-not-allowed' : ''}
-                >
-                    Подтвердить отклонение
-                </AdminPillButton>
-                <AdminPillButton onClick={onCancel} tone="neutral">
-                    Отмена
-                </AdminPillButton>
-            </div>
-        </div>
-    );
+      <div className="flex items-center gap-2">
+        <AdminPillButton
+          onClick={() => onConfirm(code, text)}
+          disabled={!canSubmit}
+          tone="danger"
+          className={!canSubmit ? 'opacity-40 cursor-not-allowed' : ''}
+        >
+          Подтвердить отклонение
+        </AdminPillButton>
+        <AdminPillButton onClick={onCancel} tone="neutral">
+          Отмена
+        </AdminPillButton>
+      </div>
+    </div>
+  );
 };
 
 export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
-    parents,
-    query,
-    onDataChanged,
+  parents,
+  query,
+  onDataChanged,
 }) => {
-    const [parentStatusFilter, setParentStatusFilter] = useState<ParentStatusFilter>('all');
-    const [onlyNeedsAction, setOnlyNeedsAction] = useState(true);
-    const [selectedParent, setSelectedParent] = useState<ParentRequest | null>(null);
-    const [rejectingId, setRejectingId] = useState<string | null>(null);
-    const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
-    const [editingNotes, setEditingNotes] = useState(false);
-    const [notesState, setNotesState] = useState('');
-    const [notifySubject, setNotifySubject] = useState('');
-    const [notifyText, setNotifyText] = useState('');
-    const [notifyBusy, setNotifyBusy] = useState(false);
+  const [parentStatusFilter, setParentStatusFilter] = useState<ParentStatusFilter>('all');
+  const [onlyNeedsAction, setOnlyNeedsAction] = useState(true);
+  const [selectedParent, setSelectedParent] = useState<ParentRequest | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [notesState, setNotesState] = useState('');
+  const [notifySubject, setNotifySubject] = useState('');
+  const [notifyText, setNotifyText] = useState('');
+  const [notifyBusy, setNotifyBusy] = useState(false);
 
-    useEffect(() => {
-        setNotesState(selectedParent?.analysisNotes ?? '');
-        setEditingNotes(false);
-        const statusLabel = parentStatusLabel(selectedParent?.status);
-        setNotifySubject(`Статус вашей заявки: ${statusLabel}`);
-        setNotifyText('');
-        setNotifyBusy(false);
-    }, [selectedParent?.id, selectedParent?.status, selectedParent?.analysisNotes]);
+  useEffect(() => {
+    setNotesState(selectedParent?.analysisNotes ?? '');
+    setEditingNotes(false);
+    const statusLabel = parentStatusLabel(selectedParent?.status);
+    setNotifySubject(`Статус вашей заявки: ${statusLabel}`);
+    setNotifyText('');
+    setNotifyBusy(false);
+  }, [selectedParent?.id, selectedParent?.status, selectedParent?.analysisNotes]);
 
-    const { updateParentStatus, rejectParent } = useAdminParentModeration({
-        onDataChanged,
-        selectedParent,
-        setSelectedParent,
+  const { updateParentStatus, rejectParent } = useAdminParentModeration({
+    onDataChanged,
+    selectedParent,
+    setSelectedParent,
+  });
+  const { reportSuccess, reportError } = useAdminWorkflowUI();
+
+  const filteredParents = React.useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return parents.filter((p) => {
+      const status = p.status || 'new';
+      const isResubmitted = (p.changeLog || []).some((e) => e.type === 'resubmitted');
+      const byStatus =
+        parentStatusFilter === 'all' ||
+        status === parentStatusFilter ||
+        (parentStatusFilter === 'resubmitted' && isResubmitted && status === 'in_review');
+      const byNeedsAction =
+        !onlyNeedsAction || status === 'new' || status === 'in_review' || status === 'rejected';
+      const byQuery =
+        !q ||
+        p.city.toLowerCase().includes(q) ||
+        p.comment.toLowerCase().includes(q) ||
+        p.requirements.join(' ').toLowerCase().includes(q);
+      return byStatus && byNeedsAction && byQuery;
     });
-    const { reportSuccess, reportError } = useAdminWorkflowUI();
+  }, [parents, query, parentStatusFilter, onlyNeedsAction]);
 
-    const filteredParents = React.useMemo(() => {
-        const q = query.trim().toLowerCase();
-        return parents.filter((p) => {
-            const status = p.status || 'new';
-            const isResubmitted = (p.changeLog || []).some((e) => e.type === 'resubmitted');
-            const byStatus =
-                parentStatusFilter === 'all' ||
-                status === parentStatusFilter ||
-                (parentStatusFilter === 'resubmitted' && isResubmitted && status === 'in_review');
-            const byNeedsAction = !onlyNeedsAction || status === 'new' || status === 'in_review' || status === 'rejected';
-            const byQuery =
-                !q ||
-                p.city.toLowerCase().includes(q) ||
-                p.comment.toLowerCase().includes(q) ||
-                p.requirements.join(' ').toLowerCase().includes(q);
-            return byStatus && byNeedsAction && byQuery;
-        });
-    }, [parents, query, parentStatusFilter, onlyNeedsAction]);
+  const handleRejectConfirm = async (
+    parent: ParentRequest,
+    code: RejectReasonCode,
+    text: string,
+  ) => {
+    setRejectingId(null);
+    await rejectParent(parent, code, text);
+  };
 
-    const handleRejectConfirm = async (parent: ParentRequest, code: RejectReasonCode, text: string) => {
-        setRejectingId(null);
-        await rejectParent(parent, code, text);
-    };
+  const handleResendStatus = async () => {
+    if (!selectedParent?.requesterEmail) return;
+    setNotifyBusy(true);
+    try {
+      await notifyUserStatusChanged(selectedParent);
+      reportSuccess('Уведомление о статусе отправлено.');
+    } catch {
+      reportError('Не удалось отправить уведомление.');
+    } finally {
+      setNotifyBusy(false);
+    }
+  };
 
-    const handleResendStatus = async () => {
-        if (!selectedParent?.requesterEmail) return;
-        setNotifyBusy(true);
-        try {
-            await notifyUserStatusChanged(selectedParent);
-            reportSuccess('Уведомление о статусе отправлено.');
-        } catch {
-            reportError('Не удалось отправить уведомление.');
-        } finally {
-            setNotifyBusy(false);
-        }
-    };
+  const handleSendCustom = async () => {
+    if (!selectedParent?.requesterEmail) return;
+    const subject = notifySubject.trim();
+    const text = notifyText.trim();
+    if (!subject || !text) return;
+    setNotifyBusy(true);
+    try {
+      const result = await adminSendNotification({
+        to: selectedParent.requesterEmail,
+        subject,
+        text,
+      });
+      if (result.ok) {
+        reportSuccess('Сообщение отправлено.');
+        setNotifyText('');
+      } else {
+        reportError(result.error ?? 'Ошибка отправки.');
+      }
+    } finally {
+      setNotifyBusy(false);
+    }
+  };
 
-    const handleSendCustom = async () => {
-        if (!selectedParent?.requesterEmail) return;
-        const subject = notifySubject.trim();
-        const text = notifyText.trim();
-        if (!subject || !text) return;
-        setNotifyBusy(true);
-        try {
-            const result = await adminSendNotification({ to: selectedParent.requesterEmail, subject, text });
-            if (result.ok) {
-                reportSuccess('Сообщение отправлено.');
-                setNotifyText('');
-            } else {
-                reportError(result.error ?? 'Ошибка отправки.');
-            }
-        } finally {
-            setNotifyBusy(false);
-        }
-    };
+  const handleSaveNotes = async () => {
+    if (!selectedParent) return;
+    const updated = await adminUpdateParentRequest({
+      id: selectedParent.id,
+      changes: { analysisNotes: notesState.trim() || undefined },
+      note: 'Заметки куратора обновлены',
+    });
+    if (updated) {
+      setSelectedParent(updated);
+      onDataChanged();
+    }
+    setEditingNotes(false);
+  };
 
-    const handleSaveNotes = async () => {
-        if (!selectedParent) return;
-        const updated = await adminUpdateParentRequest({
-            id: selectedParent.id,
-            changes: { analysisNotes: notesState.trim() || undefined },
-            note: 'Заметки куратора обновлены',
-        });
-        if (updated) {
-            setSelectedParent(updated);
-            onDataChanged();
-        }
-        setEditingNotes(false);
-    };
+  return (
+    <>
+      <section>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <h3 className="text-stone-500 font-bold uppercase text-xs">Заявки родителей</h3>
+            <div className="mt-1 text-sm text-stone-600">
+              {filteredParents.length} в текущем срезе
+            </div>
+          </div>
+          <Badge variant={onlyNeedsAction ? 'warning' : 'neutral'}>
+            {onlyNeedsAction ? 'Только action-needed' : 'Все заявки'}
+          </Badge>
+        </div>
 
-    return (
-        <>
-            <section>
-                <div className="mb-4 flex items-center justify-between gap-3">
-                    <div>
-                        <h3 className="text-stone-500 font-bold uppercase text-xs">Заявки родителей</h3>
-                        <div className="mt-1 text-sm text-stone-600">{filteredParents.length} в текущем срезе</div>
-                    </div>
-                    <Badge variant={onlyNeedsAction ? 'warning' : 'neutral'}>
-                        {onlyNeedsAction ? 'Только action-needed' : 'Все заявки'}
+        <div className="rounded-[1.5rem] border border-[color:var(--cloud-border)] bg-white/60 p-3 mb-3">
+          <div className="mb-3 flex flex-wrap gap-2">
+            {(
+              [
+                ['all', 'Все'],
+                ['new', 'Новые'],
+                ['in_review', 'На проверке'],
+                ['resubmitted', 'Повторно отправленные'],
+                ['approved', 'Одобрены'],
+                ['rejected', 'Отклонены'],
+              ] as const
+            ).map(([key, label]) => (
+              <AdminPillButton
+                key={key}
+                onClick={() => setParentStatusFilter(key)}
+                active={parentStatusFilter === key}
+                tone="neutral"
+              >
+                {label}
+              </AdminPillButton>
+            ))}
+          </div>
+          <label className="inline-flex items-center gap-2 rounded-full border border-stone-200/70 bg-white/70 px-3 py-2 text-xs text-stone-700">
+            <input
+              type="checkbox"
+              checked={onlyNeedsAction}
+              onChange={(e) => setOnlyNeedsAction(e.target.checked)}
+            />
+            Только требуют действия
+          </label>
+        </div>
+
+        {filteredParents.length === 0 ? (
+          <p className="text-stone-400 text-sm">Пусто</p>
+        ) : (
+          <div className="space-y-3">
+            {filteredParents.map((p) => (
+              <Card key={p.id} className="p-4!">
+                <div className="flex justify-between text-xs text-stone-400 mb-1">
+                  <span>{new Date(p.createdAt).toLocaleString()}</span>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        p.status === 'approved'
+                          ? 'trust'
+                          : p.status === 'rejected'
+                            ? 'status'
+                            : 'info'
+                      }
+                    >
+                      {parentStatusLabel(p.status)}
                     </Badge>
+                    <span className="font-mono">{p.id.slice(0, 6)}</span>
+                  </div>
                 </div>
 
-                <div className="rounded-[1.5rem] border border-[color:var(--cloud-border)] bg-white/60 p-3 mb-3">
-                    <div className="mb-3 flex flex-wrap gap-2">
-                        {([
-                            ['all', 'Все'],
-                            ['new', 'Новые'],
-                            ['in_review', 'На проверке'],
-                            ['resubmitted', 'Повторно отправленные'],
-                            ['approved', 'Одобрены'],
-                            ['rejected', 'Отклонены'],
-                        ] as const).map(([key, label]) => (
-                            <AdminPillButton
-                                key={key}
-                                onClick={() => setParentStatusFilter(key)}
-                                active={parentStatusFilter === key}
-                                tone="neutral"
-                            >
-                                {label}
-                            </AdminPillButton>
-                        ))}
-                    </div>
-                    <label className="inline-flex items-center gap-2 rounded-full border border-stone-200/70 bg-white/70 px-3 py-2 text-xs text-stone-700">
-                        <input
-                            type="checkbox"
-                            checked={onlyNeedsAction}
-                            onChange={(e) => setOnlyNeedsAction(e.target.checked)}
-                        />
-                        Только требуют действия
-                    </label>
+                <div className="text-sm font-semibold text-stone-800">
+                  {p.city} • {p.childAge}
                 </div>
-
-                {filteredParents.length === 0 ? (
-                    <p className="text-stone-400 text-sm">Пусто</p>
-                ) : (
-                    <div className="space-y-3">
-                        {filteredParents.map((p) => (
-                            <Card key={p.id} className="p-4!">
-                                <div className="flex justify-between text-xs text-stone-400 mb-1">
-                                    <span>{new Date(p.createdAt).toLocaleString()}</span>
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant={p.status === 'approved' ? 'trust' : p.status === 'rejected' ? 'status' : 'info'}>
-                                            {parentStatusLabel(p.status)}
-                                        </Badge>
-                                        <span className="font-mono">{p.id.slice(0, 6)}</span>
-                                    </div>
-                                </div>
-
-                                <div className="text-sm font-semibold text-stone-800">{p.city} • {p.childAge}</div>
-                                <div className="text-sm text-stone-600 mt-1">График: {p.schedule}</div>
-                                <div className="text-sm text-stone-600">Бюджет: {p.budget}</div>
-                                {!!p.requirements?.length && (
-                                    <div className="text-xs text-stone-600 mt-1">
-                                        Требования: {p.requirements.join(', ')}
-                                    </div>
-                                )}
-                                {p.comment && (
-                                    <div className="text-xs text-stone-500 mt-2 italic">"{p.comment}"</div>
-                                )}
-                                {p.analysisNotes && (
-                                    <div className="mt-2 rounded-[1rem] border border-amber-100/80 bg-amber-50/50 px-3 py-2 text-xs text-amber-800">
-                                        <span className="font-semibold mr-1">Заметка:</span>{p.analysisNotes}
-                                    </div>
-                                )}
-
-                                {rejectingId !== p.id && (
-                                    <div className="mt-3 flex flex-wrap gap-2">
-                                        <AdminPillButton onClick={() => updateParentStatus(p, 'in_review')} tone="warm">
-                                            На проверку
-                                        </AdminPillButton>
-                                        <AdminPillButton onClick={() => updateParentStatus(p, 'approved')} tone="success">
-                                            Одобрить
-                                        </AdminPillButton>
-                                        <AdminPillButton
-                                            onClick={() => setRejectingId(p.id)}
-                                            tone="danger"
-                                        >
-                                            Отклонить
-                                        </AdminPillButton>
-                                        <AdminPillButton onClick={() => setSelectedParent(p)} tone="neutral">
-                                            Открыть анкету
-                                        </AdminPillButton>
-                                    </div>
-                                )}
-
-                                {rejectingId === p.id && (
-                                    <RejectInlineForm
-                                        onConfirm={(code, text) => handleRejectConfirm(p, code, text)}
-                                        onCancel={() => setRejectingId(null)}
-                                    />
-                                )}
-                            </Card>
-                        ))}
-                    </div>
+                <div className="text-sm text-stone-600 mt-1">График: {p.schedule}</div>
+                <div className="text-sm text-stone-600">Бюджет: {p.budget}</div>
+                {!!p.requirements?.length && (
+                  <div className="text-xs text-stone-600 mt-1">
+                    Требования: {p.requirements.join(', ')}
+                  </div>
                 )}
-            </section>
+                {p.comment && (
+                  <div className="text-xs text-stone-500 mt-2 italic">"{p.comment}"</div>
+                )}
+                {p.analysisNotes && (
+                  <div className="mt-2 rounded-[1rem] border border-amber-100/80 bg-amber-50/50 px-3 py-2 text-xs text-amber-800">
+                    <span className="font-semibold mr-1">Заметка:</span>
+                    {p.analysisNotes}
+                  </div>
+                )}
 
-            {/* Selected parent detail modal */}
-            {selectedParent && (
-                <div className="fixed inset-0 z-60 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className={`${adminModalSurface} w-full max-w-xl`}>
-                        <div className={adminModalHeader}>
-                            <div>
-                                <div className="eyebrow">Parent request</div>
-                                <h3 className="font-bold text-stone-800">Анкета родителя</h3>
-                                <div className="section-body mt-1">Проверка заявки, документов и истории изменений в одном окне.</div>
-                            </div>
-                            <button onClick={() => setSelectedParent(null)} className="p-2 rounded-full hover:bg-white/70">
-                                <X size={18} />
-                            </button>
-                        </div>
+                {rejectingId !== p.id && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <AdminPillButton onClick={() => updateParentStatus(p, 'in_review')} tone="warm">
+                      На проверку
+                    </AdminPillButton>
+                    <AdminPillButton
+                      onClick={() => updateParentStatus(p, 'approved')}
+                      tone="success"
+                    >
+                      Одобрить
+                    </AdminPillButton>
+                    <AdminPillButton onClick={() => setRejectingId(p.id)} tone="danger">
+                      Отклонить
+                    </AdminPillButton>
+                    <AdminPillButton onClick={() => setSelectedParent(p)} tone="neutral">
+                      Открыть анкету
+                    </AdminPillButton>
+                  </div>
+                )}
 
-                        <div className="p-4 space-y-3 text-sm">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className={adminSubsectionPanel}>
-                                    <div className="text-xs text-stone-500">Город</div>
-                                    <div className="font-semibold text-stone-800">{selectedParent.city}</div>
-                                </div>
-                                <div className={adminSubsectionPanel}>
-                                    <div className="text-xs text-stone-500">Возраст ребёнка</div>
-                                    <div className="font-semibold text-stone-800">{selectedParent.childAge}</div>
-                                </div>
-                                <div className={adminSubsectionPanel}>
-                                    <div className="text-xs text-stone-500">График</div>
-                                    <div className="font-semibold text-stone-800">{selectedParent.schedule}</div>
-                                </div>
-                                <div className={adminSubsectionPanel}>
-                                    <div className="text-xs text-stone-500">Бюджет</div>
-                                    <div className="font-semibold text-stone-800">{selectedParent.budget}</div>
-                                </div>
-                            </div>
+                {rejectingId === p.id && (
+                  <RejectInlineForm
+                    onConfirm={(code, text) => handleRejectConfirm(p, code, text)}
+                    onCancel={() => setRejectingId(null)}
+                  />
+                )}
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
 
-                            <div className={adminSubsectionPanel}>
-                                <div className="text-xs text-stone-500 mb-1">Требования</div>
-                                <div className="text-stone-700">
-                                    {selectedParent.requirements?.length
-                                        ? selectedParent.requirements.join(', ')
-                                        : 'Не указаны'}
-                                </div>
-                            </div>
-
-                            <div className={adminSubsectionPanel}>
-                                <div className="text-xs text-stone-500 mb-1">Комментарий</div>
-                                <div className="text-stone-700">{selectedParent.comment || 'Нет комментария'}</div>
-                            </div>
-
-                            <div className={adminSubsectionPanel}>
-                                <div className="text-xs text-stone-500 mb-1">Документы</div>
-                                {!selectedParent.documents?.length ? (
-                                    <div className="text-stone-500">Нет документов</div>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {selectedParent.documents.map((doc, i) => (
-                                            <div key={i} className="flex items-center justify-between rounded-[1rem] border border-stone-200/70 bg-white/80 p-2">
-                                                <div className="text-xs text-stone-700">{(doc.fileName && !String(doc.fileName).startsWith('data:')) ? doc.fileName : `${doc.type}.pdf`}</div>
-                                                {doc.fileDataUrl ? (
-                                                    <AdminPillButton
-                                                        onClick={() => setPreviewDoc({ url: doc.fileDataUrl!, name: doc.fileName || 'document' })}
-                                                        tone="neutral"
-                                                        className="px-2.5 py-1 text-[10px]"
-                                                    >
-                                                        Просмотр
-                                                    </AdminPillButton>
-                                                ) : (
-                                                    <span className="text-[10px] text-stone-400">Файл недоступен</span>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="text-xs text-stone-400 flex items-center justify-between pt-1">
-                                <span>ID: {selectedParent.id}</span>
-                                <span>{new Date(selectedParent.createdAt).toLocaleString()}</span>
-                            </div>
-                            <div className="pt-2 flex items-center gap-2">
-                                <Badge variant={selectedParent.status === 'approved' ? 'trust' : selectedParent.status === 'rejected' ? 'status' : 'info'}>
-                                    Статус: {parentStatusLabel(selectedParent.status)}
-                                </Badge>
-                                <span className="text-[10px] px-2 py-1 rounded-full bg-stone-100 text-stone-600">
-                                    Обновлено: {new Date(selectedParent.updatedAt || selectedParent.createdAt).toLocaleString()}
-                                </span>
-                            </div>
-
-                            {!!selectedParent.changeLog?.length && (
-                                <div className={adminSubsectionPanel}>
-                                    <div className="text-xs text-stone-500 mb-2">История изменений</div>
-                                    <div className="space-y-1">
-                                        {[...selectedParent.changeLog].slice(-6).reverse().map((item, idx) => (
-                                            <div key={idx} className="text-xs text-stone-600 flex items-center justify-between gap-2">
-                                                <span>{item.note || item.type}</span>
-                                                <span className="text-stone-400">{new Date(item.at).toLocaleString()}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className={adminSubsectionPanel}>
-                                <div className="text-xs text-stone-500 mb-2">Уведомления</div>
-                                {selectedParent.requesterEmail ? (
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="text-xs text-stone-600 font-mono truncate max-w-[14rem]">
-                                                {selectedParent.requesterEmail}
-                                            </span>
-                                            <AdminPillButton
-                                                tone="neutral"
-                                                className="px-2.5 py-1 text-[10px] shrink-0"
-                                                disabled={notifyBusy}
-                                                onClick={handleResendStatus}
-                                            >
-                                                Повторить уведомление о статусе
-                                            </AdminPillButton>
-                                        </div>
-                                        <input
-                                            value={notifySubject}
-                                            onChange={(e) => setNotifySubject(e.target.value)}
-                                            placeholder="Тема письма"
-                                            className="w-full input-glass rounded-xl px-3 py-2 text-xs"
-                                        />
-                                        <textarea
-                                            value={notifyText}
-                                            onChange={(e) => setNotifyText(e.target.value)}
-                                            placeholder="Текст сообщения..."
-                                            className="w-full input-glass rounded-xl px-3 py-2 text-xs min-h-[60px] resize-none"
-                                        />
-                                        <AdminPillButton
-                                            tone="dark"
-                                            disabled={notifyBusy || !notifySubject.trim() || !notifyText.trim()}
-                                            onClick={handleSendCustom}
-                                        >
-                                            {notifyBusy ? 'Отправка...' : 'Отправить сообщение'}
-                                        </AdminPillButton>
-                                    </div>
-                                ) : (
-                                    <div className="text-xs text-stone-400 italic">Email родителя не задан</div>
-                                )}
-                            </div>
-
-                            <div className={adminSubsectionPanel}>
-                                <div className="flex items-center justify-between mb-1.5">
-                                    <div className="text-xs text-stone-500">Заметки куратора</div>
-                                    {!editingNotes && (
-                                        <AdminPillButton
-                                            tone="neutral"
-                                            className="px-2.5 py-1 text-[10px]"
-                                            onClick={() => setEditingNotes(true)}
-                                        >
-                                            {selectedParent.analysisNotes ? 'Изменить' : 'Добавить'}
-                                        </AdminPillButton>
-                                    )}
-                                </div>
-                                {editingNotes ? (
-                                    <div className="space-y-2">
-                                        <textarea
-                                            value={notesState}
-                                            onChange={(e) => setNotesState(e.target.value)}
-                                            className="w-full input-glass rounded-xl px-3 py-2 text-xs min-h-[80px] resize-none"
-                                            placeholder="Заметки после анализа анкеты..."
-                                            autoFocus
-                                        />
-                                        <div className="flex gap-2">
-                                            <AdminPillButton tone="success" onClick={handleSaveNotes}>
-                                                Сохранить
-                                            </AdminPillButton>
-                                            <AdminPillButton
-                                                tone="neutral"
-                                                onClick={() => {
-                                                    setEditingNotes(false);
-                                                    setNotesState(selectedParent.analysisNotes ?? '');
-                                                }}
-                                            >
-                                                Отмена
-                                            </AdminPillButton>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="text-xs text-stone-700">
-                                        {selectedParent.analysisNotes
-                                            ? selectedParent.analysisNotes
-                                            : <span className="text-stone-400 italic">Нет заметок</span>}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+      {/* Selected parent detail modal */}
+      {selectedParent && (
+        <div className="fixed inset-0 z-60 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className={`${adminModalSurface} w-full max-w-xl`}>
+            <div className={adminModalHeader}>
+              <div>
+                <div className="eyebrow">Parent request</div>
+                <h3 className="font-bold text-stone-800">Анкета родителя</h3>
+                <div className="section-body mt-1">
+                  Проверка заявки, документов и истории изменений в одном окне.
                 </div>
-            )}
-            <AdminDocumentPreviewModal previewDoc={previewDoc} onClose={() => setPreviewDoc(null)} />
-        </>
-    );
+              </div>
+              <button
+                onClick={() => setSelectedParent(null)}
+                className="p-2 rounded-full hover:bg-white/70"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500">Город</div>
+                  <div className="font-semibold text-stone-800">{selectedParent.city}</div>
+                </div>
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500">Возраст ребёнка</div>
+                  <div className="font-semibold text-stone-800">{selectedParent.childAge}</div>
+                </div>
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500">График</div>
+                  <div className="font-semibold text-stone-800">{selectedParent.schedule}</div>
+                </div>
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500">Бюджет</div>
+                  <div className="font-semibold text-stone-800">{selectedParent.budget}</div>
+                </div>
+              </div>
+
+              <div className={adminSubsectionPanel}>
+                <div className="text-xs text-stone-500 mb-1">Требования</div>
+                <div className="text-stone-700">
+                  {selectedParent.requirements?.length
+                    ? selectedParent.requirements.join(', ')
+                    : 'Не указаны'}
+                </div>
+              </div>
+
+              <div className={adminSubsectionPanel}>
+                <div className="text-xs text-stone-500 mb-1">Комментарий</div>
+                <div className="text-stone-700">{selectedParent.comment || 'Нет комментария'}</div>
+              </div>
+
+              <div className={adminSubsectionPanel}>
+                <div className="text-xs text-stone-500 mb-1">Документы</div>
+                {!selectedParent.documents?.length ? (
+                  <div className="text-stone-500">Нет документов</div>
+                ) : (
+                  <div className="space-y-2">
+                    {selectedParent.documents.map((doc, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center justify-between rounded-[1rem] border border-stone-200/70 bg-white/80 p-2"
+                      >
+                        <div className="text-xs text-stone-700">
+                          {doc.fileName && !String(doc.fileName).startsWith('data:')
+                            ? doc.fileName
+                            : `${doc.type}.pdf`}
+                        </div>
+                        {doc.fileDataUrl ? (
+                          <AdminPillButton
+                            onClick={() =>
+                              setPreviewDoc({
+                                url: doc.fileDataUrl!,
+                                name: doc.fileName || 'document',
+                              })
+                            }
+                            tone="neutral"
+                            className="px-2.5 py-1 text-[10px]"
+                          >
+                            Просмотр
+                          </AdminPillButton>
+                        ) : (
+                          <span className="text-[10px] text-stone-400">Файл недоступен</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="text-xs text-stone-400 flex items-center justify-between pt-1">
+                <span>ID: {selectedParent.id}</span>
+                <span>{new Date(selectedParent.createdAt).toLocaleString()}</span>
+              </div>
+              <div className="pt-2 flex items-center gap-2">
+                <Badge
+                  variant={
+                    selectedParent.status === 'approved'
+                      ? 'trust'
+                      : selectedParent.status === 'rejected'
+                        ? 'status'
+                        : 'info'
+                  }
+                >
+                  Статус: {parentStatusLabel(selectedParent.status)}
+                </Badge>
+                <span className="text-[10px] px-2 py-1 rounded-full bg-stone-100 text-stone-600">
+                  Обновлено:{' '}
+                  {new Date(selectedParent.updatedAt || selectedParent.createdAt).toLocaleString()}
+                </span>
+              </div>
+
+              {!!selectedParent.changeLog?.length && (
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500 mb-2">История изменений</div>
+                  <div className="space-y-1">
+                    {[...selectedParent.changeLog]
+                      .slice(-6)
+                      .reverse()
+                      .map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="text-xs text-stone-600 flex items-center justify-between gap-2"
+                        >
+                          <span>{item.note || item.type}</span>
+                          <span className="text-stone-400">
+                            {new Date(item.at).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              <div className={adminSubsectionPanel}>
+                <div className="text-xs text-stone-500 mb-2">Уведомления</div>
+                {selectedParent.requesterEmail ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-stone-600 font-mono truncate max-w-[14rem]">
+                        {selectedParent.requesterEmail}
+                      </span>
+                      <AdminPillButton
+                        tone="neutral"
+                        className="px-2.5 py-1 text-[10px] shrink-0"
+                        disabled={notifyBusy}
+                        onClick={handleResendStatus}
+                      >
+                        Повторить уведомление о статусе
+                      </AdminPillButton>
+                    </div>
+                    <input
+                      value={notifySubject}
+                      onChange={(e) => setNotifySubject(e.target.value)}
+                      placeholder="Тема письма"
+                      className="w-full input-glass rounded-xl px-3 py-2 text-xs"
+                    />
+                    <textarea
+                      value={notifyText}
+                      onChange={(e) => setNotifyText(e.target.value)}
+                      placeholder="Текст сообщения..."
+                      className="w-full input-glass rounded-xl px-3 py-2 text-xs min-h-[60px] resize-none"
+                    />
+                    <AdminPillButton
+                      tone="dark"
+                      disabled={notifyBusy || !notifySubject.trim() || !notifyText.trim()}
+                      onClick={handleSendCustom}
+                    >
+                      {notifyBusy ? 'Отправка...' : 'Отправить сообщение'}
+                    </AdminPillButton>
+                  </div>
+                ) : (
+                  <div className="text-xs text-stone-400 italic">Email родителя не задан</div>
+                )}
+              </div>
+
+              <div className={adminSubsectionPanel}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="text-xs text-stone-500">Заметки куратора</div>
+                  {!editingNotes && (
+                    <AdminPillButton
+                      tone="neutral"
+                      className="px-2.5 py-1 text-[10px]"
+                      onClick={() => setEditingNotes(true)}
+                    >
+                      {selectedParent.analysisNotes ? 'Изменить' : 'Добавить'}
+                    </AdminPillButton>
+                  )}
+                </div>
+                {editingNotes ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={notesState}
+                      onChange={(e) => setNotesState(e.target.value)}
+                      className="w-full input-glass rounded-xl px-3 py-2 text-xs min-h-[80px] resize-none"
+                      placeholder="Заметки после анализа анкеты..."
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <AdminPillButton tone="success" onClick={handleSaveNotes}>
+                        Сохранить
+                      </AdminPillButton>
+                      <AdminPillButton
+                        tone="neutral"
+                        onClick={() => {
+                          setEditingNotes(false);
+                          setNotesState(selectedParent.analysisNotes ?? '');
+                        }}
+                      >
+                        Отмена
+                      </AdminPillButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-xs text-stone-700">
+                    {selectedParent.analysisNotes ? (
+                      selectedParent.analysisNotes
+                    ) : (
+                      <span className="text-stone-400 italic">Нет заметок</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      <AdminDocumentPreviewModal previewDoc={previewDoc} onClose={() => setPreviewDoc(null)} />
+    </>
+  );
 };

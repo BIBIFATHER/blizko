@@ -4,10 +4,10 @@ import type {
   NannyProfile,
   ParentRequest,
   SubmissionResult,
-} from "../types";
-import type { RiskFlag } from "./riskEngine";
+} from '../types';
+import type { RiskFlag } from './riskEngine';
 
-export type MatchingRequest = Omit<ParentRequest, "id" | "createdAt" | "type">;
+export type MatchingRequest = Omit<ParentRequest, 'id' | 'createdAt' | 'type'>;
 
 export type RankedCandidate = {
   nanny: NannyProfile;
@@ -25,10 +25,10 @@ export type MatchingAiResponse = {
 export type MatchResultBuilder = (
   ranked: RankedCandidate[],
   request: MatchingRequest,
-  lang: Language
+  lang: Language,
 ) => Promise<MatchResult>;
 
 export type HeuristicFallbackBuilder = (
   ranked: RankedCandidate[],
-  lang: Language
+  lang: Language,
 ) => SubmissionResult;

@@ -58,7 +58,9 @@ describe('api/payments/webhook handler', () => {
     poolQuery
       .mockResolvedValueOnce({
         rowCount: 1,
-        rows: [{ id: 'payment-1', parent_request_id: 'parent-1', status: 'pending', amount: '990.00' }],
+        rows: [
+          { id: 'payment-1', parent_request_id: 'parent-1', status: 'pending', amount: '990.00' },
+        ],
       })
       .mockResolvedValueOnce({});
     activatePaidParentRequest.mockResolvedValue(true);

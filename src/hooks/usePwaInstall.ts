@@ -17,7 +17,9 @@ export function usePwaInstall() {
   });
 
   const [isStandalone] = useState(() => {
-    const isStand = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as Navigator & { standalone?: boolean }).standalone;
+    const isStand =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as Navigator & { standalone?: boolean }).standalone;
     return Boolean(isStand);
   });
 

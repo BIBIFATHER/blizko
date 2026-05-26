@@ -40,7 +40,8 @@ function countEvents(
   event: string,
   predicate?: (record: AnalyticsEventRecord) => boolean,
 ): number {
-  return events.filter((record) => record.event === event && (!predicate || predicate(record))).length;
+  return events.filter((record) => record.event === event && (!predicate || predicate(record)))
+    .length;
 }
 
 function getSessionKey(record: AnalyticsEventRecord): string | null {
@@ -53,11 +54,11 @@ function countUniqueSessions(
   event: string,
   predicate?: (record: AnalyticsEventRecord) => boolean,
 ): number {
-  const matching = events.filter((record) => record.event === event && (!predicate || predicate(record)));
+  const matching = events.filter(
+    (record) => record.event === event && (!predicate || predicate(record)),
+  );
   const sessionIds = new Set(
-    matching
-      .map(getSessionKey)
-      .filter((value): value is string => Boolean(value)),
+    matching.map(getSessionKey).filter((value): value is string => Boolean(value)),
   );
 
   return sessionIds.size > 0 ? sessionIds.size : matching.length;
@@ -85,7 +86,8 @@ export function buildDashboardMetrics(params: {
   const parentStarts = countUniqueSessions(
     events,
     ANALYTICS_EVENTS.PAGE_VIEW,
-    (record) => record.properties.page === 'parent_form' && record.properties.source === 'form_start',
+    (record) =>
+      record.properties.page === 'parent_form' && record.properties.source === 'form_start',
   );
   const parentSubmitted = countUniqueSessions(
     events,
@@ -95,9 +97,15 @@ export function buildDashboardMetrics(params: {
   const resultsViewed = countUniqueSessions(events, ANALYTICS_EVENTS.MATCHING_RESULTS_VIEWED);
 
   const profileOpens = countUniqueSessions(events, ANALYTICS_EVENTS.MATCH_PROFILE_OPENED);
-  const bookingsCreated = params.bookings.length || countEvents(events, ANALYTICS_EVENTS.BOOKING_CREATED);
-  const completedBookings = params.bookings.filter((booking) => booking.status === 'completed').length;
-  const reviewsCaptured = params.nannies.reduce((sum, nanny) => sum + (nanny.reviews || []).length, 0);
+  const bookingsCreated =
+    params.bookings.length || countEvents(events, ANALYTICS_EVENTS.BOOKING_CREATED);
+  const completedBookings = params.bookings.filter(
+    (booking) => booking.status === 'completed',
+  ).length;
+  const reviewsCaptured = params.nannies.reduce(
+    (sum, nanny) => sum + (nanny.reviews || []).length,
+    0,
+  );
 
   const repeatFamilies = Object.values(
     params.bookings.reduce<Record<string, number>>((acc, booking) => {

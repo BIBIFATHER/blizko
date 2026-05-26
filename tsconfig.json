@@ -4,15 +4,9 @@
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "module": "ESNext",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -20,17 +14,10 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "include": [
-    "api/**/*.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "vite.config.ts"
-  ]
+  "include": ["api/**/*.ts", "src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
 }

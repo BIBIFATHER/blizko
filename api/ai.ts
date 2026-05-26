@@ -3,7 +3,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { verifyBearerUser } from './_auth.js';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
-import { getGeminiApiKey, getGeminiInstruction, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
+import {
+  getGeminiApiKey,
+  getGeminiInstruction,
+  getGeminiModels,
+  normalizeGeminiTemperature,
+} from './_gemini.js';
 
 const REQUEST_TIMEOUT_MS = 20000;
 const MAX_RETRIES = 2;
@@ -163,7 +168,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         } catch (err: any) {
           const isAbort = err?.name === 'AbortError';
           lastStatus = 504;
-          lastError = isAbort ? 'AI provider timeout' : `AI provider request failed: ${String(err?.message ?? err)}`;
+          lastError = isAbort
+            ? 'AI provider timeout'
+            : `AI provider request failed: ${String(err?.message ?? err)}`;
 
           if (attempt < MAX_RETRIES) {
             await sleep(300 * (attempt + 1));

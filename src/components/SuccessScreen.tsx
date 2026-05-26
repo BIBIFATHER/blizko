@@ -33,7 +33,9 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
     const finalizePayment = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (!session?.access_token || cancelled) {
           if (!cancelled) setPaidFlowState('fallback');
           return;
@@ -107,7 +109,9 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
     };
 
     void finalizePayment();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [isPaid, paymentId, lang, navigate]);
 
   // Paid flow — payment processing in progress
@@ -123,13 +127,21 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-[#1C2B2D]">
               {isMatching
-                ? (lang === 'ru' ? 'Готовим варианты' : 'Preparing your options')
-                : (lang === 'ru' ? 'Подтверждаем оплату' : 'Confirming payment')}
+                ? lang === 'ru'
+                  ? 'Готовим варианты'
+                  : 'Preparing your options'
+                : lang === 'ru'
+                  ? 'Подтверждаем оплату'
+                  : 'Confirming payment'}
             </h3>
             <p className="text-sm leading-relaxed text-[#1C2B2D]/55">
               {isMatching
-                ? (lang === 'ru' ? 'Куратор получит заявку и подготовит варианты.' : 'The curator will receive your request and prepare options.')
-                : (lang === 'ru' ? 'Проверяем платёж, это займёт несколько секунд.' : 'Verifying your payment, this takes a few seconds.')}
+                ? lang === 'ru'
+                  ? 'Куратор получит заявку и подготовит варианты.'
+                  : 'The curator will receive your request and prepare options.'
+                : lang === 'ru'
+                  ? 'Проверяем платёж, это займёт несколько секунд.'
+                  : 'Verifying your payment, this takes a few seconds.'}
             </p>
           </div>
         </div>
@@ -165,7 +177,6 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
   return (
     <div className="form-shell animate-slide-up">
       <div className="mx-auto flex max-w-sm flex-col gap-8 py-8 px-2">
-
         {/* Hero */}
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#EFF3F2] text-[#2A6B6E]">
@@ -178,7 +189,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
             <p className="text-sm leading-relaxed text-[#1C2B2D]/60">
               {lang === 'ru'
                 ? 'Куратор посмотрит заявку и подберёт 2–3 варианта для вашей семьи.'
-                : "The curator will review your request and prepare 2–3 options for your family."}
+                : 'The curator will review your request and prepare 2–3 options for your family.'}
             </p>
           </div>
         </div>
@@ -207,7 +218,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
             <p className="text-sm leading-relaxed text-[#1C2B2D]/80">
               {lang === 'ru'
                 ? 'Ответ обычно приходит в течение 24 часов. Вы получите 2–3 подходящих варианта.'
-                : 'You\'ll hear back within 24 hours with 2–3 suitable candidates.'}
+                : "You'll hear back within 24 hours with 2–3 suitable candidates."}
             </p>
           </div>
 
@@ -229,10 +240,11 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
             {lang === 'ru' ? 'Понятно, вернуться на главную' : 'Got it, back to home'}
           </Button>
           <p className="text-xs text-center text-[#1C2B2D]/35">
-            {lang === 'ru' ? 'Можно вернуться позже — заявка сохранена.' : 'You can come back later — your request is saved.'}
+            {lang === 'ru'
+              ? 'Можно вернуться позже — заявка сохранена.'
+              : 'You can come back later — your request is saved.'}
           </p>
         </div>
-
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export const GosUslugiModal: React.FC<GosUslugiModalProps> = ({ onClose, onSucce
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     // Simulate ESIA request (Speed up for testing: 600ms)
     setTimeout(() => {
       setLoading(false);
@@ -28,7 +28,6 @@ export const GosUslugiModal: React.FC<GosUslugiModalProps> = ({ onClose, onSucce
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm animate-fade-in">
       <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
-        
         {/* Header - imitation of official portal */}
         <div className="bg-[#0D4CD3] p-4 flex justify-between items-center text-white">
           <div className="flex items-center gap-2">
@@ -51,22 +50,22 @@ export const GosUslugiModal: React.FC<GosUslugiModalProps> = ({ onClose, onSucce
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <Input 
-              label={lang === 'ru' ? "Телефон / Email / СНИЛС" : "Phone / Email / ID"}
-              placeholder="+7 (999) 000-00-00" 
+            <Input
+              label={lang === 'ru' ? 'Телефон / Email / СНИЛС' : 'Phone / Email / ID'}
+              placeholder="+7 (999) 000-00-00"
               required // Fake required
             />
-            
-            <Input 
-              label={lang === 'ru' ? "Пароль" : "Password"}
-              type="password" 
-              placeholder="••••••••" 
+
+            <Input
+              label={lang === 'ru' ? 'Пароль' : 'Password'}
+              type="password"
+              placeholder="••••••••"
               required
             />
 
             <div className="pt-2">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 isLoading={loading}
                 className="bg-[#0D4CD3] hover:bg-[#0A3CB0] text-white"
               >
@@ -77,9 +76,7 @@ export const GosUslugiModal: React.FC<GosUslugiModalProps> = ({ onClose, onSucce
 
           <div className="mt-6 flex items-start gap-3 p-3 bg-stone-50 rounded-lg text-xs text-stone-500">
             <Shield size={16} className="text-[#0D4CD3] shrink-0 mt-0.5" />
-            <p>
-              {text.gosSecure}
-            </p>
+            <p>{text.gosSecure}</p>
           </div>
         </div>
       </div>

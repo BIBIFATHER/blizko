@@ -1,7 +1,7 @@
-import React from "react";
-import { ArrowLeft } from "lucide-react";
+import React from 'react';
+import { ArrowLeft } from 'lucide-react';
 
-import { useStepTransition } from "./useStepTransition";
+import { useStepTransition } from './useStepTransition';
 
 interface StepWizardShellProps {
   backLabel: string;
@@ -20,7 +20,7 @@ export const StepWizardShell: React.FC<StepWizardShellProps> = ({
   backLabel,
   children,
   currentStep,
-  formClassName = "",
+  formClassName = '',
   lockedNotice,
   onBack,
   progress,
@@ -62,7 +62,7 @@ export const StepWizardShell: React.FC<StepWizardShellProps> = ({
         {lockedNotice}
 
         <form className={formClassName} onSubmit={(e) => e.preventDefault()}>
-          <div key={stepKey} className={direction === "back" ? "step-enter-back" : "step-enter"}>
+          <div key={stepKey} className={direction === 'back' ? 'step-enter-back' : 'step-enter'}>
             {children}
           </div>
         </form>

@@ -15,9 +15,7 @@ async function getCurrentUserId(): Promise<string> {
   return data.user?.id || 'anon';
 }
 
-export type UploadResult =
-  | { ok: true; url: string }
-  | { ok: false; reason: 'disabled' | 'error' };
+export type UploadResult = { ok: true; url: string } | { ok: false; reason: 'disabled' | 'error' };
 
 export async function uploadDocumentFile(file: File, docType: string): Promise<UploadResult> {
   if (!supabase) return { ok: false, reason: 'disabled' };
@@ -26,9 +24,10 @@ export async function uploadDocumentFile(file: File, docType: string): Promise<U
     const ext = file.name.split('.').pop() || 'bin';
     const filePath = `${userId}/${getNowTs()}-${docType}.${ext}`;
 
-    const { error } = await supabase.storage
-      .from(DOCS_BUCKET)
-      .upload(filePath, file, { contentType: file.type || 'application/octet-stream', upsert: false });
+    const { error } = await supabase.storage.from(DOCS_BUCKET).upload(filePath, file, {
+      contentType: file.type || 'application/octet-stream',
+      upsert: false,
+    });
 
     if (error) {
       console.warn('Document upload error:', error.message);

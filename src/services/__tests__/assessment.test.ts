@@ -5,23 +5,26 @@ import type { NannyProfile } from '@/core/types';
 
 describe('buildRuleBasedAssessment', () => {
   it('produces a rule-based profile with explainable signals', () => {
-    const result = buildRuleBasedAssessment({
-      l1: '4',
-      l2: '5',
-      l3: '5',
-      l4: '4',
-      l5: '4',
-      l6: '4',
-      l7: '5',
-      l8: '4',
-      l9: '4',
-      l10: '5',
-      s1: 'a',
-      s2: 'b',
-      s3: 'a',
-      t1: 'После сложного дня иду гулять и восстанавливаю ресурс в тишине.',
-      t2: 'Моя суперсила — спокойствие и мягкая деэскалация.',
-    }, 'ru');
+    const result = buildRuleBasedAssessment(
+      {
+        l1: '4',
+        l2: '5',
+        l3: '5',
+        l4: '4',
+        l5: '4',
+        l6: '4',
+        l7: '5',
+        l8: '4',
+        l9: '4',
+        l10: '5',
+        s1: 'a',
+        s2: 'b',
+        s3: 'a',
+        t1: 'После сложного дня иду гулять и восстанавливаю ресурс в тишине.',
+        t2: 'Моя суперсила — спокойствие и мягкая деэскалация.',
+      },
+      'ru',
+    );
 
     expect(result.method).toBe('rule_based_v1');
     expect(result.coverage).toBe(1);
@@ -32,12 +35,15 @@ describe('buildRuleBasedAssessment', () => {
   });
 
   it('marks partial coverage when not all questions are answered', () => {
-    const result = buildRuleBasedAssessment({
-      l3: '5',
-      s2: 'b',
-      t1: 'Люблю восстанавливаться через сон.',
-      t2: 'Сильная сторона — прозрачность с родителями.',
-    }, 'ru');
+    const result = buildRuleBasedAssessment(
+      {
+        l3: '5',
+        s2: 'b',
+        t1: 'Люблю восстанавливаться через сон.',
+        t2: 'Сильная сторона — прозрачность с родителями.',
+      },
+      'ru',
+    );
 
     expect(result.coverage).toBeLessThan(1);
     expect(result.confidenceReason).toBe('partial_answers');

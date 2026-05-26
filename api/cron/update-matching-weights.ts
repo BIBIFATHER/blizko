@@ -17,7 +17,7 @@ import { getDbPool } from '../_db.js';
 
 const MIN_SIGNALS = 50;
 const PRIOR_STRENGTH = 200; // sample count at which alpha = 0.5
-const MAX_DRIFT = 0.30;     // max ±30% multiplier on prior per run
+const MAX_DRIFT = 0.3; // max ±30% multiplier on prior per run
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET' && req.method !== 'POST') {
@@ -116,7 +116,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (updates.length === 0) {
-      return res.status(200).json({ ok: true, skipped: true, reason: 'no factor updates computed' });
+      return res
+        .status(200)
+        .json({ ok: true, skipped: true, reason: 'no factor updates computed' });
     }
 
     // Upsert updated weights
@@ -136,7 +138,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ok: true,
       total_signals: totalSignals,
       factors_updated: updates.length,
-      updates: updates.map(u => ({
+      updates: updates.map((u) => ({
         factor: u.factor,
         prior: priors[u.factor],
         new_weight: Math.round(u.weight * 100) / 100,

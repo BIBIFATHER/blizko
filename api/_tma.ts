@@ -35,7 +35,9 @@ export interface WebModeResult {
   webMode: true;
 }
 
-export function isWebMode(result: TmaValidationResult | WebModeResult | null): result is WebModeResult {
+export function isWebMode(
+  result: TmaValidationResult | WebModeResult | null,
+): result is WebModeResult {
   return result !== null && (result as WebModeResult).webMode === true;
 }
 
@@ -50,7 +52,7 @@ export function isWebMode(result: TmaValidationResult | WebModeResult | null): r
 export function validateTmaInitData(
   initData: string | undefined | null,
   botToken?: string,
-  maxAgeSeconds = 300
+  maxAgeSeconds = 300,
 ): TmaValidationResult | null {
   if (!initData) return null;
 
@@ -72,9 +74,7 @@ export function validateTmaInitData(
     // 3. Compute HMAC-SHA256
     // secret_key = HMAC-SHA256("WebAppData", bot_token)
     const secretKey = createHmac('sha256', 'WebAppData').update(token).digest();
-    const computedHash = createHmac('sha256', secretKey)
-      .update(dataCheckString)
-      .digest('hex');
+    const computedHash = createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
 
     // 4. Constant-time comparison
     if (computedHash.length !== hash.length) return null;

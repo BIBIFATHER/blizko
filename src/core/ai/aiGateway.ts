@@ -80,7 +80,11 @@ async function fileToDataUrl(file: File): Promise<string> {
   });
 }
 
-export async function aiImage(file: File, prompt: string, options?: AIRequestOptions): Promise<string> {
+export async function aiImage(
+  file: File,
+  prompt: string,
+  options?: AIRequestOptions,
+): Promise<string> {
   const imageDataUrl = await fileToDataUrl(file);
 
   const messages: AIMessage[] = [

@@ -16,8 +16,8 @@ export interface MatchingWeights {
   verification: number;
   childAge: number;
   schedule: number;
-  requirementMatch: number;   // per requirement
-  mirrorMax: number;          // cap for mirror scoring
+  requirementMatch: number; // per requirement
+  mirrorMax: number; // cap for mirror scoring
   softSkillsMax: number;
   qualityPremium: number;
   qualityGood: number;
@@ -67,9 +67,7 @@ export async function getWeights(): Promise<MatchingWeights> {
   try {
     if (!supabase) return DEFAULT_WEIGHTS;
 
-    const { data, error } = await supabase
-      .from('matching_weights')
-      .select('factor,weight');
+    const { data, error } = await supabase.from('matching_weights').select('factor,weight');
 
     if (error || !data || data.length === 0) {
       return DEFAULT_WEIGHTS;

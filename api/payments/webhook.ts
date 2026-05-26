@@ -1,7 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDbPool } from '../_db.js';
 import { rateLimit } from '../_rate-limit.js';
-import { activatePaidParentRequest, isAllowedPaymentStatus, verifyPaymentWithYooKassa } from './_shared.js';
+import {
+  activatePaidParentRequest,
+  isAllowedPaymentStatus,
+  verifyPaymentWithYooKassa,
+} from './_shared.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -54,10 +58,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (payment.status !== realStatus) {
-      await pool.query(
-        `UPDATE payments SET status = $1, updated_at = NOW() WHERE id = $2`,
-        [realStatus, payment.id],
-      );
+      await pool.query(`UPDATE payments SET status = $1, updated_at = NOW() WHERE id = $2`, [
+        realStatus,
+        payment.id,
+      ]);
     }
 
     if (realStatus === 'succeeded' && payment.parent_request_id) {

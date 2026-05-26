@@ -36,7 +36,7 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 }) => {
   const grid = useMemo(() => {
     return days.map((_, dayIdx) =>
-      slots.map((_, slotIdx) => statusMap[`${dayIdx}-${slotIdx}`] || 'available')
+      slots.map((_, slotIdx) => statusMap[`${dayIdx}-${slotIdx}`] || 'available'),
     );
   }, [days, slots, statusMap]);
 
@@ -59,7 +59,9 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
         {slots.map((slot, slotIdx) => (
           <React.Fragment key={slot}>
-            <div className="text-[9px] text-stone-400 flex items-center justify-end pr-0.5 leading-tight">{slot}</div>
+            <div className="text-[9px] text-stone-400 flex items-center justify-end pr-0.5 leading-tight">
+              {slot}
+            </div>
             <div className="grid grid-cols-7 gap-0.5">
               {days.map((_, dayIdx) => {
                 const status = grid[dayIdx][slotIdx];
@@ -70,9 +72,23 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
                     type="button"
                     onClick={() => !readonly && onToggle && onToggle(dayIdx, slotIdx)}
                     className={`h-11 rounded-md border text-[10px] font-semibold transition-colors ${statusClass(status)} ${readonly ? 'cursor-default' : 'active:scale-95'}`}
-                    title={status === 'busy' ? 'занято' : status === 'reserved' ? 'резерв' : status === 'selected' ? 'выбрано' : 'свободно'}
+                    title={
+                      status === 'busy'
+                        ? 'занято'
+                        : status === 'reserved'
+                          ? 'резерв'
+                          : status === 'selected'
+                            ? 'выбрано'
+                            : 'свободно'
+                    }
                   >
-                    {status === 'busy' ? '✕' : status === 'reserved' ? 'Р' : status === 'selected' ? '✓' : ''}
+                    {status === 'busy'
+                      ? '✕'
+                      : status === 'reserved'
+                        ? 'Р'
+                        : status === 'selected'
+                          ? '✓'
+                          : ''}
                   </button>
                 );
               })}
@@ -83,10 +99,18 @@ export const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
 
       {legend && (
         <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-stone-500">
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-white border border-stone-200" /> свободно</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-[#2A6B6E]" /> выбрано</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-[#C4744A]/20" /> резерв</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-stone-200" /> занято</span>
+          <span className="inline-flex items-center gap-1">
+            <span className="w-3 h-3 rounded bg-white border border-stone-200" /> свободно
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="w-3 h-3 rounded bg-[#2A6B6E]" /> выбрано
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="w-3 h-3 rounded bg-[#C4744A]/20" /> резерв
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="w-3 h-3 rounded bg-stone-200" /> занято
+          </span>
         </div>
       )}
     </Card>

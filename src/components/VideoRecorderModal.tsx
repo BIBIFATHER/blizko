@@ -11,16 +11,23 @@ interface VideoRecorderModalProps {
   lang: Language;
 }
 
-const VIDEO_BUCKET = (import.meta.env.VITE_SUPABASE_VIDEO_BUCKET as string | undefined) || 'nanny-videos';
+const VIDEO_BUCKET =
+  (import.meta.env.VITE_SUPABASE_VIDEO_BUCKET as string | undefined) || 'nanny-videos';
 const getNowTs = () => Date.now();
 
-export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose, onSave, lang }) => {
+export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({
+  onClose,
+  onSave,
+  lang,
+}) => {
   const text = t[lang];
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [permissionError, setPermissionError] = useState(false);
-  const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'uploading' | 'done'>('idle');
+  const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'uploading' | 'done'>(
+    'idle',
+  );
   const [timer, setTimer] = useState(0);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -102,7 +109,10 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
 
     try {
       const chunks: BlobPart[] = [];
-      const recorder = new MediaRecorder(stream, selectedMime ? { mimeType: selectedMime } : undefined);
+      const recorder = new MediaRecorder(
+        stream,
+        selectedMime ? { mimeType: selectedMime } : undefined,
+      );
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (event) => {
@@ -124,7 +134,11 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
 
         // Fallback: local blob URL (works in this browser session/local state only)
         const localUrl = URL.createObjectURL(blob);
-        setErrorMsg(lang === 'ru' ? 'Видео сохранено локально (временный URL). Настройте Supabase Storage bucket для постоянного хранения.' : 'Video saved locally (temporary URL). Configure Supabase Storage bucket for persistent storage.');
+        setErrorMsg(
+          lang === 'ru'
+            ? 'Видео сохранено локально (временный URL). Настройте Supabase Storage bucket для постоянного хранения.'
+            : 'Video saved locally (temporary URL). Configure Supabase Storage bucket for persistent storage.',
+        );
         setRecordingState('done');
         onSave(localUrl);
       };
@@ -135,7 +149,9 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
       setTimer(0);
     } catch (e) {
       console.error('MediaRecorder start error:', e);
-      setErrorMsg(lang === 'ru' ? 'Не удалось начать запись видео.' : 'Failed to start video recording.');
+      setErrorMsg(
+        lang === 'ru' ? 'Не удалось начать запись видео.' : 'Failed to start video recording.',
+      );
     }
   };
 
@@ -182,7 +198,9 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
 
               <div className="absolute top-4 left-4 z-10">
                 <div className="bg-black/30 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium flex items-center gap-2">
-                  {recordingState === 'recording' && <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />}
+                  {recordingState === 'recording' && (
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  )}
                   {recordingState === 'recording' ? formatTime(timer) : text.videoModalTitle}
                 </div>
               </div>
@@ -200,7 +218,11 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({ onClose,
         <div className="p-6 bg-white text-center">
           <p className="text-stone-500 text-sm mb-3 min-h-[40px]">{text.videoModalHint}</p>
 
-          {errorMsg && <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2 mb-4">{errorMsg}</p>}
+          {errorMsg && (
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2 mb-4">
+              {errorMsg}
+            </p>
+          )}
 
           {recordedBlob && recordingState === 'done' && (
             <p className="text-xs text-green-700 bg-green-50 border border-green-100 rounded-lg p-2 mb-4">

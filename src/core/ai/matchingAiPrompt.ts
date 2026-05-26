@@ -1,17 +1,17 @@
-import { aiText } from "./aiGateway";
-import { formatInsightsBlock } from "./insightsLoader";
-import type { MatchingAiResponse, MatchingRequest, RankedCandidate } from "./matchingAi.types";
+import { aiText } from './aiGateway';
+import { formatInsightsBlock } from './insightsLoader';
+import type { MatchingAiResponse, MatchingRequest, RankedCandidate } from './matchingAi.types';
 
 const schemaType = {
-  OBJECT: "OBJECT",
-  INTEGER: "INTEGER",
-  ARRAY: "ARRAY",
-  STRING: "STRING",
+  OBJECT: 'OBJECT',
+  INTEGER: 'INTEGER',
+  ARRAY: 'ARRAY',
+  STRING: 'STRING',
 } as const;
 
 function buildCandidateData(topCandidates: RankedCandidate[]): string {
   if (topCandidates.length === 0) {
-    return "No candidates in database. Provide recommendations to improve request quality.";
+    return 'No candidates in database. Provide recommendations to improve request quality.';
   }
 
   return JSON.stringify(
@@ -23,16 +23,16 @@ function buildCandidateData(topCandidates: RankedCandidate[]): string {
       experience: candidate.nanny.experience,
       skills: candidate.nanny.skills || [],
       childAges: candidate.nanny.childAges || [],
-      softSkills: candidate.nanny.softSkills?.dominantStyle || "Unknown",
+      softSkills: candidate.nanny.softSkills?.dominantStyle || 'Unknown',
       verified: candidate.nanny.isVerified,
       heuristicScore: candidate.score,
-    }))
+    })),
   );
 }
 
 function sanitizeRecommendations(
-  recommendations: MatchingAiResponse["recommendations"],
-  fallback: string[]
+  recommendations: MatchingAiResponse['recommendations'],
+  fallback: string[],
 ): string[] {
   const safeRecommendations = Array.isArray(recommendations)
     ? recommendations.filter(Boolean).slice(0, 3)
@@ -44,8 +44,8 @@ function sanitizeRecommendations(
 export async function getAiMatchSummary(
   request: MatchingRequest,
   ranked: RankedCandidate[],
-  lang: "ru" | "en",
-  fallback: { matchScore: number; recommendations: string[] }
+  lang: 'ru' | 'en',
+  fallback: { matchScore: number; recommendations: string[] },
 ): Promise<{ matchScore: number; recommendations: string[] }> {
   const insightsBlock = await formatInsightsBlock();
   const candidateData = buildCandidateData(ranked.slice(0, 25));
@@ -59,15 +59,15 @@ Return realistic compatibility score and 3 practical, SPECIFIC recommendations f
 
 PARENT REQUEST:
 City: ${request.city}
-District: ${request.district || "не указан"}
-Metro: ${request.metro || "не указана"}
+District: ${request.district || 'не указан'}
+Metro: ${request.metro || 'не указана'}
 Child Age: ${request.childAge}
 Schedule: ${request.schedule}
 Budget: ${request.budget}
-Requirements: ${request.requirements.join(", ")}
+Requirements: ${request.requirements.join(', ')}
 Comment: ${request.comment}
-Family Style: ${request.riskProfile?.familyStyle || "не указан"}
-Communication: ${request.riskProfile?.communicationPreference || "не указана"}
+Family Style: ${request.riskProfile?.familyStyle || 'не указан'}
+Communication: ${request.riskProfile?.communicationPreference || 'не указана'}
 
 TOP CANDIDATES (already pre-ranked by heuristic scoring):
 ${candidateData}
@@ -76,7 +76,7 @@ Rules:
 - matchScore must be realistic (0-100). If top candidate has heuristicScore 80+, matchScore should be 75-95.
 - Each recommendation MUST reference specific candidate names or specific aspects of the request.
 - Do NOT give generic advice like "check references" — be specific.
-- recommendations must be exactly 3 short strings in ${lang === "ru" ? "Russian" : "English"}.
+- recommendations must be exactly 3 short strings in ${lang === 'ru' ? 'Russian' : 'English'}.
 
 Output JSON only:
 {
@@ -88,7 +88,7 @@ Output JSON only:
   try {
     const responseText = await aiText(prompt, {
       temperature: 0.4,
-      responseMimeType: "application/json",
+      responseMimeType: 'application/json',
       responseSchema: {
         type: schemaType.OBJECT,
         properties: {
@@ -98,13 +98,13 @@ Output JSON only:
             items: { type: schemaType.STRING },
           },
         },
-        required: ["matchScore", "recommendations"],
+        required: ['matchScore', 'recommendations'],
       },
     });
 
     if (!responseText) return fallback;
 
-    const result = JSON.parse(responseText || "{}") as MatchingAiResponse;
+    const result = JSON.parse(responseText || '{}') as MatchingAiResponse;
     const matchScore = Number.isFinite(result?.matchScore)
       ? Math.max(0, Math.min(100, Math.round(result.matchScore as number)))
       : fallback.matchScore;
@@ -114,7 +114,7 @@ Output JSON only:
       recommendations: sanitizeRecommendations(result?.recommendations, fallback.recommendations),
     };
   } catch (error) {
-    console.error("AI Matching Failed:", error);
+    console.error('AI Matching Failed:', error);
     return fallback;
   }
 }

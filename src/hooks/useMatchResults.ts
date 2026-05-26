@@ -20,23 +20,31 @@ interface UseMatchResultsReturn {
  */
 function buildPreviewData(lang: Language): MatchResult {
   return {
-    overallAdvice: lang === 'ru'
-      ? 'Мы оставили только те профили, где можно спокойно перейти к разговору о деталях.'
-      : 'We kept only the profiles worth moving into a real conversation.',
+    overallAdvice:
+      lang === 'ru'
+        ? 'Мы оставили только те профили, где можно спокойно перейти к разговору о деталях.'
+        : 'We kept only the profiles worth moving into a real conversation.',
     requestId: 'preview-request-1',
     candidates: [
       {
         score: 93,
         reasons: ['high_empathy', 'verified', 'experience_fit'],
-        humanExplanation: lang === 'ru'
-          ? 'Анна хорошо подходит семьям, которым важны спокойный ритм, прозрачная коммуникация и мягкая адаптация ребёнка.'
-          : 'Anna fits families that value calm rhythm, transparent communication, and a gentle child adaptation.',
+        humanExplanation:
+          lang === 'ru'
+            ? 'Анна хорошо подходит семьям, которым важны спокойный ритм, прозрачная коммуникация и мягкая адаптация ребёнка.'
+            : 'Anna fits families that value calm rhythm, transparent communication, and a gentle child adaptation.',
         trustBadges: ['verified_moderation', 'soft_skills', 'has_reviews'],
         riskFlags: [
           {
             level: 'warning' as const,
-            message: lang === 'ru' ? 'Уточните вечерний график заранее.' : 'Confirm evening schedule in advance.',
-            advice: lang === 'ru' ? 'Лучше сразу обсудить регулярные поздние смены.' : 'Discuss recurring late shifts early.',
+            message:
+              lang === 'ru'
+                ? 'Уточните вечерний график заранее.'
+                : 'Confirm evening schedule in advance.',
+            advice:
+              lang === 'ru'
+                ? 'Лучше сразу обсудить регулярные поздние смены.'
+                : 'Discuss recurring late shifts early.',
           },
         ],
         nanny: {
@@ -48,12 +56,25 @@ function buildPreviewData(lang: Language): MatchResult {
           expectedRate: '900 ₽/ч',
           contact: '',
           isVerified: true,
-          about: 'Работаю с детьми 0–7 лет, внимательно отношусь к режиму и эмоциональному комфорту ребёнка.',
+          about:
+            'Работаю с детьми 0–7 лет, внимательно отношусь к режиму и эмоциональному комфорту ребёнка.',
           skills: ['Развивающие игры', 'Монтессори', 'Подготовка к школе'],
           childAges: ['0-1', '1-3', '3-6'],
           reviews: [
-            { id: 'r1', authorName: 'Мария', rating: 5, text: 'Очень спокойная и внимательная няня.', date: Date.now() - 86400000 },
-            { id: 'r2', authorName: 'Екатерина', rating: 5, text: 'Дочка быстро привыкла, всё прошло отлично.', date: Date.now() - 172800000 },
+            {
+              id: 'r1',
+              authorName: 'Мария',
+              rating: 5,
+              text: 'Очень спокойная и внимательная няня.',
+              date: Date.now() - 86400000,
+            },
+            {
+              id: 'r2',
+              authorName: 'Екатерина',
+              rating: 5,
+              text: 'Дочка быстро привыкла, всё прошло отлично.',
+              date: Date.now() - 172800000,
+            },
           ],
           softSkills: {
             method: 'rule_based_v1' as const,
@@ -70,7 +91,8 @@ function buildPreviewData(lang: Language): MatchResult {
             traits: { empathy: 92, stability: 84, responsibility: 87, structure: 73 },
             signals: [],
           },
-          photo: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
+          photo:
+            'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
           createdAt: Date.now(),
           type: 'nanny' as const,
         },
@@ -78,9 +100,10 @@ function buildPreviewData(lang: Language): MatchResult {
       {
         score: 85,
         reasons: ['good_schedule_fit', 'verified'],
-        humanExplanation: lang === 'ru'
-          ? 'Екатерина сильна там, где семье нужен более структурный режим и опыт с дошкольниками.'
-          : 'Ekaterina is strong where the family needs a more structured rhythm and preschool experience.',
+        humanExplanation:
+          lang === 'ru'
+            ? 'Екатерина сильна там, где семье нужен более структурный режим и опыт с дошкольниками.'
+            : 'Ekaterina is strong where the family needs a more structured rhythm and preschool experience.',
         trustBadges: ['verified_moderation', 'ai_checked'],
         nanny: {
           id: 'preview-2',
@@ -95,7 +118,8 @@ function buildPreviewData(lang: Language): MatchResult {
           skills: ['Подготовка к школе', 'Прогулки', 'Режим дня'],
           childAges: ['1-3', '3-6'],
           reviews: [],
-          photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop',
+          photo:
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop',
           createdAt: Date.now(),
           type: 'nanny' as const,
         },
@@ -103,9 +127,10 @@ function buildPreviewData(lang: Language): MatchResult {
       {
         score: 72,
         reasons: ['location_match'],
-        humanExplanation: lang === 'ru'
-          ? 'Ольга живёт рядом и подходит по графику, но стоит уточнить опыт с малышами.'
-          : 'Olga lives nearby and fits the schedule, but verify her experience with toddlers.',
+        humanExplanation:
+          lang === 'ru'
+            ? 'Ольга живёт рядом и подходит по графику, но стоит уточнить опыт с малышами.'
+            : 'Olga lives nearby and fits the schedule, but verify her experience with toddlers.',
         trustBadges: ['ai_checked'],
         nanny: {
           id: 'preview-3',
@@ -151,7 +176,11 @@ export function useMatchResults(lang: Language): UseMatchResultsReturn {
 
     // Priority 1: navigation state from matching flow
     if (stateResult) {
-      try { setItem(CACHE_KEY, JSON.stringify(stateResult)); } catch { /* quota */ }
+      try {
+        setItem(CACHE_KEY, JSON.stringify(stateResult));
+      } catch {
+        /* quota */
+      }
       return stateResult;
     }
 

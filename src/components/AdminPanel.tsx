@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  clearAllData,
-  clearTestData,
-} from '@/services/storage';
+import { clearAllData, clearTestData } from '@/services/storage';
 import { ParentRequest, NannyProfile } from '@/core/types';
 import { Button } from './UI';
 import { supabase } from '@/services/supabase';
@@ -14,7 +11,11 @@ import { AdminParentsTab } from './admin/AdminParentsTab';
 import { AdminNanniesTab } from './admin/AdminNanniesTab';
 import { AdminBookingsTab } from './admin/AdminBookingsTab';
 import { AdminPillButton, adminModalSurface } from './admin/adminPrimitives';
-import { AdminWorkflowEvent, AdminWorkflowUIProvider, useAdminWorkflowUI } from './admin/adminWorkflowUI';
+import {
+  AdminWorkflowEvent,
+  AdminWorkflowUIProvider,
+  useAdminWorkflowUI,
+} from './admin/adminWorkflowUI';
 import { getAllBookings, updateBookingStatus, Booking } from '@/services/booking';
 import {
   AnalyticsEventRecord,
@@ -71,8 +72,12 @@ const AdminPanelContent: React.FC<{
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     const [pr, nr, remoteAnalytics] = await Promise.all([
-      fetch('/api/data?resource=parents', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
-      fetch('/api/data?resource=nannies', { headers }).then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
+      fetch('/api/data?resource=parents', { headers })
+        .then((r) => (r.ok ? r.json() : { items: [] }))
+        .catch(() => ({ items: [] })),
+      fetch('/api/data?resource=nannies', { headers })
+        .then((r) => (r.ok ? r.json() : { items: [] }))
+        .catch(() => ({ items: [] })),
       fetchRemoteAnalyticsEvents(30, token),
     ]);
 
@@ -84,7 +89,9 @@ const AdminPanelContent: React.FC<{
     setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
 
     const seenTs = Number(getItem(ADMIN_PARENTS_SEEN_TS_KEY) || '0');
-    const unseen = p.filter((item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs).length;
+    const unseen = p.filter(
+      (item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs,
+    ).length;
     setUnseenParentsCount(unseen);
 
     // Load bookings
@@ -138,34 +145,37 @@ const AdminPanelContent: React.FC<{
 
   const filteredActionFeed = React.useMemo(() => {
     const normalizedQuery = journalQuery.trim().toLowerCase();
-    return actionFeed.filter((entry) => {
-      if (journalFilter === 'all') return true;
-      if (journalFilter === 'errors') return entry.kind === 'error' || entry.action === 'workflow_error';
-      if (journalFilter === 'workflow') return entry.action.startsWith('workflow_');
-      if (journalFilter === 'bookings') return entry.action.includes('booking');
-      if (journalFilter === 'moderation') {
-        return (
-          entry.action.includes('bulk_') ||
-          entry.action.includes('verify') ||
-          entry.action.includes('clear_') ||
-          entry.action.includes('status')
-        );
-      }
-      return true;
-    }).filter((entry) => {
-      if (!normalizedQuery) return true;
-      const haystack = [
-        entry.action,
-        entry.message,
-        formatActionLabel(entry),
-        JSON.stringify(entry.meta || {}),
-        entry.id,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(normalizedQuery);
-    });
+    return actionFeed
+      .filter((entry) => {
+        if (journalFilter === 'all') return true;
+        if (journalFilter === 'errors')
+          return entry.kind === 'error' || entry.action === 'workflow_error';
+        if (journalFilter === 'workflow') return entry.action.startsWith('workflow_');
+        if (journalFilter === 'bookings') return entry.action.includes('booking');
+        if (journalFilter === 'moderation') {
+          return (
+            entry.action.includes('bulk_') ||
+            entry.action.includes('verify') ||
+            entry.action.includes('clear_') ||
+            entry.action.includes('status')
+          );
+        }
+        return true;
+      })
+      .filter((entry) => {
+        if (!normalizedQuery) return true;
+        const haystack = [
+          entry.action,
+          entry.message,
+          formatActionLabel(entry),
+          JSON.stringify(entry.meta || {}),
+          entry.id,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        return haystack.includes(normalizedQuery);
+      });
   }, [actionFeed, journalFilter, journalQuery]);
 
   const handleClear = async () => {
@@ -198,88 +208,104 @@ const AdminPanelContent: React.FC<{
     setUnseenParentsCount(0);
   };
 
-    return (
+  return (
     <div className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
-      <div className={`${adminModalSurface} w-full max-w-5xl max-h-[90vh] flex flex-col animate-slide-up`}>
+      <div
+        className={`${adminModalSurface} w-full max-w-5xl max-h-[90vh] flex flex-col animate-slide-up`}
+      >
         <div className="hero-shell rounded-none border-x-0 border-t-0 border-b border-[color:var(--cloud-border)] shadow-none flex items-start justify-between gap-4">
           <div>
             <div className="eyebrow mb-3">Operations console</div>
             <h2 className="text-3xl font-display text-stone-900">Админ-панель</h2>
-            <p className="mt-2 text-sm text-stone-500">Локальные данные, модерация, аналитика и управление вручную.</p>
+            <p className="mt-2 text-sm text-stone-500">
+              Локальные данные, модерация, аналитика и управление вручную.
+            </p>
             <div className="mt-3 text-[10px] text-amber-700 bg-amber-50 border border-amber-100 rounded-full px-3 py-1 inline-flex">
               Blizko+ — подбор, который объясним • гарантия прихода
             </div>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/80 rounded-full transition-colors">
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/80 rounded-full transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
 
         <div className="border-b border-[color:var(--cloud-border)] px-4 py-4 flex flex-col gap-3 bg-white/70">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
-          <div className="flex items-center gap-2 flex-1 input-glass rounded-2xl px-3 py-2">
-            <Search size={16} className="text-stone-400" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Поиск по родителям/няням..."
-              className="bg-transparent outline-none text-sm w-full"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <AdminPillButton
-              onClick={() => setTab('overview')}
-              active={tab === 'overview'}
-              className="min-h-[42px] px-4 text-sm"
-            >
-              Обзор
-            </AdminPillButton>
-            <AdminPillButton
-              onClick={() => { setTab('parents'); markParentsAsSeen(); }}
-              active={tab === 'parents'}
-              className="min-h-[42px] px-4 text-sm flex items-center gap-1"
-            >
-              Родители
-              {unseenParentsCount > 0 && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500 text-white">{unseenParentsCount}</span>
-              )}
-            </AdminPillButton>
-            <AdminPillButton
-              onClick={() => setTab('nannies')}
-              active={tab === 'nannies'}
-              className="min-h-[42px] px-4 text-sm"
-            >
-              Няни
-            </AdminPillButton>
-            <AdminPillButton
-              onClick={() => setTab('bookings')}
-              active={tab === 'bookings'}
-              className="min-h-[42px] px-4 text-sm"
-            >
-              Бронирования
-            </AdminPillButton>
-            <AdminPillButton
-              onClick={() => setTab('journal')}
-              active={tab === 'journal'}
-              className="min-h-[42px] px-4 text-sm"
-            >
-              Журнал
-            </AdminPillButton>
-          </div>
+            <div className="flex items-center gap-2 flex-1 input-glass rounded-2xl px-3 py-2">
+              <Search size={16} className="text-stone-400" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Поиск по родителям/няням..."
+                className="bg-transparent outline-none text-sm w-full"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <AdminPillButton
+                onClick={() => setTab('overview')}
+                active={tab === 'overview'}
+                className="min-h-[42px] px-4 text-sm"
+              >
+                Обзор
+              </AdminPillButton>
+              <AdminPillButton
+                onClick={() => {
+                  setTab('parents');
+                  markParentsAsSeen();
+                }}
+                active={tab === 'parents'}
+                className="min-h-[42px] px-4 text-sm flex items-center gap-1"
+              >
+                Родители
+                {unseenParentsCount > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500 text-white">
+                    {unseenParentsCount}
+                  </span>
+                )}
+              </AdminPillButton>
+              <AdminPillButton
+                onClick={() => setTab('nannies')}
+                active={tab === 'nannies'}
+                className="min-h-[42px] px-4 text-sm"
+              >
+                Няни
+              </AdminPillButton>
+              <AdminPillButton
+                onClick={() => setTab('bookings')}
+                active={tab === 'bookings'}
+                className="min-h-[42px] px-4 text-sm"
+              >
+                Бронирования
+              </AdminPillButton>
+              <AdminPillButton
+                onClick={() => setTab('journal')}
+                active={tab === 'journal'}
+                className="min-h-[42px] px-4 text-sm"
+              >
+                Журнал
+              </AdminPillButton>
+            </div>
           </div>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <label className="flex items-center gap-2 text-xs text-stone-600 bg-white/80 border border-[color:var(--cloud-border)] rounded-2xl px-3 py-2">
-            <input type="checkbox" checked={onlyProblematic} onChange={(e) => setOnlyProblematic(e.target.checked)} />
-            Только проблемные анкеты
-          </label>
-          <div className="sm:w-72 flex gap-2">
-            <Button onClick={handleClearTest} variant="secondary">
-              <Trash2 size={16} /> Удалить тестовые
-            </Button>
-            <Button onClick={handleClear} variant="secondary">
-              <Trash2 size={16} /> Очистить всё
-            </Button>
-          </div>
+            <label className="flex items-center gap-2 text-xs text-stone-600 bg-white/80 border border-[color:var(--cloud-border)] rounded-2xl px-3 py-2">
+              <input
+                type="checkbox"
+                checked={onlyProblematic}
+                onChange={(e) => setOnlyProblematic(e.target.checked)}
+              />
+              Только проблемные анкеты
+            </label>
+            <div className="sm:w-72 flex gap-2">
+              <Button onClick={handleClearTest} variant="secondary">
+                <Trash2 size={16} /> Удалить тестовые
+              </Button>
+              <Button onClick={handleClear} variant="secondary">
+                <Trash2 size={16} /> Очистить всё
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -294,11 +320,7 @@ const AdminPanelContent: React.FC<{
             />
           )}
           {tab === 'parents' && (
-            <AdminParentsTab
-              parents={parents}
-              query={query}
-              onDataChanged={loadData}
-            />
+            <AdminParentsTab parents={parents} query={query} onDataChanged={loadData} />
           )}
           {tab === 'nannies' && (
             <AdminNanniesTab
@@ -324,7 +346,9 @@ const AdminPanelContent: React.FC<{
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="eyebrow">Action feed</div>
-                  <div className="mt-1 text-sm text-stone-600">Серверный журнал действий и системных сообщений админки.</div>
+                  <div className="mt-1 text-sm text-stone-600">
+                    Серверный журнал действий и системных сообщений админки.
+                  </div>
                 </div>
                 <AdminPillButton
                   onClick={() => {
@@ -337,13 +361,15 @@ const AdminPanelContent: React.FC<{
                 </AdminPillButton>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                {([
-                  ['all', 'Все'],
-                  ['workflow', 'Workflow'],
-                  ['moderation', 'Модерация'],
-                  ['bookings', 'Бронирования'],
-                  ['errors', 'Ошибки'],
-                ] as const).map(([key, label]) => (
+                {(
+                  [
+                    ['all', 'Все'],
+                    ['workflow', 'Workflow'],
+                    ['moderation', 'Модерация'],
+                    ['bookings', 'Бронирования'],
+                    ['errors', 'Ошибки'],
+                  ] as const
+                ).map(([key, label]) => (
                   <AdminPillButton
                     key={key}
                     onClick={() => setJournalFilter(key)}
@@ -355,12 +381,14 @@ const AdminPanelContent: React.FC<{
                 ))}
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                {([
-                  ['1', '24 часа'],
-                  ['7', '7 дней'],
-                  ['30', '30 дней'],
-                  ['all', 'Всё время'],
-                ] as const).map(([key, label]) => (
+                {(
+                  [
+                    ['1', '24 часа'],
+                    ['7', '7 дней'],
+                    ['30', '30 дней'],
+                    ['all', 'Всё время'],
+                  ] as const
+                ).map(([key, label]) => (
                   <AdminPillButton
                     key={key}
                     onClick={() => setJournalRange(key)}
@@ -385,15 +413,20 @@ const AdminPanelContent: React.FC<{
               ) : (
                 <div className="mt-4 space-y-2">
                   {filteredActionFeed.map((entry, index) => (
-                    <div key={`${entry.action}-${entry.at}-${index}`} className="flex items-start justify-between gap-3 rounded-[1rem] border border-stone-200/70 bg-white/75 px-3 py-2">
+                    <div
+                      key={`${entry.action}-${entry.at}-${index}`}
+                      className="flex items-start justify-between gap-3 rounded-[1rem] border border-stone-200/70 bg-white/75 px-3 py-2"
+                    >
                       <div>
-                        <div className={`text-sm font-medium ${
-                          entry.kind === 'error'
-                            ? 'text-red-700'
-                            : entry.kind === 'success'
-                              ? 'text-green-700'
-                              : 'text-stone-700'
-                        }`}>
+                        <div
+                          className={`text-sm font-medium ${
+                            entry.kind === 'error'
+                              ? 'text-red-700'
+                              : entry.kind === 'success'
+                                ? 'text-green-700'
+                                : 'text-stone-700'
+                          }`}
+                        >
                           {formatActionLabel(entry)}
                         </div>
                         {formatActionMeta(entry) && (
@@ -435,45 +468,45 @@ export const AdminPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [actionFeedLoading, setActionFeedLoading] = useState(false);
   const [journalRange, setJournalRange] = useState<AdminJournalRange>('7');
 
-  const loadFeed = React.useCallback(async (
-    mode: 'replace' | 'append' = 'replace',
-    beforeAt?: number | null,
-  ) => {
-    setActionFeedLoading(true);
-    try {
-      const remote = await fetchAdminActions({
-        limit: 12,
-        beforeAt: mode === 'append' ? beforeAt ?? null : null,
-        days: journalRange,
-      });
-      if (remote) {
-        setActionFeed((current) =>
-          mode === 'append' ? [...current, ...remote.items] : remote.items
-        );
-        setActionFeedHasMore(remote.hasMore);
-        if (mode === 'replace') {
-          setItem(ADMIN_ACTIONS_KEY, JSON.stringify(remote.items));
-        }
-        return;
-      }
-    } catch {
-      // fall back to local cache
-    } finally {
-      setActionFeedLoading(false);
-    }
-
-    if (mode === 'replace') {
+  const loadFeed = React.useCallback(
+    async (mode: 'replace' | 'append' = 'replace', beforeAt?: number | null) => {
+      setActionFeedLoading(true);
       try {
-        const raw = getItem(ADMIN_ACTIONS_KEY) || '[]';
-        const items = JSON.parse(raw);
-        setActionFeed(Array.isArray(items) ? items.slice(0, 12) : []);
-        setActionFeedHasMore(false);
+        const remote = await fetchAdminActions({
+          limit: 12,
+          beforeAt: mode === 'append' ? (beforeAt ?? null) : null,
+          days: journalRange,
+        });
+        if (remote) {
+          setActionFeed((current) =>
+            mode === 'append' ? [...current, ...remote.items] : remote.items,
+          );
+          setActionFeedHasMore(remote.hasMore);
+          if (mode === 'replace') {
+            setItem(ADMIN_ACTIONS_KEY, JSON.stringify(remote.items));
+          }
+          return;
+        }
       } catch {
-        setActionFeed([]);
-        setActionFeedHasMore(false);
+        // fall back to local cache
+      } finally {
+        setActionFeedLoading(false);
       }
-    }
-  }, [journalRange]);
+
+      if (mode === 'replace') {
+        try {
+          const raw = getItem(ADMIN_ACTIONS_KEY) || '[]';
+          const items = JSON.parse(raw);
+          setActionFeed(Array.isArray(items) ? items.slice(0, 12) : []);
+          setActionFeedHasMore(false);
+        } catch {
+          setActionFeed([]);
+          setActionFeedHasMore(false);
+        }
+      }
+    },
+    [journalRange],
+  );
 
   useEffect(() => {
     void loadFeed('replace');

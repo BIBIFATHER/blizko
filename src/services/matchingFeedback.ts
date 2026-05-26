@@ -43,18 +43,16 @@ export async function recordMatchOutcome(
 
   try {
     if (outcome === 'interested') {
-      const { error } = await supabase
-        .from('matching_outcomes')
-        .upsert(
-          {
-            parent_id: parentId,
-            nanny_id: nannyId,
-            outcome: null,
-            feedback_text: buildFeedbackText('interest_signal', feedbackText),
-            score_at_match: scoreAtMatch ?? null,
-          },
-          { onConflict: 'parent_id,nanny_id' }
-        );
+      const { error } = await supabase.from('matching_outcomes').upsert(
+        {
+          parent_id: parentId,
+          nanny_id: nannyId,
+          outcome: null,
+          feedback_text: buildFeedbackText('interest_signal', feedbackText),
+          score_at_match: scoreAtMatch ?? null,
+        },
+        { onConflict: 'parent_id,nanny_id' },
+      );
 
       if (error) {
         console.warn('[MatchingFeedback] Failed to record interest signal:', error.message);
@@ -62,18 +60,16 @@ export async function recordMatchOutcome(
       return;
     }
 
-    const { error } = await supabase
-      .from('matching_outcomes')
-      .upsert(
-        {
-          parent_id: parentId,
-          nanny_id: nannyId,
-          outcome,
-          feedback_text: buildFeedbackText('final_outcome', feedbackText),
-          score_at_match: scoreAtMatch ?? null,
-        },
-        { onConflict: 'parent_id,nanny_id' }
-      );
+    const { error } = await supabase.from('matching_outcomes').upsert(
+      {
+        parent_id: parentId,
+        nanny_id: nannyId,
+        outcome,
+        feedback_text: buildFeedbackText('final_outcome', feedbackText),
+        score_at_match: scoreAtMatch ?? null,
+      },
+      { onConflict: 'parent_id,nanny_id' },
+    );
 
     if (error) {
       console.warn('[MatchingFeedback] Failed to record outcome:', error.message);
@@ -90,9 +86,9 @@ export async function recordMatchOutcome(
 export async function recordMicroSurvey(
   parentId: string,
   nannyId: string,
-  frictionScore: number,  // 1-5
+  frictionScore: number, // 1-5
   alignmentScore: number, // 1-5
-  vibeWord: string,       // single word
+  vibeWord: string, // single word
 ): Promise<void> {
   if (!supabase || !parentId || !nannyId) return;
 

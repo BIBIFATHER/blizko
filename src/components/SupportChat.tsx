@@ -22,7 +22,12 @@ interface SupportChatProps {
 
 const getNowTs = () => Date.now();
 
-const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher = false, openOnMount = false }) => {
+const SupportChatInner: React.FC<SupportChatProps> = ({
+  lang,
+  user,
+  hideLauncher = false,
+  openOnMount = false,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -57,15 +62,18 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
 
         // If no messages yet, show a proactive welcome
         if (existing.length === 0) {
-          setMessages([{
-            id: 'welcome',
-            ticket_id: tk.id,
-            sender_type: 'ai_concierge',
-            text: lang === 'ru'
-              ? 'Привет! 👋 Это Команда Blizko. Спрашивайте что угодно о подборе няни, верификации или работе сервиса. Если понадобится живой человек — Антон сразу подключится.'
-              : 'Hi! 👋 This is the Blizko team. Ask us anything about nanny matching, verification, or how the service works. If you need a human — Anton will join right away.',
-            created_at: new Date().toISOString(),
-          }]);
+          setMessages([
+            {
+              id: 'welcome',
+              ticket_id: tk.id,
+              sender_type: 'ai_concierge',
+              text:
+                lang === 'ru'
+                  ? 'Привет! 👋 Это Команда Blizko. Спрашивайте что угодно о подборе няни, верификации или работе сервиса. Если понадобится живой человек — Антон сразу подключится.'
+                  : 'Hi! 👋 This is the Blizko team. Ask us anything about nanny matching, verification, or how the service works. If you need a human — Anton will join right away.',
+              created_at: new Date().toISOString(),
+            },
+          ]);
         }
 
         unsubscribe = subscribeToTicketMessages(tk.id, (m) => {
@@ -73,7 +81,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
           // messages via Realtime to avoid duplicates (local temp-id ≠ DB uuid).
           if (m.sender_type === 'ai_concierge') return;
           setMessages((prev) => {
-            if (prev.some(p => p.id === m.id)) return prev;
+            if (prev.some((p) => p.id === m.id)) return prev;
             return [...prev, m];
           });
           if (m.sender_type === 'human_agent') {
@@ -118,7 +126,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
     if (!sent) return;
 
     // 2. Add user message to local state
-    setMessages(prev => [...prev, sent]);
+    setMessages((prev) => [...prev, sent]);
 
     // 3. Call AI Concierge
     setIsAiThinking(true);
@@ -126,13 +134,16 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
     setIsAiThinking(false);
 
     // 4. Add AI response to local state (will also arrive via Realtime)
-    setMessages(prev => [...prev, {
-      id: `ai-${getNowTs()}`,
-      ticket_id: ticket.id,
-      sender_type: 'ai_concierge',
-      text: result.reply,
-      created_at: new Date().toISOString(),
-    }]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `ai-${getNowTs()}`,
+        ticket_id: ticket.id,
+        sender_type: 'ai_concierge',
+        text: result.reply,
+        created_at: new Date().toISOString(),
+      },
+    ]);
 
     // 5. Check if escalated
     if (result.escalated) {
@@ -168,15 +179,31 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
       <div className="fixed bottom-4 right-4 z-70 w-full max-w-[340px] flex flex-col items-end animate-slide-up">
         <div className="card-cloud w-full overflow-hidden rounded-[1.7rem] p-5 flex flex-col">
           <div className="flex justify-between items-start mb-3">
-            <div className="text-sm font-medium text-stone-700">{lang === 'ru' ? 'Для чата нужна авторизация' : 'Please sign in to use chat'}</div>
-            <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-stone-600 transition-colors p-1" aria-label="Close">
+            <div className="text-sm font-medium text-stone-700">
+              {lang === 'ru' ? 'Для чата нужна авторизация' : 'Please sign in to use chat'}
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-stone-400 hover:text-stone-600 transition-colors p-1"
+              aria-label="Close"
+            >
               <X size={16} />
             </button>
           </div>
-          <p className="text-xs text-stone-500 leading-relaxed">{lang === 'ru' ? 'Войдите в аккаунт, чтобы написать нам. Мы ответим за пару секунд!' : 'Sign in to chat with us. We respond in seconds!'}</p>
+          <p className="text-xs text-stone-500 leading-relaxed">
+            {lang === 'ru'
+              ? 'Войдите в аккаунт, чтобы написать нам. Мы ответим за пару секунд!'
+              : 'Sign in to chat with us. We respond in seconds!'}
+          </p>
           <button
             type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent('blizko:open-auth-modal', { detail: { source: 'support_chat_gate' } }))}
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent('blizko:open-auth-modal', {
+                  detail: { source: 'support_chat_gate' },
+                }),
+              )
+            }
             className="mt-4 w-full bg-stone-900 text-white rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-stone-800 transition-colors"
           >
             {lang === 'ru' ? 'Войти и написать' : 'Sign in to chat'}
@@ -193,17 +220,34 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
   const getSenderInfo = (msg: SupportMessage) => {
     switch (msg.sender_type) {
       case 'ai_concierge':
-        return { label: 'Команда Blizko', icon: <Sparkles size={12} className="text-amber-500" />, bubbleClass: 'bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 text-stone-700 rounded-tl-sm' };
+        return {
+          label: 'Команда Blizko',
+          icon: <Sparkles size={12} className="text-amber-500" />,
+          bubbleClass:
+            'bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 text-stone-700 rounded-tl-sm',
+        };
       case 'human_agent':
-        return { label: 'Антон', icon: <UserCheck size={12} className="text-green-500" />, bubbleClass: 'bg-linear-to-br from-green-50 to-emerald-50 border border-green-100 text-stone-700 rounded-tl-sm' };
+        return {
+          label: 'Антон',
+          icon: <UserCheck size={12} className="text-green-500" />,
+          bubbleClass:
+            'bg-linear-to-br from-green-50 to-emerald-50 border border-green-100 text-stone-700 rounded-tl-sm',
+        };
       default:
-        return { label: 'Вы', icon: null, bubbleClass: 'bg-amber-100 text-stone-900 rounded-tr-sm' };
+        return {
+          label: 'Вы',
+          icon: null,
+          bubbleClass: 'bg-amber-100 text-stone-900 rounded-tr-sm',
+        };
     }
   };
 
   return (
     <div className="fixed bottom-4 right-4 z-70 w-full max-w-[360px] flex flex-col items-end animate-slide-up">
-      <div className="card-cloud w-full overflow-hidden rounded-[1.8rem] flex flex-col border border-white/70" style={{ height: 'min(520px, calc(100vh - 100px))' }}>
+      <div
+        className="card-cloud w-full overflow-hidden rounded-[1.8rem] flex flex-col border border-white/70"
+        style={{ height: 'min(520px, calc(100vh - 100px))' }}
+      >
         {/* Header */}
         <div className="relative flex items-center justify-between overflow-hidden border-b border-[color:var(--cloud-border)] bg-stone-950 p-4 text-white">
           <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-500/20 blur-3xl pointer-events-none" />
@@ -215,13 +259,19 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
               <span className="font-bold block text-sm tracking-wide">Команда Blizko</span>
               <span className="text-[10px] text-stone-400 uppercase tracking-wider">
                 {isEscalated
-                  ? (lang === 'ru' ? '🔴 Антон подключается...' : '🔴 Anton is joining...')
-                  : (lang === 'ru' ? '🟢 Онлайн' : '🟢 Online')
-                }
+                  ? lang === 'ru'
+                    ? '🔴 Антон подключается...'
+                    : '🔴 Anton is joining...'
+                  : lang === 'ru'
+                    ? '🟢 Онлайн'
+                    : '🟢 Online'}
               </span>
             </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="text-stone-400 hover:text-white transition-colors">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-stone-400 hover:text-white transition-colors"
+          >
             <Minimize2 size={18} />
           </button>
         </div>
@@ -231,7 +281,9 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
           <div className="flex items-center gap-2 border-b border-amber-100 bg-amber-50 px-4 py-2">
             <UserCheck size={14} className="text-amber-600" />
             <span className="text-xs text-amber-700 font-medium">
-              {lang === 'ru' ? 'Антон уже в курсе и скоро подключится лично' : 'Anton has been notified and will join shortly'}
+              {lang === 'ru'
+                ? 'Антон уже в курсе и скоро подключится лично'
+                : 'Anton has been notified and will join shortly'}
             </span>
           </div>
         )}
@@ -241,7 +293,7 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
           {/* Skeleton loader */}
           {isLoading && (
             <div className="space-y-3 animate-pulse">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="flex justify-start">
                   <div className="max-w-[75%]">
                     <div className="h-2.5 w-16 bg-stone-200 rounded mb-2" />
@@ -285,9 +337,18 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
                   </span>
                 </div>
                 <div className="bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex gap-1.5 items-center">
-                  <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div
+                    className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0ms' }}
+                  />
+                  <div
+                    className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '150ms' }}
+                  />
+                  <div
+                    className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '300ms' }}
+                  />
                 </div>
               </div>
             </div>
@@ -297,7 +358,10 @@ const SupportChatInner: React.FC<SupportChatProps> = ({ lang, user, hideLauncher
         </div>
 
         {/* Input */}
-        <form onSubmit={handleSend} className="flex items-center gap-2 border-t border-[color:var(--cloud-border)] bg-white/92 p-3 backdrop-blur-sm">
+        <form
+          onSubmit={handleSend}
+          className="flex items-center gap-2 border-t border-[color:var(--cloud-border)] bg-white/92 p-3 backdrop-blur-sm"
+        >
           <input
             type="text"
             value={inputValue}

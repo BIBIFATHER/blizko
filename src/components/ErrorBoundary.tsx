@@ -43,11 +43,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-stone-800 mb-1">
-            Что-то пошло не так
-          </h3>
+          <h3 className="text-lg font-bold text-stone-800 mb-1">Что-то пошло не так</h3>
           <p className="text-sm text-stone-500 max-w-xs leading-relaxed">
-            {this.props.fallbackMessage || 'Мы уже знаем об этом и работаем над исправлением. Попробуйте обновить страницу.'}
+            {this.props.fallbackMessage ||
+              'Мы уже знаем об этом и работаем над исправлением. Попробуйте обновить страницу.'}
           </p>
         </div>
 

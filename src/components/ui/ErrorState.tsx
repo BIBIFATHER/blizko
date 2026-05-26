@@ -23,7 +23,9 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ lang, onRetry }) => (
         {lang === 'ru' ? 'Не удалось загрузить результаты' : 'Failed to load results'}
       </p>
       <p className="text-sm text-[#6B7280]">
-        {lang === 'ru' ? 'Проверьте соединение и попробуйте снова.' : 'Check your connection and try again.'}
+        {lang === 'ru'
+          ? 'Проверьте соединение и попробуйте снова.'
+          : 'Check your connection and try again.'}
       </p>
     </div>
     <button

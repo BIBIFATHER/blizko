@@ -43,7 +43,11 @@ describe('submit guards — no false success on persist error', () => {
   it('parent: sync=error → does not navigate and does not webhook', async () => {
     vi.mocked(saveParentRequest).mockResolvedValue({ item: { id: 'x' } as never, sync: 'error' });
 
-    const handleParentSubmit = useParentSubmit({ navigate: navigate as never, user: null, lang: 'ru' });
+    const handleParentSubmit = useParentSubmit({
+      navigate: navigate as never,
+      user: null,
+      lang: 'ru',
+    });
     await handleParentSubmit({ city: 'Москва' } as never);
 
     expect(saveParentRequest).toHaveBeenCalledTimes(1);
@@ -64,7 +68,11 @@ describe('submit guards — no false success on persist error', () => {
   it('parent: sync=synced → navigates (sanity: success still works)', async () => {
     vi.mocked(saveParentRequest).mockResolvedValue({ item: { id: 'x' } as never, sync: 'synced' });
 
-    const handleParentSubmit = useParentSubmit({ navigate: navigate as never, user: null, lang: 'ru' });
+    const handleParentSubmit = useParentSubmit({
+      navigate: navigate as never,
+      user: null,
+      lang: 'ru',
+    });
     await handleParentSubmit({ city: 'Москва' } as never);
 
     expect(navigate).toHaveBeenCalled();

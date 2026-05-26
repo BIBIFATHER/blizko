@@ -12,7 +12,11 @@ vi.mock('@/services/supabase', () => ({
   },
 }));
 
-import { adminSendNotification, adminUpdateParentRequest, createAdminAction } from '@/services/adminApi';
+import {
+  adminSendNotification,
+  adminUpdateParentRequest,
+  createAdminAction,
+} from '@/services/adminApi';
 
 const originalFetch = global.fetch;
 

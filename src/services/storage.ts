@@ -42,8 +42,10 @@ const getLocalNannies = (): NannyProfile[] => {
   return Array.isArray(parsed) ? parsed : [];
 };
 
-const setLocalParents = (items: ParentRequest[]) => setItem(STORAGE_KEY_PARENTS, JSON.stringify(items));
-const setLocalNannies = (items: NannyProfile[]) => setItem(STORAGE_KEY_NANNIES, JSON.stringify(items));
+const setLocalParents = (items: ParentRequest[]) =>
+  setItem(STORAGE_KEY_PARENTS, JSON.stringify(items));
+const setLocalNannies = (items: NannyProfile[]) =>
+  setItem(STORAGE_KEY_NANNIES, JSON.stringify(items));
 
 const getPendingIds = (key: string): string[] => {
   const data = getItem(key);
@@ -87,7 +89,10 @@ function markPendingSync(table: 'parents' | 'nannies', id: string) {
 
 function clearPendingSync(table: 'parents' | 'nannies', id: string) {
   const key = table === 'parents' ? STORAGE_KEY_PENDING_PARENTS : STORAGE_KEY_PENDING_NANNIES;
-  setPendingIds(key, getPendingIds(key).filter((pendingId) => pendingId !== id));
+  setPendingIds(
+    key,
+    getPendingIds(key).filter((pendingId) => pendingId !== id),
+  );
 }
 
 function getPendingSyncIds(table: 'parents' | 'nannies') {
@@ -126,7 +131,9 @@ async function getCurrentUserId(): Promise<string | null> {
   return data.user?.id || null;
 }
 
-async function getCurrentUserIdentity(): Promise<Partial<Pick<User, 'id' | 'name' | 'email' | 'phone'>>> {
+async function getCurrentUserIdentity(): Promise<
+  Partial<Pick<User, 'id' | 'name' | 'email' | 'phone'>>
+> {
   if (!supabase) return {};
   const { data } = await supabase.auth.getUser();
   const authUser = data.user;
@@ -135,13 +142,17 @@ async function getCurrentUserIdentity(): Promise<Partial<Pick<User, 'id' | 'name
     id: authUser?.id || undefined,
     email: authUser?.email || undefined,
     phone: String(authUser?.user_metadata?.phone_e164 || authUser?.phone || '') || undefined,
-    name: String(authUser?.user_metadata?.name || authUser?.user_metadata?.full_name || '') || undefined,
+    name:
+      String(authUser?.user_metadata?.name || authUser?.user_metadata?.full_name || '') ||
+      undefined,
   };
 }
 
 async function remoteGet(table: 'parents'): Promise<Array<StorageRow<ParentRequest>> | null>;
 async function remoteGet(table: 'nannies'): Promise<Array<StorageRow<NannyProfile>> | null>;
-async function remoteGet(table: 'parents' | 'nannies'): Promise<Array<StorageRow<StorageEntity>> | null> {
+async function remoteGet(
+  table: 'parents' | 'nannies',
+): Promise<Array<StorageRow<StorageEntity>> | null> {
   try {
     if (!supabase) return null;
     // For nannies: read from nannies_public view (PII stripped)
@@ -198,9 +209,18 @@ async function remoteGetOwnParents(): Promise<Array<StorageRow<ParentRequest>> |
   }
 }
 
-async function remoteGetById(table: 'parents', id: string): Promise<StorageRow<ParentRequest> | null>;
-async function remoteGetById(table: 'nannies', id: string): Promise<StorageRow<NannyProfile> | null>;
-async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<StorageRow<StorageEntity> | null> {
+async function remoteGetById(
+  table: 'parents',
+  id: string,
+): Promise<StorageRow<ParentRequest> | null>;
+async function remoteGetById(
+  table: 'nannies',
+  id: string,
+): Promise<StorageRow<NannyProfile> | null>;
+async function remoteGetById(
+  table: 'parents' | 'nannies',
+  id: string,
+): Promise<StorageRow<StorageEntity> | null> {
   try {
     if (!supabase) return null;
 
@@ -217,10 +237,7 @@ async function remoteGetById(table: 'parents' | 'nannies', id: string): Promise<
   }
 }
 
-type RemoteSaveResult<T> =
-  | { sync: 'synced'; item: T }
-  | { sync: 'pending' }
-  | { sync: 'error' };
+type RemoteSaveResult<T> = { sync: 'synced'; item: T } | { sync: 'pending' } | { sync: 'error' };
 
 async function remoteSave<T extends StorageEntity>(
   table: 'parents' | 'nannies',
@@ -250,8 +267,14 @@ async function remoteSave<T extends StorageEntity>(
   }
 }
 
-async function saveWithFallback(table: 'parents', item: ParentRequest): Promise<SaveResult<ParentRequest>>;
-async function saveWithFallback(table: 'nannies', item: NannyProfile): Promise<SaveResult<NannyProfile>>;
+async function saveWithFallback(
+  table: 'parents',
+  item: ParentRequest,
+): Promise<SaveResult<ParentRequest>>;
+async function saveWithFallback(
+  table: 'nannies',
+  item: NannyProfile,
+): Promise<SaveResult<NannyProfile>>;
 async function saveWithFallback(
   table: 'parents' | 'nannies',
   item: ParentRequest | NannyProfile,
@@ -288,7 +311,8 @@ async function remoteClear(table: 'parents' | 'nannies', testOnly = false): Prom
 
 const fromRow = <T extends StorageEntity>(row: StorageRow<T>): T => {
   const payload = (row?.payload ?? {}) as Partial<T>;
-  const createdAt = payload?.createdAt ?? (row?.created_at ? new Date(row.created_at).getTime() : Date.now());
+  const createdAt =
+    payload?.createdAt ?? (row?.created_at ? new Date(row.created_at).getTime() : Date.now());
   return {
     ...payload,
     id: payload?.id ?? row?.id,
@@ -297,7 +321,7 @@ const fromRow = <T extends StorageEntity>(row: StorageRow<T>): T => {
 };
 
 export const saveParentRequest = async (
-  data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'>
+  data: Omit<ParentRequest, 'id' | 'createdAt' | 'type'>,
 ): Promise<SaveResult<ParentRequest>> => {
   const now = Date.now();
   const newRequest: ParentRequest = {
@@ -315,7 +339,12 @@ export const saveParentRequest = async (
 
 export const updateParentRequest = async (
   data: Partial<ParentRequest> & { id: string },
-  options?: { actor?: 'user' | 'admin'; note?: string; allowApprovedEdit?: boolean; forceStatusEvent?: boolean }
+  options?: {
+    actor?: 'user' | 'admin';
+    note?: string;
+    allowApprovedEdit?: boolean;
+    forceStatusEvent?: boolean;
+  },
 ): Promise<SaveResult<ParentRequest> | null> => {
   const existing = getLocalParents();
   const localPrev = existing.find((p) => p.id === data.id);
@@ -326,7 +355,7 @@ export const updateParentRequest = async (
 
   const now = Date.now();
   const statusChanged = typeof data.status !== 'undefined' && data.status !== prev.status;
-  const eventType = (statusChanged || options?.forceStatusEvent) ? 'status_changed' : 'updated';
+  const eventType = statusChanged || options?.forceStatusEvent ? 'status_changed' : 'updated';
 
   const updated = {
     ...prev,
@@ -338,7 +367,9 @@ export const updateParentRequest = async (
         at: now,
         type: eventType,
         by: options?.actor || 'user',
-        note: options?.note || (statusChanged ? `Статус: ${prev.status || 'new'} → ${data.status}` : 'Заявка обновлена'),
+        note:
+          options?.note ||
+          (statusChanged ? `Статус: ${prev.status || 'new'} → ${data.status}` : 'Заявка обновлена'),
       },
     ],
   } as ParentRequest;
@@ -346,7 +377,9 @@ export const updateParentRequest = async (
   return saveWithFallback('parents', updated);
 };
 
-export const resubmitParentRequest = async (id: string): Promise<SaveResult<ParentRequest> | null> => {
+export const resubmitParentRequest = async (
+  id: string,
+): Promise<SaveResult<ParentRequest> | null> => {
   const existing = getLocalParents();
   const localPrev = existing.find((p) => p.id === id);
   const remotePrev = localPrev ? null : await remoteGetById('parents', id);
@@ -367,14 +400,20 @@ export const resubmitParentRequest = async (id: string): Promise<SaveResult<Pare
   return saveWithFallback('parents', updated);
 };
 
-export const saveNannyProfile = async (data: Partial<NannyProfile>): Promise<SaveResult<NannyProfile>> => {
+export const saveNannyProfile = async (
+  data: Partial<NannyProfile>,
+): Promise<SaveResult<NannyProfile>> => {
   const existing = getLocalNannies();
   const currentUserId = await getCurrentUserId();
 
   if (data.id) {
     const index = existing.findIndex((p) => p.id === data.id);
     if (index !== -1) {
-      const updatedProfile = { ...existing[index], ...data, userId: currentUserId || existing[index].userId } as NannyProfile;
+      const updatedProfile = {
+        ...existing[index],
+        ...data,
+        userId: currentUserId || existing[index].userId,
+      } as NannyProfile;
       return saveWithFallback('nannies', updatedProfile);
     }
   }
@@ -450,11 +489,19 @@ function filterLocalParentsForUser(
   user: Partial<Pick<User, 'id' | 'email'>>,
 ): ParentRequest[] {
   const userId = String(user.id || '').trim();
-  const userEmail = String(user.email || '').trim().toLowerCase();
+  const userEmail = String(user.email || '')
+    .trim()
+    .toLowerCase();
 
   return items.filter((item) => {
     if (userId && item.requesterId === userId) return true;
-    if (userEmail && String(item.requesterEmail || '').trim().toLowerCase() === userEmail) return true;
+    if (
+      userEmail &&
+      String(item.requesterEmail || '')
+        .trim()
+        .toLowerCase() === userEmail
+    )
+      return true;
     return false;
   });
 }
@@ -531,7 +578,13 @@ export const clearTestData = async () => {
   const localNannies = getLocalNannies().filter((n) => !String(n.id || '').startsWith('test-'));
   setLocalParents(localParents);
   setLocalNannies(localNannies);
-  setPendingIds(STORAGE_KEY_PENDING_PARENTS, getPendingSyncIds('parents').filter((id) => !String(id).startsWith('test-')));
-  setPendingIds(STORAGE_KEY_PENDING_NANNIES, getPendingSyncIds('nannies').filter((id) => !String(id).startsWith('test-')));
+  setPendingIds(
+    STORAGE_KEY_PENDING_PARENTS,
+    getPendingSyncIds('parents').filter((id) => !String(id).startsWith('test-')),
+  );
+  setPendingIds(
+    STORAGE_KEY_PENDING_NANNIES,
+    getPendingSyncIds('nannies').filter((id) => !String(id).startsWith('test-')),
+  );
   await Promise.all([remoteClear('parents', true), remoteClear('nannies', true)]);
 };

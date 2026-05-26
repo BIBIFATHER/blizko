@@ -40,9 +40,7 @@ export const notifyUserStatusChanged = async (req: ParentRequest): Promise<boole
   };
 
   const statusLabel = statusMap[req.status || 'new'] || req.status || 'new';
-  const reason = req.rejectionInfo?.reasonText
-    ? ` Причина: ${req.rejectionInfo.reasonText}`
-    : '';
+  const reason = req.rejectionInfo?.reasonText ? ` Причина: ${req.rejectionInfo.reasonText}` : '';
 
   return sendToWebhook({
     event: 'user.parent_request_status_changed',

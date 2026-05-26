@@ -76,61 +76,91 @@ export const assessmentItems: AssessmentItem[] = [
   {
     id: 'l1',
     type: 'likert',
-    text: { ru: 'Я легко сохраняю спокойствие, когда планы меняются в последнюю минуту.', en: 'I easily stay calm when plans change at the last minute.' },
+    text: {
+      ru: 'Я легко сохраняю спокойствие, когда планы меняются в последнюю минуту.',
+      en: 'I easily stay calm when plans change at the last minute.',
+    },
     trait: 'stability',
   },
   {
     id: 'l2',
     type: 'likert',
-    text: { ru: 'Детям важнее чувствовать, что их понимают, чем просто следовать правилам.', en: 'It is more important for children to feel understood than to just follow rules.' },
+    text: {
+      ru: 'Детям важнее чувствовать, что их понимают, чем просто следовать правилам.',
+      en: 'It is more important for children to feel understood than to just follow rules.',
+    },
     trait: 'empathy',
   },
   {
     id: 'l3',
     type: 'likert',
-    text: { ru: 'Я всегда сообщаю родителям о мелких происшествиях, даже если ребенок не пострадал.', en: 'I always inform parents about minor incidents, even if the child was not hurt.' },
+    text: {
+      ru: 'Я всегда сообщаю родителям о мелких происшествиях, даже если ребенок не пострадал.',
+      en: 'I always inform parents about minor incidents, even if the child was not hurt.',
+    },
     trait: 'responsibility',
   },
   {
     id: 'l4',
     type: 'likert',
-    text: { ru: 'Четкий режим дня — залог хорошего настроения ребенка.', en: 'A strict daily schedule is the key to a child\'s good mood.' },
+    text: {
+      ru: 'Четкий режим дня — залог хорошего настроения ребенка.',
+      en: "A strict daily schedule is the key to a child's good mood.",
+    },
     trait: 'structure',
   },
   {
     id: 'l5',
     type: 'likert',
-    text: { ru: 'Я могу сдерживать свои эмоции, даже если ребенок ведет себя агрессивно.', en: 'I can control my emotions even if the child is behaving aggressively.' },
+    text: {
+      ru: 'Я могу сдерживать свои эмоции, даже если ребенок ведет себя агрессивно.',
+      en: 'I can control my emotions even if the child is behaving aggressively.',
+    },
     trait: 'stability',
   },
   {
     id: 'l6',
     type: 'likert',
-    text: { ru: 'Иногда нужно нарушить правила, чтобы установить доверие с ребенком.', en: 'Sometimes rules need to be bent to build trust with a child.' },
+    text: {
+      ru: 'Иногда нужно нарушить правила, чтобы установить доверие с ребенком.',
+      en: 'Sometimes rules need to be bent to build trust with a child.',
+    },
     trait: 'empathy',
   },
   {
     id: 'l7',
     type: 'likert',
-    text: { ru: 'Безопасность важнее, чем веселье или обучение.', en: 'Safety is more important than fun or learning.' },
+    text: {
+      ru: 'Безопасность важнее, чем веселье или обучение.',
+      en: 'Safety is more important than fun or learning.',
+    },
     trait: 'responsibility',
   },
   {
     id: 'l8',
     type: 'likert',
-    text: { ru: 'Мне комфортнее работать, когда у меня есть четкий список задач от родителей.', en: 'I feel more comfortable working when I have a clear task list from parents.' },
+    text: {
+      ru: 'Мне комфортнее работать, когда у меня есть четкий список задач от родителей.',
+      en: 'I feel more comfortable working when I have a clear task list from parents.',
+    },
     trait: 'structure',
   },
   {
     id: 'l9',
     type: 'likert',
-    text: { ru: 'Я быстро восстанавливаю силы после тяжелого рабочего дня.', en: 'I recover my energy quickly after a hard work day.' },
+    text: {
+      ru: 'Я быстро восстанавливаю силы после тяжелого рабочего дня.',
+      en: 'I recover my energy quickly after a hard work day.',
+    },
     trait: 'stability',
   },
   {
     id: 'l10',
     type: 'likert',
-    text: { ru: 'Я считаю, что няня должна быть частью семьи, а не просто персоналом.', en: 'I believe a nanny should be part of the family, not just staff.' },
+    text: {
+      ru: 'Я считаю, что няня должна быть частью семьи, а не просто персоналом.',
+      en: 'I believe a nanny should be part of the family, not just staff.',
+    },
     trait: 'empathy',
   },
   {
@@ -138,23 +168,41 @@ export const assessmentItems: AssessmentItem[] = [
     type: 'scenario',
     text: {
       ru: 'Ребенок (3 года) устраивает истерику в магазине, потому что вы не купили игрушку. Ваши действия?',
-      en: 'A child (3 y.o.) throws a tantrum in a store because you didn\'t buy a toy. Your action?',
+      en: "A child (3 y.o.) throws a tantrum in a store because you didn't buy a toy. Your action?",
     },
     options: [
       {
         id: 'a',
-        text: { ru: 'Спокойно пережду пик эмоций, обеспечив безопасность, затем обниму.', en: 'Calmly wait out the peak of emotions ensuring safety, then hug.' },
-        traits: [{ trait: 'empathy', value: 3 }, { trait: 'stability', value: 3 }],
+        text: {
+          ru: 'Спокойно пережду пик эмоций, обеспечив безопасность, затем обниму.',
+          en: 'Calmly wait out the peak of emotions ensuring safety, then hug.',
+        },
+        traits: [
+          { trait: 'empathy', value: 3 },
+          { trait: 'stability', value: 3 },
+        ],
       },
       {
         id: 'b',
-        text: { ru: 'Строго напомню о нашем уговоре и выведу из магазина.', en: 'Strictly remind about our agreement and take him out of the store.' },
-        traits: [{ trait: 'structure', value: 3 }, { trait: 'stability', value: 2 }],
+        text: {
+          ru: 'Строго напомню о нашем уговоре и выведу из магазина.',
+          en: 'Strictly remind about our agreement and take him out of the store.',
+        },
+        traits: [
+          { trait: 'structure', value: 3 },
+          { trait: 'stability', value: 2 },
+        ],
       },
       {
         id: 'c',
-        text: { ru: 'Попробую отвлечь его внимание на что-то другое интересное.', en: 'Try to distract his attention to something else interesting.' },
-        traits: [{ trait: 'responsibility', value: 2 }, { trait: 'empathy', value: 1 }],
+        text: {
+          ru: 'Попробую отвлечь его внимание на что-то другое интересное.',
+          en: 'Try to distract his attention to something else interesting.',
+        },
+        traits: [
+          { trait: 'responsibility', value: 2 },
+          { trait: 'empathy', value: 1 },
+        ],
       },
     ],
   },
@@ -163,22 +211,34 @@ export const assessmentItems: AssessmentItem[] = [
     type: 'scenario',
     text: {
       ru: 'Вы заметили, что у ребенка ссадина, но не видели момент падения. Родители вернутся через час.',
-      en: 'You notice the child has a scratch, but didn\'t see the fall. Parents return in an hour.',
+      en: "You notice the child has a scratch, but didn't see the fall. Parents return in an hour.",
     },
     options: [
       {
         id: 'a',
-        text: { ru: 'Обработаю рану и сообщу родителям сразу по их приходу.', en: 'Treat the wound and inform parents immediately upon their arrival.' },
+        text: {
+          ru: 'Обработаю рану и сообщу родителям сразу по их приходу.',
+          en: 'Treat the wound and inform parents immediately upon their arrival.',
+        },
         traits: [{ trait: 'structure', value: 2 }],
       },
       {
         id: 'b',
-        text: { ru: 'Сразу напишу родителям сообщение с фото, чтобы быть честной.', en: 'Immediately message parents with a photo to be honest.' },
-        traits: [{ trait: 'responsibility', value: 3 }, { trait: 'stability', value: 2 }],
+        text: {
+          ru: 'Сразу напишу родителям сообщение с фото, чтобы быть честной.',
+          en: 'Immediately message parents with a photo to be honest.',
+        },
+        traits: [
+          { trait: 'responsibility', value: 3 },
+          { trait: 'stability', value: 2 },
+        ],
       },
       {
         id: 'c',
-        text: { ru: 'Если ребенок не плачет, не буду заострять внимание.', en: 'If the child is not crying, I won\'t focus on it.' },
+        text: {
+          ru: 'Если ребенок не плачет, не буду заострять внимание.',
+          en: "If the child is not crying, I won't focus on it.",
+        },
         traits: [{ trait: 'structure', value: 1 }],
       },
     ],
@@ -188,22 +248,37 @@ export const assessmentItems: AssessmentItem[] = [
     type: 'scenario',
     text: {
       ru: 'Родители просят укладывать ребенка спать в 13:00, но он совсем не хочет и активно играет.',
-      en: 'Parents ask to put the child to sleep at 1:00 PM, but he doesn\'t want to and is playing actively.',
+      en: "Parents ask to put the child to sleep at 1:00 PM, but he doesn't want to and is playing actively.",
     },
     options: [
       {
         id: 'a',
-        text: { ru: 'Буду соблюдать режим: начну успокаивать его заранее, чтобы уложить вовремя.', en: 'Will follow the schedule: start calming him down in advance to put him to bed on time.' },
-        traits: [{ trait: 'structure', value: 3 }, { trait: 'responsibility', value: 2 }],
+        text: {
+          ru: 'Буду соблюдать режим: начну успокаивать его заранее, чтобы уложить вовремя.',
+          en: 'Will follow the schedule: start calming him down in advance to put him to bed on time.',
+        },
+        traits: [
+          { trait: 'structure', value: 3 },
+          { trait: 'responsibility', value: 2 },
+        ],
       },
       {
         id: 'b',
-        text: { ru: 'Позволю поиграть еще 30 минут, если он не выглядит уставшим.', en: 'Let him play for another 30 minutes if he doesn\'t look tired.' },
-        traits: [{ trait: 'empathy', value: 2 }, { trait: 'structure', value: 0 }],
+        text: {
+          ru: 'Позволю поиграть еще 30 минут, если он не выглядит уставшим.',
+          en: "Let him play for another 30 minutes if he doesn't look tired.",
+        },
+        traits: [
+          { trait: 'empathy', value: 2 },
+          { trait: 'structure', value: 0 },
+        ],
       },
       {
         id: 'c',
-        text: { ru: 'Предложу тихую игру в кровати вместо сна.', en: 'Offer a quiet game in bed instead of sleep.' },
+        text: {
+          ru: 'Предложу тихую игру в кровати вместо сна.',
+          en: 'Offer a quiet game in bed instead of sleep.',
+        },
         traits: [{ trait: 'empathy', value: 3 }],
       },
     ],
@@ -231,7 +306,12 @@ function safeJsonParse<T>(raw: string): T | null {
 
   const variants = [
     raw.trim(),
-    raw.trim().replace(/^```json\s*/i, '').replace(/^```/, '').replace(/```$/, '').trim(),
+    raw
+      .trim()
+      .replace(/^```json\s*/i, '')
+      .replace(/^```/, '')
+      .replace(/```$/, '')
+      .trim(),
   ];
 
   for (const variant of variants) {
@@ -310,7 +390,12 @@ function buildSignals(answers: Record<string, string>): AssessmentSignal[] {
     reportingEvidence.push(`l3:${getLikertAnswer(answers, 'l3')}`);
     reportingStrengths.push(l3);
   }
-  const reporting = buildSignal('transparent_reporting', 'positive', reportingEvidence, reportingStrengths);
+  const reporting = buildSignal(
+    'transparent_reporting',
+    'positive',
+    reportingEvidence,
+    reportingStrengths,
+  );
   if (reporting) signals.push(reporting);
 
   const routineEvidence: string[] = [];
@@ -383,7 +468,12 @@ function buildSignals(answers: Record<string, string>): AssessmentSignal[] {
     lowReportingEvidence.push(`l3:${getLikertAnswer(answers, 'l3')}`);
     lowReportingStrengths.push(1 - l3);
   }
-  const lowReporting = buildSignal('low_incident_reporting', 'watch', lowReportingEvidence, lowReportingStrengths);
+  const lowReporting = buildSignal(
+    'low_incident_reporting',
+    'watch',
+    lowReportingEvidence,
+    lowReportingStrengths,
+  );
   if (lowReporting) signals.push(lowReporting);
 
   const lowStructureEvidence: string[] = [];
@@ -400,7 +490,12 @@ function buildSignals(answers: Record<string, string>): AssessmentSignal[] {
     lowStructureEvidence.push(`l8:${getLikertAnswer(answers, 'l8')}`);
     lowStructureStrengths.push(1 - l8);
   }
-  const lowStructure = buildSignal('low_structure_preference', 'watch', lowStructureEvidence, lowStructureStrengths);
+  const lowStructure = buildSignal(
+    'low_structure_preference',
+    'watch',
+    lowStructureEvidence,
+    lowStructureStrengths,
+  );
   if (lowStructure) signals.push(lowStructure);
 
   return signals.sort((a, b) => b.strength - a.strength);
@@ -477,7 +572,9 @@ function buildModerationSummary(
   coverage: number,
   traits: Record<SoftSkillTrait, number>,
 ): string {
-  const topSignals = signals.slice(0, 3).map((signal) => getAssessmentSignalLabel(signal.signal, lang));
+  const topSignals = signals
+    .slice(0, 3)
+    .map((signal) => getAssessmentSignalLabel(signal.signal, lang));
   const watchSignals = signals
     .filter((signal) => signal.direction === 'watch')
     .map((signal) => getAssessmentSignalLabel(signal.signal, lang));
@@ -493,17 +590,25 @@ function buildModerationSummary(
     return [
       `Метод: rule_based_v1. Стиль: ${dominantStyle}. Coverage: ${Math.round(coverage * 100)}%.`,
       `Сильнее всего выражена черта: ${strongestTraitLabel[strongestTrait].ru} (${traits[strongestTrait]}%).`,
-      topSignals.length ? `Наблюдаемые сигналы: ${topSignals.join(', ')}.` : 'Сильных сигналов пока недостаточно.',
+      topSignals.length
+        ? `Наблюдаемые сигналы: ${topSignals.join(', ')}.`
+        : 'Сильных сигналов пока недостаточно.',
       watchSignals.length ? `Зоны внимания: ${watchSignals.join(', ')}.` : '',
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
 
   return [
     `Method: rule_based_v1. Style: ${dominantStyle}. Coverage: ${Math.round(coverage * 100)}%.`,
     `Strongest trait: ${strongestTraitLabel[strongestTrait].en} (${traits[strongestTrait]}%).`,
-    topSignals.length ? `Observed signals: ${topSignals.join(', ')}.` : 'Not enough strong signals yet.',
+    topSignals.length
+      ? `Observed signals: ${topSignals.join(', ')}.`
+      : 'Not enough strong signals yet.',
     watchSignals.length ? `Watchouts: ${watchSignals.join(', ')}.` : '',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 async function generateAiStructuredSummary(
@@ -525,7 +630,9 @@ async function generateAiStructuredSummary(
     candidateInfo?.about ? `About: ${candidateInfo.about}` : '',
     `Reflection answer 1: ${answers.t1 || ''}`,
     `Reflection answer 2: ${answers.t2 || ''}`,
-  ].filter(Boolean).join('\n');
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   try {
     const raw = await aiText(prompt, {
@@ -563,8 +670,12 @@ async function generateAiStructuredSummary(
       method: 'ai_structured_summary_v1',
       parentSafeSummary: parsed.parentSafeSummary.trim(),
       moderationNotes: parsed.moderationNotes.trim(),
-      extractedSignals: Array.isArray(parsed.extractedSignals) ? parsed.extractedSignals.filter(Boolean).slice(0, 5) : [],
-      watchouts: Array.isArray(parsed.watchouts) ? parsed.watchouts.filter(Boolean).slice(0, 5) : [],
+      extractedSignals: Array.isArray(parsed.extractedSignals)
+        ? parsed.extractedSignals.filter(Boolean).slice(0, 5)
+        : [],
+      watchouts: Array.isArray(parsed.watchouts)
+        ? parsed.watchouts.filter(Boolean).slice(0, 5)
+        : [],
       generatedAt: Date.now(),
     };
   } catch {
@@ -606,11 +717,14 @@ export function buildRuleBasedAssessment(
     }
   });
 
-  const traits = TRAIT_KEYS.reduce((acc, trait) => {
-    const normalized = Math.round((rawTraitScores[trait] / TRAIT_MAX_SCORES[trait]) * 100);
-    acc[trait] = Math.round(clamp01(normalized / 100) * 100);
-    return acc;
-  }, {} as Record<SoftSkillTrait, number>);
+  const traits = TRAIT_KEYS.reduce(
+    (acc, trait) => {
+      const normalized = Math.round((rawTraitScores[trait] / TRAIT_MAX_SCORES[trait]) * 100);
+      acc[trait] = Math.round(clamp01(normalized / 100) * 100);
+      return acc;
+    },
+    {} as Record<SoftSkillTrait, number>,
+  );
 
   const styleDelta = traits.empathy - traits.structure;
   let dominantStyle: SoftSkillsProfile['dominantStyle'] = 'Balanced';
@@ -651,7 +765,12 @@ export async function analyzeAssessment(
   candidateInfo?: AssessmentCandidateInfo,
 ): Promise<SoftSkillsProfile> {
   const profile = buildRuleBasedAssessment(answers, lang);
-  const aiStructuredSummary = await generateAiStructuredSummary(answers, lang, profile, candidateInfo);
+  const aiStructuredSummary = await generateAiStructuredSummary(
+    answers,
+    lang,
+    profile,
+    candidateInfo,
+  );
 
   if (!aiStructuredSummary) return profile;
 

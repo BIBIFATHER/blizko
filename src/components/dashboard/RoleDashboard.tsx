@@ -65,7 +65,9 @@ function TrendBars({ points }: { points: DashboardTrendPoint[] }) {
 
         return (
           <div key={point.label} className="flex h-full flex-col justify-end gap-2">
-            <div className="text-center text-[11px] font-semibold text-stone-500">{point.value}</div>
+            <div className="text-center text-[11px] font-semibold text-stone-500">
+              {point.value}
+            </div>
             <div
               className="rounded-t-[18px] bg-linear-to-t from-stone-900 via-stone-700 to-amber-300 shadow-[0_10px_20px_rgba(120,113,108,0.12)]"
               style={{ height: `${height}%` }}
@@ -133,8 +135,12 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
     : buildFamilyDashboardModel({ lang, requests, bookings });
 
   const primaryActionLabel = isNanny
-    ? (lang === 'ru' ? 'Открыть анкету няни' : 'Open nanny profile')
-    : (lang === 'ru' ? 'Открыть анкету семьи' : 'Open family request');
+    ? lang === 'ru'
+      ? 'Открыть анкету няни'
+      : 'Open nanny profile'
+    : lang === 'ru'
+      ? 'Открыть анкету семьи'
+      : 'Open family request';
 
   return (
     <div className="page-frame section-stack animate-fade-in">
@@ -179,15 +185,19 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
                 {lang === 'ru' ? 'Последняя синхронизация' : 'Last synced'}
               </p>
               <p className="mt-3 text-2xl font-semibold text-stone-950">
-                {lastLoadedAt ? new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
-                  day: '2-digit',
-                  month: 'short',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                }).format(lastLoadedAt) : '—'}
+                {lastLoadedAt
+                  ? new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', {
+                      day: '2-digit',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }).format(lastLoadedAt)
+                  : '—'}
               </p>
               <p className="mt-2 text-sm leading-6 text-stone-600">
-                {lang === 'ru' ? 'Дашборд собирается из реальных заявок, бронирований и статусов профиля.' : 'The dashboard is assembled from real requests, bookings, and profile states.'}
+                {lang === 'ru'
+                  ? 'Дашборд собирается из реальных заявок, бронирований и статусов профиля.'
+                  : 'The dashboard is assembled from real requests, bookings, and profile states.'}
               </p>
             </div>
 
@@ -220,43 +230,55 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
                   {lang === 'ru' ? 'Сводка' : 'Summary'}
                 </div>
                 <p className="mt-2 text-sm leading-6 text-stone-600">
-                  {lang === 'ru' ? 'Быстрый срез по активности, качеству и следующему полезному действию.' : 'A fast snapshot of activity, quality, and the next useful move.'}
+                  {lang === 'ru'
+                    ? 'Быстрый срез по активности, качеству и следующему полезному действию.'
+                    : 'A fast snapshot of activity, quality, and the next useful move.'}
                 </p>
               </div>
             </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {model.kpis.map((kpi) => {
-              const Icon = getKpiIcon(kpi.icon);
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {model.kpis.map((kpi) => {
+                const Icon = getKpiIcon(kpi.icon);
 
-              return (
-                <Card key={kpi.label} className={`p-5! ${toneClasses[kpi.tone]}`}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconWrapClasses[kpi.tone]}`}>
-                      <Icon size={18} />
+                return (
+                  <Card key={kpi.label} className={`p-5! ${toneClasses[kpi.tone]}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div
+                        className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconWrapClasses[kpi.tone]}`}
+                      >
+                        <Icon size={18} />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[11px] uppercase tracking-widest text-stone-400">
+                          {kpi.label}
+                        </div>
+                        <div className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-stone-900">
+                          {kpi.value}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-[11px] uppercase tracking-widest text-stone-400">{kpi.label}</div>
-                      <div className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-stone-900">{kpi.value}</div>
-                    </div>
-                  </div>
-                  <div className="mt-4 text-sm leading-6 text-stone-600">{kpi.helper}</div>
-                </Card>
-              );
-            })}
-          </div>
+                    <div className="mt-4 text-sm leading-6 text-stone-600">{kpi.helper}</div>
+                  </Card>
+                );
+              })}
+            </div>
           </section>
 
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
             <Card className="p-5! bg-white border-stone-100">
               <div className="mb-5 space-y-1">
-                <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">{model.trend.title}</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
+                  {model.trend.title}
+                </div>
                 <div className="text-sm text-stone-600">{model.trend.description}</div>
               </div>
 
               {loading ? (
                 <div className="secondary-card border-dashed bg-stone-50/70 px-4 py-10 text-center text-sm text-stone-500">
-                  {lang === 'ru' ? 'Загружаем реальные точки активности…' : 'Loading real activity points…'}
+                  {lang === 'ru'
+                    ? 'Загружаем реальные точки активности…'
+                    : 'Loading real activity points…'}
                 </div>
               ) : (
                 <TrendBars points={model.trend.points} />
@@ -272,14 +294,21 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
                 <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
                   {lang === 'ru' ? 'Контекст' : 'Context'}
                 </div>
-                <div className="text-xl font-semibold tracking-[-0.03em] text-stone-900">{model.callout.title}</div>
+                <div className="text-xl font-semibold tracking-[-0.03em] text-stone-900">
+                  {model.callout.title}
+                </div>
                 <p className="text-sm leading-6 text-stone-600">{model.callout.description}</p>
               </div>
 
               <div className="mt-5 space-y-3">
                 {model.callout.items.map((item) => (
-                  <div key={item.label} className="surface-panel secondary-card border-white/70 px-4 py-3">
-                    <div className="text-[11px] uppercase tracking-[0.08em] text-stone-400">{item.label}</div>
+                  <div
+                    key={item.label}
+                    className="surface-panel secondary-card border-white/70 px-4 py-3"
+                  >
+                    <div className="text-[11px] uppercase tracking-[0.08em] text-stone-400">
+                      {item.label}
+                    </div>
                     <div className="mt-1 text-sm font-medium text-stone-700">{item.value}</div>
                   </div>
                 ))}
@@ -289,12 +318,16 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
 
           <Card className="p-0! overflow-hidden bg-white border-stone-100">
             <div className="border-b border-stone-100 px-5 py-4">
-              <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">{model.table.title}</div>
+              <div className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-400">
+                {model.table.title}
+              </div>
             </div>
 
             {model.table.rows.length === 0 ? (
               <div className="px-5 py-10 text-center">
-                <div className="text-base font-semibold text-stone-800">{model.table.emptyTitle}</div>
+                <div className="text-base font-semibold text-stone-800">
+                  {model.table.emptyTitle}
+                </div>
                 <div className="mt-2 text-sm text-stone-500">{model.table.emptyDescription}</div>
               </div>
             ) : (
@@ -303,7 +336,10 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
                   <thead className="bg-stone-50/80">
                     <tr>
                       {model.table.columns.map((column) => (
-                        <th key={column} className="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-400">
+                        <th
+                          key={column}
+                          className="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-stone-400"
+                        >
                           {column}
                         </th>
                       ))}
@@ -314,13 +350,18 @@ export function RoleDashboard({ user, lang }: RoleDashboardProps) {
                       <tr key={row.id} className="border-t border-stone-100 align-top">
                         <td className="px-5 py-4">
                           <div className="text-sm font-medium text-stone-800">{row.primary}</div>
-                          {row.secondary && <div className="mt-1 text-sm text-stone-500">{row.secondary}</div>}
+                          {row.secondary && (
+                            <div className="mt-1 text-sm text-stone-500">{row.secondary}</div>
+                          )}
                         </td>
                         <td className="px-5 py-4">
                           <Badge variant={row.status.variant}>{row.status.label}</Badge>
                         </td>
                         {row.values.map((value) => (
-                          <td key={`${row.id}-${value}`} className="px-5 py-4 text-sm text-stone-600">
+                          <td
+                            key={`${row.id}-${value}`}
+                            className="px-5 py-4 text-sm text-stone-600"
+                          >
                             {value}
                           </td>
                         ))}

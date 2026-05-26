@@ -2,13 +2,13 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 interface SeoHeadProps {
-    title: string;
-    description: string;
-    canonical: string;
-    ogImage?: string;
-    robots?: string;
-    ogType?: string;
-    schema?: Record<string, unknown>;
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage?: string;
+  robots?: string;
+  ogType?: string;
+  schema?: Record<string, unknown>;
 }
 
 /**
@@ -16,39 +16,35 @@ interface SeoHeadProps {
  * Sets document.title, meta description, canonical, OG/Twitter tags, and JSON-LD schema.
  */
 export const SeoHead: React.FC<SeoHeadProps> = ({
-    title,
-    description,
-    canonical,
-    ogImage = '/og-image.png',
-    robots = 'index, follow',
-    ogType = 'website',
-    schema,
+  title,
+  description,
+  canonical,
+  ogImage = '/og-image.png',
+  robots = 'index, follow',
+  ogType = 'website',
+  schema,
 }) => {
-    return (
-        <Helmet>
-            <title>{title}</title>
-            <meta name="description" content={description} />
-            <meta name="robots" content={robots} />
-            <link rel="canonical" href={canonical} />
+  return (
+    <Helmet>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta name="robots" content={robots} />
+      <link rel="canonical" href={canonical} />
 
-            <meta property="og:title" content={title} />
-            <meta property="og:description" content={description} />
-            <meta property="og:url" content={canonical} />
-            <meta property="og:image" content={ogImage} />
-            <meta property="og:type" content={ogType} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={canonical} />
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:type" content={ogType} />
 
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content={title} />
-            <meta name="twitter:description" content={description} />
-            <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={ogImage} />
 
-            {schema && (
-                <script type="application/ld+json">
-                    {JSON.stringify(schema)}
-                </script>
-            )}
-        </Helmet>
-    );
+      {schema && <script type="application/ld+json">{JSON.stringify(schema)}</script>}
+    </Helmet>
+  );
 };
 
 export default SeoHead;

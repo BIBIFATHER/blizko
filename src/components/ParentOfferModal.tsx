@@ -38,7 +38,10 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
             <FileText size={20} className="text-sky-500" />
             <h3>{text.parentOfferTitle}</h3>
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-800 transition-colors">
+          <button
+            onClick={onClose}
+            className="text-stone-400 hover:text-stone-800 transition-colors"
+          >
             <X size={20} />
           </button>
         </div>

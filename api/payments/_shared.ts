@@ -1,13 +1,20 @@
 import type { Pool } from 'pg';
 
 export const MATCHING_FEE_RUB = 990;
-const ALLOWED_PAYMENT_STATUSES = ['pending', 'waiting_for_capture', 'succeeded', 'canceled'] as const;
+const ALLOWED_PAYMENT_STATUSES = [
+  'pending',
+  'waiting_for_capture',
+  'succeeded',
+  'canceled',
+] as const;
 
 function base64Encode(str: string): string {
   return Buffer.from(str).toString('base64');
 }
 
-export function isAllowedPaymentStatus(status: string): status is (typeof ALLOWED_PAYMENT_STATUSES)[number] {
+export function isAllowedPaymentStatus(
+  status: string,
+): status is (typeof ALLOWED_PAYMENT_STATUSES)[number] {
   return ALLOWED_PAYMENT_STATUSES.includes(status as (typeof ALLOWED_PAYMENT_STATUSES)[number]);
 }
 
@@ -48,11 +55,13 @@ export async function verifyPaymentWithYooKassa(paymentId: string): Promise<{
   }
 }
 
-export async function activatePaidParentRequest(pool: Pool, parentRequestId: string): Promise<boolean> {
-  const parentResult = await pool.query(
-    `SELECT id, payload FROM parents WHERE id = $1`,
-    [parentRequestId],
-  );
+export async function activatePaidParentRequest(
+  pool: Pool,
+  parentRequestId: string,
+): Promise<boolean> {
+  const parentResult = await pool.query(`SELECT id, payload FROM parents WHERE id = $1`, [
+    parentRequestId,
+  ]);
 
   if (parentResult.rowCount === 0) {
     console.warn(`Paid parent request not found: ${parentRequestId}`);
@@ -86,10 +95,10 @@ export async function activatePaidParentRequest(pool: Pool, parentRequestId: str
 
   delete updatedPayload.paymentDraftKey;
 
-  await pool.query(
-    `UPDATE parents SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2`,
-    [JSON.stringify(updatedPayload), parentRequestId],
-  );
+  await pool.query(`UPDATE parents SET payload = $1::jsonb, updated_at = NOW() WHERE id = $2`, [
+    JSON.stringify(updatedPayload),
+    parentRequestId,
+  ]);
 
   return true;
 }

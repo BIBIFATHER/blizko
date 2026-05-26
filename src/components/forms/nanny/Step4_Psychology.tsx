@@ -8,187 +8,245 @@ import { Language, NannyRiskProfile, SoftSkillsProfile } from '@/core/types';
 import { getAssessmentSignalLabel } from '@/services/assessment';
 
 interface Props {
-    lang: Language;
-    onFinalSubmit: () => void;
-    loading: boolean;
+  lang: Language;
+  onFinalSubmit: () => void;
+  loading: boolean;
 }
 
 export const Step4_Psychology: React.FC<Props> = ({ lang, onFinalSubmit, loading }) => {
-    const text = t[lang];
-    const {
-        formData,
-        softSkills, setSoftSkills,
-        riskProfile, setRiskProfile,
-        prevStep, isEditing
-    } = useNannyForm();
+  const text = t[lang];
+  const { formData, softSkills, setSoftSkills, riskProfile, setRiskProfile, prevStep, isEditing } =
+    useNannyForm();
 
-    const [showAssessment, setShowAssessment] = useState(false);
+  const [showAssessment, setShowAssessment] = useState(false);
 
-    const setSingleRiskValue = <K extends keyof NannyRiskProfile>(key: K) => (values: string[]) => {
-        const nextValue = values[0];
-        if (!nextValue) return;
-        setRiskProfile((prev) => ({ ...(prev || {}), [key]: nextValue as NannyRiskProfile[K] }));
+  const setSingleRiskValue =
+    <K extends keyof NannyRiskProfile>(key: K) =>
+    (values: string[]) => {
+      const nextValue = values[0];
+      if (!nextValue) return;
+      setRiskProfile((prev) => ({ ...(prev || {}), [key]: nextValue as NannyRiskProfile[K] }));
     };
 
-    const handleAssessmentComplete = (result: SoftSkillsProfile) => {
-        setSoftSkills(result);
-        setShowAssessment(false);
-    };
+  const handleAssessmentComplete = (result: SoftSkillsProfile) => {
+    setSoftSkills(result);
+    setShowAssessment(false);
+  };
 
-    return (
-        <div className="animate-fade-in space-y-6 pb-32">
-            <div className="section-label">
-                {lang === 'ru' ? 'Как вы работаете с детьми' : 'How you work with children'}
-            </div>
-            <p className="text-sm text-stone-500 -mt-3">
-                {lang === 'ru'
-                    ? 'Последний шаг — самый важный. Здесь семьи поймут, подходите ли вы друг другу.'
-                    : 'The last step — the most important one. This is where families understand if you\'re the right fit.'}
-            </p>
+  return (
+    <div className="animate-fade-in space-y-6 pb-32">
+      <div className="section-label">
+        {lang === 'ru' ? 'Как вы работаете с детьми' : 'How you work with children'}
+      </div>
+      <p className="text-sm text-stone-500 -mt-3">
+        {lang === 'ru'
+          ? 'Последний шаг — самый важный. Здесь семьи поймут, подходите ли вы друг другу.'
+          : "The last step — the most important one. This is where families understand if you're the right fit."}
+      </p>
 
-            <Card className={`transition-all duration-300 ${softSkills ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}>
-                <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full shrink-0 ${softSkills ? 'bg-[#7FA99B]/30 text-[#1C2B2D]' : 'bg-stone-100 text-stone-400'}`}>
-                        <BrainCircuit size={24} />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="font-semibold text-stone-800 mb-1">
-                            {softSkills ? text.testResultTitle : text.softSkillsTitle}
-                        </h3>
+      <Card
+        className={`transition-all duration-300 ${softSkills ? 'bg-[#EFF3F2] border-[#7FA99B]/40 shadow-sm' : 'bg-white/60 backdrop-blur-md border border-white/60 shadow-sm'}`}
+      >
+        <div className="flex items-start gap-4">
+          <div
+            className={`p-3 rounded-full shrink-0 ${softSkills ? 'bg-[#7FA99B]/30 text-[#1C2B2D]' : 'bg-stone-100 text-stone-400'}`}
+          >
+            <BrainCircuit size={24} />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-stone-800 mb-1">
+              {softSkills ? text.testResultTitle : text.softSkillsTitle}
+            </h3>
 
-                        {!softSkills && (
-                            <>
-                                <p className="text-sm text-stone-500 mb-3">{text.softSkillsDesc}</p>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowAssessment(true)}
-                                    className="text-sm font-medium text-[#2A6B6E] bg-[#EFF3F2] px-4 py-2 rounded-lg hover:bg-[#7FA99B]/20 transition-colors"
-                                >
-                                    {text.startTest}
-                                </button>
-                            </>
-                        )}
-
-                        {softSkills && (
-                            <div className="animate-fade-in">
-                                <div className="flex items-center gap-2 text-sm text-[#2A6B6E] font-medium mb-2">
-                                    <Check size={16} /> {text.testCompletedBadge}
-                                </div>
-                                <div className="bg-white/60 p-3 rounded-lg text-xs text-stone-600 italic leading-relaxed border border-[#7FA99B]/30">
-                                    "{softSkills.familySummary || softSkills.summary}"
-                                </div>
-                                {softSkills.signals?.length > 0 && (
-                                    <div className="mt-3 flex flex-wrap gap-1.5">
-                                        {softSkills.signals
-                                            .filter((signal) => signal.direction === 'positive')
-                                            .slice(0, 3)
-                                            .map((signal) => (
-                                                <span
-                                                    key={signal.signal}
-                                                    className="inline-flex items-center rounded-full bg-[#EFF3F2] px-2 py-1 text-[10px] font-medium text-[#2A6B6E]"
-                                                >
-                                                    {getAssessmentSignalLabel(signal.signal, lang)}
-                                                </span>
-                                            ))}
-                                    </div>
-                                )}
-                                {softSkills.coverage < 0.99 && (
-                                    <div className="mt-2 text-[11px] text-stone-500">
-                                        {lang === 'ru' ? 'Вывод предварительный: анкета заполнена не полностью.' : 'This is a preliminary read because the questionnaire is incomplete.'}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </Card>
-
-            <div className="bg-[#EFF3F2]/60 backdrop-blur-md border border-[#7FA99B]/40 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
-                <div className="text-sm font-semibold text-[#1C2B2D] mb-4">
-                    {lang === 'ru' ? 'Как я общаюсь' : 'How I communicate'}
-                </div>
-
-                <ChipGroup
-                    label={lang === 'ru' ? 'Если у ребенка истерика, ваш первый шаг:' : 'If a child has a tantrum, your first step:'}
-                    options={lang === 'ru' ? ['Успокоить эмоции', 'Переключить внимание', 'Обозначить границы'] : ['Calm emotions', 'Distract', 'Set boundaries']}
-                    selected={riskProfile?.tantrumFirstStep ? [riskProfile.tantrumFirstStep] : []}
-                    onChange={setSingleRiskValue('tantrumFirstStep')}
-                    single
-                />
-
-                <ChipGroup
-                    label={lang === 'ru' ? 'Ваш стиль дисциплины:' : 'Your discipline style:'}
-                    options={lang === 'ru' ? ['Мягкая', 'Структурная', 'Строгая'] : ['Gentle', 'Structured', 'Strict']}
-                    selected={riskProfile?.disciplineStyle ? [riskProfile.disciplineStyle] : []}
-                    onChange={setSingleRiskValue('disciplineStyle')}
-                    single
-                />
-
-                <ChipGroup
-                    label={lang === 'ru' ? 'Ваш стиль режима дня:' : 'Your routine style:'}
-                    options={lang === 'ru' ? ['Чёткая структура', 'Баланс', 'Гибкая адаптация'] : ['Clear structure', 'Balanced', 'Flexible adaptation']}
-                    selected={riskProfile?.routineStyle ? [riskProfile.routineStyle] : []}
-                    onChange={setSingleRiskValue('routineStyle')}
-                    single
-                />
-
-                <ChipGroup
-                    label={lang === 'ru' ? 'Коммуникация с родителями:' : 'Communication with parents:'}
-                    options={lang === 'ru' ? ['Минимум сообщений', 'Регулярно (2-3 раза)', 'Часто'] : ['Minimal messages', 'Regular (2-3 times)', 'Frequent']}
-                    selected={riskProfile?.communicationStyle ? [riskProfile.communicationStyle] : []}
-                    onChange={setSingleRiskValue('communicationStyle')}
-                    single
-                />
-
-                <ChipGroup
-                    label={lang === 'ru' ? 'Мои сильные стороны:' : 'My strengths:'}
-                    options={lang === 'ru' ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность'] : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']}
-                    selected={riskProfile?.strengths || []}
-                    onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), strengths: list }))}
-                />
-
-                <ChipGroup
-                    label={lang === 'ru' ? 'Стиль общения:' : 'Communication style:'}
-                    options={lang === 'ru'
-                        ? ['Логика', 'Ценности', 'Эмпатия', 'Лёгкость', 'Тихое присутствие', 'Действую, меньше слов']
-                        : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet presence', 'Action over words']
-                    }
-                    selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
-                    onChange={setSingleRiskValue('pcmType')}
-                    single
-                />
-
-                <div className="space-y-1">
-                    <label className="block text-xs text-stone-600">{lang === 'ru' ? 'В чем я хочу развиваться (честно о сложностях)' : 'Where I want to grow (honestly about challenges)'}</label>
-                    <input
-                        className="w-full text-sm border border-[#7FA99B]/50 rounded-lg px-3 py-2 bg-white outline-none focus:border-[#2A6B6E] focus:ring-2 focus:ring-[#2A6B6E]/20 transition-all shadow-inner"
-                        value={riskProfile?.notBestAt || ''}
-                        onChange={(e) => setRiskProfile((prev) => ({ ...(prev || {}), notBestAt: e.target.value }))}
-                        placeholder={lang === 'ru' ? 'Например: мне пока сложно дается выстраивание жестких границ' : 'For example: setting strict boundaries is still hard for me'}
-                    />
-                </div>
-            </div>
-
-            <div className="sticky-action-rail sticky-footer-fade flex gap-4">
-                <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
-                    {lang === 'ru' ? 'Назад' : 'Back'}
-                </Button>
-                <Button type="button" className="flex-1" onClick={onFinalSubmit} isLoading={loading} pulse={true}>
-                    {isEditing ? (lang === 'ru' ? 'Сохранить изменения' : 'Save Changes') : (lang === 'ru' ? 'Отправить анкету' : 'Submit profile')}
-                </Button>
-            </div>
-
-            {showAssessment && (
-                <BehavioralTestModal
-                    onClose={() => setShowAssessment(false)}
-                    onComplete={handleAssessmentComplete}
-                    lang={lang}
-                    candidateInfo={{
-                        experience: formData.experience,
-                        about: formData.about
-                    }}
-                />
+            {!softSkills && (
+              <>
+                <p className="text-sm text-stone-500 mb-3">{text.softSkillsDesc}</p>
+                <button
+                  type="button"
+                  onClick={() => setShowAssessment(true)}
+                  className="text-sm font-medium text-[#2A6B6E] bg-[#EFF3F2] px-4 py-2 rounded-lg hover:bg-[#7FA99B]/20 transition-colors"
+                >
+                  {text.startTest}
+                </button>
+              </>
             )}
+
+            {softSkills && (
+              <div className="animate-fade-in">
+                <div className="flex items-center gap-2 text-sm text-[#2A6B6E] font-medium mb-2">
+                  <Check size={16} /> {text.testCompletedBadge}
+                </div>
+                <div className="bg-white/60 p-3 rounded-lg text-xs text-stone-600 italic leading-relaxed border border-[#7FA99B]/30">
+                  "{softSkills.familySummary || softSkills.summary}"
+                </div>
+                {softSkills.signals?.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {softSkills.signals
+                      .filter((signal) => signal.direction === 'positive')
+                      .slice(0, 3)
+                      .map((signal) => (
+                        <span
+                          key={signal.signal}
+                          className="inline-flex items-center rounded-full bg-[#EFF3F2] px-2 py-1 text-[10px] font-medium text-[#2A6B6E]"
+                        >
+                          {getAssessmentSignalLabel(signal.signal, lang)}
+                        </span>
+                      ))}
+                  </div>
+                )}
+                {softSkills.coverage < 0.99 && (
+                  <div className="mt-2 text-[11px] text-stone-500">
+                    {lang === 'ru'
+                      ? 'Вывод предварительный: анкета заполнена не полностью.'
+                      : 'This is a preliminary read because the questionnaire is incomplete.'}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-    );
+      </Card>
+
+      <div className="bg-[#EFF3F2]/60 backdrop-blur-md border border-[#7FA99B]/40 shadow-sm rounded-3xl p-5 space-y-2 mt-8">
+        <div className="text-sm font-semibold text-[#1C2B2D] mb-4">
+          {lang === 'ru' ? 'Как я общаюсь' : 'How I communicate'}
+        </div>
+
+        <ChipGroup
+          label={
+            lang === 'ru'
+              ? 'Если у ребенка истерика, ваш первый шаг:'
+              : 'If a child has a tantrum, your first step:'
+          }
+          options={
+            lang === 'ru'
+              ? ['Успокоить эмоции', 'Переключить внимание', 'Обозначить границы']
+              : ['Calm emotions', 'Distract', 'Set boundaries']
+          }
+          selected={riskProfile?.tantrumFirstStep ? [riskProfile.tantrumFirstStep] : []}
+          onChange={setSingleRiskValue('tantrumFirstStep')}
+          single
+        />
+
+        <ChipGroup
+          label={lang === 'ru' ? 'Ваш стиль дисциплины:' : 'Your discipline style:'}
+          options={
+            lang === 'ru'
+              ? ['Мягкая', 'Структурная', 'Строгая']
+              : ['Gentle', 'Structured', 'Strict']
+          }
+          selected={riskProfile?.disciplineStyle ? [riskProfile.disciplineStyle] : []}
+          onChange={setSingleRiskValue('disciplineStyle')}
+          single
+        />
+
+        <ChipGroup
+          label={lang === 'ru' ? 'Ваш стиль режима дня:' : 'Your routine style:'}
+          options={
+            lang === 'ru'
+              ? ['Чёткая структура', 'Баланс', 'Гибкая адаптация']
+              : ['Clear structure', 'Balanced', 'Flexible adaptation']
+          }
+          selected={riskProfile?.routineStyle ? [riskProfile.routineStyle] : []}
+          onChange={setSingleRiskValue('routineStyle')}
+          single
+        />
+
+        <ChipGroup
+          label={lang === 'ru' ? 'Коммуникация с родителями:' : 'Communication with parents:'}
+          options={
+            lang === 'ru'
+              ? ['Минимум сообщений', 'Регулярно (2-3 раза)', 'Часто']
+              : ['Minimal messages', 'Regular (2-3 times)', 'Frequent']
+          }
+          selected={riskProfile?.communicationStyle ? [riskProfile.communicationStyle] : []}
+          onChange={setSingleRiskValue('communicationStyle')}
+          single
+        />
+
+        <ChipGroup
+          label={lang === 'ru' ? 'Мои сильные стороны:' : 'My strengths:'}
+          options={
+            lang === 'ru'
+              ? ['Спокойствие', 'Структура', 'Игра', 'Обучение', 'Активность']
+              : ['Calm', 'Structure', 'Play', 'Learning', 'Activity']
+          }
+          selected={riskProfile?.strengths || []}
+          onChange={(list) => setRiskProfile((prev) => ({ ...(prev || {}), strengths: list }))}
+        />
+
+        <ChipGroup
+          label={lang === 'ru' ? 'Стиль общения:' : 'Communication style:'}
+          options={
+            lang === 'ru'
+              ? [
+                  'Логика',
+                  'Ценности',
+                  'Эмпатия',
+                  'Лёгкость',
+                  'Тихое присутствие',
+                  'Действую, меньше слов',
+                ]
+              : ['Logic', 'Values', 'Empathy', 'Lightness', 'Quiet presence', 'Action over words']
+          }
+          selected={riskProfile?.pcmType ? [riskProfile.pcmType] : []}
+          onChange={setSingleRiskValue('pcmType')}
+          single
+        />
+
+        <div className="space-y-1">
+          <label className="block text-xs text-stone-600">
+            {lang === 'ru'
+              ? 'В чем я хочу развиваться (честно о сложностях)'
+              : 'Where I want to grow (honestly about challenges)'}
+          </label>
+          <input
+            className="w-full text-sm border border-[#7FA99B]/50 rounded-lg px-3 py-2 bg-white outline-none focus:border-[#2A6B6E] focus:ring-2 focus:ring-[#2A6B6E]/20 transition-all shadow-inner"
+            value={riskProfile?.notBestAt || ''}
+            onChange={(e) =>
+              setRiskProfile((prev) => ({ ...(prev || {}), notBestAt: e.target.value }))
+            }
+            placeholder={
+              lang === 'ru'
+                ? 'Например: мне пока сложно дается выстраивание жестких границ'
+                : 'For example: setting strict boundaries is still hard for me'
+            }
+          />
+        </div>
+      </div>
+
+      <div className="sticky-action-rail sticky-footer-fade flex gap-4">
+        <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
+          {lang === 'ru' ? 'Назад' : 'Back'}
+        </Button>
+        <Button
+          type="button"
+          className="flex-1"
+          onClick={onFinalSubmit}
+          isLoading={loading}
+          pulse={true}
+        >
+          {isEditing
+            ? lang === 'ru'
+              ? 'Сохранить изменения'
+              : 'Save Changes'
+            : lang === 'ru'
+              ? 'Отправить анкету'
+              : 'Submit profile'}
+        </Button>
+      </div>
+
+      {showAssessment && (
+        <BehavioralTestModal
+          onClose={() => setShowAssessment(false)}
+          onComplete={handleAssessmentComplete}
+          lang={lang}
+          candidateInfo={{
+            experience: formData.experience,
+            about: formData.about,
+          }}
+        />
+      )}
+    </div>
+  );
 };

@@ -38,12 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/nannies_public?select=id,payload,created_at&order=created_at.desc`, {
-      headers: {
-        apikey: supabaseServiceRoleKey,
-        Authorization: `Bearer ${supabaseServiceRoleKey}`,
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/nannies_public?select=id,payload,created_at&order=created_at.desc`,
+      {
+        headers: {
+          apikey: supabaseServiceRoleKey,
+          Authorization: `Bearer ${supabaseServiceRoleKey}`,
+        },
       },
-    });
+    );
 
     const data = await response.json().catch(() => []);
     if (!response.ok) {
@@ -53,9 +56,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const item = Array.isArray(data)
       ? data
           .map((row) => ({
-            ...(stripSensitiveFields((row?.payload || {}) as Record<string, unknown>)),
+            ...stripSensitiveFields((row?.payload || {}) as Record<string, unknown>),
             id: row?.payload?.id ?? row?.id,
-            createdAt: row?.payload?.createdAt ?? (row?.created_at ? new Date(row.created_at).getTime() : Date.now()),
+            createdAt:
+              row?.payload?.createdAt ??
+              (row?.created_at ? new Date(row.created_at).getTime() : Date.now()),
           }))
           .find((nanny) => idMatchesPrefix(nanny.id, shortId))
       : null;

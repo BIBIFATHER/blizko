@@ -53,7 +53,7 @@ async function _logShadowScoresAsync(
     nanny_id: r.nanny.id,
     heuristic_score: r.score,
     factors: r.factors || {},
-    weight_snapshot: null,  // filled by weight update cron later
+    weight_snapshot: null, // filled by weight update cron later
     score_at_match: r.score,
     display_position: index + 1,
     explore_flag: wildcardId != null && r.nanny.id === wildcardId,
@@ -65,16 +65,14 @@ async function _logShadowScoresAsync(
     // update display_position, explore_flag, score_at_match to reflect the latest
     // context before the outcome decision. outcome is absent from the row object
     // so Supabase never overwrites it in the UPDATE SET.
-    await supabase
-      .from('matching_outcomes')
-      .upsert(rows, { onConflict: 'parent_id,nanny_id' });
+    await supabase.from('matching_outcomes').upsert(rows, { onConflict: 'parent_id,nanny_id' });
   } catch {
     // Silent fail
   }
 }
 
 // ε-Greedy configuration
-const EPSILON = 0.10; // 10% exploration rate
+const EPSILON = 0.1; // 10% exploration rate
 
 /**
  * Apply ε-greedy exploration to ranked candidates.

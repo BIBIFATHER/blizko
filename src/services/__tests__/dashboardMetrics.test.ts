@@ -62,12 +62,28 @@ describe('buildDashboardMetrics', () => {
   it('uses unique session ids for funnel counts when analytics include session_id', () => {
     const now = new Date().toISOString();
     const events: AnalyticsEventRecord[] = [
-      { event: 'page_view', properties: { page: 'parent_form', source: 'form_start', session_id: 's1' }, timestamp: now },
-      { event: 'page_view', properties: { page: 'parent_form', source: 'form_start', session_id: 's1' }, timestamp: now },
-      { event: 'form_submitted', properties: { form_type: 'parent', session_id: 's1' }, timestamp: now },
+      {
+        event: 'page_view',
+        properties: { page: 'parent_form', source: 'form_start', session_id: 's1' },
+        timestamp: now,
+      },
+      {
+        event: 'page_view',
+        properties: { page: 'parent_form', source: 'form_start', session_id: 's1' },
+        timestamp: now,
+      },
+      {
+        event: 'form_submitted',
+        properties: { form_type: 'parent', session_id: 's1' },
+        timestamp: now,
+      },
       { event: 'matching_results_viewed', properties: { session_id: 's1' }, timestamp: now },
       { event: 'match_profile_opened', properties: { session_id: 's1' }, timestamp: now },
-      { event: 'page_view', properties: { page: 'parent_form', source: 'form_start', session_id: 's2' }, timestamp: now },
+      {
+        event: 'page_view',
+        properties: { page: 'parent_form', source: 'form_start', session_id: 's2' },
+        timestamp: now,
+      },
     ];
 
     const metrics = buildDashboardMetrics({

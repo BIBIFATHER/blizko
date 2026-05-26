@@ -1,4 +1,3 @@
-
 export type Language = 'ru' | 'en';
 
 export interface Review {
@@ -18,7 +17,12 @@ export interface ParentChangeEvent {
 }
 
 export interface RejectionInfo {
-  reasonCode?: 'profile_incomplete' | 'docs_missing' | 'budget_invalid' | 'contact_invalid' | 'other';
+  reasonCode?:
+    | 'profile_incomplete'
+    | 'docs_missing'
+    | 'budget_invalid'
+    | 'contact_invalid'
+    | 'other';
   reasonText?: string;
   rejectedAt?: number;
   rejectedBy?: 'admin';
@@ -115,7 +119,13 @@ export interface NormalizedResume {
 }
 
 export interface DocumentVerification {
-  type: 'passport' | 'medical_book' | 'recommendation_letter' | 'education_document' | 'resume' | 'other';
+  type:
+    | 'passport'
+    | 'medical_book'
+    | 'recommendation_letter'
+    | 'education_document'
+    | 'resume'
+    | 'other';
   status: 'verified' | 'rejected' | 'pending';
   documentNumber?: string;
   expiryDate?: string;
@@ -180,22 +190,22 @@ export interface SubmissionResult {
 export interface MatchCandidate {
   nanny: NannyProfile;
   score: number;
-  reasons: string[];           // machine reasons
-  humanExplanation: string;     // why this nanny fits (Peak-End: emotional moment)
-  trustBadges: TrustBadge[];   // Authority Bias: visual trust
+  reasons: string[]; // machine reasons
+  humanExplanation: string; // why this nanny fits (Peak-End: emotional moment)
+  trustBadges: TrustBadge[]; // Authority Bias: visual trust
   riskFlags?: { level: 'warning' | 'critical'; message: string; advice?: string }[];
 }
 
 export type TrustBadge =
-  | 'verified_docs'       // ✓ Документы проверены
-  | 'verified_moderation'  // ✓ Ручная модерация
-  | 'ai_checked'          // ✓ AI-проверка
-  | 'soft_skills'         // ✓ Soft skills оценены
-  | 'has_reviews';        // ✓ Есть отзывы
+  | 'verified_docs' // ✓ Документы проверены
+  | 'verified_moderation' // ✓ Ручная модерация
+  | 'ai_checked' // ✓ AI-проверка
+  | 'soft_skills' // ✓ Soft skills оценены
+  | 'has_reviews'; // ✓ Есть отзывы
 
 export interface MatchResult {
-  candidates: MatchCandidate[];  // 0-3 candidates (Paradox of Choice)
-  overallAdvice: string;         // context-specific advice for parent
+  candidates: MatchCandidate[]; // 0-3 candidates (Paradox of Choice)
+  overallAdvice: string; // context-specific advice for parent
   requestId?: string;
 }
 

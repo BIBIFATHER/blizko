@@ -18,7 +18,7 @@ export interface MatchFollowUpState {
 function readState(): MatchFollowUpState | null {
   try {
     const raw = getItem(MATCH_FOLLOW_UP_KEY);
-    return raw ? JSON.parse(raw) as MatchFollowUpState : null;
+    return raw ? (JSON.parse(raw) as MatchFollowUpState) : null;
   } catch {
     return null;
   }
@@ -40,7 +40,8 @@ export function saveMatchFollowUp(matchResult: MatchResult): void {
   if (typeof window === 'undefined' || !matchResult?.candidates?.length) return;
 
   const existing = readState();
-  const sameRequest = existing?.matchResult?.requestId && existing.matchResult.requestId === matchResult.requestId;
+  const sameRequest =
+    existing?.matchResult?.requestId && existing.matchResult.requestId === matchResult.requestId;
 
   if (sameRequest && existing) {
     writeState({ ...existing, matchResult });

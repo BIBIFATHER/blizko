@@ -1,10 +1,15 @@
 import { NannyProfile, User } from '@/core/types';
 
-const normalizeText = (value?: string) => String(value || '').trim().toLowerCase();
+const normalizeText = (value?: string) =>
+  String(value || '')
+    .trim()
+    .toLowerCase();
 const normalizeDigits = (value?: string) => String(value || '').replace(/\D+/g, '');
 
 function normalizeContact(value?: string): string {
-  const raw = String(value || '').trim().toLowerCase();
+  const raw = String(value || '')
+    .trim()
+    .toLowerCase();
   if (!raw) return '';
   if (raw.includes('@')) return raw;
 
@@ -22,7 +27,9 @@ export function findCurrentNannyProfile(
   }
 
   const normalizedName = normalizeText(user.name);
-  const contactCandidates = [normalizeContact(user.email), normalizeContact(user.phone)].filter(Boolean);
+  const contactCandidates = [normalizeContact(user.email), normalizeContact(user.phone)].filter(
+    Boolean,
+  );
 
   if (contactCandidates.length > 0) {
     const contactMatches = profiles.filter((profile) =>

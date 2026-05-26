@@ -1,6 +1,6 @@
 /**
  * Blizko Support Engine — Client Service
- * 
+ *
  * Works with support_tickets and support_messages tables.
  * Calls /api/ai-support for AI Concierge responses.
  */
@@ -81,7 +81,7 @@ export async function fetchTicketMessages(ticketId: string): Promise<SupportMess
 export async function sendUserMessage(
   ticketId: string,
   userId: string,
-  text: string
+  text: string,
 ): Promise<SupportMessage | null> {
   if (!supabase) return null;
 
@@ -117,13 +117,15 @@ export type ConciergeResponse = {
 export async function callConcierge(
   ticketId: string,
   userId: string,
-  message: string
+  message: string,
 ): Promise<ConciergeResponse> {
   try {
     // Get session token for server-side auth verification
     const authHeaders: Record<string, string> = { ...getTmaHeaders() };
     if (supabase) {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.access_token) {
         authHeaders['Authorization'] = `Bearer ${session.access_token}`;
       }
@@ -161,7 +163,7 @@ export async function callConcierge(
 
 export function subscribeToTicketMessages(
   ticketId: string,
-  onMessage: (m: SupportMessage) => void
+  onMessage: (m: SupportMessage) => void,
 ) {
   if (!supabase) return () => undefined;
 
@@ -175,7 +177,7 @@ export function subscribeToTicketMessages(
         table: 'support_messages',
         filter: `ticket_id=eq.${ticketId}`,
       },
-      (payload) => onMessage(payload.new as SupportMessage)
+      (payload) => onMessage(payload.new as SupportMessage),
     )
     .subscribe();
 

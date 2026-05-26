@@ -1,7 +1,7 @@
-import React, { useEffect, useCallback, useRef } from "react";
-import { X } from "lucide-react";
+import React, { useEffect, useCallback, useRef } from 'react';
+import { X } from 'lucide-react';
 
-type ModalVariant = "sheet" | "card";
+type ModalVariant = 'sheet' | 'card';
 
 interface ModalShellProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -15,33 +15,31 @@ interface ModalShellProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const overlayClasses: Record<ModalVariant, string> = {
   sheet:
-    "fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-fade-in",
-  card:
-    "fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in",
+    'fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/45 backdrop-blur-sm animate-fade-in',
+  card: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in',
 };
 
 const panelClasses: Record<ModalVariant, string> = {
   sheet:
-    "w-full max-w-md sheet-modal card-cloud overflow-hidden animate-slide-up relative border-b-0 sm:border-b",
-  card:
-    "w-full max-w-md rounded-3xl card-cloud border border-stone-100/80 overflow-hidden animate-slide-up flex flex-col max-h-[85vh]",
+    'w-full max-w-md sheet-modal card-cloud overflow-hidden animate-slide-up relative border-b-0 sm:border-b',
+  card: 'w-full max-w-md rounded-3xl card-cloud border border-stone-100/80 overflow-hidden animate-slide-up flex flex-col max-h-[85vh]',
 };
 
 export const ModalShell: React.FC<ModalShellProps> = ({
   children,
-  className = "",
-  closeLabel = "Закрыть",
+  className = '',
+  closeLabel = 'Закрыть',
   onClose,
-  panelClassName = "",
+  panelClassName = '',
   showCloseButton = false,
-  variant = "card",
+  variant = 'card',
   ...props
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Escape" && onClose) {
+      if (e.key === 'Escape' && onClose) {
         onClose();
       }
     },
@@ -49,8 +47,8 @@ export const ModalShell: React.FC<ModalShellProps> = ({
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {

@@ -1,5 +1,5 @@
-import { vi } from "vitest";
-import type { VercelResponse } from "@vercel/node";
+import { vi } from 'vitest';
+import type { VercelResponse } from '@vercel/node';
 
 export type MockVercelResponse = VercelResponse & {
   statusCode?: number;

@@ -19,7 +19,7 @@ function getClientIP(req: VercelRequest): string {
   const xff = req.headers['x-forwarded-for'];
   if (typeof xff === 'string') return xff.split(',')[0].trim();
   if (Array.isArray(xff)) return xff[0]?.trim() || 'unknown';
-  return req.headers['x-real-ip'] as string || 'unknown';
+  return (req.headers['x-real-ip'] as string) || 'unknown';
 }
 
 /**
@@ -36,7 +36,7 @@ export function maskPhone(phone: string): string {
 export function auditLog(
   req: VercelRequest,
   eventType: string,
-  details: Record<string, unknown> = {}
+  details: Record<string, unknown> = {},
 ): void {
   const { url, key } = getSupabaseConfig();
   if (!url || !key) return;
@@ -44,9 +44,9 @@ export function auditLog(
   const row = {
     event_type: eventType,
     ip_address: getClientIP(req),
-    phone: details.phone as string || null,
-    user_id: details.userId as string || null,
-    tma_user_id: details.tmaUserId as number || null,
+    phone: (details.phone as string) || null,
+    user_id: (details.userId as string) || null,
+    tma_user_id: (details.tmaUserId as number) || null,
     details,
   };
 
@@ -54,11 +54,13 @@ export function auditLog(
   fetch(`${url}/rest/v1/security_audit_log`, {
     method: 'POST',
     headers: {
-      'apikey': key,
-      'Authorization': `Bearer ${key}`,
+      apikey: key,
+      Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json',
-      'Prefer': 'return=minimal',
+      Prefer: 'return=minimal',
     },
     body: JSON.stringify(row),
-  }).catch(() => { /* silently ignore */ });
+  }).catch(() => {
+    /* silently ignore */
+  });
 }

@@ -4,8 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import '../index.css';
 import App from '../App';
-import { setStorageAdapter } from "@/core/platform/storage";
-import { webStorageAdapter } from "@/web/platform/storage.web";
+import { setStorageAdapter } from '@/core/platform/storage';
+import { webStorageAdapter } from '@/web/platform/storage.web';
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -21,7 +21,7 @@ setStorageAdapter(webStorageAdapter);
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+  throw new Error('Could not find root element to mount to');
 }
 
 import { HelmetProvider } from 'react-helmet-async';
@@ -34,5 +34,5 @@ root.render(
         <App />
       </BrowserRouter>
     </HelmetProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

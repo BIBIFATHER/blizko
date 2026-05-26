@@ -69,7 +69,12 @@ function buildProfileForScoring(input: NannyReadinessInput): NannyProfile {
   };
 }
 
-function getMissingFields(input: NannyReadinessInput, hasResume: boolean, hasTrustDocs: boolean, hasVerifiedTrust: boolean): string[] {
+function getMissingFields(
+  input: NannyReadinessInput,
+  hasResume: boolean,
+  hasTrustDocs: boolean,
+  hasVerifiedTrust: boolean,
+): string[] {
   const missing: string[] = [];
 
   if (!input.name) missing.push('имя');
@@ -89,15 +94,21 @@ function getMissingFields(input: NannyReadinessInput, hasResume: boolean, hasTru
 
 export function getNannyReadinessSnapshot(input: NannyReadinessInput): NannyReadinessSnapshot {
   const docs = input.documents || [];
-  const hasResume = docs.some((doc) => doc.type === 'resume' && !!doc.fileDataUrl) || Boolean(input.resumeNormalized);
+  const hasResume =
+    docs.some((doc) => doc.type === 'resume' && !!doc.fileDataUrl) ||
+    Boolean(input.resumeNormalized);
   const hasTrustDocs = docs.some((doc) => doc.type !== 'resume' && !!doc.fileDataUrl);
-  const hasVerifiedTrust = Boolean(input.isVerified) || docs.some((doc) => doc.status === 'verified');
+  const hasVerifiedTrust =
+    Boolean(input.isVerified) || docs.some((doc) => doc.status === 'verified');
   const missingFields = getMissingFields(input, hasResume, hasTrustDocs, hasVerifiedTrust);
 
   const profile = buildProfileForScoring(input);
   const qualityScore = getQualityScore(profile);
 
-  const coreReady = missingFields.filter((field) => !['резюме', 'рекомендации', 'проверка/верификация'].includes(field)).length === 0;
+  const coreReady =
+    missingFields.filter(
+      (field) => !['резюме', 'рекомендации', 'проверка/верификация'].includes(field),
+    ).length === 0;
   const readyForReview = coreReady && hasResume && hasTrustDocs;
   const qualityApproved = readyForReview && hasVerifiedTrust && qualityScore >= 70;
 
@@ -143,11 +154,22 @@ export function getNannyReadinessLabel(snapshot: NannyReadinessSnapshot, lang: L
   return labels[snapshot.stage][lang];
 }
 
-export function getNannySuccessRecommendations(snapshot: NannyReadinessSnapshot, lang: Language): string[] {
+export function getNannySuccessRecommendations(
+  snapshot: NannyReadinessSnapshot,
+  lang: Language,
+): string[] {
   if (snapshot.qualityApproved) {
     return lang === 'ru'
-      ? ['Профиль готов к показу семьям', 'Поддерживайте календарь и контакты актуальными', 'Добавьте видеовизитку для более тёплого первого впечатления']
-      : ['Profile is ready to be shown to families', 'Keep availability and contact details up to date', 'Add a video intro for a warmer first impression'];
+      ? [
+          'Профиль готов к показу семьям',
+          'Поддерживайте календарь и контакты актуальными',
+          'Добавьте видеовизитку для более тёплого первого впечатления',
+        ]
+      : [
+          'Profile is ready to be shown to families',
+          'Keep availability and contact details up to date',
+          'Add a video intro for a warmer first impression',
+        ];
   }
 
   const recsRu: string[] = [];

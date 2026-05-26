@@ -3,7 +3,11 @@ import { setCors } from '../_cors.js';
 import { verifyBearerUser } from '../_auth.js';
 import { rateLimit } from '../_rate-limit.js';
 import { getDbPool } from '../_db.js';
-import { activatePaidParentRequest, isAllowedPaymentStatus, verifyPaymentWithYooKassa } from './_shared.js';
+import {
+  activatePaidParentRequest,
+  isAllowedPaymentStatus,
+  verifyPaymentWithYooKassa,
+} from './_shared.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
@@ -67,10 +71,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const realStatus = verification.status;
     if (realStatus !== payment.status) {
-      await pool.query(
-        `UPDATE payments SET status = $1, updated_at = NOW() WHERE id = $2`,
-        [realStatus, payment.id],
-      );
+      await pool.query(`UPDATE payments SET status = $1, updated_at = NOW() WHERE id = $2`, [
+        realStatus,
+        payment.id,
+      ]);
     }
 
     if (realStatus === 'succeeded' && payment.parent_request_id) {

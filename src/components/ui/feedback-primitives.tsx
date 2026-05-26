@@ -1,29 +1,29 @@
-import React from "react";
-import { AlertCircle, Info, ShieldCheck } from "lucide-react";
+import React from 'react';
+import { AlertCircle, Info, ShieldCheck } from 'lucide-react';
 
-import { Button } from "./form-primitives";
+import { Button } from './form-primitives';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: "trust" | "warning" | "status" | "success" | "danger" | "info" | "neutral";
+  variant?: 'trust' | 'warning' | 'status' | 'success' | 'danger' | 'info' | 'neutral';
   icon?: React.ReactNode;
   className?: string;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
   children,
-  variant = "trust",
+  variant = 'trust',
   icon,
-  className = "",
+  className = '',
 }) => {
   const variants = {
-    trust: "trust-badge",
-    warning: "trust-badge trust-badge-warning",
-    status: "trust-badge bg-red-100 text-red-700",
-    success: "trust-badge bg-green-100 text-green-700",
-    danger: "trust-badge bg-red-100 text-red-700",
-    info: "trust-badge trust-badge-blue",
-    neutral: "trust-badge bg-stone-100 text-stone-600",
+    trust: 'trust-badge',
+    warning: 'trust-badge trust-badge-warning',
+    status: 'trust-badge bg-red-100 text-red-700',
+    success: 'trust-badge bg-green-100 text-green-700',
+    danger: 'trust-badge bg-red-100 text-red-700',
+    info: 'trust-badge trust-badge-blue',
+    neutral: 'trust-badge bg-stone-100 text-stone-600',
   } as const;
 
   const defaultIcons = {
@@ -55,7 +55,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   value,
   label,
   showPercent = false,
-  className = "",
+  className = '',
 }) => {
   const clamped = Math.min(100, Math.max(0, value));
 
@@ -65,9 +65,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         <div className="mb-1.5 flex items-center justify-between">
           {label && <span className="text-xs font-medium text-stone-500">{label}</span>}
           {showPercent && (
-            <span className="text-xs font-semibold text-amber-700">
-              {Math.round(clamped)}%
-            </span>
+            <span className="text-xs font-semibold text-amber-700">{Math.round(clamped)}%</span>
           )}
         </div>
       )}
@@ -77,7 +75,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         aria-valuenow={Math.round(clamped)}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={label || "Progress"}
+        aria-label={label || 'Progress'}
       >
         <div className="progress-bar-fill" style={{ width: `${clamped}%` }} />
       </div>
@@ -86,7 +84,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 };
 
 interface StatusIndicatorProps {
-  status: "active" | "pending" | "inactive";
+  status: 'active' | 'pending' | 'inactive';
   label?: string;
   className?: string;
 }
@@ -94,18 +92,18 @@ interface StatusIndicatorProps {
 export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   status,
   label,
-  className = "",
+  className = '',
 }) => {
   const dotClass = {
-    active: "status-dot status-dot-active",
-    pending: "status-dot status-dot-pending",
-    inactive: "status-dot status-dot-inactive",
+    active: 'status-dot status-dot-active',
+    pending: 'status-dot status-dot-pending',
+    inactive: 'status-dot status-dot-inactive',
   } as const;
 
   const labelColor = {
-    active: "text-green-700",
-    pending: "text-amber-700",
-    inactive: "text-stone-400",
+    active: 'text-green-700',
+    pending: 'text-amber-700',
+    inactive: 'text-stone-400',
   } as const;
 
   return (
@@ -131,7 +129,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   description,
   actionLabel,
   onAction,
-  className = "",
+  className = '',
 }) => (
   <div className={`empty-state ${className}`}>
     {icon && <div className="empty-state-icon">{icon}</div>}
@@ -149,14 +147,8 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({
-  className = "",
-  ...props
-}) => (
-  <div
-    className={`animate-pulse rounded-2xl bg-stone-100/80 ${className}`}
-    {...props}
-  />
+export const Skeleton: React.FC<SkeletonProps> = ({ className = '', ...props }) => (
+  <div className={`animate-pulse rounded-2xl bg-stone-100/80 ${className}`} {...props} />
 );
 
 interface ErrorStateProps {
@@ -167,10 +159,10 @@ interface ErrorStateProps {
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
-  title = "Что-то пошло не так",
-  description = "Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз.",
+  title = 'Что-то пошло не так',
+  description = 'Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз.',
   onRetry,
-  className = "",
+  className = '',
 }) => (
   <div className={`empty-state ${className}`}>
     <div className="empty-state-icon bg-red-50 text-red-500">

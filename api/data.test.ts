@@ -131,7 +131,7 @@ describe('api/data handler', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => ([
+        json: async () => [
           {
             id: 'parent-1',
             payload: {
@@ -142,7 +142,7 @@ describe('api/data handler', () => {
             },
             created_at: '2026-04-08T00:00:00.000Z',
           },
-        ]),
+        ],
       }),
     );
 

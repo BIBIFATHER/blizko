@@ -275,7 +275,12 @@ a {
 .cloud-blob-peach {
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(181, 98, 42, 0.34) 0%, rgba(245, 237, 229, 0.54) 70%, transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(181, 98, 42, 0.34) 0%,
+    rgba(245, 237, 229, 0.54) 70%,
+    transparent 100%
+  );
   top: -100px;
   right: -100px;
   animation-delay: 0s;
@@ -284,7 +289,12 @@ a {
 .cloud-blob-mint {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(127, 169, 155, 0.42) 0%, rgba(232, 243, 244, 0.56) 70%, transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(127, 169, 155, 0.42) 0%,
+    rgba(232, 243, 244, 0.56) 70%,
+    transparent 100%
+  );
   top: 35%;
   left: -150px;
   animation-delay: -7s;
@@ -293,7 +303,12 @@ a {
 .cloud-blob-lavender {
   width: 380px;
   height: 380px;
-  background: radial-gradient(circle, rgba(30, 95, 99, 0.22) 0%, rgba(200, 224, 226, 0.42) 70%, transparent 100%);
+  background: radial-gradient(
+    circle,
+    rgba(30, 95, 99, 0.22) 0%,
+    rgba(200, 224, 226, 0.42) 70%,
+    transparent 100%
+  );
   bottom: 5%;
   right: -100px;
   animation-delay: -13s;

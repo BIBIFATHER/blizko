@@ -2,7 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, ArrowLeft, Loader2 } from 'lucide-react';
 import { Language, ChatMessage } from '@/core/types';
 import { t } from '@/core/i18n/translations';
-import { fetchMatchMessages, getOrCreateMatchThread, sendMatchMessage, subscribeToMatchMessages } from '@/services/matchChat';
+import {
+  fetchMatchMessages,
+  getOrCreateMatchThread,
+  sendMatchMessage,
+  subscribeToMatchMessages,
+} from '@/services/matchChat';
 
 interface NannyChatModalProps {
   bookingId: string;
@@ -14,7 +19,15 @@ interface NannyChatModalProps {
   lang: Language;
 }
 
-export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nannyName, currentUserName, currentUserId, currentUserRole, onClose, lang }) => {
+export const NannyChatModal: React.FC<NannyChatModalProps> = ({
+  bookingId,
+  nannyName,
+  currentUserName,
+  currentUserId,
+  currentUserRole,
+  onClose,
+  lang,
+}) => {
   const text = t[lang];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -49,7 +62,7 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nanny
           senderId: m.sender_id,
           senderName: m.sender_id === currentUserId ? currentUserName : nannyName,
           timestamp: new Date(m.created_at).getTime(),
-        }))
+        })),
       );
 
       unsubscribe = subscribeToMatchMessages(thread.id, (m) => {
@@ -125,13 +138,22 @@ export const NannyChatModal: React.FC<NannyChatModalProps> = ({ bookingId, nanny
               <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                    isMine ? 'bg-[#E7FFDB] text-stone-800 rounded-tr-sm' : 'bg-white text-stone-800 rounded-tl-sm'
+                    isMine
+                      ? 'bg-[#E7FFDB] text-stone-800 rounded-tr-sm'
+                      : 'bg-white text-stone-800 rounded-tl-sm'
                   }`}
                 >
-                  {msg.senderName && !isMine && <div className="text-[10px] opacity-60 mb-0.5">{msg.senderName}</div>}
+                  {msg.senderName && !isMine && (
+                    <div className="text-[10px] opacity-60 mb-0.5">{msg.senderName}</div>
+                  )}
                   {msg.text}
-                  <div className={`text-[10px] text-right mt-1 opacity-50 ${isMine ? 'text-green-900' : 'text-stone-400'}`}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div
+                    className={`text-[10px] text-right mt-1 opacity-50 ${isMine ? 'text-green-900' : 'text-stone-400'}`}
+                  >
+                    {new Date(msg.timestamp).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </div>
                 </div>
               </div>

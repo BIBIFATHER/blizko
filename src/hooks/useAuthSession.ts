@@ -9,7 +9,7 @@ function toAppUser(
     phone?: string | null;
     user_metadata?: Record<string, unknown>;
   },
-  previous: User | null
+  previous: User | null,
 ): User {
   return {
     role: previous?.role,

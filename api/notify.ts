@@ -64,7 +64,7 @@ async function sendResendEmail(to: string, subject: string, text: string) {
 async function sendTelegramMessage(
   chatId: string,
   text: string,
-  options?: { parse_mode?: 'HTML' | 'Markdown'; reply_markup?: Record<string, unknown> }
+  options?: { parse_mode?: 'HTML' | 'Markdown'; reply_markup?: Record<string, unknown> },
 ) {
   const botToken = envWithLocalFallback('TELEGRAM_BOT_TOKEN');
   if (!botToken) {
@@ -109,7 +109,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const verifiedAdmin = Boolean(verifiedUser?.email && adminEmails.includes(verifiedUser.email));
 
   const body = (req.body || {}) as NotifyPayload;
-  const channel = String(body.channel || '').trim().toLowerCase();
+  const channel = String(body.channel || '')
+    .trim()
+    .toLowerCase();
   const event = String(body.event || 'unknown');
   const subject = String(body.subject || 'Blizko уведомление');
   const text = String(body.text || '');
@@ -129,10 +131,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const chatId = String(
-        (!hasInternalToken && isAllowedClientTelegramEvent)
+        !hasInternalToken && isAllowedClientTelegramEvent
           ? envWithLocalFallback('TELEGRAM_ADMIN_CHAT_ID')
-          : (body.chat_id || envWithLocalFallback('TELEGRAM_ADMIN_CHAT_ID'))
-      || '').trim();
+          : body.chat_id || envWithLocalFallback('TELEGRAM_ADMIN_CHAT_ID') || '',
+      ).trim();
       const message = String(body.text || body.message || '').trim();
       if (!chatId || !message) {
         return res.status(400).json({ ok: false, error: 'chat_id and message are required' });

@@ -20,9 +20,7 @@ export type MatchMessage = {
 
 const ensureParticipant = async (threadId: string, userId: string, role: 'family' | 'nanny') => {
   if (!supabase) return;
-  await supabase
-    .from('chat_participants')
-    .upsert({ thread_id: threadId, user_id: userId, role });
+  await supabase.from('chat_participants').upsert({ thread_id: threadId, user_id: userId, role });
 };
 
 export async function getOrCreateMatchThread(params: {
@@ -45,7 +43,11 @@ export async function getOrCreateMatchThread(params: {
   if (existing) {
     await ensureParticipant(existing.id, currentUserId, currentUserRole);
     if (otherUserId) {
-      await ensureParticipant(existing.id, otherUserId, currentUserRole === 'family' ? 'nanny' : 'family');
+      await ensureParticipant(
+        existing.id,
+        otherUserId,
+        currentUserRole === 'family' ? 'nanny' : 'family',
+      );
     }
     return existing as MatchThread;
   }
@@ -63,7 +65,11 @@ export async function getOrCreateMatchThread(params: {
 
   await ensureParticipant(created.id, currentUserId, currentUserRole);
   if (otherUserId) {
-    await ensureParticipant(created.id, otherUserId, currentUserRole === 'family' ? 'nanny' : 'family');
+    await ensureParticipant(
+      created.id,
+      otherUserId,
+      currentUserRole === 'family' ? 'nanny' : 'family',
+    );
   }
 
   return created as MatchThread;
@@ -83,7 +89,7 @@ export async function sendMatchMessage(
   threadId: string,
   senderId: string,
   text: string,
-  options?: { bookingId?: string; senderRole?: 'family' | 'nanny' }
+  options?: { bookingId?: string; senderRole?: 'family' | 'nanny' },
 ): Promise<MatchMessage | null> {
   if (!supabase) return null;
 
@@ -112,8 +118,13 @@ export function subscribeToMatchMessages(threadId: string, onMessage: (m: MatchM
     .channel(`match-thread-${threadId}`)
     .on(
       'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `thread_id=eq.${threadId}` },
-      (payload) => onMessage(payload.new as MatchMessage)
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'chat_messages',
+        filter: `thread_id=eq.${threadId}`,
+      },
+      (payload) => onMessage(payload.new as MatchMessage),
     )
     .subscribe();
 

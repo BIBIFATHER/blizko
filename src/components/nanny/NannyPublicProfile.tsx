@@ -1,6 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, Star, ShieldCheck, Award, Heart, Users, ArrowRight, MessageCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  MapPin,
+  Clock,
+  Star,
+  ShieldCheck,
+  Award,
+  Heart,
+  Users,
+  ArrowRight,
+  MessageCircle,
+} from 'lucide-react';
 import { NannyProfile, Language } from '@/core/types';
 import { idFromSlug } from '@/core/utils/slugify';
 import { getAssessmentSignalLabel } from '@/services/assessment';
@@ -12,9 +23,21 @@ interface NannyPublicProfileProps {
 }
 
 const BADGE_CONFIG = {
-  verified_moderation: { icon: ShieldCheck, label: 'Профиль проверен', color: 'text-emerald-700 bg-emerald-50 border-emerald-100' },
-  soft_skills: { icon: Heart, label: 'Характер и стиль изучены', color: 'text-rose-700 bg-rose-50 border-rose-100' },
-  has_reviews: { icon: Users, label: 'Есть отзывы семей', color: 'text-amber-700 bg-amber-50 border-amber-100' },
+  verified_moderation: {
+    icon: ShieldCheck,
+    label: 'Профиль проверен',
+    color: 'text-emerald-700 bg-emerald-50 border-emerald-100',
+  },
+  soft_skills: {
+    icon: Heart,
+    label: 'Характер и стиль изучены',
+    color: 'text-rose-700 bg-rose-50 border-rose-100',
+  },
+  has_reviews: {
+    icon: Users,
+    label: 'Есть отзывы семей',
+    color: 'text-amber-700 bg-amber-50 border-amber-100',
+  },
 };
 
 const DEFAULT_OG_IMAGE = 'https://www.blizko.app/icons/icon-512.png';
@@ -51,7 +74,8 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
           dominantStyle: 'Empathetic',
           summary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
           familySummary: 'Спокойная, внимательная и бережно выстраивает контакт с ребёнком.',
-          moderationSummary: 'Высокая эмпатия, устойчивое поведение, без выраженных рисковых сигналов.',
+          moderationSummary:
+            'Высокая эмпатия, устойчивое поведение, без выраженных рисковых сигналов.',
           completedAt: Date.now(),
           coverage: 0.86,
           confidenceReason: 'full_answers',
@@ -74,18 +98,34 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               signal: 'transparent_reporting',
               strength: 0.78,
               direction: 'positive',
-              evidence: ['Готова коротко и регулярно сообщать семье о состоянии ребёнка и режиме дня.'],
+              evidence: [
+                'Готова коротко и регулярно сообщать семье о состоянии ребёнка и режиме дня.',
+              ],
             },
           ],
         },
-        about: 'Работаю с детьми 0–7 лет, внимательно отношусь к режиму и эмоциональному комфорту ребёнка.',
+        about:
+          'Работаю с детьми 0–7 лет, внимательно отношусь к режиму и эмоциональному комфорту ребёнка.',
         skills: ['Развивающие игры', 'Монтессори', 'Подготовка к школе'],
         childAges: ['0-1', '1-3', '3-6'],
         reviews: [
-          { id: 'r1', authorName: 'Мария', rating: 5, text: 'Очень спокойная и внимательная няня.', date: Date.now() },
-          { id: 'r2', authorName: 'Екатерина', rating: 5, text: 'Дочка быстро привыкла, всё прошло отлично.', date: Date.now() },
+          {
+            id: 'r1',
+            authorName: 'Мария',
+            rating: 5,
+            text: 'Очень спокойная и внимательная няня.',
+            date: Date.now(),
+          },
+          {
+            id: 'r2',
+            authorName: 'Екатерина',
+            rating: 5,
+            text: 'Дочка быстро привыкла, всё прошло отлично.',
+            date: Date.now(),
+          },
         ],
-        photo: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
+        photo:
+          'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
         createdAt: Date.now(),
         type: 'nanny',
       });
@@ -164,27 +204,44 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
 
   const trustSignals = [
     nanny.isVerified
-      ? { icon: ShieldCheck, label: BADGE_CONFIG.verified_moderation.label, className: 'bg-emerald-50 text-emerald-800' }
+      ? {
+          icon: ShieldCheck,
+          label: BADGE_CONFIG.verified_moderation.label,
+          className: 'bg-emerald-50 text-emerald-800',
+        }
       : null,
     nanny.softSkills
-      ? { icon: Heart, label: BADGE_CONFIG.soft_skills.label, className: 'bg-rose-50 text-rose-800' }
+      ? {
+          icon: Heart,
+          label: BADGE_CONFIG.soft_skills.label,
+          className: 'bg-rose-50 text-rose-800',
+        }
       : null,
     nanny.reviews && nanny.reviews.length > 0
-      ? { icon: Users, label: BADGE_CONFIG.has_reviews.label, className: 'bg-amber-50 text-amber-800' }
+      ? {
+          icon: Users,
+          label: BADGE_CONFIG.has_reviews.label,
+          className: 'bg-amber-50 text-amber-800',
+        }
       : null,
-  ].filter(Boolean) as Array<{ icon: React.ComponentType<{ size?: number; className?: string }>; label: string; className: string }>;
+  ].filter(Boolean) as Array<{
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    label: string;
+    className: string;
+  }>;
 
   const quickFacts = [
     nanny.district || nanny.city
       ? { icon: MapPin, label: nanny.district ? `${nanny.district}, ${nanny.city}` : nanny.city }
       : null,
-    nanny.experience
-      ? { icon: Clock, label: nanny.experience }
-      : null,
+    nanny.experience ? { icon: Clock, label: nanny.experience } : null,
     nanny.expectedRate
       ? { icon: Award, label: `${nanny.expectedRate}${lang === 'ru' ? ' / час' : ' / hour'}` }
       : null,
-  ].filter(Boolean) as Array<{ icon: React.ComponentType<{ size?: number; className?: string }>; label: string }>;
+  ].filter(Boolean) as Array<{
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    label: string;
+  }>;
 
   const seoTitle = `${nanny.name} — ${lang === 'ru' ? `Няня в ${nanny.city}` : `Nanny in ${nanny.city}`} | Blizko`;
   const seoDescription = nanny.about?.trim()
@@ -203,7 +260,11 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
   };
 
   return (
-    <article className="page-frame animate-fade-in py-4 pb-16 md:py-8" itemScope itemType="https://schema.org/Person">
+    <article
+      className="page-frame animate-fade-in py-4 pb-16 md:py-8"
+      itemScope
+      itemType="https://schema.org/Person"
+    >
       <SeoHead
         title={seoTitle}
         description={seoDescription}
@@ -234,7 +295,11 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               <div className="relative shrink-0">
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[2rem] bg-linear-to-br from-amber-100 via-[#ecd7b3] to-[#d8b886] shadow-sm ring-2 ring-white/80">
                   {nanny.photo ? (
-                    <img src={nanny.photo} alt={nanny.name} className="h-full w-full object-cover" />
+                    <img
+                      src={nanny.photo}
+                      alt={nanny.name}
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <span className="text-3xl font-bold text-amber-700">{nanny.name[0]}</span>
                   )}
@@ -247,11 +312,19 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               </div>
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-[2.1rem] leading-[0.98] text-stone-950 md:text-5xl" itemProp="name">
+                <h1
+                  className="text-[2.1rem] leading-[0.98] text-stone-950 md:text-5xl"
+                  itemProp="name"
+                >
                   {nanny.name}
                 </h1>
                 <p className="mt-2 max-w-[28ch] text-sm leading-7 text-stone-600">
-                  {nanny.softSkills?.familySummary || nanny.softSkills?.summary || nanny.about || (lang === 'ru' ? 'Спокойный профиль для бережного знакомства и дальнейшего диалога.' : 'A calm profile for a careful introduction and conversation.')}
+                  {nanny.softSkills?.familySummary ||
+                    nanny.softSkills?.summary ||
+                    nanny.about ||
+                    (lang === 'ru'
+                      ? 'Спокойный профиль для бережного знакомства и дальнейшего диалога.'
+                      : 'A calm profile for a careful introduction and conversation.')}
                 </p>
                 {avgRating && (
                   <div className="mt-3 flex items-center gap-1.5">
@@ -308,18 +381,22 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-400">
                 {text.profileOpenWhyTitle}
               </p>
-              <p className="mt-3 text-sm leading-7 text-stone-600">
-                {text.profileOpenWhyBody}
-              </p>
+              <p className="mt-3 text-sm leading-7 text-stone-600">{text.profileOpenWhyBody}</p>
             </div>
 
             {nanny.expectedRate && (
               <div className="hero-stat">
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{lang === 'ru' ? 'Ставка' : 'Rate'}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">
+                    {lang === 'ru' ? 'Ставка' : 'Rate'}
+                  </span>
                   <div>
-                    <span className="text-2xl font-semibold text-stone-950">{nanny.expectedRate}</span>
-                    <span className="ml-1 text-xs text-stone-400">{lang === 'ru' ? '/ час' : '/ hour'}</span>
+                    <span className="text-2xl font-semibold text-stone-950">
+                      {nanny.expectedRate}
+                    </span>
+                    <span className="ml-1 text-xs text-stone-400">
+                      {lang === 'ru' ? '/ час' : '/ hour'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -334,7 +411,9 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
           <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
             {text.profileAboutTitle}
           </div>
-          <p className="text-sm text-stone-700 leading-7" itemProp="description">{nanny.about}</p>
+          <p className="text-sm text-stone-700 leading-7" itemProp="description">
+            {nanny.about}
+          </p>
         </section>
       )}
 
@@ -373,9 +452,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               <div className="text-[11px] uppercase tracking-[0.16em] font-bold text-stone-400 mb-2">
                 {text.profileReviewsTitle}
               </div>
-              <p className="text-sm leading-6 text-stone-600">
-                {text.profileReviewsBody}
-              </p>
+              <p className="text-sm leading-6 text-stone-600">{text.profileReviewsBody}</p>
             </div>
             {avgRating && (
               <div className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800">
@@ -385,7 +462,10 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
           </div>
           <div className="space-y-3">
             {nanny.reviews.slice(0, 3).map((review) => (
-              <div key={review.id} className="rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(246,243,238,0.96))] p-4 shadow-cloud-soft">
+              <div
+                key={review.id}
+                className="rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(246,243,238,0.96))] p-4 shadow-cloud-soft"
+              >
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold text-stone-800">{review.authorName}</span>
                   <div className="flex items-center gap-0.5">
@@ -419,7 +499,10 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               </div>
               <div className="flex flex-wrap gap-2">
                 {nanny.skills.map((skill) => (
-                  <span key={skill} className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-semibold text-stone-700">
+                  <span
+                    key={skill}
+                    className="rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-semibold text-stone-700"
+                  >
                     {skill}
                   </span>
                 ))}
@@ -434,7 +517,10 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
               </div>
               <div className="flex flex-wrap gap-2">
                 {nanny.childAges.map((age) => (
-                  <span key={age} className="rounded-full bg-amber-50 px-3 py-1.5 text-[11px] font-semibold text-amber-800">
+                  <span
+                    key={age}
+                    className="rounded-full bg-amber-50 px-3 py-1.5 text-[11px] font-semibold text-amber-800"
+                  >
                     {age}
                   </span>
                 ))}
@@ -456,7 +542,9 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
           </Link>
           <div className="flex items-center justify-center gap-1.5 text-center text-[11px] text-stone-400">
             <MessageCircle size={11} />
-            {lang === 'ru' ? 'Куратор поможет организовать встречу' : 'The curator will arrange the introduction'}
+            {lang === 'ru'
+              ? 'Куратор поможет организовать встречу'
+              : 'The curator will arrange the introduction'}
           </div>
         </div>
       </div>

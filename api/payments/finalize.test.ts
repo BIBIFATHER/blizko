@@ -1,17 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { VercelRequest } from '@vercel/node';
 
-const {
-  poolQuery,
-  verifyBearerUser,
-  activatePaidParentRequest,
-  verifyPaymentWithYooKassa,
-} = vi.hoisted(() => ({
-  poolQuery: vi.fn(),
-  verifyBearerUser: vi.fn(),
-  activatePaidParentRequest: vi.fn(),
-  verifyPaymentWithYooKassa: vi.fn(),
-}));
+const { poolQuery, verifyBearerUser, activatePaidParentRequest, verifyPaymentWithYooKassa } =
+  vi.hoisted(() => ({
+    poolQuery: vi.fn(),
+    verifyBearerUser: vi.fn(),
+    activatePaidParentRequest: vi.fn(),
+    verifyPaymentWithYooKassa: vi.fn(),
+  }));
 
 vi.mock('../_cors.js', () => ({
   setCors: vi.fn(),
@@ -91,9 +87,6 @@ describe('api/payments/finalize handler', () => {
       expect.stringContaining('UPDATE payments SET status = $1'),
       ['succeeded', 'payment-1'],
     );
-    expect(activatePaidParentRequest).toHaveBeenCalledWith(
-      expect.any(Object),
-      'parent-1',
-    );
+    expect(activatePaidParentRequest).toHaveBeenCalledWith(expect.any(Object), 'parent-1');
   });
 });

@@ -42,13 +42,10 @@ function getClientIP(req: VercelRequest): string {
   const xff = req.headers['x-forwarded-for'];
   if (typeof xff === 'string') return xff.split(',')[0].trim();
   if (Array.isArray(xff)) return xff[0]?.trim() || 'unknown';
-  return req.headers['x-real-ip'] as string || 'unknown';
+  return (req.headers['x-real-ip'] as string) || 'unknown';
 }
 
-export function rateLimit(
-  req: VercelRequest,
-  opts: RateLimitOptions = {}
-): RateLimitResult {
+export function rateLimit(req: VercelRequest, opts: RateLimitOptions = {}): RateLimitResult {
   const { windowMs = 60_000, max = 10, prefix = '' } = opts;
   const ip = getClientIP(req);
   const key = `${prefix}:${ip}`;

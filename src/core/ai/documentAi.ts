@@ -1,5 +1,5 @@
-import { DocumentVerification, Language } from "../types";
-import { aiImage } from "./aiGateway";
+import { DocumentVerification, Language } from '../types';
+import { aiImage } from './aiGateway';
 
 const SchemaType = {
   OBJECT: 'OBJECT',
@@ -11,8 +11,8 @@ const SchemaType = {
 
 export const analyzeDocument = async (
   file: File,
-  type: DocumentVerification["type"],
-  lang: Language = "ru"
+  type: DocumentVerification['type'],
+  lang: Language = 'ru',
 ): Promise<DocumentVerification> => {
   try {
     const demoFallback = (reason?: string) =>
@@ -20,17 +20,17 @@ export const analyzeDocument = async (
         setTimeout(() => {
           resolve({
             type,
-            status: "verified",
+            status: 'verified',
             aiConfidence: 65,
             aiNotes:
-              lang === "ru"
+              lang === 'ru'
                 ? `Частичный режим: документ сохранён, но AI-распознавание ограничено${reason ? ` (${reason})` : ''}.`
                 : `Partial mode: document saved, but AI recognition is limited${reason ? ` (${reason})` : ''}.`,
             verifiedAt: Date.now(),
-            documentNumber: "AUTO-PARSE",
+            documentNumber: 'AUTO-PARSE',
             expiryDate: undefined,
             normalizedResume:
-              type === "resume"
+              type === 'resume'
                 ? {
                     fullName: undefined,
                     city: undefined,
@@ -50,7 +50,11 @@ export const analyzeDocument = async (
       const trimmed = raw.trim();
       const variants = [
         trimmed,
-        trimmed.replace(/^```json\s*/i, '').replace(/^```/, '').replace(/```$/, '').trim(),
+        trimmed
+          .replace(/^```json\s*/i, '')
+          .replace(/^```/, '')
+          .replace(/```$/, '')
+          .trim(),
       ];
       for (const v of variants) {
         try {
@@ -66,7 +70,7 @@ export const analyzeDocument = async (
 1. Check if it looks like a valid document for this type.
 2. Extract document number and expiry date if visible.
 3. If type is resume, extract structured fields for unified profile format.
-4. Provide short verification notes in ${lang === "ru" ? "Russian" : "English"}.
+4. Provide short verification notes in ${lang === 'ru' ? 'Russian' : 'English'}.
 
 Return JSON with:
 - status: 'verified' | 'rejected'
@@ -84,11 +88,11 @@ Return JSON with:
   - skills: string[]|null`;
 
     const responseText = await aiImage(file, prompt, {
-      responseMimeType: "application/json",
+      responseMimeType: 'application/json',
       responseSchema: {
         type: SchemaType.OBJECT,
         properties: {
-          status: { type: SchemaType.STRING, enum: ["verified", "rejected"] },
+          status: { type: SchemaType.STRING, enum: ['verified', 'rejected'] },
           confidence: { type: SchemaType.INTEGER },
           notes: { type: SchemaType.STRING },
           docNumber: { type: SchemaType.STRING, nullable: true },
@@ -111,7 +115,7 @@ Return JSON with:
             },
           },
         },
-        required: ["status", "confidence", "notes"],
+        required: ['status', 'confidence', 'notes'],
       },
     });
 
@@ -136,25 +140,24 @@ Return JSON with:
 
     return {
       type,
-      status: result.status === "verified" ? "verified" : "rejected",
+      status: result.status === 'verified' ? 'verified' : 'rejected',
       aiConfidence: result.confidence || 0,
-      aiNotes:
-        result.notes || (lang === "ru" ? "Ошибка анализа" : "Analysis error"),
+      aiNotes: result.notes || (lang === 'ru' ? 'Ошибка анализа' : 'Analysis error'),
       verifiedAt: Date.now(),
       documentNumber: result.docNumber || undefined,
       expiryDate: result.expiry || undefined,
       normalizedResume: result.normalizedResume || undefined,
     };
   } catch (error) {
-    console.error("AI Analysis Error:", error);
+    console.error('AI Analysis Error:', error);
     return {
       type,
-      status: "verified",
+      status: 'verified',
       aiConfidence: 50,
       aiNotes:
-        lang === "ru"
-          ? "AI не смог полностью обработать файл. Документ сохранён, проверьте и заполните поля вручную."
-          : "AI could not fully process the file. Document is saved, please review and fill fields manually.",
+        lang === 'ru'
+          ? 'AI не смог полностью обработать файл. Документ сохранён, проверьте и заполните поля вручную.'
+          : 'AI could not fully process the file. Document is saved, please review and fill fields manually.',
       verifiedAt: Date.now(),
       normalizedResume:
         type === 'resume'

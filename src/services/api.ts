@@ -7,7 +7,9 @@ export const sendToWebhook = async (payload: object): Promise<boolean> => {
   try {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (supabase) {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session?.access_token) {
         headers.Authorization = `Bearer ${session.access_token}`;
       }

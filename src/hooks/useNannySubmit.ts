@@ -3,9 +3,15 @@ import { Language, NannyProfile, SubmissionResult } from '@/core/types';
 import { saveNannyProfile } from '@/services/storage';
 import { sendToWebhook } from '@/services/api';
 import { trackFormSubmit, trackNannyReadyForMatch } from '@/services/analytics';
-import { getNannyReadinessSnapshot, getNannySuccessRecommendations } from '@/services/nannyReadiness';
+import {
+  getNannyReadinessSnapshot,
+  getNannySuccessRecommendations,
+} from '@/services/nannyReadiness';
 
-function generateNannyRegistrationResult(language: Language, data: Partial<NannyProfile>): SubmissionResult {
+function generateNannyRegistrationResult(
+  language: Language,
+  data: Partial<NannyProfile>,
+): SubmissionResult {
   const readiness = getNannyReadinessSnapshot(data);
 
   return {

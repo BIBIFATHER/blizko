@@ -1,6 +1,6 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback } from 'react';
 
-type TooltipPosition = "top" | "bottom";
+type TooltipPosition = 'top' | 'bottom';
 
 interface TooltipProps {
   content: React.ReactNode;
@@ -12,8 +12,8 @@ interface TooltipProps {
 export const Tooltip: React.FC<TooltipProps> = ({
   content,
   children,
-  position = "top",
-  className = "",
+  position = 'top',
+  className = '',
 }) => {
   const [visible, setVisible] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,8 +28,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
   }, []);
 
   const positionClasses: Record<TooltipPosition, string> = {
-    top: "bottom-full left-1/2 -translate-x-1/2 mb-2",
-    bottom: "top-full left-1/2 -translate-x-1/2 mt-2",
+    top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
+    bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
   };
 
   return (

@@ -4,7 +4,15 @@ import type { Language, NannyProfile, ParentRequest } from '@/core/types';
 
 export type DashboardBadgeVariant = 'trust' | 'warning' | 'info' | 'neutral' | 'success' | 'danger';
 export type DashboardKpiTone = 'stone' | 'amber' | 'sky' | 'emerald' | 'indigo';
-export type DashboardIconName = 'clipboard' | 'shield' | 'calendar' | 'check' | 'sparkles' | 'star' | 'file' | 'clock';
+export type DashboardIconName =
+  | 'clipboard'
+  | 'shield'
+  | 'calendar'
+  | 'check'
+  | 'sparkles'
+  | 'star'
+  | 'file'
+  | 'clock';
 
 export interface DashboardKpi {
   icon: DashboardIconName;
@@ -124,18 +132,34 @@ function buildTrendSummary(points: DashboardTrendPoint[], lang: Language): strin
   const previous = points.slice(0, -3).reduce((sum, point) => sum + point.value, 0);
 
   if (recent === 0 && previous === 0) {
-    return copy(lang, 'Пока нет недавней активности в доступных источниках.', 'No recent activity in the available sources yet.');
+    return copy(
+      lang,
+      'Пока нет недавней активности в доступных источниках.',
+      'No recent activity in the available sources yet.',
+    );
   }
 
   if (recent > previous) {
-    return copy(lang, 'Последние недели активнее предыдущего окна.', 'The latest weeks are more active than the previous window.');
+    return copy(
+      lang,
+      'Последние недели активнее предыдущего окна.',
+      'The latest weeks are more active than the previous window.',
+    );
   }
 
   if (recent < previous) {
-    return copy(lang, 'Активность в последних неделях снизилась.', 'Recent activity is below the previous window.');
+    return copy(
+      lang,
+      'Активность в последних неделях снизилась.',
+      'Recent activity is below the previous window.',
+    );
   }
 
-  return copy(lang, 'Активность держится примерно на одном уровне.', 'Activity is roughly flat across the current window.');
+  return copy(
+    lang,
+    'Активность держится примерно на одном уровне.',
+    'Activity is roughly flat across the current window.',
+  );
 }
 
 function buildWeeklyTrend(timestamps: Array<number | null>, lang: Language): DashboardTrendPoint[] {
@@ -146,7 +170,9 @@ function buildWeeklyTrend(timestamps: Array<number | null>, lang: Language): Das
   for (let index = 0; index < BUCKET_COUNT; index += 1) {
     const bucketStart = start + index * WEEK_MS;
     const bucketEnd = bucketStart + WEEK_MS;
-    const count = timestamps.filter((timestamp) => timestamp && timestamp >= bucketStart && timestamp < bucketEnd).length;
+    const count = timestamps.filter(
+      (timestamp) => timestamp && timestamp >= bucketStart && timestamp < bucketEnd,
+    ).length;
 
     points.push({
       label: formatDate(bucketStart, lang),
@@ -163,11 +189,16 @@ export function buildFamilyDashboardModel(params: {
   bookings: Booking[];
 }): DashboardViewModel {
   const { lang, requests, bookings } = params;
-  const sortedRequests = [...requests].sort((left, right) => Number(right.updatedAt || right.createdAt) - Number(left.updatedAt || left.createdAt));
+  const sortedRequests = [...requests].sort(
+    (left, right) =>
+      Number(right.updatedAt || right.createdAt) - Number(left.updatedAt || left.createdAt),
+  );
   const latestRequest = sortedRequests[0];
   const openRequests = requests.filter((request) => request.status !== 'rejected').length;
   const approvedRequests = requests.filter((request) => request.status === 'approved').length;
-  const liveBookings = bookings.filter((booking) => ['pending', 'confirmed', 'active'].includes(booking.status)).length;
+  const liveBookings = bookings.filter((booking) =>
+    ['pending', 'confirmed', 'active'].includes(booking.status),
+  ).length;
   const completedBookings = bookings.filter((booking) => booking.status === 'completed').length;
   const rejectedRequests = requests.filter((request) => request.status === 'rejected').length;
 
@@ -181,7 +212,11 @@ export function buildFamilyDashboardModel(params: {
 
   return {
     eyebrow: copy(lang, 'Семейный кабинет', 'Family dashboard'),
-    title: copy(lang, 'Главные сигналы по заявкам и бронированиям', 'Core signals for requests and bookings'),
+    title: copy(
+      lang,
+      'Главные сигналы по заявкам и бронированиям',
+      'Core signals for requests and bookings',
+    ),
     description: copy(
       lang,
       'Минимальный рабочий дашборд для семьи: что отправлено, что одобрено и что уже перешло в живые бронирования.',
@@ -197,9 +232,14 @@ export function buildFamilyDashboardModel(params: {
         icon: 'clipboard',
         label: copy(lang, 'Открытые заявки', 'Open requests'),
         value: String(openRequests),
-        helper: rejectedRequests > 0
-          ? copy(lang, `Требуют доработки: ${rejectedRequests}`, `Need rework: ${rejectedRequests}`)
-          : copy(lang, 'Без блокирующих возвратов', 'No blocking rework items'),
+        helper:
+          rejectedRequests > 0
+            ? copy(
+                lang,
+                `Требуют доработки: ${rejectedRequests}`,
+                `Need rework: ${rejectedRequests}`,
+              )
+            : copy(lang, 'Без блокирующих возвратов', 'No blocking rework items'),
         tone: 'stone',
       },
       {
@@ -207,7 +247,11 @@ export function buildFamilyDashboardModel(params: {
         label: copy(lang, 'Одобрено', 'Approved'),
         value: String(approvedRequests),
         helper: latestRequest
-          ? copy(lang, `Последнее обновление: ${formatDateTime(latestRequest.updatedAt || latestRequest.createdAt, lang)}`, `Last update: ${formatDateTime(latestRequest.updatedAt || latestRequest.createdAt, lang)}`)
+          ? copy(
+              lang,
+              `Последнее обновление: ${formatDateTime(latestRequest.updatedAt || latestRequest.createdAt, lang)}`,
+              `Last update: ${formatDateTime(latestRequest.updatedAt || latestRequest.createdAt, lang)}`,
+            )
           : copy(lang, 'Пока нет отправленных заявок', 'No submitted requests yet'),
         tone: 'emerald',
       },
@@ -215,7 +259,11 @@ export function buildFamilyDashboardModel(params: {
         icon: 'calendar',
         label: copy(lang, 'Живые бронирования', 'Live bookings'),
         value: String(liveBookings),
-        helper: copy(lang, 'Считаем pending, confirmed и active', 'Counts pending, confirmed, and active'),
+        helper: copy(
+          lang,
+          'Считаем pending, confirmed и active',
+          'Counts pending, confirmed, and active',
+        ),
         tone: 'sky',
       },
       {
@@ -228,7 +276,11 @@ export function buildFamilyDashboardModel(params: {
     ],
     trend: {
       title: copy(lang, 'Пульс активности за 6 недель', '6-week activity pulse'),
-      description: copy(lang, 'Смотрим заявки и созданные бронирования.', 'Based on request creation and booking creation.'),
+      description: copy(
+        lang,
+        'Смотрим заявки и созданные бронирования.',
+        'Based on request creation and booking creation.',
+      ),
       summary: buildTrendSummary(trendPoints, lang),
       points: trendPoints,
     },
@@ -237,37 +289,52 @@ export function buildFamilyDashboardModel(params: {
         ? copy(lang, 'Последняя заявка', 'Latest request')
         : copy(lang, 'Следующий шаг', 'Next step'),
       description: latestRequest
-        ? (latestRequest.status === 'rejected'
-          ? latestRequest.rejectionInfo?.reasonText || copy(lang, 'Модерация ждёт доработку анкеты.', 'Moderation is waiting for updates to the request.')
-          : copy(lang, 'Отсюда удобно читать текущий статус без перехода в профиль.', 'Use this card to track the current status without opening the profile modal.'))
-        : copy(lang, 'Создайте первую заявку, и здесь появится её прогресс.', 'Create your first request and its progress will appear here.'),
-      items: latestRequest ? [
-        {
-          label: copy(lang, 'Статус', 'Status'),
-          value: getParentStatusLabel(latestRequest.status, lang),
-        },
-        {
-          label: copy(lang, 'Документы', 'Documents'),
-          value: String(latestRequest.documents?.length || 0),
-        },
-        {
-          label: copy(lang, 'Обновлено', 'Updated'),
-          value: formatDateTime(latestRequest.updatedAt || latestRequest.createdAt, lang),
-        },
-      ] : [
-        {
-          label: copy(lang, 'Заявки', 'Requests'),
-          value: '0',
-        },
-        {
-          label: copy(lang, 'Бронирования', 'Bookings'),
-          value: String(bookings.length),
-        },
-        {
-          label: copy(lang, 'Совет', 'Hint'),
-          value: copy(lang, 'Начните с анкеты семьи', 'Start with a family request'),
-        },
-      ],
+        ? latestRequest.status === 'rejected'
+          ? latestRequest.rejectionInfo?.reasonText ||
+            copy(
+              lang,
+              'Модерация ждёт доработку анкеты.',
+              'Moderation is waiting for updates to the request.',
+            )
+          : copy(
+              lang,
+              'Отсюда удобно читать текущий статус без перехода в профиль.',
+              'Use this card to track the current status without opening the profile modal.',
+            )
+        : copy(
+            lang,
+            'Создайте первую заявку, и здесь появится её прогресс.',
+            'Create your first request and its progress will appear here.',
+          ),
+      items: latestRequest
+        ? [
+            {
+              label: copy(lang, 'Статус', 'Status'),
+              value: getParentStatusLabel(latestRequest.status, lang),
+            },
+            {
+              label: copy(lang, 'Документы', 'Documents'),
+              value: String(latestRequest.documents?.length || 0),
+            },
+            {
+              label: copy(lang, 'Обновлено', 'Updated'),
+              value: formatDateTime(latestRequest.updatedAt || latestRequest.createdAt, lang),
+            },
+          ]
+        : [
+            {
+              label: copy(lang, 'Заявки', 'Requests'),
+              value: '0',
+            },
+            {
+              label: copy(lang, 'Бронирования', 'Bookings'),
+              value: String(bookings.length),
+            },
+            {
+              label: copy(lang, 'Совет', 'Hint'),
+              value: copy(lang, 'Начните с анкеты семьи', 'Start with a family request'),
+            },
+          ],
     },
     table: {
       title: copy(lang, 'Разбивка по заявкам', 'Request breakdown'),
@@ -291,7 +358,11 @@ export function buildFamilyDashboardModel(params: {
         ],
       })),
       emptyTitle: copy(lang, 'Заявок пока нет', 'No requests yet'),
-      emptyDescription: copy(lang, 'После первой отправки здесь появится управляемый список заявок.', 'After the first submission, requests will appear here in a structured list.'),
+      emptyDescription: copy(
+        lang,
+        'После первой отправки здесь появится управляемый список заявок.',
+        'After the first submission, requests will appear here in a structured list.',
+      ),
     },
   };
 }
@@ -303,7 +374,9 @@ export function buildNannyDashboardModel(params: {
 }): DashboardViewModel {
   const { lang, profile, bookings } = params;
   const snapshot = getNannyReadinessSnapshot(profile || {});
-  const liveBookings = bookings.filter((booking) => ['pending', 'confirmed', 'active'].includes(booking.status)).length;
+  const liveBookings = bookings.filter((booking) =>
+    ['pending', 'confirmed', 'active'].includes(booking.status),
+  ).length;
   const completedBookings = bookings.filter((booking) => booking.status === 'completed').length;
   const reviewCount = profile?.reviews?.length || 0;
 
@@ -331,9 +404,15 @@ export function buildNannyDashboardModel(params: {
     {
       id: 'profile',
       primary: copy(lang, 'База профиля', 'Profile basics'),
-      secondary: copy(lang, 'Имя, город, опыт, график, ставка, контакты', 'Name, city, experience, schedule, rate, contact'),
+      secondary: copy(
+        lang,
+        'Имя, город, опыт, график, ставка, контакты',
+        'Name, city, experience, schedule, rate, contact',
+      ),
       status: {
-        label: basicsComplete ? copy(lang, 'Заполнено', 'Complete') : copy(lang, 'Нужно заполнить', 'Needs input'),
+        label: basicsComplete
+          ? copy(lang, 'Заполнено', 'Complete')
+          : copy(lang, 'Нужно заполнить', 'Needs input'),
         variant: getReadinessVariant({ done: basicsComplete, warning: Boolean(profile) }),
       },
       values: [
@@ -344,22 +423,34 @@ export function buildNannyDashboardModel(params: {
     {
       id: 'resume',
       primary: copy(lang, 'Резюме', 'Resume'),
-      secondary: copy(lang, 'Файл резюме или распознанный профиль', 'Resume file or parsed profile'),
+      secondary: copy(
+        lang,
+        'Файл резюме или распознанный профиль',
+        'Resume file or parsed profile',
+      ),
       status: {
         label: snapshot.hasResume ? copy(lang, 'Есть', 'Uploaded') : copy(lang, 'Нет', 'Missing'),
         variant: getReadinessVariant({ done: snapshot.hasResume, warning: Boolean(profile) }),
       },
       values: [
         copy(lang, 'Источник', 'Source'),
-        snapshot.hasResume ? copy(lang, 'Резюме доступно', 'Resume available') : copy(lang, 'Добавьте файл резюме', 'Add a resume file'),
+        snapshot.hasResume
+          ? copy(lang, 'Резюме доступно', 'Resume available')
+          : copy(lang, 'Добавьте файл резюме', 'Add a resume file'),
       ],
     },
     {
       id: 'docs',
       primary: copy(lang, 'Документы доверия', 'Trust documents'),
-      secondary: copy(lang, 'Паспорт, рекомендации, медкнижка и др.', 'Passport, references, medical book, etc.'),
+      secondary: copy(
+        lang,
+        'Паспорт, рекомендации, медкнижка и др.',
+        'Passport, references, medical book, etc.',
+      ),
       status: {
-        label: snapshot.hasTrustDocs ? copy(lang, 'Загружены', 'Uploaded') : copy(lang, 'Не загружены', 'Missing'),
+        label: snapshot.hasTrustDocs
+          ? copy(lang, 'Загружены', 'Uploaded')
+          : copy(lang, 'Не загружены', 'Missing'),
         variant: getReadinessVariant({ done: snapshot.hasTrustDocs, warning: Boolean(profile) }),
       },
       values: [
@@ -370,20 +461,35 @@ export function buildNannyDashboardModel(params: {
     {
       id: 'verification',
       primary: copy(lang, 'Верификация', 'Verification'),
-      secondary: copy(lang, 'Подтвержденный trust-сигнал для семьи', 'Confirmed trust signal visible to families'),
+      secondary: copy(
+        lang,
+        'Подтвержденный trust-сигнал для семьи',
+        'Confirmed trust signal visible to families',
+      ),
       status: {
-        label: snapshot.hasVerifiedTrust ? copy(lang, 'Подтверждено', 'Verified') : copy(lang, 'В очереди', 'Pending'),
-        variant: getReadinessVariant({ done: snapshot.hasVerifiedTrust, warning: Boolean(profile) }),
+        label: snapshot.hasVerifiedTrust
+          ? copy(lang, 'Подтверждено', 'Verified')
+          : copy(lang, 'В очереди', 'Pending'),
+        variant: getReadinessVariant({
+          done: snapshot.hasVerifiedTrust,
+          warning: Boolean(profile),
+        }),
       },
       values: [
         copy(lang, 'Статус', 'State'),
-        snapshot.hasVerifiedTrust ? copy(lang, 'Можно усиливать выдачу', 'Eligible for stronger exposure') : copy(lang, 'Ждёт ручной проверки', 'Waiting for manual review'),
+        snapshot.hasVerifiedTrust
+          ? copy(lang, 'Можно усиливать выдачу', 'Eligible for stronger exposure')
+          : copy(lang, 'Ждёт ручной проверки', 'Waiting for manual review'),
       ],
     },
     {
       id: 'match-ready',
       primary: copy(lang, 'Готовность к показу', 'Match readiness'),
-      secondary: copy(lang, 'Сводный статус readiness + quality score', 'Combined readiness and quality score status'),
+      secondary: copy(
+        lang,
+        'Сводный статус readiness + quality score',
+        'Combined readiness and quality score status',
+      ),
       status: {
         label: snapshot.qualityApproved
           ? copy(lang, 'Готова к показу', 'Ready for match')
@@ -401,7 +507,11 @@ export function buildNannyDashboardModel(params: {
 
   return {
     eyebrow: copy(lang, 'Кабинет няни', 'Nanny dashboard'),
-    title: copy(lang, 'Главные сигналы по readiness и заказам', 'Core signals for readiness and bookings'),
+    title: copy(
+      lang,
+      'Главные сигналы по readiness и заказам',
+      'Core signals for readiness and bookings',
+    ),
     description: copy(
       lang,
       'Минимальный рабочий дашборд для няни: готовность профиля, доверие и текущая динамика заказов.',
@@ -418,7 +528,11 @@ export function buildNannyDashboardModel(params: {
         label: copy(lang, 'Прогресс профиля', 'Profile completion'),
         value: `${snapshot.completionRatio}%`,
         helper: snapshot.missingFields.length
-          ? copy(lang, `Не хватает: ${snapshot.missingFields.slice(0, 2).join(', ')}`, `Missing: ${snapshot.missingFields.slice(0, 2).join(', ')}`)
+          ? copy(
+              lang,
+              `Не хватает: ${snapshot.missingFields.slice(0, 2).join(', ')}`,
+              `Missing: ${snapshot.missingFields.slice(0, 2).join(', ')}`,
+            )
           : copy(lang, 'Ключевые поля закрыты', 'Core fields are complete'),
         tone: 'stone',
       },
@@ -433,20 +547,32 @@ export function buildNannyDashboardModel(params: {
         icon: 'calendar',
         label: copy(lang, 'Живые заказы', 'Live bookings'),
         value: String(liveBookings),
-        helper: copy(lang, 'Считаем pending, confirmed и active', 'Counts pending, confirmed, and active'),
+        helper: copy(
+          lang,
+          'Считаем pending, confirmed и active',
+          'Counts pending, confirmed, and active',
+        ),
         tone: 'sky',
       },
       {
         icon: 'star',
         label: copy(lang, 'Отзывы', 'Reviews'),
         value: String(reviewCount),
-        helper: copy(lang, `Завершено заказов: ${completedBookings}`, `Completed bookings: ${completedBookings}`),
+        helper: copy(
+          lang,
+          `Завершено заказов: ${completedBookings}`,
+          `Completed bookings: ${completedBookings}`,
+        ),
         tone: 'amber',
       },
     ],
     trend: {
       title: copy(lang, 'Пульс активности за 6 недель', '6-week activity pulse'),
-      description: copy(lang, 'Смотрим профиль, бронирования и отзывы.', 'Based on profile creation, bookings, and reviews.'),
+      description: copy(
+        lang,
+        'Смотрим профиль, бронирования и отзывы.',
+        'Based on profile creation, bookings, and reviews.',
+      ),
       summary: buildTrendSummary(trendPoints, lang),
       points: trendPoints,
     },
@@ -455,10 +581,22 @@ export function buildNannyDashboardModel(params: {
         ? copy(lang, 'Профиль готов к выдаче', 'Profile is ready for exposure')
         : copy(lang, 'Следующий шаг readiness', 'Next readiness step'),
       description: snapshot.qualityApproved
-        ? copy(lang, 'Поддерживайте календарь и ответы актуальными, чтобы не терять quality-approved статус.', 'Keep availability and responses current so you do not lose the quality-approved state.')
-        : (snapshot.missingFields.length
-          ? copy(lang, `Сфокусируйтесь на: ${snapshot.missingFields.slice(0, 3).join(', ')}.`, `Focus on: ${snapshot.missingFields.slice(0, 3).join(', ')}.`)
-          : copy(lang, 'Профиль близок к следующему шагу проверки.', 'The profile is close to the next review stage.')),
+        ? copy(
+            lang,
+            'Поддерживайте календарь и ответы актуальными, чтобы не терять quality-approved статус.',
+            'Keep availability and responses current so you do not lose the quality-approved state.',
+          )
+        : snapshot.missingFields.length
+          ? copy(
+              lang,
+              `Сфокусируйтесь на: ${snapshot.missingFields.slice(0, 3).join(', ')}.`,
+              `Focus on: ${snapshot.missingFields.slice(0, 3).join(', ')}.`,
+            )
+          : copy(
+              lang,
+              'Профиль близок к следующему шагу проверки.',
+              'The profile is close to the next review stage.',
+            ),
       items: [
         {
           label: copy(lang, 'Стадия', 'Stage'),
@@ -466,7 +604,9 @@ export function buildNannyDashboardModel(params: {
         },
         {
           label: copy(lang, 'Верификация', 'Verification'),
-          value: snapshot.hasVerifiedTrust ? copy(lang, 'Есть', 'Verified') : copy(lang, 'Нет', 'Pending'),
+          value: snapshot.hasVerifiedTrust
+            ? copy(lang, 'Есть', 'Verified')
+            : copy(lang, 'Нет', 'Pending'),
         },
         {
           label: copy(lang, 'Последнее обновление', 'Last update'),
@@ -484,7 +624,11 @@ export function buildNannyDashboardModel(params: {
       ],
       rows: readinessRows,
       emptyTitle: copy(lang, 'Профиль не найден', 'Profile not found'),
-      emptyDescription: copy(lang, 'После создания анкеты здесь появятся readiness-сигналы.', 'Once the profile exists, readiness signals will appear here.'),
+      emptyDescription: copy(
+        lang,
+        'После создания анкеты здесь появятся readiness-сигналы.',
+        'Once the profile exists, readiness signals will appear here.',
+      ),
     },
   };
 }

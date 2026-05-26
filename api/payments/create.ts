@@ -6,7 +6,17 @@ import { rateLimit } from '../_rate-limit.js';
 import { getDbPool } from '../_db.js';
 import { MATCHING_FEE_RUB } from './_shared.js';
 
-type ParentRequestDraftInput = Omit<ParentRequest, 'id' | 'createdAt' | 'updatedAt' | 'type' | 'status' | 'changeLog' | 'requesterId' | 'requesterEmail'>;
+type ParentRequestDraftInput = Omit<
+  ParentRequest,
+  | 'id'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'type'
+  | 'status'
+  | 'changeLog'
+  | 'requesterId'
+  | 'requesterEmail'
+>;
 
 function base64Encode(str: string): string {
   return Buffer.from(str).toString('base64');
@@ -18,7 +28,9 @@ function asOptionalString(value: unknown, max = 200): string | undefined {
 }
 
 function asRequiredString(value: unknown, field: string, max = 5000): string {
-  const normalized = String(value || '').trim().slice(0, max);
+  const normalized = String(value || '')
+    .trim()
+    .slice(0, max);
   if (!normalized) {
     throw new Error(`Missing field: ${field}`);
   }
@@ -28,7 +40,11 @@ function asRequiredString(value: unknown, field: string, max = 5000): string {
 function asStringArray(value: unknown, maxItems = 20, itemMax = 120): string[] {
   if (!Array.isArray(value)) return [];
   return value
-    .map((item) => String(item || '').trim().slice(0, itemMax))
+    .map((item) =>
+      String(item || '')
+        .trim()
+        .slice(0, itemMax),
+    )
     .filter(Boolean)
     .slice(0, maxItems);
 }
@@ -56,7 +72,9 @@ function sanitizeParentRequestDraft(
     budget: asRequiredString(raw.budget, 'budget', 200),
     requirements: asStringArray(raw.requirements, 30, 120),
     comment: asRequiredString(raw.comment, 'comment', 10_000),
-    documents: Array.isArray(raw.documents) ? raw.documents.slice(0, 20) as ParentRequestDraftInput['documents'] : undefined,
+    documents: Array.isArray(raw.documents)
+      ? (raw.documents.slice(0, 20) as ParentRequestDraftInput['documents'])
+      : undefined,
     riskProfile: asJsonObject<NonNullable<ParentRequest['riskProfile']>>(raw.riskProfile),
     status: 'payment_pending',
     requesterId: owner.id,
@@ -71,10 +89,9 @@ async function ensureOwnedParentRequest(
   ownerUserId: string,
 ): Promise<{ id: string; payload: any } | null> {
   const pool = getDbPool();
-  const result = await pool.query(
-    `SELECT id, user_id, payload FROM parents WHERE id = $1`,
-    [parentRequestId],
-  );
+  const result = await pool.query(`SELECT id, user_id, payload FROM parents WHERE id = $1`, [
+    parentRequestId,
+  ]);
 
   if (result.rowCount === 0) return null;
 
@@ -86,7 +103,10 @@ async function ensureOwnedParentRequest(
   return { id: row.id, payload: row.payload };
 }
 
-async function findDraftRequestByKey(draftKey: string, ownerUserId: string): Promise<{ id: string; payload: any } | null> {
+async function findDraftRequestByKey(
+  draftKey: string,
+  ownerUserId: string,
+): Promise<{ id: string; payload: any } | null> {
   const pool = getDbPool();
   const result = await pool.query(
     `SELECT id, payload
@@ -127,7 +147,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let targetParentRequestId = bodyParentRequestId || null;
 
     if (targetParentRequestId) {
-      const existingRequest = await ensureOwnedParentRequest(targetParentRequestId, verifiedUser.id);
+      const existingRequest = await ensureOwnedParentRequest(
+        targetParentRequestId,
+        verifiedUser.id,
+      );
       if (!existingRequest) {
         return res.status(404).json({ error: 'Parent request not found' });
       }
@@ -137,7 +160,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(409).json({ error: 'Approved request cannot be charged again' });
       }
     } else if (draft) {
-      const existingDraft = draftKey ? await findDraftRequestByKey(draftKey, verifiedUser.id) : null;
+      const existingDraft = draftKey
+        ? await findDraftRequestByKey(draftKey, verifiedUser.id)
+        : null;
       if (existingDraft) {
         targetParentRequestId = existingDraft.id;
       } else {
@@ -160,10 +185,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ...(draftKey ? { paymentDraftKey: draftKey } : {}),
         } as ParentRequest;
 
-        await pool.query(
-          `INSERT INTO parents (id, user_id, payload) VALUES ($1, $2, $3::jsonb)`,
-          [targetParentRequestId, verifiedUser.id, JSON.stringify(parentPayload)],
-        );
+        await pool.query(`INSERT INTO parents (id, user_id, payload) VALUES ($1, $2, $3::jsonb)`, [
+          targetParentRequestId,
+          verifiedUser.id,
+          JSON.stringify(parentPayload),
+        ]);
       }
     } else {
       return res.status(400).json({ error: 'Missing parent request' });
@@ -280,10 +306,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (data.id) {
-      await pool.query(
-        `UPDATE payments SET yk_payment_id = $1 WHERE id = $2`,
-        [data.id, paymentRecordId],
-      );
+      await pool.query(`UPDATE payments SET yk_payment_id = $1 WHERE id = $2`, [
+        data.id,
+        paymentRecordId,
+      ]);
     }
 
     return res.status(200).json({

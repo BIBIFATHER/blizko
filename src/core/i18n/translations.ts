@@ -4,8 +4,13 @@ export const t = {
   ru: {
     // ... existing keys ...
     heroTitle: 'Найти няню можно спокойнее',
-    heroSubtitle: 'Blizko помогает пройти путь от тревожного поиска к нескольким понятным вариантам — с модерацией, trust-сигналами и объяснением, почему именно они подошли вашей семье.',
-    homeProofChips: ['Не каталог из десятков анкет', 'Понятные причины, почему подходит', 'Запрос → куратор → 2–3 подходящих няни'],
+    heroSubtitle:
+      'Blizko помогает пройти путь от тревожного поиска к нескольким понятным вариантам — с модерацией, trust-сигналами и объяснением, почему именно они подошли вашей семье.',
+    homeProofChips: [
+      'Не каталог из десятков анкет',
+      'Понятные причины, почему подходит',
+      'Запрос → куратор → 2–3 подходящих няни',
+    ],
     homeSafetyLine: 'Бережно проверяем каждую няню: общаемся лично, изучаем отзывы и документы.',
     homeFlowTitle: 'Как это работает',
     homeFlowSteps: ['Запрос', 'Анализ', 'Подбор'],
@@ -24,33 +29,40 @@ export const t = {
 
     trust2Title: 'Почему именно эта няня',
     trust2Desc: 'Показываем график, опыт и сигналы совместимости без магии.',
-    trust2Detail: 'Куратор смотрит на сигналы по графику, опыту, возрасту детей и стилю общения, а затем объясняет, почему именно эта няня подошла. Это не диагноз и не магическая оценка, а способ быстрее увидеть сильные совпадения и вопросы для разговора.',
+    trust2Detail:
+      'Куратор смотрит на сигналы по графику, опыту, возрасту детей и стилю общения, а затем объясняет, почему именно эта няня подошла. Это не диагноз и не магическая оценка, а способ быстрее увидеть сильные совпадения и вопросы для разговора.',
 
     trust3Title: 'Поддержка рядом',
     trust3Desc: 'Помогаем разобраться в следующем шаге и спорных моментах.',
-    trust3Detail: 'Команда Blizko помогает уточнить детали анкеты, понять следующий шаг и подключиться там, где нужен человек. Мы стараемся отвечать быстро и по делу, но не обещаем мгновенно решить любую ситуацию.',
+    trust3Detail:
+      'Команда Blizko помогает уточнить детали анкеты, понять следующий шаг и подключиться там, где нужен человек. Мы стараемся отвечать быстро и по делу, но не обещаем мгновенно решить любую ситуацию.',
 
     explainTitle: 'Почему именно эта няня?',
-    explainText: 'Куратор проверяет совпадение ценностей и стиля общения — это главный фактор стабильности.',
+    explainText:
+      'Куратор проверяет совпадение ценностей и стиля общения — это главный фактор стабильности.',
     explainBadge1: 'Совпадает график',
     explainBadge2: 'Опыт подходит возрасту',
     explainBadge3: 'Условия семьи учтены',
     explainBadge4: '',
     shortlistHeroTitle: 'Не бесконечный поиск, а 2–3 подходящих няни',
-    shortlistHeroSubtitle: 'Куратор отобрал только тех, с кем есть смысл познакомиться — чтобы не тратить силы на хаотичный просмотр анкет.',
+    shortlistHeroSubtitle:
+      'Куратор отобрал только тех, с кем есть смысл познакомиться — чтобы не тратить силы на хаотичный просмотр анкет.',
     shortlistReasonTitle: 'Почему именно эта няня',
     shortlistTrustTitle: 'Что уже видно заранее',
     shortlistRiskTitle: 'Что обсудить до первого выхода',
     shortlistEmptyTitle: 'Пока нянь нет',
-    shortlistEmptyDesc: 'Расширяем поиск. Куратор свяжется, как только найдётся подходящий вариант.',
+    shortlistEmptyDesc:
+      'Расширяем поиск. Куратор свяжется, как только найдётся подходящий вариант.',
     shortlistFooter: 'Напишите няне, обсудите варианты в семье и двигайтесь к следующему шагу.',
     profileSelectedLabel: 'Профиль от куратора',
     profileOpenWhyTitle: 'Почему именно эта няня',
-    profileOpenWhyBody: 'Куратор убедился, что характер, опыт и стиль общения этой няни соответствуют запросам семей, которых мы обслуживаем. Задавайте вопросы — для этого куратор и есть.',
+    profileOpenWhyBody:
+      'Куратор убедился, что характер, опыт и стиль общения этой няни соответствуют запросам семей, которых мы обслуживаем. Задавайте вопросы — для этого куратор и есть.',
     profileReviewsTitle: 'Отзывы семей',
     profileReviewsBody: 'Что семьи говорят после работы с этой няней.',
     profileDiscussTitle: 'Что обсудить при знакомстве',
-    profileDiscussBody: 'На первой встрече обычно говорят о режиме дня, подходе к дисциплине и о том, как няня реагирует на стресс ребёнка. Куратор может помочь подготовить вопросы — просто напишите.',
+    profileDiscussBody:
+      'На первой встрече обычно говорят о режиме дня, подходе к дисциплине и о том, как няня реагирует на стресс ребёнка. Куратор может помочь подготовить вопросы — просто напишите.',
     profileAboutTitle: 'О няне',
     profileStyleTitle: 'Характер и стиль работы',
     profileSkillsTitle: 'Навыки и занятия',
@@ -81,7 +93,8 @@ export const t = {
     nFormSubtitle: 'Расскажите о себе, чтобы найти семью',
     verificationTitle: 'Подтверждение личности',
     verifiedTitle: 'Личность подтверждена',
-    verificationDesc: 'Когда этот шаг доступен, подтверждение личности добавляет профилю дополнительный trust-маркер.',
+    verificationDesc:
+      'Когда этот шаг доступен, подтверждение личности добавляет профилю дополнительный trust-маркер.',
     verifiedDesc: 'Ваш профиль отмечен знаком доверия. Родители видят вашу анкету на 30% чаще.',
     loginGos: 'Войти через Госуслуги',
     verifiedBadge: 'Проверка пройдена',
@@ -106,7 +119,13 @@ export const t = {
     reviewTextLabel: 'Текст отзыва',
     reviewPlaceholder: 'Расскажите, как все прошло...',
     reviewChecklistLabel: 'Что особенно важно?',
-    reviewChecklistOptions: ['Пунктуальность', 'Забота', 'Безопасность', 'Коммуникация', 'Инициативность'],
+    reviewChecklistOptions: [
+      'Пунктуальность',
+      'Забота',
+      'Безопасность',
+      'Коммуникация',
+      'Инициативность',
+    ],
     reviewPreviewLabel: 'Предпросмотр отзыва',
     submitReview: 'Опубликовать отзыв',
     noReviews: 'Пока нет отзывов',
@@ -143,7 +162,8 @@ export const t = {
 
     // Soft Skills / Assessment
     softSkillsTitle: 'Тест: Поведенческий профиль',
-    softSkillsDesc: 'Пройдите расширенную анкету по стилю работы. Это помогает точнее подобрать семью.',
+    softSkillsDesc:
+      'Пройдите расширенную анкету по стилю работы. Это помогает точнее подобрать семью.',
     startTest: 'Начать тест',
     testResultTitle: 'Ваш поведенческий профиль',
     testCompletedBadge: 'Профиль собран',
@@ -151,8 +171,10 @@ export const t = {
     // Assessment Modal
     assessModalTitle: 'Поведенческий анализ',
     assessModalSubtitle: 'Оценка профессиональных качеств',
-    assessIntroText: 'В этом тесте нет правильных или неправильных ответов. Пожалуйста, отвечайте честно — это поможет нам найти семью, которой подойдет именно ваш стиль работы и темперамент.',
-    assessDisclaimer: 'Данная оценка анализирует поведенческие характеристики и не является медицинской или психологической диагностикой.',
+    assessIntroText:
+      'В этом тесте нет правильных или неправильных ответов. Пожалуйста, отвечайте честно — это поможет нам найти семью, которой подойдет именно ваш стиль работы и темперамент.',
+    assessDisclaimer:
+      'Данная оценка анализирует поведенческие характеристики и не является медицинской или психологической диагностикой.',
     assessNext: 'Далее',
     assessFinish: 'Завершить',
     assessAnalyzing: 'Собираем профиль по ответам...',
@@ -183,7 +205,8 @@ export const t = {
     gosTitle: 'Вход в систему',
     gosSubtitle: 'Для подтверждения личности в сервисе «Blizko»',
     gosLogin: 'Войти',
-    gosSecure: 'Ваши данные надежно защищены. Мы получаем только подтверждение ФИО и статус проверки документов.',
+    gosSecure:
+      'Ваши данные надежно защищены. Мы получаем только подтверждение ФИО и статус проверки документов.',
 
     // Auth & Profile
     login: 'Войти',
@@ -245,7 +268,6 @@ export const t = {
     payForBooking: 'Оплатить',
     paidStatus: 'Оплачено',
 
-
     // Nanny Offer / Agreement
     offerTitle: 'Сотрудничество с платформой «Близко»',
     offerTabTerms: 'Условия',
@@ -268,7 +290,7 @@ export const t = {
       '• соблюдать инструкции семьи.',
       'Я понимаю, что:',
       '• грубое обращение, оставление ребёнка одного, причинение вреда или обход платформы ведут к немедленному прекращению сотрудничества, штрафам и блокировке;',
-      '• при угрозе здоровью ребёнка информация может быть передана в правоохранительные органы.'
+      '• при угрозе здоровью ребёнка информация может быть передана в правоохранительные органы.',
     ],
     nannyPersonalDataText: [
       'Согласие на обработку персональных данных (для Исполнителя/Няни)',
@@ -276,7 +298,7 @@ export const t = {
       '2. Перечень персональных данных: фамилия, имя, отчество, пол, дата и место рождения, паспортные данные, адрес регистрации и проживания, номера контактных телефонов, адреса электронной почты, сведения о состоянии здоровья (медкнижка), сведения о судимости, фото- и видеоизображения.',
       '3. Цели обработки: идентификация стороны в рамках соглашений и договоров с платформой, проверка благонадежности, создание публичного профиля исполнителя, подбор заказчиков (родителей), обеспечение безопасности сервиса.',
       '4. Я соглашаюсь с тем, что часть моих данных (ФИО, опыт, фото, видеовизитка) будет доступна потенциальным заказчикам.',
-      '5. Согласие действует бессрочно до момента его отзыва путем направления письменного заявления.'
+      '5. Согласие действует бессрочно до момента его отзыва путем направления письменного заявления.',
     ],
 
     // Parent Offer / Agreement
@@ -299,7 +321,7 @@ export const t = {
       'Я согласен(на), что:',
       '• ответственность за фактическое оказание услуг несёт няня;',
       '• платформа не отвечает за действия няни или возможный вред.',
-      'Я разрешаю использовать обезличенные отзывы для улучшения сервиса.'
+      'Я разрешаю использовать обезличенные отзывы для улучшения сервиса.',
     ],
     parentPersonalDataText: [
       'Согласие на обработку персональных данных (для Заказчика/Родителя)',
@@ -307,7 +329,7 @@ export const t = {
       '2. Перечень персональных данных: фамилия, имя, номер телефона, адрес электронной почты, город проживания, информация о детях (возраст, пол, особенности).',
       '3. Цели обработки: предоставление доступа к сервису, подбор исполнителей (нянь), заключение договоров, связь с менеджерами поддержки.',
       '4. Я соглашаюсь на передачу контактных данных выбранным мною исполнителям для связи.',
-      '5. Согласие действует бессрочно до момента его отзыва.'
+      '5. Согласие действует бессрочно до момента его отзыва.',
     ],
 
     // Call
@@ -330,15 +352,35 @@ export const t = {
 
     // Arrays / Options
     scheduleOptions: ['День', 'Ночь', 'Присмотр 24 часа'],
-    reqOptions: ['Опыт с нужным возрастом', 'Первая помощь', 'Пунктуальность', 'Вечер/выходные', 'Фото/видео отчёты', 'Работа с 2 детьми', 'Комфорт с животными', 'Подтверждённая надёжность'],
+    reqOptions: [
+      'Опыт с нужным возрастом',
+      'Первая помощь',
+      'Пунктуальность',
+      'Вечер/выходные',
+      'Фото/видео отчёты',
+      'Работа с 2 детьми',
+      'Комфорт с животными',
+      'Подтверждённая надёжность',
+    ],
     ageOptions: ['Груднички (0-1)', 'Тоддлеры (1-3)', 'Дошкольники (3-6)', 'Школьники (7+)'],
-    skillOptions: ['Пед. образование', 'Мед. образование', 'Знание английского', 'Уход за двойней', 'Вождение авто'],
+    skillOptions: [
+      'Пед. образование',
+      'Мед. образование',
+      'Знание английского',
+      'Уход за двойней',
+      'Вождение авто',
+    ],
   },
   en: {
     // ... existing keys ...
     heroTitle: 'Finding a nanny can feel calmer',
-    heroSubtitle: 'Blizko helps families move from anxious searching to a few clear options — with moderation, trust signals, and an explanation of why each one is the right fit.',
-    homeProofChips: ['Not a catalog of dozens of profiles', 'Clear reasons why someone fits', 'Request → curator → 2–3 matched nannies'],
+    heroSubtitle:
+      'Blizko helps families move from anxious searching to a few clear options — with moderation, trust signals, and an explanation of why each one is the right fit.',
+    homeProofChips: [
+      'Not a catalog of dozens of profiles',
+      'Clear reasons why someone fits',
+      'Request → curator → 2–3 matched nannies',
+    ],
     homeSafetyLine: 'We verify nannies: documents, references, interviews.',
     homeFlowTitle: 'How it works',
     homeFlowSteps: ['Request', 'Analysis', 'Match'],
@@ -357,33 +399,41 @@ This does not create absolute guarantees, but it helps the family see what shoul
 
     trust2Title: 'Why this nanny',
     trust2Desc: 'Schedule, experience, and fit signals without magic.',
-    trust2Detail: 'The curator looks at signals around schedule, experience, child age, and communication style, then explains why a particular nanny was selected. It is not a diagnosis or a magical score. It is a way to spot strong fits and good questions faster.',
+    trust2Detail:
+      'The curator looks at signals around schedule, experience, child age, and communication style, then explains why a particular nanny was selected. It is not a diagnosis or a magical score. It is a way to spot strong fits and good questions faster.',
 
     trust3Title: 'Support nearby',
     trust3Desc: 'Help with the next step and tricky moments.',
-    trust3Detail: 'The Blizko team helps clarify request details, understand the next step, and step in when a human is needed. We try to reply quickly and clearly, without pretending every issue can be solved instantly.',
+    trust3Detail:
+      'The Blizko team helps clarify request details, understand the next step, and step in when a human is needed. We try to reply quickly and clearly, without pretending every issue can be solved instantly.',
 
     explainTitle: 'Why this nanny?',
-    explainText: 'The curator looks at shared values and communication style — the main factor of stability.',
+    explainText:
+      'The curator looks at shared values and communication style — the main factor of stability.',
     explainBadge1: 'Schedule matches',
     explainBadge2: 'Experience fits age',
     explainBadge3: 'Discipline approach',
     explainBadge4: 'Family conditions covered',
     shortlistHeroTitle: 'Not an endless search, but 2–3 matched nannies',
-    shortlistHeroSubtitle: 'The curator selected only the profiles worth a real conversation — no chaotic browsing required.',
+    shortlistHeroSubtitle:
+      'The curator selected only the profiles worth a real conversation — no chaotic browsing required.',
     shortlistReasonTitle: 'Why this nanny',
     shortlistTrustTitle: 'What is already visible',
     shortlistRiskTitle: 'What to discuss before the first shift',
     shortlistEmptyTitle: 'No matches yet',
-    shortlistEmptyDesc: 'We are widening the search. The curator will reach out when a good match is found.',
-    shortlistFooter: 'Message the nanny, discuss your options with your family, and move to the next step.',
+    shortlistEmptyDesc:
+      'We are widening the search. The curator will reach out when a good match is found.',
+    shortlistFooter:
+      'Message the nanny, discuss your options with your family, and move to the next step.',
     profileSelectedLabel: 'Profile from your curator',
     profileOpenWhyTitle: 'Why this nanny',
-    profileOpenWhyBody: 'The curator confirmed that this nanny\'s character, experience, and communication style match the needs of the families we serve. Ask questions — that\'s what the curator is here for.',
+    profileOpenWhyBody:
+      "The curator confirmed that this nanny's character, experience, and communication style match the needs of the families we serve. Ask questions — that's what the curator is here for.",
     profileReviewsTitle: 'Family reviews',
     profileReviewsBody: 'What families say after working with this nanny.',
     profileDiscussTitle: 'What to discuss first',
-    profileDiscussBody: 'First meetings usually cover daily routine, approach to discipline, and how the nanny handles a child\'s stress. The curator can help you prepare questions — just ask.',
+    profileDiscussBody:
+      "First meetings usually cover daily routine, approach to discipline, and how the nanny handles a child's stress. The curator can help you prepare questions — just ask.",
     profileAboutTitle: 'About the nanny',
     profileStyleTitle: 'Character and work style',
     profileSkillsTitle: 'Skills and activities',
@@ -415,7 +465,8 @@ This does not create absolute guarantees, but it helps the family see what shoul
     verificationTitle: 'Identity Verification',
     verifiedTitle: 'Identity Verified',
     verificationDesc: 'Increase parent trust — verify your profile via Government Services.',
-    verifiedDesc: 'Your profile is marked with a trust badge. Parents view your profile 30% more often.',
+    verifiedDesc:
+      'Your profile is marked with a trust badge. Parents view your profile 30% more often.',
     loginGos: 'Login via Gov Services',
     verifiedBadge: 'Verified',
     nameLabel: 'Your Name',
@@ -476,7 +527,8 @@ This does not create absolute guarantees, but it helps the family see what shoul
 
     // Soft Skills
     softSkillsTitle: 'Test: Behavioral Profile',
-    softSkillsDesc: 'Take the extended work-style questionnaire. It helps us match you with the right family.',
+    softSkillsDesc:
+      'Take the extended work-style questionnaire. It helps us match you with the right family.',
     startTest: 'Start Test',
     testResultTitle: 'Your Behavioral Profile',
     testCompletedBadge: 'Profile Ready',
@@ -484,8 +536,10 @@ This does not create absolute guarantees, but it helps the family see what shoul
     // Assessment Modal
     assessModalTitle: 'Behavioral Analysis',
     assessModalSubtitle: 'Professional Traits Assessment',
-    assessIntroText: 'There are no right or wrong answers in this test. Please answer honestly — this helps us find a family that matches your work style and temperament.',
-    assessDisclaimer: 'This assessment evaluates behavioral characteristics and is not a psychological or medical diagnosis.',
+    assessIntroText:
+      'There are no right or wrong answers in this test. Please answer honestly — this helps us find a family that matches your work style and temperament.',
+    assessDisclaimer:
+      'This assessment evaluates behavioral characteristics and is not a psychological or medical diagnosis.',
     assessNext: 'Next',
     assessFinish: 'Finish',
     assessAnalyzing: 'Building your profile from the answers...',
@@ -516,7 +570,8 @@ This does not create absolute guarantees, but it helps the family see what shoul
     gosTitle: 'System Login',
     gosSubtitle: 'To verify identity in "Blizko" service',
     gosLogin: 'Login',
-    gosSecure: 'Your data is securely protected. We only receive name confirmation and document verification status.',
+    gosSecure:
+      'Your data is securely protected. We only receive name confirmation and document verification status.',
 
     // Auth & Profile
     login: 'Log In',
@@ -578,7 +633,6 @@ This does not create absolute guarantees, but it helps the family see what shoul
     payForBooking: 'Pay',
     paidStatus: 'Paid',
 
-
     // Nanny Offer / Agreement
     offerTitle: 'Cooperation with "Blizko"',
     offerTabTerms: 'Terms',
@@ -598,11 +652,11 @@ This does not create absolute guarantees, but it helps the family see what shoul
       '• treat the child with care and respect;',
       '• never leave the child unattended;',
       '• not administer medication without written consent from parents;',
-      '• follow the family\'s instructions.',
+      "• follow the family's instructions.",
       'I understand that:',
       '• rough handling, leaving the child alone, causing harm, or bypassing the platform will lead to immediate termination of cooperation, fines, and blocking;',
-      '• in case of threat to the child\'s health, information may be transferred to law enforcement agencies.',
-      'I agree to AI analysis of my profile and video to form a behavioral profile (this is not a medical or psychological diagnosis).'
+      "• in case of threat to the child's health, information may be transferred to law enforcement agencies.",
+      'I agree to AI analysis of my profile and video to form a behavioral profile (this is not a medical or psychological diagnosis).',
     ],
     nannyPersonalDataText: [
       'Consent to Personal Data Processing (for Nanny)',
@@ -610,7 +664,7 @@ This does not create absolute guarantees, but it helps the family see what shoul
       '2. List of data: full name, date of birth, passport data, address, phone, email, health info, criminal record info, photos/videos.',
       '3. Purposes: identification, background check, profile creation, matching with parents, security.',
       '4. I agree that parts of my data (Name, experience, photo) will be visible to potential parents.',
-      '5. Consent is valid indefinitely until withdrawn.'
+      '5. Consent is valid indefinitely until withdrawn.',
     ],
 
     // Parent Offer / Agreement
@@ -629,11 +683,11 @@ This does not create absolute guarantees, but it helps the family see what shoul
       'I make all decisions about cooperation with the nanny independently.',
       'AI-verification and profiles:',
       '• help assess reliability and compatibility;',
-      '• are not a guarantee of the nanny\'s behavior.',
+      "• are not a guarantee of the nanny's behavior.",
       'I agree that:',
       '• the nanny is responsible for the actual provision of services;',
-      '• the platform is not responsible for the nanny\'s actions or possible harm.',
-      'I allow the use of anonymized reviews to improve the service.'
+      "• the platform is not responsible for the nanny's actions or possible harm.",
+      'I allow the use of anonymized reviews to improve the service.',
     ],
     parentPersonalDataText: [
       'Consent to Personal Data Processing (for Parent)',
@@ -641,7 +695,7 @@ This does not create absolute guarantees, but it helps the family see what shoul
       '2. List of data: name, phone, email, city, children information.',
       '3. Purposes: providing access to service, matching with nannies, contracts, support.',
       '4. I agree to share contact data with selected nannies.',
-      '5. Consent is valid indefinitely until withdrawn.'
+      '5. Consent is valid indefinitely until withdrawn.',
     ],
 
     // Call
@@ -659,13 +713,28 @@ This does not create absolute guarantees, but it helps the family see what shoul
     // Support Chat
     chatSupport: 'Support',
     chatPlaceholder: 'Type a message...',
-    chatWelcome: 'Hello! I\'m Anna, your care manager. How can I help you?',
+    chatWelcome: "Hello! I'm Anna, your care manager. How can I help you?",
     chatSend: 'Send',
 
     // Arrays
     scheduleOptions: ['Day', 'Night', '24-hour care'],
-    reqOptions: ['Relevant age experience', 'First aid', 'Punctuality', 'Evenings/weekends', 'Photo/video updates', 'Can handle 2 kids', 'Pet-friendly', 'Verified reliability'],
+    reqOptions: [
+      'Relevant age experience',
+      'First aid',
+      'Punctuality',
+      'Evenings/weekends',
+      'Photo/video updates',
+      'Can handle 2 kids',
+      'Pet-friendly',
+      'Verified reliability',
+    ],
     ageOptions: ['Infants (0-1)', 'Toddlers (1-3)', 'Preschool (3-6)', 'School (7+)'],
-    skillOptions: ['Pedagogical edu', 'Medical edu', 'English knowledge', 'Twins care', 'Driving license'],
-  }
+    skillOptions: [
+      'Pedagogical edu',
+      'Medical edu',
+      'English knowledge',
+      'Twins care',
+      'Driving license',
+    ],
+  },
 };

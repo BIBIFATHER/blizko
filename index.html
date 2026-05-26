@@ -109,7 +109,7 @@
         position: fixed;
         inset: 0;
         z-index: 10000;
-        background-color: #F9F6F2;
+        background-color: #f9f6f2;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -132,7 +132,8 @@
       }
       .splash-arc-svg {
         position: absolute;
-        top: 0; left: 0;
+        top: 0;
+        left: 0;
         animation: splash-arc-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
       }
       .splash-dot {
@@ -140,7 +141,7 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        background: #C4744A;
+        background: #c4744a;
         top: 33px;
         left: 46px;
         animation: splash-dot-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
@@ -149,26 +150,51 @@
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 30px;
         font-weight: 600;
-        color: #1C2B2D;
+        color: #1c2b2d;
         letter-spacing: -0.02em;
         line-height: 1;
         animation: splash-up 0.5s ease-out 0.95s both;
       }
       @keyframes splash-arc-in {
-        from { transform: translateX(-18px) scale(0.85); opacity: 0; }
-        to   { transform: translateX(0)     scale(1);    opacity: 1; }
+        from {
+          transform: translateX(-18px) scale(0.85);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0) scale(1);
+          opacity: 1;
+        }
       }
       @keyframes splash-dot-in {
-        from { transform: scale(0); opacity: 0; }
-        to   { transform: scale(1); opacity: 1; }
+        from {
+          transform: scale(0);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
       @keyframes splash-up {
-        from { transform: translateY(10px); opacity: 0; }
-        to   { transform: translateY(0);    opacity: 1; }
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
       }
       @media (prefers-reduced-motion: reduce) {
-        .splash-arc-svg, .splash-dot, .splash-wordmark { animation: none; opacity: 1; }
-        #blizko-splash.splash-exiting { transition: none; }
+        .splash-arc-svg,
+        .splash-dot,
+        .splash-wordmark {
+          animation: none;
+          opacity: 1;
+        }
+        #blizko-splash.splash-exiting {
+          transition: none;
+        }
       }
     </style>
 
@@ -215,12 +241,19 @@
     ></noscript>
 
     <!-- Splash screen: shown before React mounts, removed by App.tsx after min 2.2s -->
-    <script>window.__splashStart = Date.now();</script>
+    <script>
+      window.__splashStart = Date.now();
+    </script>
     <div id="blizko-splash" role="status" aria-label="Загрузка Blizko">
       <div class="splash-logo">
         <div class="splash-mark" aria-hidden="true">
           <svg class="splash-arc-svg" viewBox="0 0 80 80" width="80" height="80" fill="none">
-            <path d="M 48 28 A 17 17 0 1 0 48 52" stroke="#2A6B6E" stroke-width="5.5" stroke-linecap="round"/>
+            <path
+              d="M 48 28 A 17 17 0 1 0 48 52"
+              stroke="#2A6B6E"
+              stroke-width="5.5"
+              stroke-linecap="round"
+            />
           </svg>
           <div class="splash-dot"></div>
         </div>

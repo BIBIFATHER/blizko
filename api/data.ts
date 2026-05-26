@@ -5,7 +5,8 @@ import { rateLimit } from './_rate-limit.js';
 import { getServerEnv, verifyBearerAdmin, verifyBearerUser } from './_auth.js';
 import { getDbPool } from './_db.js';
 
-const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
+const json = (res: VercelResponse, status: number, payload: any) =>
+  res.status(status).json(payload);
 const RESOURCES = new Set(['parents', 'nannies', 'analytics', 'admin-actions']);
 const ANALYTICS_EVENT_LIMIT = 5_000;
 const ANALYTICS_ALLOWED_EVENTS = new Set([
@@ -37,9 +38,15 @@ const ANALYTICS_ALLOWED_EVENTS = new Set([
   'admin_panel_opened',
 ]);
 
-function getResource(req: VercelRequest): 'parents' | 'nannies' | 'analytics' | 'admin-actions' | null {
-  const resource = String((req.query as any)?.resource || '').trim().toLowerCase();
-  return RESOURCES.has(resource) ? (resource as 'parents' | 'nannies' | 'analytics' | 'admin-actions') : null;
+function getResource(
+  req: VercelRequest,
+): 'parents' | 'nannies' | 'analytics' | 'admin-actions' | null {
+  const resource = String((req.query as any)?.resource || '')
+    .trim()
+    .toLowerCase();
+  return RESOURCES.has(resource)
+    ? (resource as 'parents' | 'nannies' | 'analytics' | 'admin-actions')
+    : null;
 }
 
 function extractOwnedUserId(resource: 'parents' | 'nannies', item: any): string | null {
@@ -74,7 +81,8 @@ async function sb(path: string, init: RequestInit, url: string, key: string) {
 
 const fromRow = (r: any) => {
   const payload = r?.payload ?? {};
-  const createdAt = payload?.createdAt ?? (r?.created_at ? new Date(r.created_at).getTime() : Date.now());
+  const createdAt =
+    payload?.createdAt ?? (r?.created_at ? new Date(r.created_at).getTime() : Date.now());
   return {
     ...payload,
     id: payload?.id ?? r?.id,
@@ -131,7 +139,9 @@ function toAnalyticsRecord(row: any) {
     id: row?.id ? String(row.id) : undefined,
     event: String(row?.event || ''),
     properties: row?.properties && typeof row.properties === 'object' ? row.properties : {},
-    timestamp: row?.occurred_at ? new Date(row.occurred_at).toISOString() : new Date().toISOString(),
+    timestamp: row?.occurred_at
+      ? new Date(row.occurred_at).toISOString()
+      : new Date().toISOString(),
     url: row?.url ? String(row.url) : undefined,
   };
 }
@@ -144,8 +154,13 @@ function toAuditAnalyticsRecord(row: any) {
   return {
     id: details?.record_id ? String(details.record_id) : row?.id ? String(row.id) : undefined,
     event,
-    properties: details?.properties && typeof details.properties === 'object' ? details.properties : {},
-    timestamp: details?.occurred_at ? String(details.occurred_at) : row?.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+    properties:
+      details?.properties && typeof details.properties === 'object' ? details.properties : {},
+    timestamp: details?.occurred_at
+      ? String(details.occurred_at)
+      : row?.created_at
+        ? new Date(row.created_at).toISOString()
+        : new Date().toISOString(),
     url: details?.url ? String(details.url) : undefined,
   };
 }
@@ -168,10 +183,15 @@ function sanitizeAnalyticsRecord(input: any) {
   const parsed = timestamp ? Date.parse(timestamp) : Date.now();
   if (!Number.isFinite(parsed)) return null;
 
-  const sessionId = String((properties as any).session_id || '').trim().slice(0, 128);
+  const sessionId = String((properties as any).session_id || '')
+    .trim()
+    .slice(0, 128);
 
   return {
-    id: String(input.id || '').trim().slice(0, 128) || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+    id:
+      String(input.id || '')
+        .trim()
+        .slice(0, 128) || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
     event,
     properties,
     timestamp: new Date(parsed).toISOString(),
@@ -182,9 +202,7 @@ function sanitizeAnalyticsRecord(input: any) {
 
 function getAnalyticsRestConfig() {
   const { supabaseUrl, supabaseServiceRoleKey } = getServerEnv();
-  return supabaseUrl && supabaseServiceRoleKey
-    ? { supabaseUrl, supabaseServiceRoleKey }
-    : null;
+  return supabaseUrl && supabaseServiceRoleKey ? { supabaseUrl, supabaseServiceRoleKey } : null;
 }
 
 async function fetchAnalyticsViaSupabase(days: number) {
@@ -208,7 +226,10 @@ async function fetchAnalyticsViaSupabase(days: number) {
   return Array.isArray(data) ? data.map(toAuditAnalyticsRecord) : [];
 }
 
-async function saveAnalyticsViaSupabase(record: ReturnType<typeof sanitizeAnalyticsRecord>, userId?: string | null) {
+async function saveAnalyticsViaSupabase(
+  record: ReturnType<typeof sanitizeAnalyticsRecord>,
+  userId?: string | null,
+) {
   const config = getAnalyticsRestConfig();
   if (!config || !record) return false;
 
@@ -260,7 +281,11 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
         [String(days), ANALYTICS_EVENT_LIMIT],
       );
 
-      return json(res, 200, { items: result.rows.map(toAnalyticsRecord), days, source: 'postgres' });
+      return json(res, 200, {
+        items: result.rows.map(toAnalyticsRecord),
+        days,
+        source: 'postgres',
+      });
     } catch (e) {
       console.error('analytics GET: postgres query failed, falling back:', e);
       const items = await fetchAnalyticsViaSupabase(days);
@@ -364,7 +389,9 @@ async function handleAdminActions(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'POST') {
-    const action = String(req.body?.action || '').trim().slice(0, 120);
+    const action = String(req.body?.action || '')
+      .trim()
+      .slice(0, 120);
     const meta =
       req.body?.meta && typeof req.body.meta === 'object' && !Array.isArray(req.body.meta)
         ? req.body.meta
@@ -431,9 +458,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === 'GET') {
-      const response = await sb(`${resource}?select=id,payload,created_at&order=created_at.desc`, { method: 'GET' }, supabaseUrl, supabaseServiceRoleKey);
+      const response = await sb(
+        `${resource}?select=id,payload,created_at&order=created_at.desc`,
+        { method: 'GET' },
+        supabaseUrl,
+        supabaseServiceRoleKey,
+      );
       const data = await response.json().catch(() => []);
-      if (!response.ok) return json(res, response.status, { error: data?.message || `Failed to read ${resource}` });
+      if (!response.ok)
+        return json(res, response.status, { error: data?.message || `Failed to read ${resource}` });
       return json(res, 200, { items: (data || []).map(fromRow) });
     }
 
@@ -458,14 +491,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         supabaseServiceRoleKey,
       );
       const data = await response.json().catch(() => []);
-      if (!response.ok) return json(res, response.status, { error: data?.message || `Failed to save ${resource}` });
+      if (!response.ok)
+        return json(res, response.status, { error: data?.message || `Failed to save ${resource}` });
       const saved = Array.isArray(data) && data[0] ? fromRow(data[0]) : item;
       return json(res, 200, { item: saved });
     }
 
     if (req.method === 'PATCH') {
       const id = String(req.body?.id || '').trim();
-      const changes = req.body?.changes && typeof req.body.changes === 'object' ? req.body.changes : null;
+      const changes =
+        req.body?.changes && typeof req.body.changes === 'object' ? req.body.changes : null;
       if (!id || !changes) return json(res, 400, { error: 'Missing id or changes' });
 
       const row = await fetchResourceRow(resource, id, supabaseUrl, supabaseServiceRoleKey);
@@ -474,25 +509,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const current = fromRow(row);
 
       if (resource === 'parents') {
-        const statusChanged = typeof changes.status !== 'undefined' && changes.status !== current.status;
+        const statusChanged =
+          typeof changes.status !== 'undefined' && changes.status !== current.status;
         const forceStatusEvent = Boolean(req.body?.forceStatusEvent);
         const now = Date.now();
         const next = {
           ...current,
           ...changes,
           updatedAt: now,
-          rejectionInfo: typeof changes.status !== 'undefined' && changes.status !== 'rejected'
-            ? undefined
-            : (typeof changes.rejectionInfo !== 'undefined' ? changes.rejectionInfo : current.rejectionInfo),
+          rejectionInfo:
+            typeof changes.status !== 'undefined' && changes.status !== 'rejected'
+              ? undefined
+              : typeof changes.rejectionInfo !== 'undefined'
+                ? changes.rejectionInfo
+                : current.rejectionInfo,
           changeLog: [
             ...(current.changeLog || []),
             {
               at: now,
-              type: (statusChanged || forceStatusEvent) ? 'status_changed' : 'updated',
+              type: statusChanged || forceStatusEvent ? 'status_changed' : 'updated',
               by: 'admin',
-              note: String(req.body?.note || '').trim() || (statusChanged
-                ? `Статус: ${current.status || 'new'} → ${changes.status}`
-                : 'Заявка обновлена администратором'),
+              note:
+                String(req.body?.note || '').trim() ||
+                (statusChanged
+                  ? `Статус: ${current.status || 'new'} → ${changes.status}`
+                  : 'Заявка обновлена администратором'),
             },
           ],
         };
@@ -527,7 +568,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === 'DELETE') {
       const testOnly = String((req.query as any)?.testOnly || '') === '1';
-      const confirmed = String((req.query as any)?.confirm || '').trim().toUpperCase() === 'DELETE';
+      const confirmed =
+        String((req.query as any)?.confirm || '')
+          .trim()
+          .toUpperCase() === 'DELETE';
       if (!testOnly && !confirmed) {
         return json(res, 400, {
           error: 'Destructive delete requires explicit confirmation',
@@ -536,10 +580,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const filter = testOnly ? 'id=like.test-%25' : 'id=neq.__none__';
-      const response = await sb(`${resource}?${filter}`, { method: 'DELETE' }, supabaseUrl, supabaseServiceRoleKey);
+      const response = await sb(
+        `${resource}?${filter}`,
+        { method: 'DELETE' },
+        supabaseUrl,
+        supabaseServiceRoleKey,
+      );
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        return json(res, response.status, { error: data?.message || `Failed to clear ${resource}` });
+        return json(res, response.status, {
+          error: data?.message || `Failed to clear ${resource}`,
+        });
       }
       return json(res, 200, { ok: true, testOnly });
     }

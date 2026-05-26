@@ -5,7 +5,8 @@ import { setCors } from '../_cors.js';
 import { rateLimit } from '../_rate-limit.js';
 import { auditLog, maskPhone } from '../_audit.js';
 
-const json = (res: VercelResponse, status: number, payload: any) => res.status(status).json(payload);
+const json = (res: VercelResponse, status: number, payload: any) =>
+  res.status(status).json(payload);
 
 // Test phone for YooKassa verification (env: TEST_OTP_PHONE=+79000000000)
 const TEST_PHONE = process.env.TEST_OTP_PHONE || '+79000000000';
@@ -38,7 +39,10 @@ type OtpRow = {
 
 const HOUR_MS = 60 * 60 * 1000;
 
-export function canSend(now: number, row?: OtpRow | null): { ok: boolean; windowStart: number; sendCount: number } {
+export function canSend(
+  now: number,
+  row?: OtpRow | null,
+): { ok: boolean; windowStart: number; sendCount: number } {
   if (!row) return { ok: true, windowStart: now, sendCount: 0 };
   const windowStart = row.window_start ? new Date(row.window_start).getTime() : now;
   const sendCount = Number(row.send_count || 0);
@@ -61,22 +65,35 @@ async function handleSend(req: VercelRequest, res: VercelResponse) {
   const smsConfigured = Boolean(apiKey && email);
 
   const phone = normalizePhone(req.body?.phone);
-  if (!isValidE164(phone)) return json(res, 400, { ok: false, error: 'Некорректный номер телефона' });
+  if (!isValidE164(phone))
+    return json(res, 400, { ok: false, error: 'Некорректный номер телефона' });
 
   // Test phone bypass — no SMS, fixed code
   if (isTestPhone(phone)) {
     const supabaseTest = getServiceSupabase();
     if (supabaseTest) {
       await supabaseTest.from('phone_otps').upsert(
-        { phone, code: TEST_CODE, expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(), attempts: 0, sent_at: new Date().toISOString(), window_start: new Date().toISOString(), send_count: 1 },
-        { onConflict: 'phone' }
+        {
+          phone,
+          code: TEST_CODE,
+          expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+          attempts: 0,
+          sent_at: new Date().toISOString(),
+          window_start: new Date().toISOString(),
+          send_count: 1,
+        },
+        { onConflict: 'phone' },
       );
     }
     return json(res, 200, { ok: true, expiresInSec: 1800 });
   }
 
   const supabase = getServiceSupabase();
-  if (!supabase) return json(res, 503, { ok: false, error: 'OTP storage is not configured (SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY)' });
+  if (!supabase)
+    return json(res, 503, {
+      ok: false,
+      error: 'OTP storage is not configured (SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY)',
+    });
 
   const { data: existing, error: existingError } = await supabase
     .from('phone_otps')
@@ -90,7 +107,8 @@ async function handleSend(req: VercelRequest, res: VercelResponse) {
   }
 
   const rate = canSend(Date.now(), existing as OtpRow | null);
-  if (!rate.ok) return json(res, 429, { ok: false, error: 'Слишком много попыток. Попробуйте позже.' });
+  if (!rate.ok)
+    return json(res, 429, { ok: false, error: 'Слишком много попыток. Попробуйте позже.' });
 
   const code = String(Math.floor(100000 + Math.random() * 900000));
   const text = `Код Blizko: ${code}. Никому не сообщайте код.`;
@@ -109,7 +127,7 @@ async function handleSend(req: VercelRequest, res: VercelResponse) {
         window_start: new Date(rate.windowStart).toISOString(),
         send_count: rate.sendCount + 1,
       },
-      { onConflict: 'phone' }
+      { onConflict: 'phone' },
     );
 
     if (error) return json(res, 500, { ok: false, error: 'Failed to store OTP' });
@@ -145,7 +163,7 @@ async function handleSend(req: VercelRequest, res: VercelResponse) {
         window_start: new Date(rate.windowStart).toISOString(),
         send_count: rate.sendCount + 1,
       },
-      { onConflict: 'phone' }
+      { onConflict: 'phone' },
     );
 
     if (error) return json(res, 500, { ok: false, error: 'Failed to store OTP' });
@@ -164,7 +182,8 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
 
   const phone = normalizePhone(req.body?.phone);
   const code = String(req.body?.code || '').trim();
-  if (!phone || !/^\d{4,8}$/.test(code)) return json(res, 400, { ok: false, error: 'Некорректные данные' });
+  if (!phone || !/^\d{4,8}$/.test(code))
+    return json(res, 400, { ok: false, error: 'Некорректные данные' });
 
   const supabase = getServiceSupabase();
   if (!supabase) return json(res, 503, { ok: false, error: 'Auth service unavailable' });
@@ -228,7 +247,9 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
 
       if (createError) {
         const { data: allUsersResponse } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-        const existing = allUsersResponse?.users?.find((u: any) => u.phone === phone || u.email === tempEmail);
+        const existing = allUsersResponse?.users?.find(
+          (u: any) => u.phone === phone || u.email === tempEmail,
+        );
 
         if (existing) {
           userId = existing.id;
@@ -287,7 +308,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return json(res, 405, { ok: false, error: 'Method not allowed' });
 
-  const action = String(req.body?.action || (req.query as any)?.action || '').trim().toLowerCase();
+  const action = String(req.body?.action || (req.query as any)?.action || '')
+    .trim()
+    .toLowerCase();
   if (action === 'send') return handleSend(req, res);
   if (action === 'verify') return handleVerify(req, res);
 

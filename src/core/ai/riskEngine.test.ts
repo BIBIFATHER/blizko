@@ -26,7 +26,7 @@ describe('detectRiskFlags', () => {
           disciplineStyle: 'strict',
           communicationStyle: 'minimal',
         },
-      } as NannyProfile
+      } as NannyProfile,
     );
 
     expect(flags.map((flag) => flag.factor)).toContain('discipline_conflict');
@@ -52,7 +52,7 @@ describe('detectRiskFlags', () => {
         childAges: ['1-3 года'],
         documents: [],
         riskProfile: {},
-      } as NannyProfile
+      } as NannyProfile,
     );
 
     expect(flags.map((flag) => flag.factor)).toContain('no_medical_book');

@@ -18,7 +18,11 @@ import { uploadDocumentFile, uploadPhotoFile } from '@/services/storageUpload';
 
 const file = { name: 'passport.jpg', type: 'image/jpeg' } as unknown as File;
 
-function makeClient(opts: { uploadError?: unknown; publicUrl?: string | null; throwOnUpload?: boolean }) {
+function makeClient(opts: {
+  uploadError?: unknown;
+  publicUrl?: string | null;
+  throwOnUpload?: boolean;
+}) {
   return {
     auth: { getUser: async () => ({ data: { user: { id: 'u1' } } }) },
     storage: {
@@ -40,7 +44,10 @@ beforeEach(() => {
 describe('storageUpload — typed result, no silent null (H2)', () => {
   it('returns {ok:false, reason:disabled} when storage is not configured', async () => {
     mockState.client = null;
-    await expect(uploadDocumentFile(file, 'passport')).resolves.toEqual({ ok: false, reason: 'disabled' });
+    await expect(uploadDocumentFile(file, 'passport')).resolves.toEqual({
+      ok: false,
+      reason: 'disabled',
+    });
     await expect(uploadPhotoFile(file)).resolves.toEqual({ ok: false, reason: 'disabled' });
   });
 
@@ -53,7 +60,10 @@ describe('storageUpload — typed result, no silent null (H2)', () => {
 
   it('returns {ok:false, reason:error} when the upload throws', async () => {
     mockState.client = makeClient({ throwOnUpload: true });
-    await expect(uploadDocumentFile(file, 'medical_book')).resolves.toEqual({ ok: false, reason: 'error' });
+    await expect(uploadDocumentFile(file, 'medical_book')).resolves.toEqual({
+      ok: false,
+      reason: 'error',
+    });
   });
 
   it('returns {ok:true, url} on a successful document upload', async () => {

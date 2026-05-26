@@ -17,7 +17,12 @@ interface UserProfileModalProps {
 }
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({
-  user, onClose, onLogout, lang, onEditProfile, onEditParentRequest,
+  user,
+  onClose,
+  onLogout,
+  lang,
+  onEditProfile,
+  onEditParentRequest,
 }) => {
   const text = t[lang];
   const isNanny = user.role === 'nanny';
@@ -40,7 +45,6 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
         <div className="card-cloud w-full max-w-md overflow-hidden rounded-[2rem] animate-slide-up relative flex max-h-[90vh] flex-col border border-white/70">
-
           {/* Header with Tabs */}
           <div className="sticky top-0 z-10 border-b border-[color:var(--cloud-border)] bg-white/90 px-6 pb-3 pt-6 backdrop-blur">
             <div className="flex justify-between items-start mb-4">
@@ -55,7 +59,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   </span>
                 )}
               </div>
-              <button onClick={onClose} className="rounded-full border border-[color:var(--cloud-border)] bg-white/85 p-2 text-stone-400 transition-colors hover:text-stone-800">
+              <button
+                onClick={onClose}
+                className="rounded-full border border-[color:var(--cloud-border)] bg-white/85 p-2 text-stone-400 transition-colors hover:text-stone-800"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -95,19 +102,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               />
             )}
             {activeTab === 'bookings' && (
-              <BookingsTab
-                user={user}
-                lang={lang}
-                onReviewSubmit={handleReviewSubmit}
-              />
+              <BookingsTab user={user} lang={lang} onReviewSubmit={handleReviewSubmit} />
             )}
-            {activeTab === 'reviews' && isNanny && (
-              <ReviewsTab reviews={reviews} lang={lang} />
-            )}
+            {activeTab === 'reviews' && isNanny && <ReviewsTab reviews={reviews} lang={lang} />}
           </div>
         </div>
       </div>
-
     </>
   );
 };

@@ -61,14 +61,18 @@ export async function formatInsightsBlock(segment?: string): Promise<string> {
   if (insights.length === 0) return '';
 
   const filtered = segment
-    ? insights.filter(i => i.segment === segment || i.segment === 'all')
+    ? insights.filter((i) => i.segment === segment || i.segment === 'all')
     : insights;
 
   if (filtered.length === 0) return '';
 
   const lines = filtered.map((i) => {
-    const confidence = i.sample_count >= 50 ? '(высокая уверенность)' :
-                       i.sample_count >= 20 ? '(средняя уверенность)' : '(ранний сигнал)';
+    const confidence =
+      i.sample_count >= 50
+        ? '(высокая уверенность)'
+        : i.sample_count >= 20
+          ? '(средняя уверенность)'
+          : '(ранний сигнал)';
     const corr = i.correlation != null ? `, r=${i.correlation.toFixed(2)}` : '';
     return `- ${i.insight_text} ${confidence}${corr}`;
   });

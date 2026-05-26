@@ -36,7 +36,6 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[30rem] flex-col overflow-hidden bg-[#F9F6F2] text-[#1C2B2D] sm:max-w-[34rem] sm:rounded-[2.4rem] sm:shadow-[0_24px_70px_rgba(28,43,45,0.12)]">
-
       {/* Hero — full-bleed фото с кнопками поверх */}
       <div className="relative h-[28rem] flex-shrink-0 sm:h-[32rem]">
         <img

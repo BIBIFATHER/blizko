@@ -90,10 +90,7 @@ describe('dashboardModel', () => {
         makeParentRequest('request-1', 'approved'),
         makeParentRequest('request-2', 'rejected'),
       ],
-      bookings: [
-        makeBooking('booking-1', 'pending'),
-        makeBooking('booking-2', 'completed'),
-      ],
+      bookings: [makeBooking('booking-1', 'pending'), makeBooking('booking-2', 'completed')],
     });
 
     expect(model.eyebrow).toBe('Family dashboard');
@@ -109,10 +106,7 @@ describe('dashboardModel', () => {
     const model = buildNannyDashboardModel({
       lang: 'ru',
       profile,
-      bookings: [
-        makeBooking('booking-1', 'active'),
-        makeBooking('booking-2', 'completed'),
-      ],
+      bookings: [makeBooking('booking-1', 'active'), makeBooking('booking-2', 'completed')],
     });
 
     expect(model.eyebrow).toBe('Кабинет няни');
@@ -121,7 +115,11 @@ describe('dashboardModel', () => {
     expect(model.kpis[2].value).toBe('1');
     expect(model.kpis[3].value).toBe('1');
     expect(model.table.rows[4].status.label).toBe(
-      snapshot.qualityApproved ? 'Готова к показу' : snapshot.readyForReview ? 'Готова к ревью' : 'Еще не готова',
+      snapshot.qualityApproved
+        ? 'Готова к показу'
+        : snapshot.readyForReview
+          ? 'Готова к ревью'
+          : 'Еще не готова',
     );
   });
 });

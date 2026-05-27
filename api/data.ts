@@ -4,6 +4,7 @@ import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
 import { getServerEnv, verifyBearerAdmin, verifyBearerUser } from './_auth.js';
 import { getDbPool } from './_db.js';
+import { getServiceSupabase } from './auth/_supabase.js';
 
 const json = (res: VercelResponse, status: number, payload: any) =>
   res.status(status).json(payload);
@@ -420,9 +421,44 @@ async function handleAdminActions(req: VercelRequest, res: VercelResponse) {
   return json(res, 405, { error: 'Method not allowed' });
 }
 
+// Подписать документ няни из private-бакета (куратор ≠ owner → service_role).
+// Свёрнуто сюда из отдельного /api/sign-doc, чтобы уложиться в лимит функций Hobby.
+async function handleSignDoc(req: VercelRequest, res: VercelResponse) {
+  const admin = await verifyBearerAdmin(req);
+  if (!admin) return json(res, 403, { error: 'Admin access required' });
+
+  const path = String((req.query as any)?.path || '').trim();
+  if (!path || path.startsWith('/') || path.includes('..')) {
+    return json(res, 400, { error: 'Invalid path' });
+  }
+
+  const supabase = getServiceSupabase();
+  if (!supabase) return json(res, 500, { error: 'Storage unavailable' });
+
+  try {
+    const { data, error } = await supabase.storage
+      .from('nanny-documents')
+      .createSignedUrl(path, 300);
+    if (error || !data?.signedUrl) {
+      console.warn('sign-doc failed:', error?.message);
+      return json(res, 404, { error: 'Document not found' });
+    }
+    return json(res, 200, { url: data.signedUrl });
+  } catch (e) {
+    console.error('sign-doc error:', e);
+    return json(res, 500, { error: 'internal_error' });
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
+
+  if (req.method === 'GET' && (req.query as any)?.action === 'sign-doc') {
+    const limit = rateLimit(req, { max: 60, prefix: 'data:sign-doc' });
+    if (!limit.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
+    return handleSignDoc(req, res);
+  }
 
   const resource = getResource(req);
   if (!resource) return json(res, 400, { error: 'Missing or invalid resource' });

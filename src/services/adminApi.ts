@@ -177,7 +177,7 @@ export async function getNannyDocSignedUrl(path: string): Promise<string | null>
   const headers = await getAdminHeaders();
   if (!headers) return null;
   try {
-    const response = await fetch(`/api/sign-doc?path=${encodeURIComponent(path)}`, {
+    const response = await fetch(`/api/data?action=sign-doc&path=${encodeURIComponent(path)}`, {
       method: 'GET',
       headers,
     });

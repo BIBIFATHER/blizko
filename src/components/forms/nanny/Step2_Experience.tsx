@@ -147,9 +147,7 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
       />
 
       <div className="border-t border-stone-100 my-2" />
-      <div className="section-label">
-        {lang === 'ru' ? 'Видеовизитка' : 'Video intro'}
-      </div>
+      <div className="section-label">{lang === 'ru' ? 'Видеовизитка' : 'Video intro'}</div>
       <p className="text-sm text-stone-500 mb-2">
         {lang === 'ru'
           ? 'Короткое видео помогает семьям почувствовать вашу манеру общения. Необязательно, но повышает доверие.'

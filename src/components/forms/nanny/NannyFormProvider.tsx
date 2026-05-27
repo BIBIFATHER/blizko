@@ -29,6 +29,7 @@ export interface NannyFormData {
   about: string;
   contact: string;
   isNannySharing: boolean;
+  video?: string;
 }
 
 export interface AdvancedSettings {
@@ -122,6 +123,7 @@ export const NannyFormProvider: React.FC<{
     about: initialData?.about || '',
     contact: initialData?.contact || '',
     isNannySharing: initialData?.isNannySharing || false,
+    video: initialData?.video,
   });
 
   const [advanced, setAdvanced] = useState<AdvancedSettings>({

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNannyForm } from './NannyFormProvider';
 import { Button, Input, Textarea, ChipGroup } from '../../UI';
+import { VideoRecorderModal } from '../../VideoRecorderModal';
+import { Video, CheckCircle2 } from 'lucide-react';
 import { t } from '@/core/i18n/translations';
 import { Language } from '@/core/types';
 
@@ -10,6 +12,7 @@ interface Props {
 
 export const Step2_Experience: React.FC<Props> = ({ lang }) => {
   const text = t[lang];
+  const [showVideoModal, setShowVideoModal] = useState(false);
   const {
     formData,
     setFormData,
@@ -143,6 +146,43 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
         required
       />
 
+      <div className="border-t border-stone-100 my-2" />
+      <div className="section-label">
+        {lang === 'ru' ? 'Видеовизитка' : 'Video intro'}
+      </div>
+      <p className="text-sm text-stone-500 mb-2">
+        {lang === 'ru'
+          ? 'Короткое видео помогает семьям почувствовать вашу манеру общения. Необязательно, но повышает доверие.'
+          : 'A short video helps families sense your manner. Optional, but it builds trust.'}
+      </p>
+
+      {formData.video ? (
+        <div className="flex items-center justify-between gap-3 bg-green-50 border border-green-100 rounded-xl p-3">
+          <div className="flex items-center gap-2 text-sm text-green-800">
+            <CheckCircle2 size={18} className="shrink-0" />
+            <span>{lang === 'ru' ? 'Визитка записана' : 'Video intro recorded'}</span>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="shrink-0"
+            onClick={() => setShowVideoModal(true)}
+          >
+            {lang === 'ru' ? 'Перезаписать' : 'Re-record'}
+          </Button>
+        </div>
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+          onClick={() => setShowVideoModal(true)}
+        >
+          <Video size={18} />
+          {lang === 'ru' ? 'Записать видео' : 'Record video'}
+        </Button>
+      )}
+
       <div className="bg-[#EFF3F2] border border-[#7FA99B]/30 rounded-xl p-3 text-sm text-[#1C2B2D] mt-6 animate-fade-in">
         <div>
           {lang === 'ru'
@@ -150,6 +190,17 @@ export const Step2_Experience: React.FC<Props> = ({ lang }) => {
             : "This helps families understand if you're a good fit — even before the first call."}
         </div>
       </div>
+
+      {showVideoModal && (
+        <VideoRecorderModal
+          lang={lang}
+          onClose={() => setShowVideoModal(false)}
+          onSave={(url) => {
+            setFormData((prev) => ({ ...prev, video: url }));
+            setShowVideoModal(false);
+          }}
+        />
+      )}
 
       <div className="sticky-action-rail sticky-footer-fade flex gap-4">
         <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>

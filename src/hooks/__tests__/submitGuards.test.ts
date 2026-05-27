@@ -77,4 +77,17 @@ describe('submit guards — no false success on persist error', () => {
 
     expect(navigate).toHaveBeenCalled();
   });
+
+  // Video intro (videoвизитка): the recorded public URL travels in formData.video,
+  // so the submit path must forward it to persistence untouched — admin reads n.video.
+  it('nanny: video URL is forwarded to persistence (not dropped by submit path)', async () => {
+    vi.mocked(saveNannyProfile).mockResolvedValue({ item: { id: 'z' } as never, sync: 'synced' });
+
+    const handleNannySubmit = useNannySubmit({ navigate: navigate as never, lang: 'ru' });
+    await handleNannySubmit({ video: 'https://cdn/nanny-videos/u1/video-intro.webm' } as never);
+
+    expect(saveNannyProfile).toHaveBeenCalledWith(
+      expect.objectContaining({ video: 'https://cdn/nanny-videos/u1/video-intro.webm' }),
+    );
+  });
 });

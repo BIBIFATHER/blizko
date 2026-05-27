@@ -3,6 +3,7 @@ import { useNannyForm } from './NannyFormProvider';
 import { Button, Card } from '../../UI';
 import { ShieldCheck, Check, FileText, Upload } from 'lucide-react';
 import { DocumentUploadModal } from '../../DocumentUploadModal';
+import { getDocumentSignedUrl } from '@/services/storageUpload';
 import { t } from '@/core/i18n/translations';
 import { Language, DocumentVerification } from '@/core/types';
 import {
@@ -149,12 +150,16 @@ export const Step3_Verification: React.FC<Props> = ({ lang }) => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      {doc.fileDataUrl && (
+                      {(doc.fileStoragePath || doc.fileDataUrl) && (
                         <button
                           type="button"
-                          onClick={() => {
+                          onClick={async () => {
+                            const href = doc.fileStoragePath
+                              ? await getDocumentSignedUrl(doc.fileStoragePath)
+                              : doc.fileDataUrl;
+                            if (!href) return;
                             const a = document.createElement('a');
-                            a.href = doc.fileDataUrl!;
+                            a.href = href;
                             a.target = '_blank';
                             a.rel = 'noopener noreferrer';
                             a.download = doc.fileName || 'document';

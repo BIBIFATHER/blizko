@@ -14,7 +14,11 @@ vi.mock('@/services/supabase', () => ({
   },
 }));
 
-import { uploadDocumentFile, uploadPhotoFile } from '@/services/storageUpload';
+import {
+  uploadDocumentFile,
+  uploadPhotoFile,
+  getDocumentSignedUrl,
+} from '@/services/storageUpload';
 
 const file = { name: 'passport.jpg', type: 'image/jpeg' } as unknown as File;
 
@@ -32,6 +36,10 @@ function makeClient(opts: {
           return { error: opts.uploadError ?? null };
         },
         getPublicUrl: () => ({ data: { publicUrl: opts.publicUrl ?? 'https://cdn/doc' } }),
+        createSignedUrl: async () => ({
+          data: { signedUrl: 'https://cdn/sign/doc?token=abc' },
+          error: null,
+        }),
       }),
     },
   };
@@ -66,11 +74,18 @@ describe('storageUpload — typed result, no silent null (H2)', () => {
     });
   });
 
-  it('returns {ok:true, url} on a successful document upload', async () => {
-    mockState.client = makeClient({ publicUrl: 'https://cdn/doc-1' });
-    await expect(uploadDocumentFile(file, 'passport')).resolves.toEqual({
-      ok: true,
-      url: 'https://cdn/doc-1',
-    });
+  it('returns {ok:true, path} (private bucket — путь, не public URL) on success', async () => {
+    mockState.client = makeClient({});
+    const res = await uploadDocumentFile(file, 'passport');
+    expect(res.ok).toBe(true);
+    expect((res as { path: string }).path).toMatch(/^u1\/\d+-passport\.jpg$/);
+    expect((res as { url?: string }).url).toBeUndefined();
+  });
+
+  it('getDocumentSignedUrl returns a signed URL for the owner', async () => {
+    mockState.client = makeClient({});
+    await expect(getDocumentSignedUrl('u1/doc.jpg')).resolves.toBe(
+      'https://cdn/sign/doc?token=abc',
+    );
   });
 });

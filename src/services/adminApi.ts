@@ -171,3 +171,24 @@ export async function createAdminAction(
     return null;
   }
 }
+
+// Signed URL для документа няни из private-бакета (куратор ≠ owner → server-side).
+export async function getNannyDocSignedUrl(path: string): Promise<string | null> {
+  const headers = await getAdminHeaders();
+  if (!headers) return null;
+  try {
+    const response = await fetch(`/api/sign-doc?path=${encodeURIComponent(path)}`, {
+      method: 'GET',
+      headers,
+    });
+    const payload = await parseJsonSafe(response);
+    if (!response.ok) {
+      console.warn('getNannyDocSignedUrl failed:', response.status, payload);
+      return null;
+    }
+    return payload?.url ?? null;
+  } catch (e) {
+    console.warn('getNannyDocSignedUrl network error:', e instanceof Error ? e.message : e);
+    return null;
+  }
+}

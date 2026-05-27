@@ -22,6 +22,7 @@ import {
 import { AdminPreviewDoc } from './adminModerationUtils';
 import { useAdminNannyModeration } from '@/hooks/useAdminNannyModeration';
 import { useAdminWorkflowUI } from './adminWorkflowUI';
+import { getNannyDocSignedUrl } from '@/services/adminApi';
 
 type NannyIssueFilter = 'all' | 'noDocs' | 'rejected' | 'pending' | 'unverified';
 
@@ -347,20 +348,21 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                                     : 'отклонено'}
                               </span>
                               <AdminPillButton
-                                onClick={() => {
-                                  if (!doc.fileDataUrl) {
+                                onClick={async () => {
+                                  const path = doc.fileStoragePath;
+                                  const url = path
+                                    ? await getNannyDocSignedUrl(path)
+                                    : doc.fileDataUrl;
+                                  if (!url) {
                                     reportError(
-                                      'Файл не прикреплён к этой записи. Перезагрузите резюме заново.',
+                                      'Файл не прикреплён к этой записи. Перезагрузите документ заново.',
                                     );
                                     return;
                                   }
-                                  setPreviewDoc({
-                                    url: doc.fileDataUrl,
-                                    name: doc.fileName || 'document',
-                                  });
+                                  setPreviewDoc({ url, name: doc.fileName || 'document' });
                                 }}
-                                tone={doc.fileDataUrl ? 'neutral' : 'neutral'}
-                                className={`px-2.5 py-1 text-[10px] ${doc.fileDataUrl ? '' : 'bg-stone-100 text-stone-400 border-stone-200 hover:bg-stone-100 hover:border-stone-200'}`}
+                                tone="neutral"
+                                className={`px-2.5 py-1 text-[10px] ${doc.fileStoragePath || doc.fileDataUrl ? '' : 'bg-stone-100 text-stone-400 border-stone-200 hover:bg-stone-100 hover:border-stone-200'}`}
                               >
                                 Просмотр
                               </AdminPillButton>

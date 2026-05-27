@@ -47,7 +47,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       type: docType,
       verifiedAt: Date.now(),
       fileName: file.name,
-      fileDataUrl: upload.url,
+      fileStoragePath: upload.path,
     };
 
     onVerify(doc);

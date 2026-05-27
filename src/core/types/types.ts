@@ -134,6 +134,8 @@ export interface DocumentVerification {
   verifiedAt: number;
   fileName?: string;
   fileDataUrl?: string;
+  /** Путь в private-бакете nanny-documents. Просмотр — через signed URL. */
+  fileStoragePath?: string;
   normalizedResume?: NormalizedResume;
 }
 

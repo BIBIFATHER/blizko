@@ -16,8 +16,13 @@ async function getCurrentUserId(): Promise<string> {
 }
 
 export type UploadResult = { ok: true; url: string } | { ok: false; reason: 'disabled' | 'error' };
+// Документы лежат в PRIVATE-бакете — возвращаем путь, не публичный URL.
+// Просмотр идёт через signed URL (owner — клиентом, куратор — через /api/sign-doc).
+export type DocUploadResult =
+  | { ok: true; path: string }
+  | { ok: false; reason: 'disabled' | 'error' };
 
-export async function uploadDocumentFile(file: File, docType: string): Promise<UploadResult> {
+export async function uploadDocumentFile(file: File, docType: string): Promise<DocUploadResult> {
   if (!supabase) return { ok: false, reason: 'disabled' };
   try {
     const userId = await getCurrentUserId();
@@ -34,12 +39,29 @@ export async function uploadDocumentFile(file: File, docType: string): Promise<U
       return { ok: false, reason: 'error' };
     }
 
-    const { data } = supabase.storage.from(DOCS_BUCKET).getPublicUrl(filePath);
-    if (!data?.publicUrl) return { ok: false, reason: 'error' };
-    return { ok: true, url: data.publicUrl };
+    return { ok: true, path: filePath };
   } catch (e) {
     console.warn('Document upload exception:', e instanceof Error ? e.message : e);
     return { ok: false, reason: 'error' };
+  }
+}
+
+// Подписать документ из private-бакета. Работает для владельца (owner-read RLS).
+// Кураторы (не владельцы) получают signed URL через server-эндпоинт /api/sign-doc.
+export async function getDocumentSignedUrl(path: string, expiresIn = 300): Promise<string | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase.storage
+      .from(DOCS_BUCKET)
+      .createSignedUrl(path, expiresIn);
+    if (error) {
+      console.warn('Document sign error:', error.message);
+      return null;
+    }
+    return data?.signedUrl ?? null;
+  } catch (e) {
+    console.warn('Document sign exception:', e instanceof Error ? e.message : e);
+    return null;
   }
 }
 

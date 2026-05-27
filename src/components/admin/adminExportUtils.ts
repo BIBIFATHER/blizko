@@ -9,7 +9,9 @@ export const escapeCsv = (value: unknown) => {
 export const getNannyExportRows = (nannies: NannyProfile[]) => {
   return nannies.map((n) => {
     const docs = n.documents || [];
-    const hasResume = docs.some((d) => d.type === 'resume' && !!d.fileDataUrl);
+    const hasResume = docs.some(
+      (d) => d.type === 'resume' && !!(d.fileStoragePath || d.fileDataUrl),
+    );
     const pdConsent = docs.length > 0;
     const requiredDone = Boolean(
       n.name &&

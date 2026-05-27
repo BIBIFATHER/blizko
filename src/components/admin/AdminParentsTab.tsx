@@ -16,7 +16,11 @@ import {
   rejectReasonLabelMap,
 } from '@/hooks/useAdminParentModeration';
 import { useAdminWorkflowUI } from './adminWorkflowUI';
-import { adminUpdateParentRequest, adminSendNotification } from '@/services/adminApi';
+import {
+  adminUpdateParentRequest,
+  adminSendNotification,
+  getNannyDocSignedUrl,
+} from '@/services/adminApi';
 import { notifyUserStatusChanged } from '@/services/notifications';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
@@ -414,14 +418,18 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                             ? doc.fileName
                             : `${doc.type}.pdf`}
                         </div>
-                        {doc.fileDataUrl ? (
+                        {doc.fileStoragePath || doc.fileDataUrl ? (
                           <AdminPillButton
-                            onClick={() =>
-                              setPreviewDoc({
-                                url: doc.fileDataUrl!,
-                                name: doc.fileName || 'document',
-                              })
-                            }
+                            onClick={async () => {
+                              const url = doc.fileStoragePath
+                                ? await getNannyDocSignedUrl(doc.fileStoragePath)
+                                : doc.fileDataUrl;
+                              if (!url) {
+                                reportError('Не удалось открыть документ.');
+                                return;
+                              }
+                              setPreviewDoc({ url, name: doc.fileName || 'document' });
+                            }}
                             tone="neutral"
                             className="px-2.5 py-1 text-[10px]"
                           >

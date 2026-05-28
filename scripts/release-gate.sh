@@ -3,7 +3,8 @@
 # Release gate — исполняемая версия .context/CODEX_RELEASE_PROTOCOL.md.
 # Прогоняет все обязательные проверки и падает (exit 1), если хоть одна не прошла
 # или в рабочем дереве остались незакоммиченные PRODUCT-файлы.
-# memory/* и MEMORY.md считаются допустимо-dirty (их намеренно не коммитят).
+# Допустимо-dirty (намеренно не коммитятся): memory/*, MEMORY.md, .claude/, .agents/,
+# BOOTSTRAP.md — это локальный tooling/память агента, не продуктовый код.
 #
 set -uo pipefail
 cd "$(dirname "$0")/.."
@@ -20,13 +21,13 @@ PRODUCT_GLOBS=(
 )
 
 sec "Repository hygiene"
-# Dirty product = всё, кроме memory/ и MEMORY.md
-DIRTY_PRODUCT="$(git status --porcelain | sed 's/^...//' | grep -vE '^(MEMORY\.md|memory/)' || true)"
+# Dirty product = всё, кроме tooling/памяти агента (memory/, MEMORY.md, .claude/, .agents/, BOOTSTRAP.md)
+DIRTY_PRODUCT="$(git status --porcelain | sed 's/^...//' | grep -vE '^(MEMORY\.md|memory/|\.claude/|\.agents/|BOOTSTRAP\.md)' || true)"
 if [ -n "$DIRTY_PRODUCT" ]; then
   bad "Незакоммиченные product-файлы (закоммить перед релизом):"
   echo "$DIRTY_PRODUCT" | sed 's/^/      /'
 else
-  ok "Product-дерево чистое (dirty только memory — допустимо)"
+  ok "Product-дерево чистое (dirty только tooling/память — допустимо)"
 fi
 printf "  latest commit: %s %s\n" "$(git rev-parse --short HEAD)" "$(git log -1 --pretty=%s)"
 

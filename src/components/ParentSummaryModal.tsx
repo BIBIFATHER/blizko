@@ -45,7 +45,7 @@ export const ParentSummaryModal: React.FC<Props> = ({
     );
   if (advanced.pets)
     conditionTags.push(ru ? `Животные: ${advanced.pets}` : `Pets: ${advanced.pets}`);
-  if (formData.isNannySharing) conditionTags.push(ru ? 'Nanny Sharing' : 'Nanny Sharing');
+  if (formData.isNannySharing) conditionTags.push(ru ? 'Няня на две семьи' : 'Nanny Sharing');
 
   return (
     <ModalShell variant="card" className="z-80" panelClassName="bg-[#F9F6F2]/95 backdrop-blur-xl">

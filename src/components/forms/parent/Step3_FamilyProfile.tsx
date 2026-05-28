@@ -188,7 +188,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
       {/* Nanny sharing */}
       <div className="wizard-sharing-card">
         <Checkbox
-          label={ru ? 'Делить няню с соседями (Nanny Sharing)' : 'Share a nanny with neighbors'}
+          label={ru ? 'Делить няню с соседями (няня на две семьи)' : 'Share a nanny with neighbors'}
           checked={formData.isNannySharing}
           onChange={(checked) => setFormData((p) => ({ ...p, isNannySharing: checked }))}
         />

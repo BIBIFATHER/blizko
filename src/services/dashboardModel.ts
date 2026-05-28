@@ -463,7 +463,7 @@ export function buildNannyDashboardModel(params: {
       primary: copy(lang, 'Верификация', 'Verification'),
       secondary: copy(
         lang,
-        'Подтвержденный trust-сигнал для семьи',
+        'Подтверждённый сигнал доверия для семьи',
         'Confirmed trust signal visible to families',
       ),
       status: {

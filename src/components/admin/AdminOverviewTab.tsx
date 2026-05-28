@@ -67,8 +67,8 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
       label: 'Анкеты нянь',
       value: metrics.supply.total,
       icon: <Users size={18} />,
-      note: 'Весь активный supply',
-      badge: <Badge variant="info">Supply</Badge>,
+      note: 'Всё активное предложение',
+      badge: <Badge variant="info">Предложение</Badge>,
     },
     {
       label: 'Готовы к ручной проверке',

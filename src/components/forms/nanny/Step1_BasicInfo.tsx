@@ -193,7 +193,7 @@ export const Step1_BasicInfo: React.FC<Props> = ({ lang }) => {
         </div>
         <p className="text-xs text-stone-500 mt-2 pl-9">
           {lang === 'ru'
-            ? 'Nanny Sharing: работа у двух семей в одном районе (до 3 км). Может обеспечить полную занятость и стабильный доход.'
+            ? 'Няня на две семьи: работа у двух семей в одном районе (до 3 км). Может обеспечить полную занятость и стабильный доход.'
             : 'Work with two families in the same area. Can provide full-time employment and stable income.'}
         </p>
       </div>

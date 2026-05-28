@@ -226,7 +226,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
         <Checkbox
           label={
             lang === 'ru'
-              ? 'Делить няню с соседями (Nanny Sharing)'
+              ? 'Делить няню с соседями (няня на две семьи)'
               : 'Share a nanny with neighbors'
           }
           checked={formData.isNannySharing}

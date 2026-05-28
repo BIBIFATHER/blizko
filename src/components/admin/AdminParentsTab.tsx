@@ -245,7 +245,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
             </div>
           </div>
           <Badge variant={onlyNeedsAction ? 'warning' : 'neutral'}>
-            {onlyNeedsAction ? 'Только action-needed' : 'Все заявки'}
+            {onlyNeedsAction ? 'Только требующие действия' : 'Все заявки'}
           </Badge>
         </div>
 
@@ -544,7 +544,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     </AdminPillButton>
                   </div>
                 ) : (
-                  <div className="text-xs text-stone-400 italic">Email родителя не задан</div>
+                  <div className="text-xs text-stone-400 italic">Почта родителя не задана</div>
                 )}
               </div>
 

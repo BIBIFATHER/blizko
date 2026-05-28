@@ -46,7 +46,7 @@ interface MatchResultsScreenProps {
 const TRUST_BADGE_LABELS: Record<TrustBadge, Record<Language, string>> = {
   verified_docs: { ru: 'Документы ✓', en: 'Docs verified' },
   verified_moderation: { ru: 'Модерация ✓', en: 'Reviewed' },
-  ai_checked: { ru: 'AI-проверка', en: 'AI-verified' },
+  ai_checked: { ru: 'ИИ-проверка', en: 'AI-verified' },
   soft_skills: { ru: 'Soft skills ✓', en: 'Soft skills' },
   has_reviews: { ru: 'Есть отзывы', en: 'Has reviews' },
 };
@@ -144,7 +144,9 @@ const CandidateCard: React.FC<{
     nanny.city || nanny.district
       ? { icon: <MapPin size={12} />, label: nanny.district || nanny.city || '' }
       : null,
-    nanny.isNannySharing ? { icon: <Heart size={12} />, label: 'Nanny Sharing' } : null,
+    nanny.isNannySharing
+      ? { icon: <Heart size={12} />, label: lang === 'ru' ? 'Няня на две семьи' : 'Nanny Sharing' }
+      : null,
   ].filter(Boolean) as Array<{ icon: React.ReactNode; label: string }>;
 
   /* First card gets a subtle breathing glow — position-based, no score exposed */

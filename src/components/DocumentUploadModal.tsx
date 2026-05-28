@@ -126,7 +126,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           </h3>
           <p className="text-sm text-stone-500 max-w-[260px]">
             {lang === 'ru'
-              ? 'AI извлекает основные поля, чтобы сократить ручной ввод.'
+              ? 'ИИ извлекает основные поля, чтобы сократить ручной ввод.'
               : 'AI is extracting key fields to reduce manual form filling.'}
           </p>
         </div>

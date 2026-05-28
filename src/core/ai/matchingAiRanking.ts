@@ -196,7 +196,7 @@ export function rankCandidates(
         );
         rawScore += softSkillsScore;
         factors.softSkills = softSkillsScore;
-        reasons.push('Есть AI-оценка soft skills');
+        reasons.push('Есть ИИ-оценка гибких навыков');
       }
 
       rawScore += growthScore;

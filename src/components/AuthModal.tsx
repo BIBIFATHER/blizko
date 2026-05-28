@@ -373,7 +373,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
             <div className="surface-panel rounded-[28px] p-4 sm:p-5">
               <Input
                 label={
-                  method === 'phone' ? (lang === 'ru' ? 'Номер телефона' : 'Phone Number') : 'Email'
+                  method === 'phone'
+                    ? lang === 'ru'
+                      ? 'Номер телефона'
+                      : 'Phone Number'
+                    : lang === 'ru'
+                      ? 'Почта'
+                      : 'Email'
                 }
                 type={method === 'phone' ? 'tel' : 'email'}
                 placeholder={method === 'phone' ? '+7 999 000-00-00' : 'hello@example.com'}
@@ -519,7 +525,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                   }}
                   className="text-xs text-stone-400 hover:text-stone-600"
                 >
-                  {lang === 'ru' ? 'Изменить email' : 'Change email'}
+                  {lang === 'ru' ? 'Изменить почту' : 'Change email'}
                 </button>
               </div>
             </div>

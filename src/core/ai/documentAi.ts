@@ -24,7 +24,7 @@ export const analyzeDocument = async (
             aiConfidence: 65,
             aiNotes:
               lang === 'ru'
-                ? `Частичный режим: документ сохранён, но AI-распознавание ограничено${reason ? ` (${reason})` : ''}.`
+                ? `Частичный режим: документ сохранён, но ИИ-распознавание ограничено${reason ? ` (${reason})` : ''}.`
                 : `Partial mode: document saved, but AI recognition is limited${reason ? ` (${reason})` : ''}.`,
             verifiedAt: Date.now(),
             documentNumber: 'AUTO-PARSE',
@@ -156,7 +156,7 @@ Return JSON with:
       aiConfidence: 50,
       aiNotes:
         lang === 'ru'
-          ? 'AI не смог полностью обработать файл. Документ сохранён, проверьте и заполните поля вручную.'
+          ? 'ИИ не смог полностью обработать файл. Документ сохранён, проверьте и заполните поля вручную.'
           : 'AI could not fully process the file. Document is saved, please review and fill fields manually.',
       verifiedAt: Date.now(),
       normalizedResume:

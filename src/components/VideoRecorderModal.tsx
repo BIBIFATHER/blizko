@@ -136,7 +136,7 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({
         const localUrl = URL.createObjectURL(blob);
         setErrorMsg(
           lang === 'ru'
-            ? 'Видео сохранено локально (временный URL). Настройте Supabase Storage bucket для постоянного хранения.'
+            ? 'Видео сохранено только на этом устройстве. Попробуйте загрузить ещё раз чуть позже.'
             : 'Video saved locally (temporary URL). Configure Supabase Storage bucket for persistent storage.',
         );
         setRecordingState('done');

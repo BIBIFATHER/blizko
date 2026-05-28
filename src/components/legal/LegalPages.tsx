@@ -407,7 +407,7 @@ export const SafeDealPage: React.FC = () => {
             </h2>
             <ul className="space-y-2 list-disc list-inside text-stone-600">
               <li>Сделка создаётся автоматически при подтверждении подбора</li>
-              <li>Обе стороны получают уведомление (Telegram + email)</li>
+              <li>Обе стороны получают уведомление (Telegram + почта)</li>
               <li>Покупатель оплачивает депозит через ссылку в приложении</li>
               <li>Исполнитель получает уведомление о поступлении средств</li>
             </ul>
@@ -577,7 +577,7 @@ export const PrivacyPage: React.FC = () => {
             <ul className="list-disc list-inside space-y-1 text-stone-600">
               <li>Оказание услуг подбора нянь</li>
               <li>Верификация пользователей</li>
-              <li>Улучшение качества AI-подбора</li>
+              <li>Улучшение качества ИИ-подбора</li>
               <li>Техническая поддержка</li>
             </ul>
           </div>

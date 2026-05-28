@@ -51,7 +51,7 @@ export const GosUslugiModal: React.FC<GosUslugiModalProps> = ({ onClose, onSucce
 
           <form onSubmit={handleLogin} className="space-y-4">
             <Input
-              label={lang === 'ru' ? 'Телефон / Email / СНИЛС' : 'Phone / Email / ID'}
+              label={lang === 'ru' ? 'Телефон / почта / СНИЛС' : 'Phone / Email / ID'}
               placeholder="+7 (999) 000-00-00"
               required // Fake required
             />

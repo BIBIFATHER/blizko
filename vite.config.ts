@@ -29,7 +29,11 @@ export default defineConfig({
     port: 3000,
     allowedHosts: ['its-bathrooms-from-sent.trycloudflare.com'],
     proxy: {
-      '/api': {
+      // Только AI-эндпоинты идут в AI-воркер (префикс покрывает /api/ai и /api/ai-support).
+      // Остальные /api/* — обычные Vercel-функции, в `vite dev` не запускаются;
+      // для полного бэкенда используйте `vercel dev`. Раньше catch-all '/api'
+      // мисроутил весь трафик в воркер → ложные 400 "Empty prompt" / 405 (BLI-49).
+      '/api/ai': {
         target: 'https://ai-proxy.blizko-ai.workers.dev',
         changeOrigin: true,
         secure: true,

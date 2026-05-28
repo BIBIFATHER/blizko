@@ -20,8 +20,10 @@ import {
   adminUpdateParentRequest,
   adminSendNotification,
   getNannyDocSignedUrl,
+  createAdminAction,
 } from '@/services/adminApi';
 import { notifyUserStatusChanged } from '@/services/notifications';
+import { trackShortlistDelivered } from '@/services/analytics';
 
 type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' | 'resubmitted';
 
@@ -209,6 +211,13 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     } finally {
       setNotifyBusy(false);
     }
+  };
+
+  const handleDeliverShortlist = async () => {
+    if (!selectedParent) return;
+    trackShortlistDelivered(selectedParent.id);
+    await createAdminAction('shortlist_delivered', { parentId: selectedParent.id });
+    reportSuccess('Подборка отмечена как выданная семье.');
   };
 
   const handleSaveNotes = async () => {
@@ -464,6 +473,15 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                   Обновлено:{' '}
                   {new Date(selectedParent.updatedAt || selectedParent.createdAt).toLocaleString()}
                 </span>
+              </div>
+
+              <div className="pt-1">
+                <AdminPillButton tone="warm" onClick={handleDeliverShortlist}>
+                  Выдать подборку семье
+                </AdminPillButton>
+                <p className="mt-1 text-[10px] text-stone-400">
+                  Отмечает факт выдачи подборки (для метрик подбора).
+                </p>
               </div>
 
               {!!selectedParent.changeLog?.length && (

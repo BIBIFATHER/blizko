@@ -6,6 +6,7 @@
  */
 
 import { supabase } from './supabase';
+import { trackMatchOutcomeRecorded } from './analytics';
 
 export type MatchOutcome = 'hired' | 'rejected' | 'ghosted';
 export type MatchAction = 'interested' | 'hired' | 'rejected' | 'ghosted';
@@ -73,7 +74,10 @@ export async function recordMatchOutcome(
 
     if (error) {
       console.warn('[MatchingFeedback] Failed to record outcome:', error.message);
+      return;
     }
+
+    trackMatchOutcomeRecorded(outcome, parentId, nannyId, scoreAtMatch);
   } catch (e) {
     console.warn('[MatchingFeedback] Error:', e);
   }

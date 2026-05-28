@@ -37,6 +37,8 @@ const ANALYTICS_ALLOWED_EVENTS = new Set([
   'nanny_offer_shown',
   'nanny_offer_accepted',
   'admin_panel_opened',
+  'shortlist_delivered',
+  'match_outcome_recorded',
 ]);
 
 function getResource(

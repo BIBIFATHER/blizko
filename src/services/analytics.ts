@@ -76,6 +76,10 @@ export const ANALYTICS_EVENTS = {
 
   // Admin
   ADMIN_PANEL_OPENED: 'admin_panel_opened',
+
+  // Curation & matching outcomes (pilot learning loop)
+  SHORTLIST_DELIVERED: 'shortlist_delivered',
+  MATCH_OUTCOME_RECORDED: 'match_outcome_recorded',
 } as const;
 
 type EventName = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
@@ -357,5 +361,28 @@ export function trackBookingCreated(parentId: string, nannyId: string): void {
   track(ANALYTICS_EVENTS.BOOKING_CREATED, {
     parent_id: parentId,
     nanny_id: nannyId,
+  });
+}
+
+/** Curator delivered a shortlist to a family (match-acceptance funnel). */
+export function trackShortlistDelivered(parentId: string, candidateCount?: number): void {
+  track(ANALYTICS_EVENTS.SHORTLIST_DELIVERED, {
+    parent_id: parentId,
+    ...(typeof candidateCount === 'number' ? { candidate_count: candidateCount } : {}),
+  });
+}
+
+/** A final match outcome was recorded (feeds matching_outcomes learning loop). */
+export function trackMatchOutcomeRecorded(
+  outcome: 'hired' | 'rejected' | 'ghosted',
+  parentId: string,
+  nannyId: string,
+  scoreAtMatch?: number,
+): void {
+  track(ANALYTICS_EVENTS.MATCH_OUTCOME_RECORDED, {
+    outcome,
+    parent_id: parentId,
+    nanny_id: nannyId,
+    ...(typeof scoreAtMatch === 'number' ? { score_at_match: scoreAtMatch } : {}),
   });
 }

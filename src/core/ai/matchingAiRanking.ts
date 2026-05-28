@@ -196,7 +196,7 @@ export function rankCandidates(
         );
         rawScore += softSkillsScore;
         factors.softSkills = softSkillsScore;
-        reasons.push('Есть ИИ-оценка гибких навыков');
+        reasons.push('Есть ИИ-оценка навыков общения');
       }
 
       rawScore += growthScore;
@@ -205,7 +205,7 @@ export function rankCandidates(
       if (request.isNannySharing && nanny.isNannySharing) {
         rawScore += w.nannySharing;
         factors.nannySharing = w.nannySharing;
-        reasons.push('Готова к совместному шерингу няни');
+        reasons.push('Готова работать на две семьи');
       }
 
       const qualityScore = getQualityScore(nanny);

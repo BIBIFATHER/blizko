@@ -154,7 +154,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
             {uploadedDoc && (
               <div className="mt-2 text-xs text-stone-500 space-y-1">
                 <div>
-                  {lang === 'ru' ? 'AI confidence' : 'AI confidence'}: {uploadedDoc.aiConfidence}%
+                  {lang === 'ru' ? 'Уверенность ИИ' : 'AI confidence'}: {uploadedDoc.aiConfidence}%
                 </div>
                 <div>{uploadedDoc.aiNotes}</div>
                 {uploadedDoc.type === 'resume' && uploadedDoc.normalizedResume && (

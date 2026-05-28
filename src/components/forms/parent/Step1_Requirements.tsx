@@ -234,7 +234,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
         />
         <p className="text-xs leading-relaxed text-stone-500 sm:pl-9">
           {lang === 'ru'
-            ? 'Шеринг — это как каршеринг, только для нянь. Вы делите часы няни с семьёй поблизости и экономите до 50% стоимости.'
+            ? 'Вы можете разделить часы няни с семьёй поблизости и сэкономить до 50%.'
             : 'Share a nanny with a nearby family and save up to 50% on costs.'}
         </p>
       </div>

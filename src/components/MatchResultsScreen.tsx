@@ -47,7 +47,7 @@ const TRUST_BADGE_LABELS: Record<TrustBadge, Record<Language, string>> = {
   verified_docs: { ru: 'Документы ✓', en: 'Docs verified' },
   verified_moderation: { ru: 'Модерация ✓', en: 'Reviewed' },
   ai_checked: { ru: 'ИИ-проверка', en: 'AI-verified' },
-  soft_skills: { ru: 'Soft skills ✓', en: 'Soft skills' },
+  soft_skills: { ru: 'Навыки общения ✓', en: 'Soft skills' },
   has_reviews: { ru: 'Есть отзывы', en: 'Has reviews' },
 };
 

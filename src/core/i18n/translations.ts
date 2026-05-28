@@ -213,7 +213,7 @@ export const t = {
     // Auth & Profile
     login: 'Войти',
     register: 'Регистрация',
-    emailLabel: 'Email',
+    emailLabel: 'Почта',
     passwordLabel: 'Пароль',
     nameLabelSimple: 'Имя',
     authTitle: 'Личный кабинет',

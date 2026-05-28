@@ -78,11 +78,11 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
       badge: <Badge variant="warning">Ревью</Badge>,
     },
     {
-      label: 'Quality-approved supply',
+      label: 'Проверенные анкеты',
       value: qualityApproved,
       icon: <TrendingUp size={18} />,
       note: 'Готовы к показу семье',
-      badge: <Badge variant="success">Quality</Badge>,
+      badge: <Badge variant="success">Качество</Badge>,
     },
     {
       label: 'Документы загружены',
@@ -162,9 +162,9 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
         <Card className="p-4!">
           <div className="flex items-center justify-between gap-3 mb-3">
             <div className="text-xs uppercase tracking-wide text-stone-400">
-              Nanny Quality Funnel
+              Воронка качества нянь
             </div>
-            <Badge variant="success">Quality</Badge>
+            <Badge variant="success">Качество</Badge>
           </div>
           <div className="space-y-2 text-sm text-stone-600">
             <div className="flex items-center justify-between">
@@ -180,7 +180,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
               <strong className="text-stone-800">{metrics.supply.readyForReview}</strong>
             </div>
             <div className="flex items-center justify-between">
-              <span>Quality-approved</span>
+              <span>Прошли проверку</span>
               <strong className="text-emerald-700">{metrics.supply.qualityApproved}</strong>
             </div>
           </div>

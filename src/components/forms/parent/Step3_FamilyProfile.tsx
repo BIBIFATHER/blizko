@@ -194,7 +194,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
         />
         <p className="text-xs leading-relaxed text-stone-500 sm:pl-9">
           {ru
-            ? 'Шеринг — это как каршеринг, только для нянь. Вы делите часы няни с семьёй поблизости и экономите до 50% стоимости.'
+            ? 'Вы можете разделить часы няни с семьёй поблизости и сэкономить до 50%.'
             : 'Share a nanny with a nearby family and save up to 50% on costs.'}
         </p>
       </div>

@@ -161,7 +161,7 @@ export const HowWeVerifyPage: React.FC = () => {
 
         <footer className="mt-6 text-center text-sm text-stone-400">
           <Link
-            to="/humanity-plus"
+            to="/how-it-works"
             className="text-amber-600 hover:text-amber-700 underline underline-offset-2 transition-colors"
           >
             Узнайте, как работает подбор Blizko →
@@ -172,9 +172,9 @@ export const HowWeVerifyPage: React.FC = () => {
   );
 };
 
-/* ─── HumanityPlusPage ─── /humanity-plus ─── */
+/* ─── HowItWorksPage ─── /how-it-works ─── */
 
-const humanityPlusSchema = {
+const howItWorksSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
@@ -213,7 +213,7 @@ const humanityPlusSchema = {
   ],
 };
 
-export const HumanityPlusPage: React.FC = () => {
+export const HowItWorksPage: React.FC = () => {
   const navigate = useNavigate();
 
   const factors = useMemo(
@@ -257,8 +257,8 @@ export const HumanityPlusPage: React.FC = () => {
       <SeoHead
         title="Как Blizko подбирает няню | Кураторский подбор"
         description="Куратор и система доверительных сигналов: контекст семьи, проверка анкеты и опыт няни — и понятные причины выбора. Как устроен подбор Blizko."
-        canonical="https://blizko.app/humanity-plus"
-        schema={humanityPlusSchema}
+        canonical="https://blizko.app/how-it-works"
+        schema={howItWorksSchema}
       />
 
       <article className="page-frame section-stack animate-fade-in py-4 pb-16 md:py-8">

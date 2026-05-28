@@ -44,8 +44,8 @@ const NannyPublicProfile = lazy(() =>
 const HowWeVerifyPage = lazy(() =>
   import('@/components/seo/SeoPages').then((module) => ({ default: module.HowWeVerifyPage })),
 );
-const HumanityPlusPage = lazy(() =>
-  import('@/components/seo/SeoPages').then((module) => ({ default: module.HumanityPlusPage })),
+const HowItWorksPage = lazy(() =>
+  import('@/components/seo/SeoPages').then((module) => ({ default: module.HowItWorksPage })),
 );
 const OfertaPage = lazy(() =>
   import('@/components/legal/LegalPages').then((module) => ({ default: module.OfertaPage })),
@@ -350,7 +350,8 @@ export default function App() {
             <Route path="/success" element={<SuccessScreen lang={lang} />} />
             <Route path="/match-results" element={<MatchResultsScreen lang={lang} />} />
             <Route path="/how-we-verify" element={<HowWeVerifyPage />} />
-            <Route path="/humanity-plus" element={<HumanityPlusPage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/humanity-plus" element={<Navigate to="/how-it-works" replace />} />
             <Route path="/oferta" element={<OfertaPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/safe-deal" element={<SafeDealPage />} />

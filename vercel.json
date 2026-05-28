@@ -12,6 +12,13 @@
             "schedule": "0 4 * * 1"
         }
     ],
+    "redirects": [
+        {
+            "source": "/humanity-plus",
+            "destination": "/how-it-works",
+            "permanent": true
+        }
+    ],
     "rewrites": [
         {
             "source": "/(.*)",

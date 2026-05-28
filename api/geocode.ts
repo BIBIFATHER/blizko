@@ -13,10 +13,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!rl.ok) return res.status(429).json({ error: 'Too many requests' });
 
   const q = String(req.query.q || '').trim();
-  if (!q || q.length < 2) return res.status(200).json({ items: [] });
+  const lat = String(req.query.lat || '').trim();
+  const lon = String(req.query.lon || '').trim();
+  const lang = String(req.query.lang || 'ru').trim() || 'ru';
+
+  const hasReverseCoords = lat !== '' && lon !== '';
+  if (!hasReverseCoords && (!q || q.length < 2)) return res.status(200).json({ items: [] });
 
   try {
     const yandexKey = process.env.YANDEX_GEOCODER_API_KEY;
+
+    if (hasReverseCoords) {
+      const geocode = `${lon},${lat}`;
+
+      if (yandexKey) {
+        const yUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=${encodeURIComponent(yandexKey)}&format=json&geocode=${encodeURIComponent(geocode)}&results=1&lang=${encodeURIComponent(lang === 'ru' ? 'ru_RU' : 'en_US')}`;
+        const yr = await fetch(yUrl);
+        const yj = await yr.json().catch(() => null);
+        const meta =
+          yj?.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject?.metaDataProperty
+            ?.GeocoderMetaData;
+        const components = meta?.Address?.Components || [];
+        const city =
+          components.find((x: any) => x?.kind === 'locality')?.name ||
+          components.find((x: any) => x?.kind === 'province')?.name ||
+          '';
+        const district =
+          components.find((x: any) => x?.kind === 'district')?.name ||
+          components.find((x: any) => x?.kind === 'area')?.name ||
+          '';
+        if (city || district) {
+          return res.status(200).json({ city, district, provider: 'yandex' });
+        }
+      }
+
+      const nUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&accept-language=${encodeURIComponent(lang)}`;
+      const nr = await fetch(nUrl, {
+        headers: { 'User-Agent': 'blizko-app/1.0 (local dev)' },
+      });
+      const data = await nr.json().catch(() => null);
+      const city = data?.address?.city || data?.address?.town || data?.address?.village || '';
+      const district =
+        data?.address?.suburb || data?.address?.city_district || data?.address?.neighbourhood || '';
+      return res.status(200).json({ city, district, provider: 'nominatim' });
+    }
 
     // 1) Prefer Yandex when key exists
     if (yandexKey) {

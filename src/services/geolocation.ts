@@ -27,21 +27,14 @@ export const detectUserLocation = async (lang: Language): Promise<GeolocationRes
       async (pos) => {
         try {
           const { latitude, longitude } = pos.coords;
-          // Use OpenStreetMap Nominatim for reverse geocoding
-          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=${lang}`;
-          const r = await fetch(url, {
-            headers: { Accept: 'application/json' },
-          });
+          const url = `/api/geocode?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&lang=${encodeURIComponent(lang)}`;
+          const r = await fetch(url, { headers: { Accept: 'application/json' } });
 
           if (!r.ok) throw new Error('Geocoding service error');
 
           const data = await r.json();
-          const city = data?.address?.city || data?.address?.town || data?.address?.village || '';
-          const district =
-            data?.address?.suburb ||
-            data?.address?.city_district ||
-            data?.address?.neighbourhood ||
-            '';
+          const city = data?.city || '';
+          const district = data?.district || '';
 
           resolve({
             city,

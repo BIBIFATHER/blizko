@@ -275,14 +275,9 @@ export const NannyFormProvider: React.FC<{
 
     const tmr = setTimeout(async () => {
       try {
-        const nr = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&limit=5`,
-        );
+        const nr = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`);
         const nj = await nr.json().catch(() => []);
-        const list = (Array.isArray(nj) ? nj : [])
-          .map((x: { display_name?: string }) => x?.display_name)
-          .filter(Boolean)
-          .slice(0, 5);
+        const list = (Array.isArray(nj?.items) ? nj.items : []).filter(Boolean).slice(0, 5);
 
         setCitySuggestions(list);
       } catch {

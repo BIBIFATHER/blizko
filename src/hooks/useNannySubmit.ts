@@ -1,7 +1,6 @@
 import { NavigateFunction } from 'react-router-dom';
 import { Language, NannyProfile, SubmissionResult } from '@/core/types';
 import { saveNannyProfile } from '@/services/storage';
-import { sendToWebhook } from '@/services/api';
 import { trackFormSubmit, trackNannyReadyForMatch } from '@/services/analytics';
 import {
   getNannyReadinessSnapshot,
@@ -35,7 +34,6 @@ export function useNannySubmit({ navigate, lang }: NannySubmitDeps) {
       return;
     }
 
-    await sendToWebhook(saved.item);
     trackFormSubmit('nanny');
 
     const readiness = getNannyReadinessSnapshot(saved.item);

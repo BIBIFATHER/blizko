@@ -1,9 +1,20 @@
 import { NavigateFunction } from 'react-router-dom';
-import { Language, ParentRequest, User } from '@/core/types';
+import { Language, ParentRequest, SubmissionResult, User } from '@/core/types';
 import { getNannyProfiles, saveParentRequest, updateParentRequest } from '@/services/storage';
-import { sendToWebhook } from '@/services/api';
 import { notifyAdminNewRequest } from '@/services/notifications';
 import { trackFormSubmit } from '@/services/analytics';
+
+// После сохранения заявки matching/AI — best-effort: не держим пользователя на спиннере,
+// если AI-цепочка зависла или упала. Возвращает null по таймауту/ошибке.
+const MATCH_TIMEOUT_MS = 8000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), ms);
+  });
+  return Promise.race([promise.catch(() => null), timeout]).finally(() => clearTimeout(timer));
+}
 
 type ParentSubmitInput = Omit<ParentRequest, 'id' | 'createdAt' | 'type'> & {
   id?: string;
@@ -35,7 +46,6 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
         return;
       }
 
-      await sendToWebhook(updated.item);
       navigate('/');
       return;
     }
@@ -51,18 +61,31 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
       return;
     }
 
-    await sendToWebhook(saved.item);
-    await notifyAdminNewRequest(saved.item);
     trackFormSubmit('parent');
 
-    const allNannies = await getNannyProfiles();
-    const { findBestMatch } = await import('@/core/ai/matchingAi');
-    const aiMatchResult = await findBestMatch(data, allNannies, lang, user?.id);
+    // Заявка уже в БД. Дальше — best-effort: уведомление админу fire-and-forget
+    // (его сбой не должен запирать пользователя на спиннере), AI-matching — с
+    // таймаутом. Навигация после сохранения гарантирована.
+    void notifyAdminNewRequest(saved.item).catch(() => {});
 
-    if (aiMatchResult.matchResult && aiMatchResult.matchResult.candidates.length > 0) {
+    let aiMatchResult: SubmissionResult | null = null;
+    try {
+      const allNannies = await withTimeout(getNannyProfiles(), MATCH_TIMEOUT_MS);
+      if (allNannies) {
+        const { findBestMatch } = await import('@/core/ai/matchingAi');
+        aiMatchResult = await withTimeout(
+          findBestMatch(data, allNannies, lang, user?.id),
+          MATCH_TIMEOUT_MS,
+        );
+      }
+    } catch {
+      aiMatchResult = null;
+    }
+
+    if (aiMatchResult?.matchResult && aiMatchResult.matchResult.candidates.length > 0) {
       navigate('/match-results', { state: { matchResult: aiMatchResult.matchResult } });
     } else {
-      navigate('/success', { state: { result: aiMatchResult } });
+      navigate('/success', { state: { result: aiMatchResult ?? undefined } });
     }
 
     return { savedId: saved.item.id };

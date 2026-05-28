@@ -31,6 +31,7 @@ import { useParentSubmit } from '@/hooks/useParentSubmit';
 import { useNannySubmit } from '@/hooks/useNannySubmit';
 import { saveParentRequest, saveNannyProfile } from '@/services/storage';
 import { sendToWebhook } from '@/services/api';
+import { findBestMatch } from '@/core/ai/matchingAi';
 
 const navigate = vi.fn();
 
@@ -76,6 +77,22 @@ describe('submit guards — no false success on persist error', () => {
     await handleParentSubmit({ city: 'Москва' } as never);
 
     expect(navigate).toHaveBeenCalled();
+  });
+
+  // Launch-blocker regression: после успешного сохранения пользователь НЕ должен
+  // застревать на спиннере, если AI-matching упал/завис. Навигация обязана случиться.
+  it('parent: navigates to /success even when AI matching throws (no spinner trap)', async () => {
+    vi.mocked(saveParentRequest).mockResolvedValue({ item: { id: 'p9' } as never, sync: 'synced' });
+    vi.mocked(findBestMatch).mockRejectedValueOnce(new Error('AI aborted'));
+
+    const handleParentSubmit = useParentSubmit({
+      navigate: navigate as never,
+      user: null,
+      lang: 'ru',
+    });
+    await handleParentSubmit({ city: 'Москва' } as never);
+
+    expect(navigate).toHaveBeenCalledWith('/success', expect.anything());
   });
 
   // Video intro (videoвизитка): the recorded public URL travels in formData.video,

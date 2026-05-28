@@ -194,7 +194,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
         />
         <p className="text-xs leading-relaxed text-stone-500 sm:pl-9">
           {ru
-            ? 'Вы можете разделить часы няни с семьёй поблизости и сэкономить до 50%.'
+            ? 'Иногда одной няне удобно помогать двум семьям рядом. Так вы делите часы и снижаете стоимость.'
             : 'Share a nanny with a nearby family and save up to 50% on costs.'}
         </p>
       </div>

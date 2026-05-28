@@ -234,7 +234,7 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
         />
         <p className="text-xs leading-relaxed text-stone-500 sm:pl-9">
           {lang === 'ru'
-            ? 'Вы можете разделить часы няни с семьёй поблизости и сэкономить до 50%.'
+            ? 'Иногда одной няне удобно помогать двум семьям рядом. Так вы делите часы и снижаете стоимость.'
             : 'Share a nanny with a nearby family and save up to 50% on costs.'}
         </p>
       </div>

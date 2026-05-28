@@ -50,10 +50,23 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
       return;
     }
 
+    // Гейт логином: RLS на parents разрешает insert только при auth.uid() = user_id.
+    // Без логина заявка не долетит до БД (тихо уйдёт в local-pending) и куратор её не
+    // увидит. Поэтому для анонима открываем авторизацию и НЕ сохраняем/не навигируем —
+    // после входа форма остаётся смонтированной, пользователь повторяет отправку.
+    if (!user) {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('blizko:open-auth-modal', { detail: { source: 'parent_submit' } }),
+        );
+      }
+      return;
+    }
+
     const saved = await saveParentRequest({
       ...data,
-      requesterId: user?.id,
-      requesterEmail: user?.email,
+      requesterId: user.id,
+      requesterEmail: user.email,
     });
 
     if (saved.sync === 'error') {

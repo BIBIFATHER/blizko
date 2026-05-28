@@ -46,7 +46,7 @@ describe('submit guards — no false success on persist error', () => {
 
     const handleParentSubmit = useParentSubmit({
       navigate: navigate as never,
-      user: null,
+      user: { id: 'u1', email: 'p@x.co' } as never,
       lang: 'ru',
     });
     await handleParentSubmit({ city: 'Москва' } as never);
@@ -71,7 +71,7 @@ describe('submit guards — no false success on persist error', () => {
 
     const handleParentSubmit = useParentSubmit({
       navigate: navigate as never,
-      user: null,
+      user: { id: 'u1', email: 'p@x.co' } as never,
       lang: 'ru',
     });
     await handleParentSubmit({ city: 'Москва' } as never);
@@ -87,12 +87,39 @@ describe('submit guards — no false success on persist error', () => {
 
     const handleParentSubmit = useParentSubmit({
       navigate: navigate as never,
-      user: null,
+      user: { id: 'u1', email: 'p@x.co' } as never,
       lang: 'ru',
     });
     await handleParentSubmit({ city: 'Москва' } as never);
 
     expect(navigate).toHaveBeenCalledWith('/success', expect.anything());
+  });
+
+  // BLI-66: анонимная заявка не сохраняется (RLS) и тихо терялась. Без логина —
+  // открываем авторизацию, НЕ сохраняем и НЕ навигируем (нет ложного /success).
+  it('parent: anonymous (no user) → does not save or navigate (login gate)', async () => {
+    const hasWindow = typeof window !== 'undefined';
+    const dispatchSpy = hasWindow ? vi.spyOn(window, 'dispatchEvent') : null;
+
+    const handleParentSubmit = useParentSubmit({
+      navigate: navigate as never,
+      user: null,
+      lang: 'ru',
+    });
+    await handleParentSubmit({ city: 'Москва' } as never);
+
+    // Ключевая гарантия (env-agnostic): анонимный сабмит не пишет и не навигирует
+    // → нет тихой потери и ложного /success.
+    expect(saveParentRequest).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+
+    if (dispatchSpy) {
+      const openedAuth = dispatchSpy.mock.calls.some(
+        ([e]) => e instanceof Event && e.type === 'blizko:open-auth-modal',
+      );
+      expect(openedAuth).toBe(true);
+      dispatchSpy.mockRestore();
+    }
   });
 
   // Video intro (videoвизитка): the recorded public URL travels in formData.video,

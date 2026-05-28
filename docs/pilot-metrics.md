@@ -35,9 +35,23 @@
 - M% дошли до первой встречи;
 - качественная обратная связь по доверию (порог согласовать).
 
-## Гэпы инструментации
+## Dashboard / source of truth
 
-- Нет явных событий **`shortlist_delivered`** (куратор выдал) и **`match_outcome_recorded`**
-  (исход встречи) → acceptance и learning меряются косвенно. Заведено отдельной
-  actionable-задачей в Linear.
-- Канал post-meeting feedback не определён (см. curator-operating-script TODO).
+**Linear** (проект «Blizko v1 Public Pilot») — единый источник истины на первую неделю
+пилота. Не плодим Notion/Sheets: воронка, исходы и решения живут в Linear.
+
+- Feedback от семей/нянь → заводим в Linear **только если actionable** (баг, гэп, явная
+  правка). Эмоции/контекст без действия — не тикеты.
+
+## Weekly review (ритуал)
+
+Раз в неделю (≈30 мин): смотрим воронку + `matching_outcomes`, отвечаем на 3 вопроса —
+где отваливаются семьи, что улучшить в продукте, что в кураторском процессе. Итог —
+1–3 actionable-тикета в Linear.
+
+## Статус инструментации
+
+- ✅ События **`shortlist_delivered`** и **`match_outcome_recorded`** добавлены и в проде
+  (BLI-59) — acceptance и learning loop меряются напрямую.
+- Канал post-meeting feedback — **Telegram** (резерв — почта); закреплено в
+  `curator-operating-script.md`.

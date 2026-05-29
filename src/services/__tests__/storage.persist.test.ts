@@ -96,3 +96,35 @@ describe('saveParentRequest — persist contract (C1)', () => {
     expect(result.sync).toBe('pending');
   });
 });
+
+describe('mergeNannyPreservingMedia — re-submit не обнуляет медиа (BLI-68)', () => {
+  const existing = {
+    id: 'n1',
+    documents: [{ type: 'passport' }],
+    video: 'https://cdn/video.webm',
+    photo: 'https://cdn/photo.jpg',
+  } as never;
+
+  it('сохраняет существующие documents/video/photo, если входящие пустые/без них', async () => {
+    const { mergeNannyPreservingMedia } = await import('@/services/storage');
+    const merged = mergeNannyPreservingMedia(existing, {
+      about: 'обновил только текст',
+      documents: [],
+    } as never);
+    expect(merged.documents).toHaveLength(1);
+    expect(merged.video).toBe('https://cdn/video.webm');
+    expect(merged.photo).toBe('https://cdn/photo.jpg');
+    expect((merged as { about?: string }).about).toBe('обновил только текст');
+  });
+
+  it('перезаписывает медиа, когда новые значения реально пришли', async () => {
+    const { mergeNannyPreservingMedia } = await import('@/services/storage');
+    const merged = mergeNannyPreservingMedia(existing, {
+      documents: [{ type: 'passport' }, { type: 'medical' }],
+      video: 'https://cdn/new.webm',
+    } as never);
+    expect(merged.documents).toHaveLength(2);
+    expect(merged.video).toBe('https://cdn/new.webm');
+    expect(merged.photo).toBe('https://cdn/photo.jpg'); // photo не пришло → сохранено
+  });
+});

@@ -400,6 +400,20 @@ export const resubmitParentRequest = async (
   return saveWithFallback('parents', updated);
 };
 
+// Merge-guard (BLI-68): повторный submit формы без повторной загрузки не должен
+// обнулять уже сохранённые медиа/документы. Сохраняем существующие непустые
+// documents/video/photo, если входящие пришли пустыми/без них.
+export function mergeNannyPreservingMedia(
+  existing: NannyProfile,
+  data: Partial<NannyProfile>,
+): NannyProfile {
+  const merged = { ...existing, ...data } as NannyProfile;
+  if (!data.documents || data.documents.length === 0) merged.documents = existing.documents;
+  if (!data.video) merged.video = existing.video;
+  if (!data.photo) merged.photo = existing.photo;
+  return merged;
+}
+
 export const saveNannyProfile = async (
   data: Partial<NannyProfile>,
 ): Promise<SaveResult<NannyProfile>> => {
@@ -409,11 +423,10 @@ export const saveNannyProfile = async (
   if (data.id) {
     const index = existing.findIndex((p) => p.id === data.id);
     if (index !== -1) {
-      const updatedProfile = {
-        ...existing[index],
-        ...data,
+      const updatedProfile: NannyProfile = {
+        ...mergeNannyPreservingMedia(existing[index], data),
         userId: currentUserId || existing[index].userId,
-      } as NannyProfile;
+      };
       return saveWithFallback('nannies', updatedProfile);
     }
   }
@@ -421,12 +434,11 @@ export const saveNannyProfile = async (
   const remoteOwn = await remoteGetOwnNanny();
   if (remoteOwn) {
     const remoteOwnProfile = fromRow<NannyProfile>(remoteOwn);
-    const updatedProfile = {
-      ...remoteOwnProfile,
-      ...data,
+    const updatedProfile: NannyProfile = {
+      ...mergeNannyPreservingMedia(remoteOwnProfile, data),
       id: remoteOwnProfile.id,
       userId: currentUserId || remoteOwnProfile.userId,
-    } as NannyProfile;
+    };
     return saveWithFallback('nannies', updatedProfile);
   }
 

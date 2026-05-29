@@ -13,7 +13,6 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { ParentRequest, NannyProfile } from '@/core/types';
-import { Button } from '@/components/UI';
 import { supabase } from '@/services/supabase';
 import { getItem, setItem } from '@/core/platform/storage';
 import { createAdminAction, fetchAdminActions } from '@/services/adminApi';
@@ -198,24 +197,21 @@ const AdminPageContent: React.FC<{
           <ArrowLeft size={16} /> <span className="hidden sm:inline">На сайт</span>
         </button>
         <div className="flex-1" />
-        <div className="hidden md:block">
-          <div className="eyebrow">Operations console</div>
-        </div>
-        <div className="flex gap-2">
-          <Button
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
             onClick={handleClearTest}
-            variant="secondary"
-            className="text-xs px-2.5 py-1.5 h-auto"
+            className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white/70 px-3 py-1.5 text-xs font-medium text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-700"
           >
             <Trash2 size={13} /> <span className="hidden sm:inline">Тестовые</span>
-          </Button>
-          <Button
+          </button>
+          <button
+            type="button"
             onClick={handleClear}
-            variant="secondary"
-            className="text-xs px-2.5 py-1.5 h-auto"
+            className="inline-flex items-center gap-1.5 rounded-full border border-red-200/70 bg-white/70 px-3 py-1.5 text-xs font-medium text-red-600/90 transition-colors hover:bg-red-50"
           >
             <Trash2 size={13} /> <span className="hidden sm:inline">Очистить всё</span>
-          </Button>
+          </button>
         </div>
       </header>
 
@@ -229,7 +225,7 @@ const AdminPageContent: React.FC<{
               to={t === 'overview' ? '/admin' : `/admin/${t}`}
               end={t === 'overview'}
               className={({ isActive }) =>
-                `shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-stone-900 text-white border-stone-900' : 'bg-white/70 text-stone-700 border-stone-200/80 hover:bg-white'}`
+                `shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-[color:var(--color-primary)] text-white border-[color:var(--color-primary)]' : 'bg-white/70 text-stone-700 border-stone-200/80 hover:bg-white'}`
               }
             >
               {label}
@@ -242,7 +238,7 @@ const AdminPageContent: React.FC<{
         <nav className="hidden md:flex flex-col w-52 shrink-0 border-r border-[color:var(--cloud-border)] bg-white/60 pt-6 pb-10 gap-1 px-3">
           <div className="px-2 mb-4">
             <h1 className="text-lg font-semibold text-stone-900">Админ-панель</h1>
-            <p className="text-xs text-stone-400 mt-0.5">Blizko Operations</p>
+            <p className="text-xs text-stone-400 mt-0.5">Операционная панель</p>
           </div>
           {NAV_ITEMS.map(({ tab: t, label, icon: Icon }) => (
             <NavLink
@@ -250,7 +246,7 @@ const AdminPageContent: React.FC<{
               to={t === 'overview' ? '/admin' : `/admin/${t}`}
               end={t === 'overview'}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'}`
+                `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? 'bg-[color:var(--color-primary)] text-white' : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'}`
               }
             >
               <Icon size={16} />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Badge } from '../UI';
 import { ParentRequest } from '@/core/types';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown, Copy, ExternalLink, PhoneCall } from 'lucide-react';
 import {
   AdminDocumentPreviewModal,
   AdminPillButton,
@@ -48,6 +48,53 @@ function parentStatusLabel(status?: ParentRequest['status']) {
   if (status === 'approved') return 'Одобрена';
   if (status === 'rejected') return 'Отклонена';
   return 'Новая';
+}
+
+function formatAdminDate(value?: number) {
+  if (!value) return '—';
+  return new Date(value).toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function getParentShortId(parent: ParentRequest) {
+  return parent.id.slice(0, 8);
+}
+
+function getLocationLine(parent: ParentRequest) {
+  return [parent.city, parent.district, parent.metro ? `м. ${parent.metro}` : '']
+    .filter(Boolean)
+    .join(', ');
+}
+
+function getLastChange(parent: ParentRequest) {
+  return [...(parent.changeLog || [])].sort((a, b) => b.at - a.at)[0];
+}
+
+function getNextAction(parent: ParentRequest) {
+  const status = parent.status || 'new';
+  if (status === 'new') return 'Связаться и уточнить контекст';
+  if (status === 'in_review') return 'Собрать shortlist 2–3 няни';
+  if (status === 'approved') return 'Выдать подборку / зафиксировать outcome';
+  if (status === 'rejected') return 'Ждём правки от семьи';
+  if (status === 'payment_pending') return 'Проверить оплату';
+  return 'Проверить заявку';
+}
+
+function buildParentBrief(parent: ParentRequest) {
+  const requirements = parent.requirements?.length ? parent.requirements.join(', ') : 'не указаны';
+  const comment = parent.comment || 'без комментария';
+  return `Заявка #${getParentShortId(parent)}
+Локация: ${getLocationLine(parent) || 'не указана'}
+Ребёнок: ${parent.childAge || 'не указан'}
+График: ${parent.schedule || 'не указан'}
+Бюджет: ${parent.budget || 'не указан'}
+Важно: ${requirements}
+Комментарий: ${comment}
+Следующее действие: ${getNextAction(parent)}`;
 }
 
 interface RejectInlineFormProps {
@@ -162,6 +209,33 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
   });
   const { reportSuccess, reportError } = useAdminWorkflowUI();
 
+  const crmStats = React.useMemo(() => {
+    const counts = parents.reduce(
+      (acc, parent) => {
+        const status = parent.status || 'new';
+        acc.total += 1;
+        if (status === 'new') acc.new += 1;
+        if (status === 'in_review') acc.inReview += 1;
+        if (status === 'approved') acc.approved += 1;
+        if (status === 'rejected') acc.rejected += 1;
+        if (status === 'payment_pending') acc.paymentPending += 1;
+        if (status === 'new' || status === 'in_review' || status === 'rejected')
+          acc.needsAction += 1;
+        return acc;
+      },
+      {
+        total: 0,
+        needsAction: 0,
+        new: 0,
+        inReview: 0,
+        approved: 0,
+        rejected: 0,
+        paymentPending: 0,
+      },
+    );
+    return counts;
+  }, [parents]);
+
   const filteredParents = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     return parents.filter((p) => {
@@ -256,9 +330,39 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     setEditingNotes(false);
   };
 
+  const handleCopyParentBrief = async (parent: ParentRequest) => {
+    try {
+      await navigator.clipboard.writeText(buildParentBrief(parent));
+      reportSuccess('Сводка заявки скопирована.');
+    } catch {
+      reportError('Не удалось скопировать сводку.');
+    }
+  };
+
   return (
     <>
       <section>
+        <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-5">
+          {[
+            ['В работе', crmStats.needsAction, 'Новые / проверка / правки'],
+            ['Новые', crmStats.new, 'Связаться с семьёй'],
+            ['На проверке', crmStats.inReview, 'Готовим shortlist'],
+            ['Одобрены', crmStats.approved, 'Можно вести к встрече'],
+            ['Отклонены', crmStats.rejected, 'Ждут правок'],
+          ].map(([label, value, hint]) => (
+            <div
+              key={label}
+              className="section-shell rounded-[1.25rem] p-3 bg-white/70 min-h-[88px]"
+            >
+              <div className="text-[10px] uppercase tracking-[0.08em] text-stone-400 font-bold">
+                {label}
+              </div>
+              <div className="mt-1 text-2xl font-semibold text-stone-900">{value}</div>
+              <div className="mt-1 text-[11px] leading-snug text-stone-500">{hint}</div>
+            </div>
+          ))}
+        </div>
+
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h3 className="text-stone-500 font-bold uppercase text-xs">Заявки родителей</h3>
@@ -310,7 +414,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
             {filteredParents.map((p) => (
               <Card key={p.id} className="p-4!">
                 <div className="flex justify-between text-xs text-stone-400 mb-1">
-                  <span>{new Date(p.createdAt).toLocaleString()}</span>
+                  <span>{formatAdminDate(p.createdAt)}</span>
                   <div className="flex items-center gap-2">
                     <Badge
                       variant={
@@ -323,15 +427,21 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     >
                       {parentStatusLabel(p.status)}
                     </Badge>
-                    <span className="font-mono">{p.id.slice(0, 6)}</span>
+                    <span className="font-mono">#{getParentShortId(p)}</span>
                   </div>
                 </div>
 
-                <div className="text-sm font-semibold text-stone-800">
-                  {p.city} • {p.childAge}
+                <div className="text-sm font-semibold text-stone-800">{getLocationLine(p)}</div>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-stone-500">
+                  <span>{p.childAge || 'Возраст не указан'}</span>
+                  {p.requesterEmail && <span className="font-mono">{p.requesterEmail}</span>}
                 </div>
                 <div className="text-sm text-stone-600 mt-1">График: {p.schedule}</div>
                 <div className="text-sm text-stone-600">Бюджет: {p.budget}</div>
+                <div className="mt-2 rounded-[1rem] bg-stone-50/80 px-3 py-2 text-xs text-stone-600">
+                  <span className="font-semibold text-stone-800">Следующее действие:</span>{' '}
+                  {getNextAction(p)}
+                </div>
                 {!!p.requirements?.length && (
                   <div className="text-xs text-stone-600 mt-1">
                     Требования: {p.requirements.join(', ')}
@@ -349,6 +459,9 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
 
                 {rejectingId !== p.id && (
                   <div className="mt-3 flex flex-wrap gap-2">
+                    <AdminPillButton onClick={() => setSelectedParent(p)} tone="dark">
+                      Открыть CRM
+                    </AdminPillButton>
                     <AdminPillButton onClick={() => updateParentStatus(p, 'in_review')} tone="warm">
                       На проверку
                     </AdminPillButton>
@@ -361,8 +474,8 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     <AdminPillButton onClick={() => setRejectingId(p.id)} tone="danger">
                       Отклонить
                     </AdminPillButton>
-                    <AdminPillButton onClick={() => setSelectedParent(p)} tone="neutral">
-                      Открыть анкету
+                    <AdminPillButton onClick={() => handleCopyParentBrief(p)} tone="neutral">
+                      <Copy size={13} /> Сводка
                     </AdminPillButton>
                   </div>
                 )}
@@ -382,13 +495,15 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
       {/* Selected parent detail modal */}
       {selectedParent && (
         <div className="fixed inset-0 z-60 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`${adminModalSurface} w-full max-w-xl`}>
+          <div className={`${adminModalSurface} w-full max-w-3xl max-h-[92vh] overflow-y-auto`}>
             <div className={adminModalHeader}>
               <div>
-                <div className="eyebrow">Parent request</div>
-                <h3 className="font-bold text-stone-800">Анкета родителя</h3>
+                <div className="eyebrow">Parent CRM</div>
+                <h3 className="font-bold text-stone-800">
+                  Заявка #{getParentShortId(selectedParent)}
+                </h3>
                 <div className="section-body mt-1">
-                  Проверка заявки, документов и истории изменений в одном окне.
+                  Контекст семьи, следующий шаг, заметки и коммуникация.
                 </div>
               </div>
               <button
@@ -400,10 +515,73 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
             </div>
 
             <div className="p-4 space-y-3 text-sm">
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_0.85fr]">
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500 mb-2">CRM-сводка</div>
+                  <div className="space-y-2">
+                    <div className="text-base font-semibold text-stone-900">
+                      {getLocationLine(selectedParent) || 'Локация не указана'}
+                    </div>
+                    <div className="rounded-[1rem] bg-amber-50/70 px-3 py-2 text-xs text-amber-800">
+                      <span className="font-semibold">Следующее действие:</span>{' '}
+                      {getNextAction(selectedParent)}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <AdminPillButton
+                        tone="neutral"
+                        onClick={() => handleCopyParentBrief(selectedParent)}
+                      >
+                        <Copy size={13} /> Скопировать сводку
+                      </AdminPillButton>
+                      <a
+                        href={`/admin/parents?q=${getParentShortId(selectedParent)}`}
+                        className="rounded-full border border-stone-200/80 bg-white/70 px-3.5 py-2 text-xs font-semibold text-stone-700 transition-all hover:bg-white hover:border-amber-200/60 inline-flex items-center gap-1.5"
+                      >
+                        <ExternalLink size={13} /> Ссылка
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500 mb-2">Контакт</div>
+                  {selectedParent.requesterEmail || selectedParent.requesterId ? (
+                    <div className="space-y-2">
+                      {selectedParent.requesterEmail && (
+                        <a
+                          href={`mailto:${selectedParent.requesterEmail}`}
+                          className="flex items-center gap-2 text-sm font-mono text-stone-800 underline decoration-stone-300 underline-offset-4"
+                        >
+                          <PhoneCall size={14} /> {selectedParent.requesterEmail}
+                        </a>
+                      )}
+                      {selectedParent.requesterId && (
+                        <div className="text-[11px] text-stone-500 break-all">
+                          user: {selectedParent.requesterId}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-stone-400">Контакт не указан</div>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className={adminSubsectionPanel}>
                   <div className="text-xs text-stone-500">Город</div>
                   <div className="font-semibold text-stone-800">{selectedParent.city}</div>
+                </div>
+                <div className={adminSubsectionPanel}>
+                  <div className="text-xs text-stone-500">Район / метро</div>
+                  <div className="font-semibold text-stone-800">
+                    {[
+                      selectedParent.district,
+                      selectedParent.metro ? `м. ${selectedParent.metro}` : '',
+                    ]
+                      .filter(Boolean)
+                      .join(', ') || 'Не указано'}
+                  </div>
                 </div>
                 <div className={adminSubsectionPanel}>
                   <div className="text-xs text-stone-500">Возраст ребёнка</div>
@@ -477,7 +655,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
 
               <div className="text-xs text-stone-400 flex items-center justify-between pt-1">
                 <span>ID: {selectedParent.id}</span>
-                <span>{new Date(selectedParent.createdAt).toLocaleString()}</span>
+                <span>Создано: {formatAdminDate(selectedParent.createdAt)}</span>
               </div>
               <div className="pt-2 flex items-center gap-2">
                 <Badge
@@ -492,9 +670,14 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                   Статус: {parentStatusLabel(selectedParent.status)}
                 </Badge>
                 <span className="text-[10px] px-2 py-1 rounded-full bg-stone-100 text-stone-600">
-                  Обновлено:{' '}
-                  {new Date(selectedParent.updatedAt || selectedParent.createdAt).toLocaleString()}
+                  Обновлено: {formatAdminDate(selectedParent.updatedAt || selectedParent.createdAt)}
                 </span>
+                {getLastChange(selectedParent) && (
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-white text-stone-500">
+                    Последнее:{' '}
+                    {getLastChange(selectedParent)?.note || getLastChange(selectedParent)?.type}
+                  </span>
+                )}
               </div>
 
               <div className="pt-1">

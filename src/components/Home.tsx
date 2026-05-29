@@ -35,9 +35,9 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[30rem] flex-col overflow-hidden bg-[#F9F6F2] text-[#1C2B2D] sm:max-w-[34rem] sm:rounded-[2.4rem] sm:shadow-[0_24px_70px_rgba(28,43,45,0.12)]">
-      {/* Hero — full-bleed фото с кнопками поверх */}
-      <div className="relative h-[28rem] flex-shrink-0 sm:h-[32rem]">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[30rem] flex-col overflow-hidden bg-[#F9F6F2] text-[#1C2B2D] sm:max-w-[34rem] sm:rounded-[2.4rem] sm:shadow-[0_24px_70px_rgba(28,43,45,0.12)] lg:max-w-[40rem]">
+      {/* Hero — full-bleed фото, растёт и заполняет высоту экрана (без пустого провала) */}
+      <div className="relative min-h-[24rem] flex-1 sm:min-h-[28rem]">
         <img
           src={heroImage}
           alt={copy.photoAlt}
@@ -68,17 +68,17 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
         </div>
       </div>
 
-      {/* Текст + CTA */}
-      <div className="flex flex-1 flex-col justify-end px-5 pb-7 pt-1">
+      {/* Текст + CTA — естественная высота, сразу под фото */}
+      <div className="flex flex-shrink-0 flex-col px-5 pb-7 pt-1 sm:px-7 lg:px-9">
         <h1 className="flex flex-col">
           <span
-            className="animate-fade-up font-display text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.022em] text-[#1C2B2D] sm:text-[2.75rem]"
+            className="animate-fade-up font-display text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.022em] text-[#1C2B2D] sm:text-[2.75rem] lg:text-[3.1rem]"
             style={{ animationDelay: '0ms' }}
           >
             {copy.headlineTop}
           </span>
           <span
-            className="animate-fade-up font-display text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.022em] text-[#1C2B2D] sm:text-[2.75rem]"
+            className="animate-fade-up font-display text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.022em] text-[#1C2B2D] sm:text-[2.75rem] lg:text-[3.1rem]"
             style={{ animationDelay: '80ms' }}
           >
             {copy.headlineBottom}

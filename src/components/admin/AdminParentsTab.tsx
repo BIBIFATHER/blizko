@@ -30,6 +30,7 @@ type ParentStatusFilter = 'all' | 'new' | 'in_review' | 'approved' | 'rejected' 
 interface AdminParentsTabProps {
   parents: ParentRequest[];
   query: string;
+  focusParentId?: string;
   onDataChanged: () => void;
 }
 
@@ -119,6 +120,7 @@ const RejectInlineForm: React.FC<RejectInlineFormProps> = ({ onConfirm, onCancel
 export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
   parents,
   query,
+  focusParentId,
   onDataChanged,
 }) => {
   const [parentStatusFilter, setParentStatusFilter] = useState<ParentStatusFilter>('all');
@@ -141,6 +143,18 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     setNotifyBusy(false);
   }, [selectedParent?.id, selectedParent?.status, selectedParent?.analysisNotes]);
 
+  useEffect(() => {
+    const needle = focusParentId?.trim().toLowerCase();
+    if (!needle) return;
+    if (selectedParent?.id.toLowerCase().startsWith(needle)) return;
+
+    const parent = parents.find((p) => {
+      const id = p.id.toLowerCase();
+      return id === needle || id.startsWith(needle);
+    });
+    if (parent) setSelectedParent(parent);
+  }, [focusParentId, parents, selectedParent?.id]);
+
   const { updateParentStatus, rejectParent } = useAdminParentModeration({
     onDataChanged,
     selectedParent,
@@ -161,7 +175,15 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         !onlyNeedsAction || status === 'new' || status === 'in_review' || status === 'rejected';
       const byQuery =
         !q ||
+        p.id.toLowerCase().includes(q) ||
+        p.requesterId?.toLowerCase().includes(q) ||
+        p.requesterEmail?.toLowerCase().includes(q) ||
         p.city.toLowerCase().includes(q) ||
+        p.district?.toLowerCase().includes(q) ||
+        p.metro?.toLowerCase().includes(q) ||
+        p.childAge.toLowerCase().includes(q) ||
+        p.schedule.toLowerCase().includes(q) ||
+        p.budget.toLowerCase().includes(q) ||
         p.comment.toLowerCase().includes(q) ||
         p.requirements.join(' ').toLowerCase().includes(q);
       return byStatus && byNeedsAction && byQuery;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -74,15 +74,20 @@ const AdminPageContent: React.FC<{
 }) => {
   const { confirmAction, reportSuccess } = useAdminWorkflowUI();
   const navigate = useNavigate();
+  const location = useLocation();
   const { tab = 'overview' } = useParams<{ tab?: string }>();
   const activeTab = (NAV_ITEMS.some((n) => n.tab === tab) ? tab : 'overview') as AdminTab;
+  const focusedParentId = React.useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return (params.get('q') || params.get('request') || '').trim();
+  }, [location.search]);
 
   const [parents, setParents] = useState<ParentRequest[]>([]);
   const [nannies, setNannies] = useState<NannyProfile[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [analyticsEvents, setAnalyticsEvents] = useState<AnalyticsEventRecord[]>([]);
   const [unseenParentsCount, setUnseenParentsCount] = useState(0);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(focusedParentId);
   const [onlyProblematic, setOnlyProblematic] = useState(false);
 
   const loadData = async () => {
@@ -119,6 +124,12 @@ const AdminPageContent: React.FC<{
       void loadData();
     });
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'parents' && focusedParentId) {
+      setQuery(focusedParentId);
+    }
+  }, [activeTab, focusedParentId]);
 
   const handleClear = async () => {
     const { clearAllData } = await import('@/services/storage');
@@ -265,7 +276,12 @@ const AdminPageContent: React.FC<{
               />
             )}
             {activeTab === 'parents' && (
-              <AdminParentsTab parents={parents} query={query} onDataChanged={loadData} />
+              <AdminParentsTab
+                parents={parents}
+                query={query}
+                focusParentId={focusedParentId}
+                onDataChanged={loadData}
+              />
             )}
             {activeTab === 'nannies' && (
               <AdminNanniesTab

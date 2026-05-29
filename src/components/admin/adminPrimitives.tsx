@@ -2,7 +2,7 @@ import React from 'react';
 import { X } from 'lucide-react';
 import { AdminPreviewDoc } from './adminModerationUtils';
 
-type AdminPillTone = 'neutral' | 'warm' | 'success' | 'danger' | 'dark';
+type AdminPillTone = 'neutral' | 'warm' | 'success' | 'danger' | 'dark' | 'primary';
 
 const adminPillToneClasses: Record<AdminPillTone, string> = {
   neutral:
@@ -11,6 +11,8 @@ const adminPillToneClasses: Record<AdminPillTone, string> = {
   success: 'bg-green-50 text-green-700 border-green-200/80 hover:bg-green-100',
   danger: 'bg-red-50 text-red-700 border-red-200/80 hover:bg-red-100',
   dark: 'bg-stone-900 text-white border-stone-900 shadow-sm',
+  primary:
+    'bg-[color:var(--color-primary)] text-white border-[color:var(--color-primary)] shadow-sm hover:opacity-90',
 };
 
 export const adminPillButtonBase =

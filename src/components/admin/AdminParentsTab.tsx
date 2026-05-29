@@ -78,8 +78,8 @@ function getLastChange(parent: ParentRequest) {
 function getNextAction(parent: ParentRequest) {
   const status = parent.status || 'new';
   if (status === 'new') return 'Связаться и уточнить контекст';
-  if (status === 'in_review') return 'Собрать shortlist 2–3 няни';
-  if (status === 'approved') return 'Выдать подборку / зафиксировать outcome';
+  if (status === 'in_review') return 'Собрать подборку 2–3 няни';
+  if (status === 'approved') return 'Выдать подборку и зафиксировать результат';
   if (status === 'rejected') return 'Ждём правки от семьи';
   if (status === 'payment_pending') return 'Проверить оплату';
   return 'Проверить заявку';
@@ -274,6 +274,19 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     });
   }, [parents, query, parentStatusFilter, onlyNeedsAction]);
 
+  // Плитки-счётчики работают как единый фильтр (заменяют отдельный ряд чипов + чекбокс).
+  const parentFilterKey =
+    onlyNeedsAction && parentStatusFilter === 'all' ? 'needs_action' : parentStatusFilter;
+  const applyParentFilter = (key: string) => {
+    if (key === 'needs_action') {
+      setOnlyNeedsAction(true);
+      setParentStatusFilter('all');
+    } else {
+      setOnlyNeedsAction(false);
+      setParentStatusFilter(key as ParentStatusFilter);
+    }
+  };
+
   const handleRejectConfirm = async (
     parent: ParentRequest,
     code: RejectReasonCode,
@@ -352,69 +365,50 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
   return (
     <>
       <section>
-        <div className="mb-4 grid grid-cols-2 gap-2 lg:grid-cols-5">
-          {[
-            ['В работе', crmStats.needsAction, 'Новые / проверка / правки'],
-            ['Новые', crmStats.new, 'Связаться с семьёй'],
-            ['На проверке', crmStats.inReview, 'Готовим shortlist'],
-            ['Одобрены', crmStats.approved, 'Можно вести к встрече'],
-            ['Отклонены', crmStats.rejected, 'Ждут правок'],
-          ].map(([label, value, hint]) => (
-            <div
-              key={label}
-              className="section-shell rounded-[1.25rem] p-3 bg-white/70 min-h-[88px]"
-            >
-              <div className="text-[10px] uppercase tracking-[0.08em] text-stone-400 font-bold">
-                {label}
-              </div>
-              <div className="mt-1 text-2xl font-semibold text-stone-900">{value}</div>
-              <div className="mt-1 text-[11px] leading-snug text-stone-500">{hint}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <h3 className="text-stone-500 font-bold uppercase text-xs">Заявки родителей</h3>
-            <div className="mt-1 text-sm text-stone-600">
-              {filteredParents.length} в текущем срезе
-            </div>
-          </div>
-          <Badge variant={onlyNeedsAction ? 'warning' : 'neutral'}>
-            {onlyNeedsAction ? 'Только требующие действия' : 'Все заявки'}
-          </Badge>
-        </div>
-
-        <div className="rounded-[1.5rem] border border-[color:var(--cloud-border)] bg-white/60 p-3 mb-3">
-          <div className="mb-3 flex flex-wrap gap-2">
-            {(
-              [
-                ['all', 'Все'],
-                ['new', 'Новые'],
-                ['in_review', 'На проверке'],
-                ['resubmitted', 'Повторно отправленные'],
-                ['approved', 'Одобрены'],
-                ['rejected', 'Отклонены'],
-              ] as const
-            ).map(([key, label]) => (
-              <AdminPillButton
+        <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          {(
+            [
+              ['needs_action', 'В работе', crmStats.needsAction],
+              ['all', 'Все', crmStats.total],
+              ['new', 'Новые', crmStats.new],
+              ['in_review', 'На проверке', crmStats.inReview],
+              ['approved', 'Одобрены', crmStats.approved],
+              ['rejected', 'Отклонены', crmStats.rejected],
+            ] as const
+          ).map(([key, label, value]) => {
+            const active = parentFilterKey === key;
+            return (
+              <button
                 key={key}
-                onClick={() => setParentStatusFilter(key)}
-                active={parentStatusFilter === key}
-                tone="neutral"
+                type="button"
+                onClick={() => applyParentFilter(key)}
+                aria-pressed={active}
+                className={`rounded-[1.25rem] p-3 text-left transition-all ${
+                  active
+                    ? 'bg-[color:var(--color-primary)] shadow-sm'
+                    : 'section-shell bg-white/70 hover:bg-white'
+                }`}
               >
-                {label}
-              </AdminPillButton>
-            ))}
-          </div>
-          <label className="inline-flex items-center gap-2 rounded-full border border-stone-200/70 bg-white/70 px-3 py-2 text-xs text-stone-700">
-            <input
-              type="checkbox"
-              checked={onlyNeedsAction}
-              onChange={(e) => setOnlyNeedsAction(e.target.checked)}
-            />
-            Только требуют действия
-          </label>
+                <div
+                  className={`text-2xl font-semibold ${active ? 'text-white' : 'text-stone-900'}`}
+                >
+                  {value}
+                </div>
+                <div
+                  className={`mt-0.5 text-[11px] font-medium ${active ? 'text-white/85' : 'text-stone-500'}`}
+                >
+                  {label}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mb-3 flex items-baseline gap-2">
+          <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-stone-500">
+            Заявки родителей
+          </h3>
+          <span className="text-sm text-stone-400">· {filteredParents.length}</span>
         </div>
 
         {filteredParents.length === 0 ? (
@@ -467,35 +461,14 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                   </div>
                 )}
 
-                {rejectingId !== p.id && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <AdminPillButton onClick={() => openParent(p)} tone="dark">
-                      Открыть CRM
-                    </AdminPillButton>
-                    <AdminPillButton onClick={() => updateParentStatus(p, 'in_review')} tone="warm">
-                      На проверку
-                    </AdminPillButton>
-                    <AdminPillButton
-                      onClick={() => updateParentStatus(p, 'approved')}
-                      tone="success"
-                    >
-                      Одобрить
-                    </AdminPillButton>
-                    <AdminPillButton onClick={() => setRejectingId(p.id)} tone="danger">
-                      Отклонить
-                    </AdminPillButton>
-                    <AdminPillButton onClick={() => handleCopyParentBrief(p)} tone="neutral">
-                      <Copy size={13} /> Сводка
-                    </AdminPillButton>
-                  </div>
-                )}
-
-                {rejectingId === p.id && (
-                  <RejectInlineForm
-                    onConfirm={(code, text) => handleRejectConfirm(p, code, text)}
-                    onCancel={() => setRejectingId(null)}
-                  />
-                )}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <AdminPillButton onClick={() => openParent(p)} tone="primary">
+                    Открыть карточку
+                  </AdminPillButton>
+                  <AdminPillButton onClick={() => handleCopyParentBrief(p)} tone="neutral">
+                    <Copy size={13} /> Сводка
+                  </AdminPillButton>
+                </div>
               </Card>
             ))}
           </div>
@@ -508,7 +481,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
           <div className={`${adminModalSurface} w-full max-w-3xl max-h-[92vh] overflow-y-auto`}>
             <div className={adminModalHeader}>
               <div>
-                <div className="eyebrow">Parent CRM</div>
+                <div className="eyebrow">Карточка заявки</div>
                 <h3 className="font-bold text-stone-800">
                   Заявка #{getParentShortId(selectedParent)}
                 </h3>
@@ -527,7 +500,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
             <div className="p-4 space-y-3 text-sm">
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_0.85fr]">
                 <div className={adminSubsectionPanel}>
-                  <div className="text-xs text-stone-500 mb-2">CRM-сводка</div>
+                  <div className="text-xs text-stone-500 mb-2">Сводка по заявке</div>
                   <div className="space-y-2">
                     <div className="text-base font-semibold text-stone-900">
                       {getLocationLine(selectedParent) || 'Локация не указана'}
@@ -536,6 +509,33 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                       <span className="font-semibold">Следующее действие:</span>{' '}
                       {getNextAction(selectedParent)}
                     </div>
+                    {rejectingId === selectedParent.id ? (
+                      <RejectInlineForm
+                        onConfirm={(code, text) => handleRejectConfirm(selectedParent, code, text)}
+                        onCancel={() => setRejectingId(null)}
+                      />
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        <AdminPillButton
+                          onClick={() => updateParentStatus(selectedParent, 'in_review')}
+                          tone="neutral"
+                        >
+                          На проверку
+                        </AdminPillButton>
+                        <AdminPillButton
+                          onClick={() => updateParentStatus(selectedParent, 'approved')}
+                          tone="success"
+                        >
+                          Одобрить
+                        </AdminPillButton>
+                        <AdminPillButton
+                          onClick={() => setRejectingId(selectedParent.id)}
+                          tone="danger"
+                        >
+                          Отклонить
+                        </AdminPillButton>
+                      </div>
+                    )}
                     <div className="flex flex-wrap gap-2">
                       <AdminPillButton
                         tone="neutral"

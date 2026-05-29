@@ -29,10 +29,9 @@ export function useAuthSession() {
   const [isProfileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
-    if (!supabase) {
-      setAuthLoading(false);
-      return;
-    }
+    // authLoading инициализируется как !!supabase, поэтому при отсутствии supabase
+    // он уже false — отдельный setState не нужен (и не триггерит cascading render).
+    if (!supabase) return;
 
     supabase.auth
       .getUser()

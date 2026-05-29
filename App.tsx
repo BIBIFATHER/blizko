@@ -361,7 +361,12 @@ export default function App() {
             <Route
               path="/nanny-dashboard"
               element={
-                <RequireRole role="nanny" user={effectiveUser} isAdmin={isAdmin} authLoading={authLoading && !effectiveUser}>
+                <RequireRole
+                  role="nanny"
+                  user={effectiveUser}
+                  isAdmin={isAdmin}
+                  authLoading={authLoading && !effectiveUser}
+                >
                   <RoleDashboard user={effectiveUser!} lang={lang} />
                 </RequireRole>
               }
@@ -369,7 +374,12 @@ export default function App() {
             <Route
               path="/family-dashboard"
               element={
-                <RequireRole role="parent" user={effectiveUser} isAdmin={isAdmin} authLoading={authLoading && !effectiveUser}>
+                <RequireRole
+                  role="parent"
+                  user={effectiveUser}
+                  isAdmin={isAdmin}
+                  authLoading={authLoading && !effectiveUser}
+                >
                   <RoleDashboard user={effectiveUser!} lang={lang} />
                 </RequireRole>
               }
@@ -377,7 +387,12 @@ export default function App() {
             <Route
               path="/admin"
               element={
-                <RequireRole role="admin" user={effectiveUser} isAdmin={isAdmin} authLoading={authLoading && !effectiveUser}>
+                <RequireRole
+                  role="admin"
+                  user={effectiveUser}
+                  isAdmin={isAdmin}
+                  authLoading={authLoading && !effectiveUser}
+                >
                   <AdminPage />
                 </RequireRole>
               }
@@ -385,7 +400,12 @@ export default function App() {
             <Route
               path="/admin/:tab"
               element={
-                <RequireRole role="admin" user={effectiveUser} isAdmin={isAdmin} authLoading={authLoading && !effectiveUser}>
+                <RequireRole
+                  role="admin"
+                  user={effectiveUser}
+                  isAdmin={isAdmin}
+                  authLoading={authLoading && !effectiveUser}
+                >
                   <AdminPage />
                 </RequireRole>
               }

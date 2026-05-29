@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 type ModalVariant = 'sheet' | 'card';
@@ -57,7 +58,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
     }
   };
 
-  return (
+  const overlay = (
     <div
       className={`${overlayClasses[variant]} ${className}`}
       onClick={handleBackdropClick}
@@ -81,4 +82,11 @@ export const ModalShell: React.FC<ModalShellProps> = ({
       </div>
     </div>
   );
+
+  // Портал в body: модалка часто вложена в анимированные контейнеры шагов формы
+  // (.step-enter, .animate-slide-up), у которых задан transform — а это делает
+  // containing block для position:fixed, и overlay позиционируется относительно
+  // предка, а не вьюпорта (верх уезжает под статус-бар). Портал это снимает.
+  if (typeof document === 'undefined') return overlay;
+  return createPortal(overlay, document.body);
 };

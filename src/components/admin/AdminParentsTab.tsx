@@ -31,6 +31,7 @@ interface AdminParentsTabProps {
   parents: ParentRequest[];
   query: string;
   focusParentId?: string;
+  onParentOpened?: (parent: ParentRequest) => void;
   onDataChanged: () => void;
 }
 
@@ -168,6 +169,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
   parents,
   query,
   focusParentId,
+  onParentOpened,
   onDataChanged,
 }) => {
   const [parentStatusFilter, setParentStatusFilter] = useState<ParentStatusFilter>('all');
@@ -180,6 +182,14 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
   const [notifySubject, setNotifySubject] = useState('');
   const [notifyText, setNotifyText] = useState('');
   const [notifyBusy, setNotifyBusy] = useState(false);
+
+  const openParent = React.useCallback(
+    (parent: ParentRequest) => {
+      setSelectedParent(parent);
+      onParentOpened?.(parent);
+    },
+    [onParentOpened],
+  );
 
   useEffect(() => {
     setNotesState(selectedParent?.analysisNotes ?? '');
@@ -199,8 +209,8 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
       const id = p.id.toLowerCase();
       return id === needle || id.startsWith(needle);
     });
-    if (parent) setSelectedParent(parent);
-  }, [focusParentId, parents, selectedParent?.id]);
+    if (parent) openParent(parent);
+  }, [focusParentId, openParent, parents, selectedParent?.id]);
 
   const { updateParentStatus, rejectParent } = useAdminParentModeration({
     onDataChanged,
@@ -459,7 +469,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
 
                 {rejectingId !== p.id && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <AdminPillButton onClick={() => setSelectedParent(p)} tone="dark">
+                    <AdminPillButton onClick={() => openParent(p)} tone="dark">
                       Открыть CRM
                     </AdminPillButton>
                     <AdminPillButton onClick={() => updateParentStatus(p, 'in_review')} tone="warm">

@@ -37,8 +37,29 @@ import {
 type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings' | 'curator' | 'journal';
 type AdminJournalRange = '1' | '7' | '30' | 'all';
 
-const ADMIN_PARENTS_SEEN_TS_KEY = 'blizko_admin_parents_seen_ts';
+const ADMIN_PARENTS_SEEN_BY_ID_KEY = 'blizko_admin_parents_seen_by_id';
 const ADMIN_ACTIONS_KEY = 'blizko_admin_actions';
+
+function getParentUpdatedAt(parent: ParentRequest) {
+  return Number(parent.updatedAt || parent.createdAt || 0);
+}
+
+function readSeenParentMap() {
+  try {
+    return JSON.parse(getItem(ADMIN_PARENTS_SEEN_BY_ID_KEY) || '{}') as Record<string, number>;
+  } catch {
+    return {};
+  }
+}
+
+function countUnseenParents(parents: ParentRequest[]) {
+  const seenById = readSeenParentMap();
+  return parents.filter((parent) => {
+    const updatedAt = getParentUpdatedAt(parent);
+    const seenAt = seenById[parent.id] || 0;
+    return updatedAt > seenAt;
+  }).length;
+}
 
 const NAV_ITEMS: {
   tab: AdminTab;
@@ -110,11 +131,7 @@ const AdminPageContent: React.FC<{
     setNannies(n);
     setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
 
-    const seenTs = Number(getItem(ADMIN_PARENTS_SEEN_TS_KEY) || '0');
-    setUnseenParentsCount(
-      p.filter((item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs)
-        .length,
-    );
+    setUnseenParentsCount(countUnseenParents(p));
 
     setBookings(await getAllBookings());
   };
@@ -155,9 +172,11 @@ const AdminPageContent: React.FC<{
     reportSuccess('Тестовые записи удалены.');
   };
 
-  const markParentsAsSeen = () => {
-    setItem(ADMIN_PARENTS_SEEN_TS_KEY, String(Date.now()));
-    setUnseenParentsCount(0);
+  const markParentAsSeen = (parent: ParentRequest) => {
+    const seenById = readSeenParentMap();
+    seenById[parent.id] = Math.max(Date.now(), getParentUpdatedAt(parent));
+    setItem(ADMIN_PARENTS_SEEN_BY_ID_KEY, JSON.stringify(seenById));
+    setUnseenParentsCount(countUnseenParents(parents));
   };
 
   return (
@@ -202,7 +221,6 @@ const AdminPageContent: React.FC<{
               key={t}
               to={t === 'overview' ? '/admin' : `/admin/${t}`}
               end={t === 'overview'}
-              onClick={t === 'parents' ? markParentsAsSeen : undefined}
               className={({ isActive }) =>
                 `shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-stone-900 text-white border-stone-900' : 'bg-white/70 text-stone-700 border-stone-200/80 hover:bg-white'}`
               }
@@ -224,7 +242,6 @@ const AdminPageContent: React.FC<{
               key={t}
               to={t === 'overview' ? '/admin' : `/admin/${t}`}
               end={t === 'overview'}
-              onClick={t === 'parents' ? markParentsAsSeen : undefined}
               className={({ isActive }) =>
                 `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'}`
               }
@@ -280,6 +297,7 @@ const AdminPageContent: React.FC<{
                 parents={parents}
                 query={query}
                 focusParentId={focusedParentId}
+                onParentOpened={markParentAsSeen}
                 onDataChanged={loadData}
               />
             )}

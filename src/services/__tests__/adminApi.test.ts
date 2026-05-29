@@ -14,8 +14,10 @@ vi.mock('@/services/supabase', () => ({
 
 import {
   adminSendNotification,
+  adminSendSupportReply,
   adminUpdateParentRequest,
   createAdminAction,
+  fetchAdminSupportInbox,
 } from '@/services/adminApi';
 
 const originalFetch = global.fetch;
@@ -41,5 +43,17 @@ describe('adminApi — no unhandled throw on network failure (H5)', () => {
   it('createAdminAction resolves null instead of rejecting', async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error('offline')) as unknown as typeof fetch;
     await expect(createAdminAction('viewed', {})).resolves.toBeNull();
+  });
+
+  it('fetchAdminSupportInbox resolves null instead of rejecting', async () => {
+    global.fetch = vi
+      .fn()
+      .mockRejectedValue(new Error('support offline')) as unknown as typeof fetch;
+    await expect(fetchAdminSupportInbox('ticket-1')).resolves.toBeNull();
+  });
+
+  it('adminSendSupportReply resolves null instead of rejecting', async () => {
+    global.fetch = vi.fn().mockRejectedValue(new Error('reply offline')) as unknown as typeof fetch;
+    await expect(adminSendSupportReply('ticket-1', 'Ответ')).resolves.toBeNull();
   });
 });

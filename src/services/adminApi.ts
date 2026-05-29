@@ -15,6 +15,54 @@ export interface FetchAdminActionsResult {
   nextCursor: number | null;
 }
 
+export interface AdminSupportTicket {
+  id: string;
+  familyId: string | null;
+  nannyId: string | null;
+  matchId: string | null;
+  status: 'open' | 'resolved' | 'human_escalated' | string;
+  sentimentScore: number;
+  summary: string;
+  createdAt: number;
+  updatedAt: number;
+  lastMessage: {
+    text: string;
+    senderType: string;
+    createdAt: number;
+  } | null;
+}
+
+export interface AdminSupportMessage {
+  id: string;
+  ticketId: string;
+  senderType: 'user' | 'ai_concierge' | 'human_agent' | string;
+  senderId: string | null;
+  text: string;
+  createdAt: number;
+}
+
+export interface AdminSupportParentContext {
+  id: string;
+  createdAt: number;
+  city: string;
+  district: string;
+  metro: string;
+  childAge: string;
+  schedule: string;
+  budget: string;
+  requirements: string[];
+  comment: string;
+  contact: string;
+  status: string;
+}
+
+export interface AdminSupportInboxResult {
+  items: AdminSupportTicket[];
+  selected: AdminSupportTicket | null;
+  messages: AdminSupportMessage[];
+  parentContext: AdminSupportParentContext | null;
+}
+
 async function getAdminHeaders(): Promise<Record<string, string> | null> {
   const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
   if (!token) return null;
@@ -112,6 +160,61 @@ export async function fetchAdminActions(params?: {
     };
   } catch (e) {
     console.warn('fetchAdminActions network error:', e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+export async function fetchAdminSupportInbox(
+  ticketId?: string,
+): Promise<AdminSupportInboxResult | null> {
+  const headers = await getAdminHeaders();
+  if (!headers) return null;
+  const search = new URLSearchParams({ resource: 'support' });
+  if (ticketId) search.set('ticketId', ticketId);
+
+  try {
+    const response = await fetch(`/api/data?${search.toString()}`, {
+      method: 'GET',
+      headers,
+    });
+    const payload = await parseJsonSafe(response);
+    if (!response.ok) {
+      console.warn('fetchAdminSupportInbox failed:', response.status, payload);
+      return null;
+    }
+    return {
+      items: Array.isArray(payload?.items) ? payload.items : [],
+      selected: payload?.selected ?? null,
+      messages: Array.isArray(payload?.messages) ? payload.messages : [],
+      parentContext: payload?.parentContext ?? null,
+    };
+  } catch (e) {
+    console.warn('fetchAdminSupportInbox network error:', e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+export async function adminSendSupportReply(
+  ticketId: string,
+  text: string,
+): Promise<AdminSupportMessage | null> {
+  const headers = await getAdminHeaders();
+  if (!headers) return null;
+
+  try {
+    const response = await fetch('/api/data?resource=support', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ ticketId, text }),
+    });
+    const payload = await parseJsonSafe(response);
+    if (!response.ok) {
+      console.warn('adminSendSupportReply failed:', response.status, payload);
+      return null;
+    }
+    return payload?.item ?? null;
+  } catch (e) {
+    console.warn('adminSendSupportReply network error:', e instanceof Error ? e.message : e);
     return null;
   }
 }

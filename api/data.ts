@@ -8,7 +8,7 @@ import { getServiceSupabase } from './auth/_supabase.js';
 
 const json = (res: VercelResponse, status: number, payload: any) =>
   res.status(status).json(payload);
-const RESOURCES = new Set(['parents', 'nannies', 'analytics', 'admin-actions']);
+const RESOURCES = new Set(['parents', 'nannies', 'analytics', 'admin-actions', 'support']);
 const ANALYTICS_EVENT_LIMIT = 5_000;
 const ANALYTICS_ALLOWED_EVENTS = new Set([
   'page_view',
@@ -43,12 +43,12 @@ const ANALYTICS_ALLOWED_EVENTS = new Set([
 
 function getResource(
   req: VercelRequest,
-): 'parents' | 'nannies' | 'analytics' | 'admin-actions' | null {
+): 'parents' | 'nannies' | 'analytics' | 'admin-actions' | 'support' | null {
   const resource = String((req.query as any)?.resource || '')
     .trim()
     .toLowerCase();
   return RESOURCES.has(resource)
-    ? (resource as 'parents' | 'nannies' | 'analytics' | 'admin-actions')
+    ? (resource as 'parents' | 'nannies' | 'analytics' | 'admin-actions' | 'support')
     : null;
 }
 
@@ -423,6 +423,227 @@ async function handleAdminActions(req: VercelRequest, res: VercelResponse) {
   return json(res, 405, { error: 'Method not allowed' });
 }
 
+function toSupportTicketRecord(row: any, lastMessage?: any) {
+  return {
+    id: String(row?.id || ''),
+    familyId: row?.family_id ? String(row.family_id) : null,
+    nannyId: row?.nanny_id ? String(row.nanny_id) : null,
+    matchId: row?.match_id ? String(row.match_id) : null,
+    status: String(row?.status || 'open'),
+    sentimentScore: Number(row?.sentiment_score || 0),
+    summary: row?.summary ? String(row.summary) : '',
+    createdAt: row?.created_at ? new Date(row.created_at).getTime() : Date.now(),
+    updatedAt: row?.updated_at ? new Date(row.updated_at).getTime() : Date.now(),
+    lastMessage: lastMessage
+      ? {
+          text: String(lastMessage.text || ''),
+          senderType: String(lastMessage.sender_type || ''),
+          createdAt: lastMessage.created_at
+            ? new Date(lastMessage.created_at).getTime()
+            : Date.now(),
+        }
+      : null,
+  };
+}
+
+function toSupportMessageRecord(row: any) {
+  return {
+    id: String(row?.id || ''),
+    ticketId: String(row?.ticket_id || ''),
+    senderType: String(row?.sender_type || ''),
+    senderId: row?.sender_id ? String(row.sender_id) : null,
+    text: String(row?.text || ''),
+    createdAt: row?.created_at ? new Date(row.created_at).getTime() : Date.now(),
+  };
+}
+
+function toParentContextRecord(row: any) {
+  if (!row) return null;
+  const payload = row?.payload && typeof row.payload === 'object' ? row.payload : {};
+  return {
+    id: String(row?.id || payload?.id || ''),
+    createdAt: row?.created_at
+      ? new Date(row.created_at).getTime()
+      : Number(payload?.createdAt || 0),
+    city: String(payload?.city || ''),
+    district: String(payload?.district || ''),
+    metro: String(payload?.metro || ''),
+    childAge: String(payload?.childAge || ''),
+    schedule: String(payload?.schedule || ''),
+    budget: String(payload?.budget || ''),
+    requirements: Array.isArray(payload?.requirements) ? payload.requirements.map(String) : [],
+    comment: String(payload?.comment || ''),
+    contact: String(payload?.requesterEmail || ''),
+    status: String(payload?.status || ''),
+  };
+}
+
+async function fetchSupportParentContext(
+  familyId: string | null,
+  supabaseUrl: string,
+  supabaseServiceRoleKey: string,
+) {
+  if (!familyId) return null;
+
+  const response = await sb(
+    `parents?user_id=eq.${encodeURIComponent(familyId)}&select=id,payload,created_at&order=created_at.desc&limit=1`,
+    { method: 'GET' },
+    supabaseUrl,
+    supabaseServiceRoleKey,
+  );
+  const data = await response.json().catch(() => []);
+  if (!response.ok || !Array.isArray(data) || !data[0]) return null;
+  return toParentContextRecord(data[0]);
+}
+
+async function handleSupport(req: VercelRequest, res: VercelResponse) {
+  const { supabaseUrl, supabaseServiceRoleKey } = getServerEnv();
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    return json(res, 500, { error: 'Supabase is not configured' });
+  }
+
+  const adminUser = await verifyBearerAdmin(req);
+  if (!adminUser) return json(res, 403, { error: 'Admin access required' });
+
+  if (req.method === 'GET') {
+    const ticketId = String((req.query as any)?.ticketId || '').trim();
+
+    const ticketsResponse = await sb(
+      'support_tickets?select=id,family_id,nanny_id,match_id,status,sentiment_score,summary,created_at,updated_at&order=updated_at.desc&limit=50',
+      { method: 'GET' },
+      supabaseUrl,
+      supabaseServiceRoleKey,
+    );
+    const ticketRows = await ticketsResponse.json().catch(() => []);
+    if (!ticketsResponse.ok) {
+      return json(res, ticketsResponse.status, {
+        error: ticketRows?.message || 'Failed to read support tickets',
+      });
+    }
+
+    const tickets = Array.isArray(ticketRows) ? ticketRows : [];
+    if (!tickets.length && !ticketId) {
+      return json(res, 200, { items: [], selected: null, messages: [] });
+    }
+
+    let selectedRaw = ticketId
+      ? tickets.find((ticket) => String(ticket?.id || '') === ticketId) || null
+      : null;
+    if (ticketId && !selectedRaw) {
+      const selectedResponse = await sb(
+        `support_tickets?id=eq.${encodeURIComponent(ticketId)}&select=id,family_id,nanny_id,match_id,status,sentiment_score,summary,created_at,updated_at&limit=1`,
+        { method: 'GET' },
+        supabaseUrl,
+        supabaseServiceRoleKey,
+      );
+      const selectedRows = await selectedResponse.json().catch(() => []);
+      if (!selectedResponse.ok) {
+        return json(res, selectedResponse.status, {
+          error: selectedRows?.message || 'Failed to read support ticket',
+        });
+      }
+      selectedRaw = Array.isArray(selectedRows) ? selectedRows[0] || null : null;
+    }
+
+    const ticketIds = tickets.map((row) => String(row.id)).filter(Boolean);
+    const messagePath = ticketId
+      ? `support_messages?ticket_id=eq.${encodeURIComponent(ticketId)}&select=id,ticket_id,sender_type,sender_id,text,created_at&order=created_at.asc&limit=100`
+      : `support_messages?ticket_id=in.(${ticketIds.join(',')})&select=id,ticket_id,sender_type,sender_id,text,created_at&order=created_at.desc&limit=100`;
+
+    const messagesResponse = await sb(
+      messagePath,
+      { method: 'GET' },
+      supabaseUrl,
+      supabaseServiceRoleKey,
+    );
+    const messageRows = await messagesResponse.json().catch(() => []);
+    if (!messagesResponse.ok) {
+      return json(res, messagesResponse.status, {
+        error: messageRows?.message || 'Failed to read support messages',
+      });
+    }
+
+    const messages = Array.isArray(messageRows) ? messageRows : [];
+    const lastByTicket = new Map<string, any>();
+    for (const message of messages) {
+      const id = String(message?.ticket_id || '');
+      if (!id) continue;
+      if (ticketId) lastByTicket.set(id, message);
+      if (!ticketId && !lastByTicket.has(id)) lastByTicket.set(id, message);
+    }
+
+    const items = tickets.map((ticket) =>
+      toSupportTicketRecord(ticket, lastByTicket.get(String(ticket.id))),
+    );
+    const selected = selectedRaw
+      ? toSupportTicketRecord(selectedRaw, lastByTicket.get(ticketId))
+      : null;
+    const parentContext = selectedRaw
+      ? await fetchSupportParentContext(
+          String(selectedRaw.family_id || ''),
+          supabaseUrl,
+          supabaseServiceRoleKey,
+        )
+      : null;
+
+    return json(res, 200, {
+      items,
+      selected,
+      messages: ticketId ? messages.map(toSupportMessageRecord) : [],
+      parentContext,
+    });
+  }
+
+  if (req.method === 'POST') {
+    const ticketId = String(req.body?.ticketId || '').trim();
+    const text = String(req.body?.text || '').trim();
+    if (!ticketId || !text) return json(res, 400, { error: 'Missing ticketId or text' });
+
+    const response = await sb(
+      'support_messages',
+      {
+        method: 'POST',
+        headers: { Prefer: 'return=representation' },
+        body: JSON.stringify([
+          {
+            ticket_id: ticketId,
+            sender_type: 'human_agent',
+            sender_id: adminUser.id,
+            text,
+          },
+        ]),
+      },
+      supabaseUrl,
+      supabaseServiceRoleKey,
+    );
+    const data = await response.json().catch(() => []);
+    if (!response.ok) {
+      return json(res, response.status, {
+        error: data?.message || 'Failed to write support reply',
+      });
+    }
+
+    await sb(
+      `support_tickets?id=eq.${encodeURIComponent(ticketId)}`,
+      {
+        method: 'PATCH',
+        headers: { Prefer: 'return=minimal' },
+        body: JSON.stringify({ status: 'open' }),
+      },
+      supabaseUrl,
+      supabaseServiceRoleKey,
+    ).catch(() => {
+      /* reply is already saved */
+    });
+
+    return json(res, 201, {
+      item: Array.isArray(data) && data[0] ? toSupportMessageRecord(data[0]) : null,
+    });
+  }
+
+  return json(res, 405, { error: 'Method not allowed' });
+}
+
 // Подписать документ няни из private-бакета (куратор ≠ owner → service_role).
 // Свёрнуто сюда из отдельного /api/sign-doc, чтобы уложиться в лимит функций Hobby.
 async function handleSignDoc(req: VercelRequest, res: VercelResponse) {
@@ -481,6 +702,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
     if (!limit.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
     return handleAdminActions(req, res);
+  }
+
+  if (resource === 'support') {
+    const limit = rateLimit(req, {
+      max: req.method === 'POST' ? 60 : 30,
+      prefix: `data:${resource}:${req.method.toLowerCase()}`,
+    });
+    if (!limit.ok) return json(res, 429, { error: 'Too many requests. Try again later.' });
+    return handleSupport(req, res);
   }
 
   const rl = rateLimit(req, { max: 30, prefix: `data:${resource}` });

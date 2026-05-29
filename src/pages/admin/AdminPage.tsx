@@ -10,6 +10,7 @@ import {
   Search,
   ArrowLeft,
   Blend,
+  MessageCircle,
 } from 'lucide-react';
 import { ParentRequest, NannyProfile } from '@/core/types';
 import { Button } from '@/components/UI';
@@ -22,6 +23,7 @@ import { AdminNanniesTab } from '@/components/admin/AdminNanniesTab';
 import { AdminBookingsTab } from '@/components/admin/AdminBookingsTab';
 import { AdminJournalTab, AdminActionEntry } from '@/components/admin/AdminJournalTab';
 import { AdminCuratorTab } from '@/components/admin/AdminCuratorTab';
+import { AdminSupportTab } from '@/components/admin/AdminSupportTab';
 import {
   AdminWorkflowEvent,
   AdminWorkflowUIProvider,
@@ -34,7 +36,7 @@ import {
   getAnalyticsEvents,
 } from '@/services/analytics';
 
-type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings' | 'curator' | 'journal';
+type AdminTab = 'overview' | 'parents' | 'nannies' | 'bookings' | 'curator' | 'support' | 'journal';
 type AdminJournalRange = '1' | '7' | '30' | 'all';
 
 const ADMIN_PARENTS_SEEN_BY_ID_KEY = 'blizko_admin_parents_seen_by_id';
@@ -71,6 +73,7 @@ const NAV_ITEMS: {
   { tab: 'nannies', label: 'Няни', icon: Baby },
   { tab: 'bookings', label: 'Бронирования', icon: CalendarDays },
   { tab: 'curator', label: 'Куратор', icon: Blend },
+  { tab: 'support', label: 'Чаты', icon: MessageCircle },
   { tab: 'journal', label: 'Журнал', icon: ScrollText },
 ];
 
@@ -101,6 +104,10 @@ const AdminPageContent: React.FC<{
   const focusedParentId = React.useMemo(() => {
     const params = new URLSearchParams(location.search);
     return (params.get('q') || params.get('request') || '').trim();
+  }, [location.search]);
+  const focusedSupportTicketId = React.useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return (params.get('ticket') || '').trim();
   }, [location.search]);
 
   const [parents, setParents] = useState<ParentRequest[]>([]);
@@ -318,6 +325,7 @@ const AdminPageContent: React.FC<{
                 logAdminAction={logAdminAction}
               />
             )}
+            {activeTab === 'support' && <AdminSupportTab focusTicketId={focusedSupportTicketId} />}
             {activeTab === 'bookings' && (
               <AdminBookingsTab
                 bookings={bookings}

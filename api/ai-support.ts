@@ -257,23 +257,138 @@ async function callGemini(
 }
 
 // ============================================
-// Telegram Escalation (direct Bot API)
+// Telegram human handoff (direct Bot API)
 // ============================================
-async function sendTelegramEscalation(userMessage: string, sentiment: number) {
+type SupportHistoryRow = {
+  sender_type: string;
+  text: string;
+};
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function getToneLabel(sentiment: number) {
+  if (sentiment < -0.5) return 'тревожный';
+  if (sentiment < -0.15) return 'напряжённый';
+  if (sentiment > 0.4) return 'спокойный';
+  return 'нейтральный';
+}
+
+function getAdminSupportUrl(ticketId: string) {
+  const base =
+    process.env.VITE_PUBLIC_APP_URL ||
+    process.env.PUBLIC_APP_URL ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+    'https://www.blizko.app';
+  const normalized = base.startsWith('http') ? base : `https://${base}`;
+  return `${normalized.replace(/\/$/, '')}/admin/support?ticket=${encodeURIComponent(ticketId)}`;
+}
+
+async function fetchRecentHistoryRows(
+  ticketId: string,
+  currentMessage: string,
+): Promise<SupportHistoryRow[]> {
+  const base = getSupabaseUrl();
+  if (!base || ticketId === 'test') return [];
+
+  try {
+    const resp = await fetch(
+      `${base}/rest/v1/support_messages?ticket_id=eq.${ticketId}&order=created_at.desc&limit=6&select=sender_type,text`,
+      { headers: getSupabaseHeaders() },
+    );
+    if (!resp.ok) return [];
+    const rows: SupportHistoryRow[] = await resp.json().catch(() => []);
+    return rows
+      .filter((m, i) => !(i === 0 && m.sender_type === 'user' && m.text === currentMessage))
+      .slice(0, 5)
+      .reverse();
+  } catch {
+    return [];
+  }
+}
+
+async function fetchUserTelegramContext(userId: string): Promise<string[]> {
+  const base = getSupabaseUrl();
+  if (!base || !userId) return [];
+
+  try {
+    const resp = await fetch(
+      `${base}/rest/v1/parents?user_id=eq.${userId}&select=payload,created_at&order=created_at.desc&limit=1`,
+      { headers: getSupabaseHeaders() },
+    );
+    if (!resp.ok) return [];
+    const rows: Array<{ payload: Record<string, unknown> }> = await resp.json().catch(() => []);
+    const p = rows[0]?.payload || {};
+    const lines: string[] = [];
+    if (p.city || p.district) {
+      lines.push(`Локация: ${[p.city, p.district].filter(Boolean).join(', ')}`);
+    }
+    if (p.childAge) lines.push(`Ребёнок: ${p.childAge}`);
+    if (p.schedule) lines.push(`График: ${p.schedule}`);
+    if (p.budget) lines.push(`Бюджет: ${p.budget}`);
+    if (p.requesterEmail) lines.push(`Контакт: ${p.requesterEmail}`);
+    return lines;
+  } catch {
+    return [];
+  }
+}
+
+async function sendTelegramHumanHandoff(params: {
+  ticketId: string;
+  userId: string;
+  userMessage: string;
+  sentiment: number;
+  reason: string;
+}) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
   if (!botToken || !chatId) return;
 
+  const [historyRows, contextLines] = await Promise.all([
+    fetchRecentHistoryRows(params.ticketId, params.userMessage),
+    fetchUserTelegramContext(params.userId),
+  ]);
+
+  const historyText = historyRows.length
+    ? `\n\n<b>История:</b>\n${historyRows
+        .map((m) => {
+          const label = m.sender_type === 'user' ? 'Родитель' : 'Команда Blizko';
+          return `• ${escapeHtml(label)}: ${escapeHtml(m.text).slice(0, 140)}`;
+        })
+        .join('\n')}`
+    : '';
+
+  const contextText = contextLines.length
+    ? `\n\n<b>Контекст семьи:</b>\n${contextLines.map((line) => `• ${escapeHtml(line)}`).join('\n')}`
+    : '';
+
   const text =
-    `🚨 <b>Эскалация в поддержке Blizko</b>\n\n` +
-    `😔 Настроение: <b>${sentiment.toFixed(2)}</b>\n` +
-    `💬 Сообщение: <i>${userMessage.slice(0, 200)}</i>\n\n` +
-    `<b>Пользователь ждёт ответа человека.</b>`;
+    `🟠 <b>Нужен ответ человека</b>\n\n` +
+    `Причина: ${escapeHtml(params.reason)}\n` +
+    `Тон сообщения: <b>${getToneLabel(params.sentiment)}</b>\n` +
+    `Сообщение: <i>${escapeHtml(params.userMessage).slice(0, 240)}</i>` +
+    contextText +
+    historyText +
+    `\n\nОткрой чат в админке: там будет история обращения и контекст семьи.`;
 
   await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: 'Открыть чат с семьёй', url: getAdminSupportUrl(params.ticketId) }],
+        ],
+      },
+    }),
   }).catch((e) => console.error('[Telegram]', e));
 }
 
@@ -299,14 +414,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const body = req.body || {};
   const { message, ticketId } = body;
+  const supportTicketId = typeof ticketId === 'string' ? ticketId.trim() : '';
 
   if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'Missing message' });
   }
 
   // Verify ticket ownership — user can only interact with their own tickets
-  if (ticketId && ticketId !== 'test') {
-    const isOwner = await verifyTicketOwnership(ticketId, auth.userId);
+  if (supportTicketId && supportTicketId !== 'test') {
+    const isOwner = await verifyTicketOwnership(supportTicketId, auth.userId);
     if (!isOwner)
       return res.status(403).json({ error: 'Forbidden: ticket does not belong to user' });
   }
@@ -319,7 +435,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let draftReply = '';
 
     const [historyBlock, userContext] = await Promise.all([
-      fetchRecentHistory(ticketId, userMessage),
+      fetchRecentHistory(supportTicketId, userMessage),
       fetchUserContext(auth.userId),
     ]);
 
@@ -363,16 +479,27 @@ Rules:
       'не понимаешь',
       'хочу поговорить',
     ];
-    if (escalationKeywords.some((kw) => lower.includes(kw))) needsHuman = true;
+    const keywordHandoff = escalationKeywords.some((kw) => lower.includes(kw));
+    if (keywordHandoff) needsHuman = true;
 
     const shouldEscalate = needsHuman || sentiment < -0.5;
-    await updateTicketSentiment(ticketId, sentiment, shouldEscalate);
+    await updateTicketSentiment(supportTicketId, sentiment, shouldEscalate);
 
     if (shouldEscalate) {
-      await sendTelegramEscalation(userMessage, sentiment);
+      if (supportTicketId && supportTicketId !== 'test') {
+        await sendTelegramHumanHandoff({
+          ticketId: supportTicketId,
+          userId: auth.userId,
+          userMessage,
+          sentiment,
+          reason: keywordHandoff
+            ? 'родитель просит подключить человека или руководство'
+            : 'сообщение выглядит тревожным',
+        });
+      }
       const reply =
         'Я понимаю, что ситуация непростая. Антон уже в курсе и скоро подключится лично. Вы в надёжных руках 💛';
-      await insertAiMessage(ticketId, reply);
+      await insertAiMessage(supportTicketId, reply);
       return res.status(200).json({ reply, sentiment, escalated: true });
     }
 
@@ -384,7 +511,7 @@ Rules:
       });
     }
 
-    await insertAiMessage(ticketId, draftReply);
+    await insertAiMessage(supportTicketId, draftReply);
     return res.status(200).json({ reply: draftReply, sentiment, escalated: false });
   } catch (e: any) {
     console.error('[AI Support] Error:', e);

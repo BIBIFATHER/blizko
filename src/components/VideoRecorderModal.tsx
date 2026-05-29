@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from './UI';
+import { ModalPortal } from './ui/modal-portal';
 import { X, StopCircle, Upload, Camera } from 'lucide-react';
 import { Language } from '@/core/types';
 import { t } from '@/core/i18n/translations';
@@ -170,100 +171,102 @@ export const VideoRecorderModal: React.FC<VideoRecorderModalProps> = ({
   const canClose = recordingState !== 'uploading';
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white w-full max-w-sm rounded-3xl overflow-hidden animate-slide-up flex flex-col relative">
-        <button
-          onClick={() => canClose && onClose()}
-          disabled={!canClose}
-          className="absolute top-4 right-4 z-20 text-white drop-shadow-md hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
-        >
-          <X size={24} />
-        </button>
+    <ModalPortal>
+      <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/80 backdrop-blur-sm animate-fade-in">
+        <div className="bg-white w-full max-w-sm rounded-3xl overflow-hidden animate-slide-up flex flex-col relative">
+          <button
+            onClick={() => canClose && onClose()}
+            disabled={!canClose}
+            className="absolute top-4 right-4 z-20 text-white drop-shadow-md hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
+          >
+            <X size={24} />
+          </button>
 
-        <div className="relative aspect-3/4 bg-stone-800 flex items-center justify-center overflow-hidden">
-          {permissionError ? (
-            <div className="text-center p-6 text-stone-300">
-              <Camera size={48} className="mx-auto mb-4 opacity-50" />
-              <p>{text.cameraPermission}</p>
-            </div>
-          ) : (
-            <>
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted={recordingState !== 'done'}
-                className={`w-full h-full object-cover transform scale-x-[-1] transition-opacity duration-300 ${recordingState === 'uploading' ? 'opacity-50' : 'opacity-100'}`}
-              />
-
-              <div className="absolute top-4 left-4 z-10">
-                <div className="bg-black/30 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium flex items-center gap-2">
-                  {recordingState === 'recording' && (
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  )}
-                  {recordingState === 'recording' ? formatTime(timer) : text.videoModalTitle}
-                </div>
+          <div className="relative aspect-3/4 bg-stone-800 flex items-center justify-center overflow-hidden">
+            {permissionError ? (
+              <div className="text-center p-6 text-stone-300">
+                <Camera size={48} className="mx-auto mb-4 opacity-50" />
+                <p>{text.cameraPermission}</p>
               </div>
+            ) : (
+              <>
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted={recordingState !== 'done'}
+                  className={`w-full h-full object-cover transform scale-x-[-1] transition-opacity duration-300 ${recordingState === 'uploading' ? 'opacity-50' : 'opacity-100'}`}
+                />
+
+                <div className="absolute top-4 left-4 z-10">
+                  <div className="bg-black/30 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium flex items-center gap-2">
+                    {recordingState === 'recording' && (
+                      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    )}
+                    {recordingState === 'recording' ? formatTime(timer) : text.videoModalTitle}
+                  </div>
+                </div>
+
+                {recordingState === 'uploading' && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                    <Upload size={32} className="animate-bounce mb-2" />
+                    <span className="font-semibold">{text.uploading}</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="p-6 bg-white text-center">
+            <p className="text-stone-500 text-sm mb-3 min-h-[40px]">{text.videoModalHint}</p>
+
+            {errorMsg && (
+              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2 mb-4">
+                {errorMsg}
+              </p>
+            )}
+
+            {recordedBlob && recordingState === 'done' && (
+              <p className="text-xs text-green-700 bg-green-50 border border-green-100 rounded-lg p-2 mb-4">
+                {lang === 'ru' ? 'Видеовизитка сохранена' : 'Video intro saved'}
+              </p>
+            )}
+
+            <div className="flex justify-center">
+              {recordingState === 'idle' && (
+                <button
+                  onClick={handleStartRecording}
+                  disabled={permissionError}
+                  className="w-16 h-16 rounded-full border-4 border-amber-200 bg-amber-400 flex items-center justify-center text-stone-900 shadow-lg hover:scale-105 active:scale-95 transition-all"
+                >
+                  <div className="w-6 h-6 bg-stone-900 rounded-full" />
+                </button>
+              )}
+
+              {recordingState === 'recording' && (
+                <button
+                  onClick={handleStopRecording}
+                  className="w-16 h-16 rounded-full border-4 border-red-200 bg-red-500 flex items-center justify-center text-white shadow-lg hover:scale-105 active:scale-95 transition-all"
+                >
+                  <StopCircle size={32} />
+                </button>
+              )}
 
               {recordingState === 'uploading' && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                  <Upload size={32} className="animate-bounce mb-2" />
-                  <span className="font-semibold">{text.uploading}</span>
+                <div className="h-16 flex items-center justify-center">
+                  <div className="w-8 h-8 border-4 border-stone-200 border-t-amber-400 rounded-full animate-spin" />
                 </div>
               )}
-            </>
-          )}
-        </div>
 
-        <div className="p-6 bg-white text-center">
-          <p className="text-stone-500 text-sm mb-3 min-h-[40px]">{text.videoModalHint}</p>
-
-          {errorMsg && (
-            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2 mb-4">
-              {errorMsg}
-            </p>
-          )}
-
-          {recordedBlob && recordingState === 'done' && (
-            <p className="text-xs text-green-700 bg-green-50 border border-green-100 rounded-lg p-2 mb-4">
-              {lang === 'ru' ? 'Видеовизитка сохранена' : 'Video intro saved'}
-            </p>
-          )}
-
-          <div className="flex justify-center">
-            {recordingState === 'idle' && (
-              <button
-                onClick={handleStartRecording}
-                disabled={permissionError}
-                className="w-16 h-16 rounded-full border-4 border-amber-200 bg-amber-400 flex items-center justify-center text-stone-900 shadow-lg hover:scale-105 active:scale-95 transition-all"
-              >
-                <div className="w-6 h-6 bg-stone-900 rounded-full" />
-              </button>
-            )}
-
-            {recordingState === 'recording' && (
-              <button
-                onClick={handleStopRecording}
-                className="w-16 h-16 rounded-full border-4 border-red-200 bg-red-500 flex items-center justify-center text-white shadow-lg hover:scale-105 active:scale-95 transition-all"
-              >
-                <StopCircle size={32} />
-              </button>
-            )}
-
-            {recordingState === 'uploading' && (
-              <div className="h-16 flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-stone-200 border-t-amber-400 rounded-full animate-spin" />
-              </div>
-            )}
-
-            {recordingState === 'done' && (
-              <Button onClick={onClose} className="px-6">
-                {lang === 'ru' ? 'Готово' : 'Done'}
-              </Button>
-            )}
+              {recordingState === 'done' && (
+                <Button onClick={onClose} className="px-6">
+                  {lang === 'ru' ? 'Готово' : 'Done'}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 };

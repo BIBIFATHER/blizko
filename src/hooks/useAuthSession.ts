@@ -22,16 +22,25 @@ function toAppUser(
 
 export function useAuthSession() {
   const [user, setUser] = useState<User | null>(null);
+  // true пока не отработал первый getUser — иначе guard'ы (RequireRole) редиректят
+  // на /login при deep-link, ещё до гидратации сессии.
+  const [authLoading, setAuthLoading] = useState<boolean>(!!supabase);
   const [isAuthOpen, setAuthOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
-    if (!supabase) return;
+    if (!supabase) {
+      setAuthLoading(false);
+      return;
+    }
 
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) return;
-      setUser((prev) => toAppUser(data.user, prev));
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        if (!data.user) return;
+        setUser((prev) => toAppUser(data.user, prev));
+      })
+      .finally(() => setAuthLoading(false));
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       const sessionUser = session?.user;
@@ -63,6 +72,7 @@ export function useAuthSession() {
   return {
     user,
     setUser,
+    authLoading,
     isAuthOpen,
     setAuthOpen,
     isProfileOpen,

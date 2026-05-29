@@ -134,7 +134,12 @@
         position: absolute;
         top: 0;
         left: 0;
-        animation: splash-arc-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+      }
+      /* Дуга «прорисовывается» (stroke draw-on) — premium-ощущение, pathLength=1 нормирует длину */
+      .splash-arc-svg path {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        animation: splash-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
       }
       .splash-dot {
         position: absolute;
@@ -144,7 +149,8 @@
         background: #c4744a;
         top: 33px;
         left: 46px;
-        animation: splash-dot-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+        /* мягкая посадка точки после прорисовки дуги (back-out — лёгкий overshoot) */
+        animation: splash-dot-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1s both;
       }
       .splash-wordmark {
         font-family: 'Playfair Display', Georgia, serif;
@@ -153,16 +159,11 @@
         color: #1c2b2d;
         letter-spacing: -0.02em;
         line-height: 1;
-        animation: splash-up 0.5s ease-out 0.95s both;
+        animation: splash-up 0.5s ease-out 1.3s both;
       }
-      @keyframes splash-arc-in {
-        from {
-          transform: translateX(-18px) scale(0.85);
-          opacity: 0;
-        }
+      @keyframes splash-draw {
         to {
-          transform: translateX(0) scale(1);
-          opacity: 1;
+          stroke-dashoffset: 0;
         }
       }
       @keyframes splash-dot-in {
@@ -186,7 +187,10 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .splash-arc-svg,
+        .splash-arc-svg path {
+          animation: none;
+          stroke-dashoffset: 0;
+        }
         .splash-dot,
         .splash-wordmark {
           animation: none;
@@ -250,6 +254,7 @@
           <svg class="splash-arc-svg" viewBox="0 0 80 80" width="80" height="80" fill="none">
             <path
               d="M 48 28 A 17 17 0 1 0 48 52"
+              pathLength="1"
               stroke="#2A6B6E"
               stroke-width="5.5"
               stroke-linecap="round"

@@ -98,7 +98,12 @@ export function useParentSubmit({ navigate, user, lang }: ParentSubmitDeps) {
     if (aiMatchResult?.matchResult && aiMatchResult.matchResult.candidates.length > 0) {
       navigate('/match-results', { state: { matchResult: aiMatchResult.matchResult } });
     } else {
-      navigate('/success', { state: { result: aiMatchResult ?? undefined } });
+      // Заявка сохранена. Даже если matching вернул null (таймаут/ошибка/нет кандидатов),
+      // передаём валидный result — иначе SuccessScreen примет это за прямой заход и покажет
+      // «Страница недоступна напрямую» вместо нормального «Спасибо».
+      navigate('/success', {
+        state: { result: aiMatchResult ?? { matchScore: 0, recommendations: [] } },
+      });
     }
 
     return { savedId: saved.item.id };

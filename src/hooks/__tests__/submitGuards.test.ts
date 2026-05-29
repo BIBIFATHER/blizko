@@ -92,7 +92,11 @@ describe('submit guards — no false success on persist error', () => {
     });
     await handleParentSubmit({ city: 'Москва' } as never);
 
-    expect(navigate).toHaveBeenCalledWith('/success', expect.anything());
+    // Должен передать ВАЛИДНЫЙ result (не undefined) — иначе SuccessScreen покажет
+    // «Страница недоступна напрямую» вместо «Спасибо» (регресс fallback-экрана).
+    expect(navigate).toHaveBeenCalledWith('/success', {
+      state: { result: expect.objectContaining({ matchScore: expect.any(Number) }) },
+    });
   });
 
   // BLI-66: анонимная заявка не сохраняется (RLS) и тихо терялась. Без логина —

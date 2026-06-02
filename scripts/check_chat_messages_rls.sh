@@ -2,27 +2,39 @@
 set -euo pipefail
 
 DATABASE_URL="${DATABASE_URL:-}"
+SUPABASE_ACCESS_TOKEN="${SUPABASE_ACCESS_TOKEN:-}"
 
-if [[ -z "$DATABASE_URL" ]]; then
+can_use_supabase_cli=0
+if command -v supabase >/dev/null 2>&1 && [[ -f "supabase/.temp/project-ref" ]]; then
+  can_use_supabase_cli=1
+fi
+
+if [[ -z "$DATABASE_URL" && -z "$SUPABASE_ACCESS_TOKEN" && "$can_use_supabase_cli" -eq 0 ]]; then
   cat <<'EOF'
 Usage:
   DATABASE_URL="postgresql://..." bash scripts/check_chat_messages_rls.sh
+  SUPABASE_ACCESS_TOKEN="<token>" bash scripts/check_chat_messages_rls.sh
+  bash scripts/check_chat_messages_rls.sh
 
 Required:
-  DATABASE_URL
+  DATABASE_URL, SUPABASE_ACCESS_TOKEN, or an already authenticated linked Supabase CLI
 
-The database user must be able to inspect pg_policies and SET ROLE anon/authenticated.
+DATABASE_URL mode:
+  The database user must be able to inspect pg_policies and SET ROLE anon/authenticated.
+
+Supabase CLI mode:
+  The repository must be linked with Supabase CLI (`supabase link`). In CI, pass
+  SUPABASE_ACCESS_TOKEN. Locally, an existing Supabase CLI login is enough.
+
 This catches regressions where chat_messages becomes visible outside thread participants.
 EOF
   exit 1
 fi
 
-if ! command -v psql >/dev/null 2>&1; then
-  echo "ERROR: psql is required"
-  exit 1
-fi
+sql_file="$(mktemp)"
+trap 'rm -f "$sql_file"' EXIT
 
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 <<'SQL'
+cat > "$sql_file" <<'SQL'
 DO $$
 DECLARE
   broad_select_count integer;
@@ -72,5 +84,21 @@ BEGIN
 END $$;
 ROLLBACK;
 SQL
+
+if [[ -n "$DATABASE_URL" ]]; then
+  if ! command -v psql >/dev/null 2>&1; then
+    echo "ERROR: psql is required for DATABASE_URL mode"
+    exit 1
+  fi
+
+  psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$sql_file"
+else
+  if [[ "$can_use_supabase_cli" -eq 0 ]]; then
+    echo "ERROR: supabase CLI is required for SUPABASE_ACCESS_TOKEN mode"
+    exit 1
+  fi
+
+  supabase db query --linked --file "$sql_file" >/tmp/check_chat_messages_rls.log
+fi
 
 echo "OK: chat_messages RLS smoke test passed"

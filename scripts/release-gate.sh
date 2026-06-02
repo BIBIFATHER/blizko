@@ -44,7 +44,7 @@ sec "Tests"
 if npm test >/tmp/gate-test.log 2>&1; then ok "$(grep -E 'Tests +[0-9]' /tmp/gate-test.log | tail -1 | sed 's/^ *//')"; else bad "tests failed"; tail -20 /tmp/gate-test.log; fi
 
 sec "Supabase RLS smoke"
-if [ -n "${DATABASE_URL:-}" ]; then
+if [ -n "${DATABASE_URL:-}" ] || [ -n "${SUPABASE_ACCESS_TOKEN:-}" ] || { command -v supabase >/dev/null 2>&1 && [ -f "supabase/.temp/project-ref" ]; }; then
   if npm run check:chat-rls >/tmp/gate-chat-rls.log 2>&1; then
     ok "chat_messages RLS smoke ok"
   else
@@ -52,7 +52,7 @@ if [ -n "${DATABASE_URL:-}" ]; then
     tail -20 /tmp/gate-chat-rls.log
   fi
 else
-  ok "skipped: DATABASE_URL не задан (live RLS smoke запускается в CI/staging)"
+  ok "skipped: DATABASE_URL/SUPABASE_ACCESS_TOKEN не задан и Supabase CLI не linked"
 fi
 
 sec "Build"

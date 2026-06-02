@@ -10,6 +10,7 @@
     "env:doctor:local": "bash scripts/with-env.sh npm run env:doctor",
     "build": "vite build",
     "preview": "vite preview",
+    "check:chat-rls": "bash scripts/check_chat_messages_rls.sh",
     "check:nannies-rls": "bash scripts/check_nannies_rls.sh",
     "test": "vitest run",
     "test:e2e": "playwright test",

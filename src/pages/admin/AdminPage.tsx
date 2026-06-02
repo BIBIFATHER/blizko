@@ -16,6 +16,7 @@ import { ParentRequest, NannyProfile } from '@/core/types';
 import { supabase } from '@/services/supabase';
 import { getItem, setItem } from '@/core/platform/storage';
 import { createAdminAction, fetchAdminActions } from '@/services/adminApi';
+import { getNannyProfiles, getParentRequests } from '@/services/storage';
 import { AdminOverviewTab } from '@/components/admin/AdminOverviewTab';
 import { AdminParentsTab } from '@/components/admin/AdminParentsTab';
 import { AdminNanniesTab } from '@/components/admin/AdminNanniesTab';
@@ -40,6 +41,20 @@ type AdminJournalRange = '1' | '7' | '30' | 'all';
 
 const ADMIN_PARENTS_SEEN_BY_ID_KEY = 'blizko_admin_parents_seen_by_id';
 const ADMIN_ACTIONS_KEY = 'blizko_admin_actions';
+
+async function fetchAdminDataResource<T>(
+  resource: 'parents' | 'nannies',
+  headers: Record<string, string>,
+) {
+  try {
+    const response = await fetch(`/api/data?resource=${resource}`, { headers });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return Array.isArray(payload?.items) ? (payload.items as T[]) : null;
+  } catch {
+    return null;
+  }
+}
 
 function getParentUpdatedAt(parent: ParentRequest) {
   return Number(parent.updatedAt || parent.createdAt || 0);
@@ -108,6 +123,10 @@ const AdminPageContent: React.FC<{
     const params = new URLSearchParams(location.search);
     return (params.get('ticket') || '').trim();
   }, [location.search]);
+  const adminRouteSearch = React.useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('mockAdmin') === '1' ? '?mockAdmin=1' : '';
+  }, [location.search]);
 
   const [parents, setParents] = useState<ParentRequest[]>([]);
   const [nannies, setNannies] = useState<NannyProfile[]>([]);
@@ -121,18 +140,16 @@ const AdminPageContent: React.FC<{
     const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    const [pr, nr, remoteAnalytics] = await Promise.all([
-      fetch('/api/data?resource=parents', { headers })
-        .then((r) => (r.ok ? r.json() : { items: [] }))
-        .catch(() => ({ items: [] })),
-      fetch('/api/data?resource=nannies', { headers })
-        .then((r) => (r.ok ? r.json() : { items: [] }))
-        .catch(() => ({ items: [] })),
+    const [remoteParents, remoteNannies, remoteAnalytics] = await Promise.all([
+      fetchAdminDataResource<ParentRequest>('parents', headers),
+      fetchAdminDataResource<NannyProfile>('nannies', headers),
       fetchRemoteAnalyticsEvents(30, token),
     ]);
 
-    const p = Array.isArray(pr?.items) ? pr.items : [];
-    const n = Array.isArray(nr?.items) ? nr.items : [];
+    const [p, n] = await Promise.all([
+      remoteParents ?? getParentRequests(),
+      remoteNannies ?? getNannyProfiles(),
+    ]);
     setParents(p);
     setNannies(n);
     setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
@@ -222,7 +239,7 @@ const AdminPageContent: React.FC<{
           {NAV_ITEMS.map(({ tab: t, label }) => (
             <NavLink
               key={t}
-              to={t === 'overview' ? '/admin' : `/admin/${t}`}
+              to={`${t === 'overview' ? '/admin' : `/admin/${t}`}${adminRouteSearch}`}
               end={t === 'overview'}
               className={({ isActive }) =>
                 `shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-[color:var(--color-primary)] text-white border-[color:var(--color-primary)]' : 'bg-white/70 text-stone-700 border-stone-200/80 hover:bg-white'}`
@@ -243,7 +260,7 @@ const AdminPageContent: React.FC<{
           {NAV_ITEMS.map(({ tab: t, label, icon: Icon }) => (
             <NavLink
               key={t}
-              to={t === 'overview' ? '/admin' : `/admin/${t}`}
+              to={`${t === 'overview' ? '/admin' : `/admin/${t}`}${adminRouteSearch}`}
               end={t === 'overview'}
               className={({ isActive }) =>
                 `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${isActive ? 'bg-[color:var(--color-primary)] text-white' : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'}`

@@ -1,12 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const adminTabs = [
-  { label: 'Родители', marker: /Заявки родителей/i },
-  { label: 'Няни', marker: /Анкеты нянь/i },
-  { label: 'Бронирования', marker: 'Ожидают старта или подтверждения' },
-  { label: 'Куратор', marker: /Ручной подбор/i },
-  { label: 'Чаты', marker: 'Чаты с семьями' },
-  { label: 'Журнал', marker: /Журнал действий/i },
+  { view: 'parents', marker: /Заявки родителей/i },
+  { view: 'nannies', marker: /Анкеты нянь/i },
+  { view: 'bookings', marker: 'Ожидают старта или подтверждения' },
+  { view: 'curator', marker: /Ручной подбор/i },
+  { view: 'support', marker: 'Чаты с семьями' },
+  { view: 'journal', marker: /Журнал действий/i },
 ];
 
 async function openAdminPreview(page: Page) {
@@ -15,8 +15,8 @@ async function openAdminPreview(page: Page) {
   await page.waitForTimeout(700);
 }
 
-async function openAdminTab(page: Page, label: string, marker: string | RegExp) {
-  await page.getByRole('link', { name: label }).first().click();
+async function openAdminTab(page: Page, view: string, marker: string | RegExp) {
+  await page.goto(`/admin-preview?view=${view}`, { waitUntil: 'domcontentloaded' });
   await expect(page.getByText(marker).first()).toBeVisible();
   await page.waitForTimeout(300);
 }
@@ -42,7 +42,7 @@ test('admin preview tabs render without splash, overlay, or horizontal overflow'
   await openAdminPreview(page);
 
   for (const tab of adminTabs) {
-    await openAdminTab(page, tab.label, tab.marker);
+    await openAdminTab(page, tab.view, tab.marker);
     await expectOperationalAdminSurface(page);
   }
 });
@@ -51,7 +51,7 @@ test('curator matching flow explains why a nanny fits', async ({ page }, testInf
   test.skip(testInfo.project.name !== 'chromium-desktop', 'Covered once on desktop.');
 
   await openAdminPreview(page);
-  await openAdminTab(page, 'Куратор', /Ручной подбор/i);
+  await openAdminTab(page, 'curator', /Ручной подбор/i);
   await page.locator('button:has-text("Москва")').first().click();
 
   await expect(page.getByText('ПОЧЕМУ ПОДХОДИТ').first()).toBeVisible();

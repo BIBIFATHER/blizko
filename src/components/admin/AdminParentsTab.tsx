@@ -701,6 +701,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
               </div>
               <button
                 onClick={() => setSelectedParent(null)}
+                aria-label="Закрыть карточку заявки"
                 className="p-2 rounded-full hover:bg-white/70"
               >
                 <X size={18} />

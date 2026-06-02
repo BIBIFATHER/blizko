@@ -325,3 +325,39 @@ Product files touched in this pass:
 - `src/components/admin/AdminParentsTab.tsx`
 - `src/components/admin/AdminSupportTab.tsx`
 - `src/components/admin/adminTrustSignals.tsx`
+
+## 2026-06-02 Real Admin Route Follow-Up
+
+Purpose:
+
+- Move QA from `/admin-preview` only to the real `/admin` route in dev.
+- Make the admin usable and testable when Supabase/API is unavailable locally.
+
+Changes:
+
+- `/admin` now falls back to `getParentRequests()` / `getNannyProfiles()` when `/api/data` is unavailable.
+- Admin navigation preserves `?mockAdmin=1` in dev so tab changes do not drop mock admin access.
+- Overview metric buttons preserve `?mockAdmin=1`.
+- Parent detail modal has an accessible close label: `Закрыть карточку заявки`.
+- Added `e2e/admin-real.spec.ts` with seeded local buffer coverage for:
+  - real `/admin?mockAdmin=1`;
+  - local parent/nanny/booking data visibility;
+  - nanny trust statuses;
+  - bookings tab;
+  - parent card trust/curator notes;
+  - rejection reason inline state;
+  - curator “why fits” reasons;
+  - assignment confirmation modal.
+- Stabilized `e2e/admin-preview.spec.ts` by opening preview views directly per route.
+
+Verification:
+
+- `npm run test:e2e` — 7 passed, 3 scoped skips.
+- `npm run typecheck` — passed.
+- `npm run lint` — passed.
+- `npm test -- --run` — 24 files / 79 tests passed.
+- `npm run build` — passed.
+
+Remaining limit:
+
+- Real authenticated server `PATCH/POST` was not verified because local env has no Supabase session/service keys. The new e2e covers real route UI, fallback data source, modals, and confirmation surfaces.

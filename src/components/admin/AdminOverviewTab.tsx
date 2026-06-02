@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { Badge, Card } from '../UI';
 import { NannyProfile, ParentRequest } from '@/core/types';
@@ -35,7 +35,12 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
   unseenParentsCount,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [attentionDismissed, setAttentionDismissed] = React.useState(false);
+  const adminRouteSearch = React.useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('mockAdmin') === '1' ? '?mockAdmin=1' : '';
+  }, [location.search]);
   const metrics = React.useMemo(
     () =>
       buildDashboardMetrics({
@@ -116,7 +121,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
         <div className="section-shell flex items-center gap-2 rounded-[1.5rem] px-4 py-3 text-sm text-stone-700">
           <button
             type="button"
-            onClick={() => navigate('/admin/parents')}
+            onClick={() => navigate(`/admin/parents${adminRouteSearch}`)}
             className="flex flex-1 items-center justify-between gap-3 text-left transition-all"
           >
             <div>
@@ -144,7 +149,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
           <button
             key={metric.label}
             type="button"
-            onClick={() => navigate(metric.to)}
+            onClick={() => navigate(`${metric.to}${adminRouteSearch}`)}
             className="rounded-[1.5rem] border border-[color:var(--cloud-border)] bg-white/80 p-4 text-left transition-all hover:bg-white hover:shadow-sm"
           >
             <div className="text-xs text-stone-500">{metric.label}</div>

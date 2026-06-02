@@ -38,10 +38,27 @@ function getToneLabel(score: number) {
   return 'нейтральный';
 }
 
+function getToneStyle(score: number): { chip: string; dot: string } {
+  if (score < -0.5) return { chip: 'bg-rose-50 text-rose-700 border-rose-100', dot: 'bg-rose-500' };
+  if (score < -0.15)
+    return { chip: 'bg-amber-50 text-amber-700 border-amber-100', dot: 'bg-amber-500' };
+  if (score > 0.4)
+    return { chip: 'bg-emerald-50 text-emerald-700 border-emerald-100', dot: 'bg-emerald-500' };
+  return { chip: 'bg-stone-50 text-stone-600 border-stone-200', dot: 'bg-stone-400' };
+}
+
 function getStatusLabel(status: string) {
   if (status === 'human_escalated') return 'нужен человек';
   if (status === 'resolved') return 'закрыт';
   return 'открыт';
+}
+
+function getStatusStyle(status: string): { chip: string; dot: string } {
+  if (status === 'human_escalated')
+    return { chip: 'bg-rose-50 text-rose-700 border-rose-100', dot: 'bg-rose-500' };
+  if (status === 'resolved')
+    return { chip: 'bg-emerald-50 text-emerald-700 border-emerald-100', dot: 'bg-emerald-500' };
+  return { chip: 'bg-stone-50 text-stone-600 border-stone-200', dot: 'bg-stone-400' };
 }
 
 function getMessageLabel(senderType: string) {
@@ -169,41 +186,55 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
           </div>
         ) : (
           <div className="space-y-2">
-            {inbox.items.map((ticket) => {
-              const active = ticket.id === selectedTicketId;
-              return (
-                <button
-                  key={ticket.id}
-                  type="button"
-                  onClick={() => selectTicket(ticket.id)}
-                  className={`w-full rounded-2xl px-3 py-3 text-left transition-colors ${
-                    active
-                      ? 'bg-white text-stone-900'
-                      : 'bg-white/50 text-stone-700 hover:bg-white/80'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold">#{ticket.id.slice(0, 8)}</span>
-                    <span
-                      className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
-                        ticket.status === 'human_escalated'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-stone-100 text-stone-600'
-                      }`}
-                    >
-                      {getStatusLabel(ticket.status)}
-                    </span>
-                  </div>
-                  <div className="mt-2 line-clamp-2 text-xs leading-relaxed text-stone-500">
-                    {ticket.lastMessage?.text || ticket.summary || 'Без сообщений'}
-                  </div>
-                  <div className="mt-2 flex items-center gap-2 text-[11px] text-stone-400">
-                    <Clock3 size={12} />
-                    {formatTime(ticket.updatedAt)}
-                  </div>
-                </button>
-              );
-            })}
+            {[...inbox.items]
+              .sort((a, b) => {
+                const aUrgent = a.status === 'human_escalated' ? 0 : 1;
+                const bUrgent = b.status === 'human_escalated' ? 0 : 1;
+                if (aUrgent !== bUrgent) return aUrgent - bUrgent;
+                return (b.updatedAt || 0) - (a.updatedAt || 0);
+              })
+              .map((ticket) => {
+                const active = ticket.id === selectedTicketId;
+                const status = getStatusStyle(ticket.status);
+                const tone = getToneStyle(ticket.sentimentScore ?? 0);
+                return (
+                  <button
+                    key={ticket.id}
+                    type="button"
+                    onClick={() => selectTicket(ticket.id)}
+                    className={`w-full rounded-2xl px-3 py-3 text-left transition-colors ${
+                      active
+                        ? 'bg-white text-stone-900 shadow-sm'
+                        : 'bg-white/50 text-stone-700 hover:bg-white/80'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold">#{ticket.id.slice(0, 8)}</span>
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.chip}`}
+                      >
+                        <span className={`size-1.5 rounded-full ${status.dot}`} />
+                        {getStatusLabel(ticket.status)}
+                      </span>
+                    </div>
+                    <div className="mt-2 line-clamp-2 text-xs leading-relaxed text-stone-500">
+                      {ticket.lastMessage?.text || ticket.summary || 'Без сообщений'}
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-stone-400">
+                      <span className="inline-flex items-center gap-1">
+                        <Clock3 size={12} />
+                        {formatTime(ticket.updatedAt)}
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${tone.chip}`}
+                      >
+                        <span className={`size-1.5 rounded-full ${tone.dot}`} />
+                        {getToneLabel(ticket.sentimentScore ?? 0)}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
           </div>
         )}
       </section>
@@ -225,9 +256,17 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
                   <div className="eyebrow">Обращение #{getTicketShortId(selected)}</div>
                   <h2 className="mt-1 text-xl font-semibold text-stone-900">История чата</h2>
                 </div>
-                <span className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800">
-                  {getToneLabel(selected.sentimentScore)}
-                </span>
+                {(() => {
+                  const tone = getToneStyle(selected.sentimentScore ?? 0);
+                  return (
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${tone.chip}`}
+                    >
+                      <span className={`size-2 rounded-full ${tone.dot}`} />
+                      {getToneLabel(selected.sentimentScore ?? 0)}
+                    </span>
+                  );
+                })()}
               </div>
 
               <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">

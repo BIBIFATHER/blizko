@@ -202,6 +202,23 @@ Note:
 
 - source maps can still include original source paths. That is expected unless sourcemaps are disabled.
 
+## Follow-Up Test Coverage
+
+Added `src/components/admin/adminTrustSignals.test.ts`.
+
+Covered contracts:
+
+- verified nanny evidence creates `ok` badges;
+- pending documents and pending video create `pending` badges;
+- missing identity/experience/docs create `missing` badges;
+- nanny risk flags cover missing docs, rejected docs, low scan confidence, and unverified identity;
+- parent risk flags cover stale new requests, payment pending, and missing contact.
+
+Why:
+
+- The admin trust layer is now a product contract, not just visual copy.
+- These tests protect the evidence-based badge language from drifting back into vague labels.
+
 ## What Claude Code Should Review Next
 
 ### Priority 1
@@ -270,4 +287,3 @@ Product files touched in this pass:
 - `src/components/admin/AdminParentsTab.tsx`
 - `src/components/admin/AdminSupportTab.tsx`
 - `src/components/admin/adminTrustSignals.tsx`
-

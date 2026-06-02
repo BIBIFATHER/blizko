@@ -4,6 +4,7 @@ import { Booking } from '@/services/booking';
 import { ParentRequest, NannyProfile } from '@/core/types';
 import { Calendar, Clock, User, CheckCircle, XCircle } from 'lucide-react';
 import { AdminPillButton } from './adminPrimitives';
+import { useAdminWorkflowUI } from './adminWorkflowUI';
 
 type BookingFilter = 'all' | 'pending' | 'confirmed' | 'active' | 'completed' | 'cancelled';
 
@@ -31,21 +32,12 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
   nannies,
   onStatusChange,
 }) => {
+  const { confirmAction } = useAdminWorkflowUI();
   const [filter, setFilter] = useState<BookingFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const [draggingBookingId, setDraggingBookingId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<Booking['status'] | null>(null);
-
-  const handleBookingDrop = (newStatus: Booking['status']) => (e: React.DragEvent) => {
-    e.preventDefault();
-    const id = e.dataTransfer.getData('text/plain');
-    setDragOverColumn(null);
-    setDraggingBookingId(null);
-    const b = bookings.find((x) => x.id === id);
-    if (!b || b.status === newStatus) return;
-    onStatusChange(id, newStatus);
-  };
 
   const parentLabel = (parentId: string) => {
     const p = parents.find((pr) => pr.id === parentId || pr.requesterId === parentId);
@@ -55,6 +47,27 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
   const nannyLabel = (nannyId: string) => {
     const n = nannies.find((np) => np.id === nannyId || np.userId === nannyId);
     return n ? n.name : `#${nannyId.slice(0, 8)}`;
+  };
+
+  const requestBookingStatusChange = async (booking: Booking, newStatus: Booking['status']) => {
+    if (booking.status === newStatus) return;
+    const ok = await confirmAction({
+      message: `Перевести бронь #${booking.id.slice(0, 8)} в статус «${statusConfig[newStatus].label}»?`,
+      detail: `${parentLabel(booking.parent_id)} → ${nannyLabel(booking.nanny_id)}`,
+      confirmLabel: 'Перевести',
+    });
+    if (!ok) return;
+    onStatusChange(booking.id, newStatus);
+  };
+
+  const handleBookingDrop = (newStatus: Booking['status']) => async (e: React.DragEvent) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData('text/plain');
+    setDragOverColumn(null);
+    setDraggingBookingId(null);
+    const b = bookings.find((x) => x.id === id);
+    if (!b) return;
+    await requestBookingStatusChange(b, newStatus);
   };
 
   const filtered = useMemo(() => {
@@ -168,13 +181,13 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
         {booking.status === 'pending' && (
           <div className="flex gap-2">
             <button
-              onClick={() => onStatusChange(booking.id, 'confirmed')}
+              onClick={() => void requestBookingStatusChange(booking, 'confirmed')}
               className="flex flex-1 items-center justify-center gap-1 rounded-full border border-green-200/80 bg-green-50 py-2 text-xs font-medium text-green-700 transition-colors hover:bg-green-100"
             >
               <CheckCircle size={14} /> Подтвердить
             </button>
             <button
-              onClick={() => onStatusChange(booking.id, 'cancelled')}
+              onClick={() => void requestBookingStatusChange(booking, 'cancelled')}
               className="flex flex-1 items-center justify-center gap-1 rounded-full border border-red-200/80 bg-red-50 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-100"
             >
               <XCircle size={14} /> Отменить
@@ -183,7 +196,7 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
         )}
         {booking.status === 'confirmed' && (
           <button
-            onClick={() => onStatusChange(booking.id, 'active')}
+            onClick={() => void requestBookingStatusChange(booking, 'active')}
             className="flex w-full items-center justify-center gap-1 rounded-full border border-amber-200/80 bg-amber-50 py-2 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-100"
           >
             <Clock size={14} /> Отметить как активное
@@ -191,11 +204,27 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
         )}
         {booking.status === 'active' && (
           <button
-            onClick={() => onStatusChange(booking.id, 'completed')}
+            onClick={() => void requestBookingStatusChange(booking, 'completed')}
             className="flex w-full items-center justify-center gap-1 rounded-full border border-green-200/80 bg-green-50 py-2 text-xs font-medium text-green-700 transition-colors hover:bg-green-100"
           >
             <CheckCircle size={14} /> Завершить
           </button>
+        )}
+        {!showStatus && (
+          <select
+            value={booking.status}
+            onChange={(event) => {
+              void requestBookingStatusChange(booking, event.target.value as Booking['status']);
+            }}
+            className="mt-3 w-full rounded-full border border-stone-200/80 bg-white/70 px-3 py-2 text-xs font-semibold text-stone-700 outline-none transition-all hover:bg-white"
+            aria-label="Изменить статус бронирования"
+          >
+            {(Object.keys(statusConfig) as Booking['status'][]).map((status) => (
+              <option key={status} value={status}>
+                {statusConfig[status].label}
+              </option>
+            ))}
+          </select>
         )}
       </div>
     );

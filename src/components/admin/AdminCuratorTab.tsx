@@ -64,6 +64,17 @@ function scorePct(score: number) {
   return Math.min(100, Math.round((score / MAX_SCORE) * 100));
 }
 
+function matchLevel(score: number): { label: string; className: string } {
+  const pct = scorePct(score);
+  if (pct >= 60) {
+    return { label: 'Сильное совпадение', className: 'bg-green-100 text-green-700' };
+  }
+  if (pct >= 30) {
+    return { label: 'Частичное совпадение', className: 'bg-amber-100 text-amber-700' };
+  }
+  return { label: 'Мало сигналов', className: 'bg-stone-100 text-stone-500' };
+}
+
 function parentLabel(p: ParentRequest) {
   return `${p.city} • ${p.childAge} • ${p.schedule}`;
 }
@@ -203,7 +214,7 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
               </div>
               <div className="space-y-2">
                 {rankedNannies.map(({ nanny: n, score, reasons }) => {
-                  const pct = scorePct(score);
+                  const level = matchLevel(score);
                   return (
                     <Card key={n.id} className="p-3!">
                       <div className="flex items-start justify-between gap-3">
@@ -246,16 +257,8 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
                           )}
                         </div>
                         <div className="shrink-0 flex flex-col items-end gap-2">
-                          <div
-                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                              pct >= 60
-                                ? 'bg-green-100 text-green-700'
-                                : pct >= 30
-                                  ? 'bg-amber-100 text-amber-700'
-                                  : 'bg-stone-100 text-stone-500'
-                            }`}
-                          >
-                            {pct}%
+                          <div className={`text-xs font-bold px-2 py-0.5 rounded-full ${level.className}`}>
+                            {level.label}
                           </div>
                           <AdminPillButton
                             tone="dark"

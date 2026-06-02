@@ -61,6 +61,15 @@ function getStatusStyle(status: string): { chip: string; dot: string } {
   return { chip: 'bg-stone-50 text-stone-600 border-stone-200', dot: 'bg-stone-400' };
 }
 
+function getPriorityReason(ticket: AdminSupportTicket | null) {
+  if (!ticket) return null;
+  if (ticket.status === 'human_escalated') return 'Срочно: семья просит человека';
+  const score = ticket.sentimentScore ?? 0;
+  if (score < -0.5) return 'Тон тревожный: нужен быстрый ответ';
+  if (score < -0.15) return 'Тон напряжённый: лучше не откладывать';
+  return null;
+}
+
 function getMessageLabel(senderType: string) {
   if (senderType === 'user') return 'Родитель';
   if (senderType === 'human_agent') return 'Антон';
@@ -116,7 +125,7 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
         if (result) {
           setInbox(result);
           if (result.selected?.id) setSelectedTicketId(result.selected.id);
-          if (!ticketId && !selectedTicketId && result.items[0]?.id) {
+          if (!ticketId && result.items[0]?.id) {
             setSelectedTicketId(result.items[0].id);
           }
         }
@@ -124,12 +133,12 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
         setLoading(false);
       }
     },
-    [selectedTicketId],
+    [],
   );
 
   React.useEffect(() => {
-    void loadInbox(focusTicketId || selectedTicketId || undefined);
-  }, [focusTicketId, loadInbox, selectedTicketId]);
+    void loadInbox(focusTicketId || undefined);
+  }, [focusTicketId, loadInbox]);
 
   const selectTicket = (ticketId: string) => {
     setSelectedTicketId(ticketId);
@@ -157,6 +166,7 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
 
   const selected = inbox.selected;
   const context = inbox.parentContext;
+  const selectedPriorityReason = getPriorityReason(selected);
 
   return (
     <div className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
@@ -197,6 +207,7 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
                 const active = ticket.id === selectedTicketId;
                 const status = getStatusStyle(ticket.status);
                 const tone = getToneStyle(ticket.sentimentScore ?? 0);
+                const priorityReason = getPriorityReason(ticket);
                 return (
                   <button
                     key={ticket.id}
@@ -232,6 +243,11 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
                         {getToneLabel(ticket.sentimentScore ?? 0)}
                       </span>
                     </div>
+                    {priorityReason && (
+                      <div className="mt-2 rounded-xl bg-rose-50/70 px-2 py-1.5 text-[11px] font-medium text-rose-700">
+                        {priorityReason}
+                      </div>
+                    )}
                   </button>
                 );
               })}
@@ -313,6 +329,11 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
                   <li>Тон сообщения: {getToneLabel(selected.sentimentScore)}</li>
                   <li>Последнее обновление: {formatTime(selected.updatedAt)}</li>
                 </ul>
+                {selectedPriorityReason && (
+                  <div className="mt-3 rounded-2xl bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
+                    {selectedPriorityReason}
+                  </div>
+                )}
               </div>
 
               <div className={`${adminSubsectionPanel} bg-white/70`}>

@@ -223,7 +223,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     selectedParent,
     setSelectedParent,
   });
-  const { reportSuccess, reportError } = useAdminWorkflowUI();
+  const { confirmAction, reportSuccess, reportError } = useAdminWorkflowUI();
 
   const crmStats = React.useMemo(() => {
     const counts = parents.reduce(
@@ -340,6 +340,27 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     },
   ];
 
+  const requestParentStatusChange = async (
+    parent: ParentRequest,
+    newStatus: NonNullable<ParentRequest['status']>,
+  ) => {
+    const current = parent.status || 'new';
+    if (current === newStatus) return;
+    if (newStatus === 'rejected') {
+      setSelectedParent(parent);
+      setRejectingId(parent.id);
+      return;
+    }
+
+    const ok = await confirmAction({
+      message: `Перевести заявку #${getParentShortId(parent)} в статус «${parentStatusLabel(newStatus)}»?`,
+      detail: `${getLocationLine(parent) || 'Локация не указана'}\n${parent.childAge || 'Возраст не указан'} · ${parent.schedule || 'График не указан'}`,
+      confirmLabel: 'Перевести',
+    });
+    if (!ok) return;
+    await updateParentStatus(parent, newStatus);
+  };
+
   const handleParentDrop =
     (newStatus: NonNullable<ParentRequest['status']>) => async (e: React.DragEvent) => {
       e.preventDefault();
@@ -348,14 +369,7 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
       setDraggingParentId(null);
       const p = parents.find((x) => x.id === id);
       if (!p) return;
-      const current = p.status || 'new';
-      if (current === newStatus) return;
-      if (newStatus === 'rejected') {
-        setSelectedParent(p);
-        setRejectingId(p.id);
-        return;
-      }
-      await updateParentStatus(p, newStatus);
+      await requestParentStatusChange(p, newStatus);
     };
 
   const renderParentCard = (
@@ -381,6 +395,10 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
             <span className="font-mono">#{getParentShortId(p)}</span>
           </div>
         </div>
+        <div className="mb-2 rounded-[1rem] bg-stone-50/80 px-3 py-2 text-xs text-stone-600">
+          <span className="font-semibold text-stone-800">Следующее действие:</span>{' '}
+          {getNextAction(p)}
+        </div>
         <div className="text-sm font-semibold text-stone-800">{getLocationLine(p)}</div>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-stone-500">
           <span>{p.childAge || 'Возраст не указан'}</span>
@@ -388,10 +406,6 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
         </div>
         <div className="mt-1 text-sm text-stone-600">График: {p.schedule}</div>
         <div className="text-sm text-stone-600">Бюджет: {p.budget}</div>
-        <div className="mt-2 rounded-[1rem] bg-stone-50/80 px-3 py-2 text-xs text-stone-600">
-          <span className="font-semibold text-stone-800">Следующее действие:</span>{' '}
-          {getNextAction(p)}
-        </div>
         {(() => {
           const flags = getParentRiskFlags(p);
           return flags.length > 0 ? (
@@ -416,6 +430,26 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
           <AdminPillButton onClick={() => openParent(p)} tone="primary">
             Открыть карточку
           </AdminPillButton>
+          {compact && (
+            <select
+              value={p.status || 'new'}
+              onClick={(event) => event.stopPropagation()}
+              onChange={(event) => {
+                void requestParentStatusChange(
+                  p,
+                  event.target.value as NonNullable<ParentRequest['status']>,
+                );
+              }}
+              className="rounded-full border border-stone-200/80 bg-white/70 px-3 py-2 text-xs font-semibold text-stone-700 outline-none transition-all hover:bg-white"
+              aria-label="Изменить статус заявки"
+            >
+              {KANBAN_COLUMNS.map((column) => (
+                <option key={column.status} value={column.status}>
+                  {column.label}
+                </option>
+              ))}
+            </select>
+          )}
           {!compact && (
             <AdminPillButton onClick={() => handleCopyParentBrief(p)} tone="neutral">
               <Copy size={13} /> Сводка
@@ -693,13 +727,13 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         <AdminPillButton
-                          onClick={() => updateParentStatus(selectedParent, 'in_review')}
+                          onClick={() => void requestParentStatusChange(selectedParent, 'in_review')}
                           tone="neutral"
                         >
                           На проверку
                         </AdminPillButton>
                         <AdminPillButton
-                          onClick={() => updateParentStatus(selectedParent, 'approved')}
+                          onClick={() => void requestParentStatusChange(selectedParent, 'approved')}
                           tone="success"
                         >
                           Одобрить

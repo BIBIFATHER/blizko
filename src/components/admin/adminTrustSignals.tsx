@@ -12,18 +12,28 @@ export function getNannyTrustBadges(n: NannyProfile): TrustBadge[] {
   const docs = n.documents || [];
   const allVerified = docs.length > 0 && docs.every((d) => d.status === 'verified');
   const anyPending = docs.some((d) => d.status === 'pending');
+  const docsStatus: SignalStatus = allVerified ? 'ok' : anyPending ? 'pending' : 'missing';
   return [
-    { label: 'Личность', status: n.isVerified ? 'ok' : 'missing' },
     {
-      label: 'Документы',
-      status: allVerified ? 'ok' : anyPending ? 'pending' : 'missing',
+      label: n.isVerified ? 'Личность подтверждена' : 'Личность не подтверждена',
+      status: n.isVerified ? 'ok' : 'missing',
     },
     {
-      label: 'Опыт',
+      label:
+        docsStatus === 'ok'
+          ? 'Документы проверены'
+          : docsStatus === 'pending'
+            ? 'Документы на проверке'
+            : 'Документы не загружены',
+      status: docsStatus,
+    },
+    {
+      label:
+        n.experience && Number(n.experience) > 0 ? 'Опыт указан' : 'Опыт нужно уточнить',
       status: n.experience && Number(n.experience) > 0 ? 'ok' : 'missing',
     },
     {
-      label: 'Видеовизитка',
+      label: n.video ? 'Видео есть' : n.videoIntro ? 'Видео ожидает просмотра' : 'Видео не загружено',
       status: n.video ? 'ok' : n.videoIntro ? 'pending' : 'missing',
     },
   ];

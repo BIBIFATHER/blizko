@@ -12,7 +12,6 @@ import { useShareActions } from '@/hooks/useShareActions';
 import { AppFooter } from '@/components/app/AppFooter';
 import { RequireRole } from '@/components/app/RequireRole';
 import { trackAuthModalOpen } from '@/services/analytics';
-import { AdminPreviewHarness } from '@/pages/admin/__preview/AdminPreviewHarness'; // DEV PREVIEW — remove before commit
 
 const ParentForm = lazy(() =>
   import('@/components/ParentForm').then((module) => ({ default: module.ParentForm })),
@@ -77,6 +76,13 @@ const RoleDashboard = lazy(() =>
     default: module.RoleDashboard,
   })),
 );
+const AdminPreviewHarness = import.meta.env.DEV
+  ? lazy(() =>
+      import('@/pages/admin/__preview/AdminPreviewHarness').then((module) => ({
+        default: module.AdminPreviewHarness,
+      })),
+    )
+  : null;
 
 function RouteFallback() {
   return (
@@ -412,7 +418,7 @@ export default function App() {
               }
             />
             <Route path="/login" element={<LoginPage onOpenAuth={() => setAuthOpen(true)} />} />
-            {import.meta.env.DEV && (
+            {AdminPreviewHarness && (
               <Route path="/admin-preview" element={<AdminPreviewHarness />} />
             )}
             <Route path="*" element={<Navigate to="/" replace />} />

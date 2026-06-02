@@ -173,12 +173,12 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
             <div
               className={`text-xs font-bold px-2.5 py-1 rounded-full ${readiness.qualityApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
             >
-              {readiness.qualityScore}/100
+              {readiness.qualityApproved ? 'Готова к показу' : 'Нужно ревью'}
             </div>
           </div>
           <ProgressBar
             className="mt-3"
-            label="Готовность профиля"
+            label="Заполненность профиля"
             showPercent
             value={readiness.completionRatio}
           />
@@ -426,7 +426,7 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                         <span
                           className={`ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${readiness.qualityApproved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
                         >
-                          {readiness.qualityScore}/100
+                          {readiness.qualityApproved ? 'Готова к показу' : 'Нужно ревью'}
                         </span>
                       </div>
                       <div className="mt-0.5 truncate text-sm text-stone-600">

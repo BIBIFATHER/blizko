@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Badge, Card } from '../UI';
 import { NannyProfile, ParentRequest } from '@/core/types';
 import {
@@ -32,6 +33,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
   events,
   unseenParentsCount,
 }) => {
+  const navigate = useNavigate();
   const metrics = React.useMemo(
     () =>
       buildDashboardMetrics({
@@ -55,88 +57,90 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
   );
   const aReady = readiness.filter((item) => item.readyForReview).length;
   const qualityApproved = readiness.filter((item) => item.qualityApproved).length;
-  const topMetrics = [
-    {
-      label: 'Заявки родителей',
-      value: metrics.parentOps.total,
-      icon: <ListChecks size={18} />,
-      note: `Требуют действия: ${metrics.parentOps.needsAction}`,
-      badge: <Badge variant="neutral">Ops</Badge>,
-    },
-    {
-      label: 'Анкеты нянь',
-      value: metrics.supply.total,
-      icon: <Users size={18} />,
-      note: 'Всё активное предложение',
-      badge: <Badge variant="info">Предложение</Badge>,
-    },
-    {
-      label: 'Готовы к ручной проверке',
-      value: aReady,
-      icon: <CheckCircle size={18} />,
-      note: 'Можно брать в модерацию',
-      badge: <Badge variant="warning">Ревью</Badge>,
-    },
-    {
-      label: 'Проверенные анкеты',
-      value: qualityApproved,
-      icon: <TrendingUp size={18} />,
-      note: 'Готовы к показу семье',
-      badge: <Badge variant="success">Качество</Badge>,
-    },
-    {
-      label: 'Документы загружены',
-      value: withDocs,
-      icon: <FileCheck2 size={18} />,
-      note: 'Есть база для проверки',
-      badge: <Badge variant="info">Docs</Badge>,
-    },
-    {
-      label: 'Верифицировано',
-      value: verified,
-      icon: <ShieldCheck size={18} />,
-      note: `На проверке документов: ${pendingDocs}`,
-      badge:
-        pendingDocs > 0 ? (
-          <Badge variant="warning">Есть pending</Badge>
-        ) : (
-          <Badge variant="trust">Чисто</Badge>
-        ),
-    },
-  ];
+  const topMetrics: { label: string; value: number; icon: React.ReactNode; note: string; to: string }[] =
+    [
+      {
+        label: 'Заявки родителей',
+        value: metrics.parentOps.total,
+        icon: <ListChecks size={18} />,
+        note: `Требуют действия: ${metrics.parentOps.needsAction}`,
+        to: '/admin/parents',
+      },
+      {
+        label: 'Анкеты нянь',
+        value: metrics.supply.total,
+        icon: <Users size={18} />,
+        note: 'Всё активное предложение',
+        to: '/admin/nannies',
+      },
+      {
+        label: 'Готовы к проверке',
+        value: aReady,
+        icon: <CheckCircle size={18} />,
+        note: 'Можно брать в модерацию',
+        to: '/admin/nannies',
+      },
+      {
+        label: 'Проверенные анкеты',
+        value: qualityApproved,
+        icon: <TrendingUp size={18} />,
+        note: 'Готовы к показу семье',
+        to: '/admin/nannies',
+      },
+      {
+        label: 'Документы загружены',
+        value: withDocs,
+        icon: <FileCheck2 size={18} />,
+        note: 'Есть база для проверки',
+        to: '/admin/nannies',
+      },
+      {
+        label: 'Верифицировано',
+        value: verified,
+        icon: <ShieldCheck size={18} />,
+        note: `На проверке документов: ${pendingDocs}`,
+        to: '/admin/nannies',
+      },
+    ];
 
   return (
     <>
       {unseenParentsCount > 0 && (
-        <div className="section-shell flex items-center justify-between gap-3 rounded-[1.5rem] px-4 py-3 text-sm text-stone-700">
+        <button
+          type="button"
+          onClick={() => navigate('/admin/parents')}
+          className="section-shell flex w-full items-center justify-between gap-3 rounded-[1.5rem] px-4 py-3 text-left text-sm text-stone-700 transition-all hover:shadow-sm"
+        >
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">
               Требует внимания
             </div>
             <div className="mt-1">Новые или обновлённые заявки родителей: {unseenParentsCount}</div>
           </div>
-          <Badge variant="danger">Новые заявки</Badge>
-        </div>
+          <Badge variant="danger">Открыть</Badge>
+        </button>
       )}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {topMetrics.map((metric) => (
-          <Card key={metric.label} className="p-4!">
-            <div className="flex items-start justify-between gap-3">
-              <div className="text-xs text-stone-500">{metric.label}</div>
-              {metric.badge}
-            </div>
-            <div className="text-2xl font-bold text-stone-800 mt-2 flex items-center gap-2">
+          <button
+            key={metric.label}
+            type="button"
+            onClick={() => navigate(metric.to)}
+            className="rounded-[1.5rem] border border-[color:var(--cloud-border)] bg-white/80 p-4 text-left transition-all hover:bg-white hover:shadow-sm"
+          >
+            <div className="text-xs text-stone-500">{metric.label}</div>
+            <div className="mt-2 flex items-center gap-2 text-2xl font-bold text-stone-800">
               {metric.icon} {metric.value}
             </div>
-            <div className="text-[11px] text-stone-500 mt-2">{metric.note}</div>
-          </Card>
+            <div className="mt-2 text-[11px] text-stone-500">{metric.note}</div>
+          </button>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-4">
         <Card className="p-4!">
           <div className="flex items-center justify-between gap-3 mb-3">
-            <div className="text-xs uppercase tracking-wide text-stone-400">Parent Conversion</div>
+            <div className="text-xs uppercase tracking-wide text-stone-400">Воронка: родители</div>
             <Badge variant="info">Воронка</Badge>
           </div>
           <div className="space-y-2 text-sm text-stone-600">
@@ -153,7 +157,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
               <strong className="text-stone-800">{metrics.parentConversion.resultsViewed}</strong>
             </div>
             <div className="pt-2 text-[11px] text-stone-500">
-              Submit rate: {metrics.parentConversion.submitRate}% • Match view rate:{' '}
+              Доля отправивших: {metrics.parentConversion.submitRate}% • Доля увидевших подбор:{' '}
               {metrics.parentConversion.matchViewRate}%
             </div>
           </div>
@@ -189,9 +193,9 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
         <Card className="p-4!">
           <div className="flex items-center justify-between gap-3 mb-3">
             <div className="text-xs uppercase tracking-wide text-stone-400">
-              Post-Match Retention
+              Удержание после подбора
             </div>
-            <Badge variant="neutral">Retention</Badge>
+            <Badge variant="neutral">Удержание</Badge>
           </div>
           <div className="space-y-2 text-sm text-stone-600">
             <div className="flex items-center justify-between">
@@ -211,7 +215,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
               </strong>
             </div>
             <div className="text-[11px] text-stone-500 pt-2">
-              First action rate: {metrics.retention.firstActionRate}% • Booking rate:{' '}
+              Доля первых действий: {metrics.retention.firstActionRate}% • Доля бронирований:{' '}
               {metrics.retention.bookingRate}%
             </div>
           </div>
@@ -219,8 +223,8 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
       </div>
 
       <div className="text-[11px] text-stone-400 mt-3">
-        Event source: {events?.length ? 'remote analytics store' : 'local browser fallback'}.
-        Pending docs:{' '}
+        Источник событий: {events?.length ? 'серверная аналитика' : 'локальный буфер'}. На проверке
+        документов:{' '}
         <span className="font-medium text-stone-600 inline-flex items-center gap-1">
           <ShieldAlert size={12} /> {pendingDocs}
         </span>

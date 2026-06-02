@@ -111,7 +111,7 @@ export const AdminJournalTab: React.FC<Props> = ({
     <div className="section-shell rounded-[1.5rem] p-4">
       <div className="flex items-center justify-between gap-3 mb-4">
         <div>
-          <div className="eyebrow">Action feed</div>
+          <div className="eyebrow">Журнал действий</div>
           <div className="mt-1 text-sm text-stone-600">
             Серверный журнал действий и системных сообщений.
           </div>
@@ -138,7 +138,7 @@ export const AdminJournalTab: React.FC<Props> = ({
             {
               {
                 all: 'Все',
-                workflow: 'Workflow',
+                workflow: 'Процессы',
                 moderation: 'Модерация',
                 bookings: 'Бронирования',
                 errors: 'Ошибки',

@@ -20,23 +20,42 @@ function norm(s?: string) {
     .replace(/ё/g, 'е');
 }
 
-function compatScore(p: ParentRequest, n: NannyProfile): number {
+function compatBreakdown(p: ParentRequest, n: NannyProfile): { score: number; reasons: string[] } {
   let score = 0;
+  const reasons: string[] = [];
   const pc = norm(p.city);
   const nc = norm(n.city);
-  if (pc && nc && nc === pc) score += 3;
-  else if (pc && nc && (nc.includes(pc) || pc.includes(nc))) score += 1;
-  if (n.isVerified) score += 2;
+  if (pc && nc && nc === pc) {
+    score += 3;
+    reasons.push('Один город');
+  } else if (pc && nc && (nc.includes(pc) || pc.includes(nc))) {
+    score += 1;
+    reasons.push('Близкая локация');
+  }
+  if (n.isVerified) {
+    score += 2;
+    reasons.push('Личность подтверждена');
+  }
   const ps = norm(p.schedule);
   const ns = norm(n.schedule);
   if (ps && ns) {
-    if (ns === ps) score += 2;
-    else if (ns.includes('полный') && ps.includes('полный')) score += 1;
-    else if (ns.includes('частич') && ps.includes('частич')) score += 1;
+    if (ns === ps) {
+      score += 2;
+      reasons.push('График совпадает');
+    } else if (ns.includes('полный') && ps.includes('полный')) {
+      score += 1;
+      reasons.push('Оба — полный день');
+    } else if (ns.includes('частич') && ps.includes('частич')) {
+      score += 1;
+      reasons.push('Оба — частичная занятость');
+    }
   }
   const pa = norm(p.childAge);
-  if (pa && n.childAges?.some((a) => norm(a).includes(pa) || pa.includes(norm(a)))) score += 1;
-  return score;
+  if (pa && n.childAges?.some((a) => norm(a).includes(pa) || pa.includes(norm(a)))) {
+    score += 1;
+    reasons.push('Опыт с возрастом ребёнка');
+  }
+  return { score, reasons };
 }
 
 const MAX_SCORE = 8;
@@ -79,7 +98,10 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
   const rankedNannies = useMemo(() => {
     if (!selectedParent) return [];
     return [...nannies]
-      .map((n) => ({ nanny: n, score: compatScore(selectedParent, n) }))
+      .map((n) => {
+        const { score, reasons } = compatBreakdown(selectedParent, n);
+        return { nanny: n, score, reasons };
+      })
       .sort((a, b) => b.score - a.score);
   }, [selectedParent, nannies]);
 
@@ -117,7 +139,7 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
   return (
     <section>
       <div className="mb-4">
-        <h3 className="text-stone-500 font-bold uppercase text-xs">Ручной матчинг</h3>
+        <h3 className="text-stone-500 font-bold uppercase text-xs">Ручной подбор</h3>
         <p className="text-sm text-stone-500 mt-1">
           Выберите заявку — увидите нянь по совместимости.
         </p>
@@ -130,7 +152,7 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
             Заявки ({actionableParents.length})
           </div>
           {actionableParents.length === 0 && (
-            <p className="text-stone-400 text-sm">Нет заявок для матчинга</p>
+            <p className="text-stone-400 text-sm">Нет заявок для подбора</p>
           )}
           {actionableParents.map((p) => (
             <button
@@ -180,7 +202,7 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
                 Няни для «{selectedParent.city}» · {nannies.length} всего
               </div>
               <div className="space-y-2">
-                {rankedNannies.map(({ nanny: n, score }) => {
+                {rankedNannies.map(({ nanny: n, score, reasons }) => {
                   const pct = scorePct(score);
                   return (
                     <Card key={n.id} className="p-3!">
@@ -203,6 +225,23 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
                           {n.childAges?.length > 0 && (
                             <div className="text-xs text-stone-400 mt-0.5">
                               Возраст: {n.childAges.join(', ')}
+                            </div>
+                          )}
+                          {reasons.length > 0 && (
+                            <div className="mt-2">
+                              <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-stone-400 mb-1">
+                                Почему подходит
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {reasons.map((r) => (
+                                  <span
+                                    key={r}
+                                    className="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-[10px] font-medium"
+                                  >
+                                    {r}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           )}
                         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Badge } from '../UI';
+import { Badge } from '../UI';
 import { ParentRequest } from '@/core/types';
 import { X, ChevronDown, Copy, ExternalLink, PhoneCall } from 'lucide-react';
 import {
@@ -10,6 +10,7 @@ import {
   adminSubsectionPanel,
 } from './adminPrimitives';
 import { AdminPreviewDoc } from './adminModerationUtils';
+import { RiskFlagRow, getParentRiskFlags } from './adminTrustSignals';
 import {
   useAdminParentModeration,
   RejectReasonCode,
@@ -174,8 +175,13 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
 }) => {
   const [parentStatusFilter, setParentStatusFilter] = useState<ParentStatusFilter>('all');
   const [onlyNeedsAction, setOnlyNeedsAction] = useState(true);
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const [selectedParent, setSelectedParent] = useState<ParentRequest | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [draggingParentId, setDraggingParentId] = useState<string | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<NonNullable<ParentRequest['status']> | null>(
+    null,
+  );
   const [previewDoc, setPreviewDoc] = useState<AdminPreviewDoc | null>(null);
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesState, setNotesState] = useState('');
@@ -287,6 +293,139 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     }
   };
 
+  const matchesQuery = (p: ParentRequest) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return [p.id, p.requesterEmail, p.city, p.district, p.childAge, p.comment]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(q);
+  };
+
+  const KANBAN_COLUMNS: {
+    status: NonNullable<ParentRequest['status']>;
+    label: string;
+    dot: string;
+    text: string;
+    accent: string;
+  }[] = [
+    {
+      status: 'new',
+      label: 'Новые',
+      dot: 'bg-stone-400',
+      text: 'text-stone-600',
+      accent: 'bg-stone-300',
+    },
+    {
+      status: 'in_review',
+      label: 'На проверке',
+      dot: 'bg-amber-500',
+      text: 'text-amber-700',
+      accent: 'bg-amber-400',
+    },
+    {
+      status: 'approved',
+      label: 'Одобрены',
+      dot: 'bg-emerald-500',
+      text: 'text-emerald-700',
+      accent: 'bg-emerald-400',
+    },
+    {
+      status: 'rejected',
+      label: 'Отклонены',
+      dot: 'bg-rose-500',
+      text: 'text-rose-700',
+      accent: 'bg-rose-400',
+    },
+  ];
+
+  const handleParentDrop =
+    (newStatus: NonNullable<ParentRequest['status']>) => async (e: React.DragEvent) => {
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain');
+      setDragOverColumn(null);
+      setDraggingParentId(null);
+      const p = parents.find((x) => x.id === id);
+      if (!p) return;
+      const current = p.status || 'new';
+      if (current === newStatus) return;
+      if (newStatus === 'rejected') {
+        setSelectedParent(p);
+        setRejectingId(p.id);
+        return;
+      }
+      await updateParentStatus(p, newStatus);
+    };
+
+  const renderParentCard = (
+    p: ParentRequest,
+    opts?: { compact?: boolean; showStatus?: boolean },
+  ) => {
+    const compact = opts?.compact;
+    const showStatus = opts?.showStatus ?? true;
+    return (
+      <div className="rounded-[1.25rem] border border-[color:var(--cloud-border)] bg-white/80 p-3">
+        <div className="mb-1 flex justify-between text-xs text-stone-400">
+          <span>{formatAdminDate(p.createdAt)}</span>
+          <div className="flex items-center gap-2">
+            {showStatus && (
+              <Badge
+                variant={
+                  p.status === 'approved' ? 'trust' : p.status === 'rejected' ? 'status' : 'info'
+                }
+              >
+                {parentStatusLabel(p.status)}
+              </Badge>
+            )}
+            <span className="font-mono">#{getParentShortId(p)}</span>
+          </div>
+        </div>
+        <div className="text-sm font-semibold text-stone-800">{getLocationLine(p)}</div>
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-stone-500">
+          <span>{p.childAge || 'Возраст не указан'}</span>
+          {!compact && p.requesterEmail && <span className="font-mono">{p.requesterEmail}</span>}
+        </div>
+        <div className="mt-1 text-sm text-stone-600">График: {p.schedule}</div>
+        <div className="text-sm text-stone-600">Бюджет: {p.budget}</div>
+        <div className="mt-2 rounded-[1rem] bg-stone-50/80 px-3 py-2 text-xs text-stone-600">
+          <span className="font-semibold text-stone-800">Следующее действие:</span>{' '}
+          {getNextAction(p)}
+        </div>
+        {(() => {
+          const flags = getParentRiskFlags(p);
+          return flags.length > 0 ? (
+            <div className="mt-2">
+              <RiskFlagRow flags={flags} />
+            </div>
+          ) : null;
+        })()}
+        {!compact && !!p.requirements?.length && (
+          <div className="mt-1 text-xs text-stone-600">Требования: {p.requirements.join(', ')}</div>
+        )}
+        {!compact && p.comment && (
+          <div className="mt-2 text-xs text-stone-500 italic">"{p.comment}"</div>
+        )}
+        {!compact && p.analysisNotes && (
+          <div className="mt-2 rounded-[1rem] border border-amber-100/80 bg-amber-50/50 px-3 py-2 text-xs text-amber-800">
+            <span className="mr-1 font-semibold">Заметка:</span>
+            {p.analysisNotes}
+          </div>
+        )}
+        <div className="mt-3 flex flex-wrap gap-2">
+          <AdminPillButton onClick={() => openParent(p)} tone="primary">
+            Открыть карточку
+          </AdminPillButton>
+          {!compact && (
+            <AdminPillButton onClick={() => handleCopyParentBrief(p)} tone="neutral">
+              <Copy size={13} /> Сводка
+            </AdminPillButton>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const handleRejectConfirm = async (
     parent: ParentRequest,
     code: RejectReasonCode,
@@ -365,112 +504,149 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
   return (
     <>
       <section>
-        <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-          {(
-            [
-              ['needs_action', 'В работе', crmStats.needsAction],
-              ['all', 'Все', crmStats.total],
-              ['new', 'Новые', crmStats.new],
-              ['in_review', 'На проверке', crmStats.inReview],
-              ['approved', 'Одобрены', crmStats.approved],
-              ['rejected', 'Отклонены', crmStats.rejected],
-            ] as const
-          ).map(([key, label, value]) => {
-            const active = parentFilterKey === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => applyParentFilter(key)}
-                aria-pressed={active}
-                className={`rounded-[1.25rem] p-3 text-left transition-all ${
-                  active
-                    ? 'bg-[color:var(--color-primary)] shadow-sm'
-                    : 'section-shell bg-white/70 hover:bg-white'
-                }`}
-              >
-                <div
-                  className={`text-2xl font-semibold ${active ? 'text-white' : 'text-stone-900'}`}
+        {viewMode === 'list' && (
+          <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {(
+              [
+                ['needs_action', 'В работе', crmStats.needsAction],
+                ['all', 'Все', crmStats.total],
+                ['new', 'Новые', crmStats.new],
+                ['in_review', 'На проверке', crmStats.inReview],
+                ['approved', 'Одобрены', crmStats.approved],
+                ['rejected', 'Отклонены', crmStats.rejected],
+              ] as const
+            ).map(([key, label, value]) => {
+              const active = parentFilterKey === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => applyParentFilter(key)}
+                  aria-pressed={active}
+                  className={`rounded-[1.25rem] p-3 text-left transition-all ${
+                    active
+                      ? 'bg-[color:var(--color-primary)] shadow-sm'
+                      : 'section-shell bg-white/70 hover:bg-white'
+                  }`}
                 >
-                  {value}
-                </div>
-                <div
-                  className={`mt-0.5 text-[11px] font-medium ${active ? 'text-white/85' : 'text-stone-500'}`}
-                >
-                  {label}
-                </div>
-              </button>
-            );
-          })}
+                  <div
+                    className={`text-2xl font-semibold ${active ? 'text-white' : 'text-stone-900'}`}
+                  >
+                    {value}
+                  </div>
+                  <div
+                    className={`mt-0.5 text-[11px] font-medium ${active ? 'text-white/85' : 'text-stone-500'}`}
+                  >
+                    {label}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-stone-500">
+              Заявки родителей
+            </h3>
+            <span className="text-sm text-stone-400">
+              · {viewMode === 'list' ? filteredParents.length : parents.filter(matchesQuery).length}
+            </span>
+          </div>
+          <div className="flex gap-1 rounded-full border border-stone-200 bg-white/70 p-0.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`rounded-full px-3 py-1 ${viewMode === 'list' ? 'bg-[color:var(--color-primary)] font-semibold text-white' : 'font-medium text-stone-500'}`}
+            >
+              Список
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('kanban')}
+              className={`rounded-full px-3 py-1 ${viewMode === 'kanban' ? 'bg-[color:var(--color-primary)] font-semibold text-white' : 'font-medium text-stone-500'}`}
+            >
+              Канбан
+            </button>
+          </div>
         </div>
 
-        <div className="mb-3 flex items-baseline gap-2">
-          <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-stone-500">
-            Заявки родителей
-          </h3>
-          <span className="text-sm text-stone-400">· {filteredParents.length}</span>
-        </div>
-
-        {filteredParents.length === 0 ? (
-          <p className="text-stone-400 text-sm">Пусто</p>
+        {viewMode === 'list' ? (
+          filteredParents.length === 0 ? (
+            <div className="rounded-[1.25rem] border border-dashed border-stone-200 px-4 py-8 text-center text-sm text-stone-400">
+              Здесь пока пусто. Новые заявки от семей появятся, как только они отправят форму.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredParents.map((p) => (
+                <div key={p.id}>{renderParentCard(p)}</div>
+              ))}
+            </div>
+          )
         ) : (
-          <div className="space-y-3">
-            {filteredParents.map((p) => (
-              <Card key={p.id} className="p-4!">
-                <div className="flex justify-between text-xs text-stone-400 mb-1">
-                  <span>{formatAdminDate(p.createdAt)}</span>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant={
-                        p.status === 'approved'
-                          ? 'trust'
-                          : p.status === 'rejected'
-                            ? 'status'
-                            : 'info'
-                      }
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {KANBAN_COLUMNS.map(({ status, label, dot, text, accent }) => {
+              const items = parents.filter(
+                (p) => (p.status || 'new') === status && matchesQuery(p),
+              );
+              const isDropTarget = dragOverColumn === status;
+              return (
+                <div
+                  key={status}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    if (dragOverColumn !== status) setDragOverColumn(status);
+                  }}
+                  onDragLeave={(e) => {
+                    if (e.currentTarget === e.target) setDragOverColumn(null);
+                  }}
+                  onDrop={handleParentDrop(status)}
+                  className={`w-72 shrink-0 overflow-hidden rounded-[1.25rem] p-2 transition-colors ${
+                    isDropTarget
+                      ? 'border-2 border-dashed border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/5'
+                      : 'border-2 border-transparent'
+                  }`}
+                >
+                  <div className={`-mx-2 -mt-2 mb-2 h-1 ${accent}`} />
+                  <div className="mb-2 flex items-center justify-between px-1">
+                    <span
+                      className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.08em] ${text}`}
                     >
-                      {parentStatusLabel(p.status)}
-                    </Badge>
-                    <span className="font-mono">#{getParentShortId(p)}</span>
+                      <span className={`size-1.5 rounded-full ${dot}`} />
+                      {label}
+                    </span>
+                    <span className={`text-xs font-semibold ${text}`}>{items.length}</span>
+                  </div>
+                  <div className="space-y-2">
+                    {items.length === 0 ? (
+                      <p className="px-1 text-xs text-stone-300">—</p>
+                    ) : (
+                      items.map((p) => (
+                        <div
+                          key={p.id}
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('text/plain', p.id);
+                            e.dataTransfer.effectAllowed = 'move';
+                            setDraggingParentId(p.id);
+                          }}
+                          onDragEnd={() => {
+                            setDraggingParentId(null);
+                            setDragOverColumn(null);
+                          }}
+                          className={`cursor-grab active:cursor-grabbing transition-opacity ${
+                            draggingParentId === p.id ? 'opacity-40' : 'opacity-100'
+                          }`}
+                        >
+                          {renderParentCard(p, { compact: true, showStatus: false })}
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
-
-                <div className="text-sm font-semibold text-stone-800">{getLocationLine(p)}</div>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-stone-500">
-                  <span>{p.childAge || 'Возраст не указан'}</span>
-                  {p.requesterEmail && <span className="font-mono">{p.requesterEmail}</span>}
-                </div>
-                <div className="text-sm text-stone-600 mt-1">График: {p.schedule}</div>
-                <div className="text-sm text-stone-600">Бюджет: {p.budget}</div>
-                <div className="mt-2 rounded-[1rem] bg-stone-50/80 px-3 py-2 text-xs text-stone-600">
-                  <span className="font-semibold text-stone-800">Следующее действие:</span>{' '}
-                  {getNextAction(p)}
-                </div>
-                {!!p.requirements?.length && (
-                  <div className="text-xs text-stone-600 mt-1">
-                    Требования: {p.requirements.join(', ')}
-                  </div>
-                )}
-                {p.comment && (
-                  <div className="text-xs text-stone-500 mt-2 italic">"{p.comment}"</div>
-                )}
-                {p.analysisNotes && (
-                  <div className="mt-2 rounded-[1rem] border border-amber-100/80 bg-amber-50/50 px-3 py-2 text-xs text-amber-800">
-                    <span className="font-semibold mr-1">Заметка:</span>
-                    {p.analysisNotes}
-                  </div>
-                )}
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <AdminPillButton onClick={() => openParent(p)} tone="primary">
-                    Открыть карточку
-                  </AdminPillButton>
-                  <AdminPillButton onClick={() => handleCopyParentBrief(p)} tone="neutral">
-                    <Copy size={13} /> Сводка
-                  </AdminPillButton>
-                </div>
-              </Card>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

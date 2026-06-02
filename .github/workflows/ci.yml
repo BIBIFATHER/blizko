@@ -36,6 +36,29 @@ jobs:
       - name: Build
         run: npm run build
 
+  security-rls:
+    name: Supabase RLS Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install PostgreSQL client
+        if: env.DATABASE_URL != ''
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Run chat messages RLS smoke
+        if: env.DATABASE_URL != ''
+        run: npm run check:chat-rls
+
+      - name: Skip without database secret
+        if: env.DATABASE_URL == ''
+        run: echo "SUPABASE_DATABASE_URL secret is not configured; skipping live RLS smoke."
+
   smoke-e2e:
     name: Smoke E2E
     runs-on: ubuntu-latest

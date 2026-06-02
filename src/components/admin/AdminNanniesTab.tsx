@@ -416,20 +416,22 @@ export const AdminNanniesTab: React.FC<AdminNanniesTabProps> = ({
                       )}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="truncate text-base font-semibold text-stone-900">
-                          {n.name}
+                      <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-1.5">
+                        <span className="flex min-w-0 max-w-full items-center gap-1.5">
+                          <span className="truncate text-base font-semibold text-stone-900">
+                            {n.name}
+                          </span>
+                          {n.isVerified && (
+                            <ShieldCheck size={15} className="shrink-0 text-emerald-600" />
+                          )}
                         </span>
-                        {n.isVerified && (
-                          <ShieldCheck size={15} className="shrink-0 text-emerald-600" />
-                        )}
                         <span
-                          className={`ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${readiness.qualityApproved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold sm:ml-1 ${readiness.qualityApproved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
                         >
                           {readiness.qualityApproved ? 'Готова к показу' : 'Нужно ревью'}
                         </span>
                       </div>
-                      <div className="mt-0.5 truncate text-sm text-stone-600">
+                      <div className="mt-0.5 text-sm text-stone-600 sm:truncate">
                         {[n.city, n.district].filter(Boolean).join(', ')} · опыт {n.experience} лет
                         {n.expectedRate ? ` · ${n.expectedRate}` : ''}
                       </div>

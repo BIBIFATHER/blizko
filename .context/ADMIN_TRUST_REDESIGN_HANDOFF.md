@@ -219,6 +219,23 @@ Why:
 - The admin trust layer is now a product contract, not just visual copy.
 - These tests protect the evidence-based badge language from drifting back into vague labels.
 
+## Playwright Visual QA Follow-Up
+
+Added project-local `@playwright/test` as a dev dependency and used Chromium to review `/admin-preview` on desktop and mobile.
+
+Found and fixed:
+
+- admin routes no longer keep the public Blizko splash screen for the full marketing delay;
+- support chat launcher is hidden on `/admin*` surfaces, so it does not cover admin cards;
+- mobile nanny cards no longer squeeze the nanny name against the readiness badge.
+
+Observed:
+
+- `/admin-preview` remains DEV-only and is absent from the production runtime bundle;
+- desktop/mobile admin preview screens render without horizontal overflow;
+- curator flow works after selecting a request and shows qualitative matching reasons without percentages;
+- console output is limited to existing React Router future warnings during dev preview.
+
 ## What Claude Code Should Review Next
 
 ### Priority 1

@@ -214,7 +214,8 @@ export default function App() {
     if (!splash) return;
 
     const splashStart: number = (window as { __splashStart?: number }).__splashStart ?? Date.now();
-    const minDuration = 2200;
+    const isAdminSurface = location.pathname.startsWith('/admin');
+    const minDuration = isAdminSurface ? 0 : 2200;
     const elapsed = Date.now() - splashStart;
     const delay = Math.max(0, minDuration - elapsed);
 
@@ -224,7 +225,7 @@ export default function App() {
     }, delay);
 
     return () => window.clearTimeout(exitTimer);
-  }, []);
+  }, [location.pathname]);
 
   const handleEditProfile = (profile?: NannyProfile) => {
     setProfileOpen(false);
@@ -244,7 +245,10 @@ export default function App() {
     !!devMock?.isAdmin;
   const currentPath = location.pathname;
   const hideSupportLauncher =
-    currentPath === '/' || currentPath === '/find-nanny' || currentPath === '/become-nanny';
+    currentPath === '/' ||
+    currentPath === '/find-nanny' ||
+    currentPath === '/become-nanny' ||
+    currentPath.startsWith('/admin');
   const pageSeo = (() => {
     if (currentPath === '/find-nanny') {
       return {

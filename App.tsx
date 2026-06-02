@@ -12,6 +12,7 @@ import { useShareActions } from '@/hooks/useShareActions';
 import { AppFooter } from '@/components/app/AppFooter';
 import { RequireRole } from '@/components/app/RequireRole';
 import { trackAuthModalOpen } from '@/services/analytics';
+import { AdminPreviewHarness } from '@/pages/admin/__preview/AdminPreviewHarness'; // DEV PREVIEW — remove before commit
 
 const ParentForm = lazy(() =>
   import('@/components/ParentForm').then((module) => ({ default: module.ParentForm })),
@@ -411,6 +412,9 @@ export default function App() {
               }
             />
             <Route path="/login" element={<LoginPage onOpenAuth={() => setAuthOpen(true)} />} />
+            {import.meta.env.DEV && (
+              <Route path="/admin-preview" element={<AdminPreviewHarness />} />
+            )}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

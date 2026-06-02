@@ -236,6 +236,27 @@ Observed:
 - curator flow works after selecting a request and shows qualitative matching reasons without percentages;
 - console output is limited to existing React Router future warnings during dev preview.
 
+## Playwright E2E Smoke Coverage
+
+Added `playwright.config.ts` and `e2e/admin-preview.spec.ts`.
+
+Covered:
+
+- desktop and mobile `/admin-preview` tab navigation for parents, nannies, bookings, curator, support, and journal;
+- no admin splash left after render;
+- no horizontal overflow on admin preview surfaces;
+- no fixed support/chat overlay covering admin cards;
+- curator selection reveals `ПОЧЕМУ ПОДХОДИТ`, qualitative match level, and trust reason;
+- mobile nanny card keeps the nanny name and readiness badge readable.
+
+Run:
+
+- `npm run test:e2e`
+
+Result:
+
+- Chromium desktop/mobile: 4 passed, 2 project-scoped skips.
+
 ## What Claude Code Should Review Next
 
 ### Priority 1

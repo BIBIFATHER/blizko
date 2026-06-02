@@ -55,8 +55,9 @@ test('curator matching flow explains why a nanny fits', async ({ page }, testInf
   await page.locator('button:has-text("Москва")').first().click();
 
   await expect(page.getByText('ПОЧЕМУ ПОДХОДИТ').first()).toBeVisible();
-  await expect(page.getByText('Сильное совпадение').first()).toBeVisible();
-  await expect(page.getByText('Личность подтверждена').first()).toBeVisible();
+  await expect(page.getByText('Частичное совпадение').first()).toBeVisible();
+  await expect(page.getByText('Есть сигналы доверия').first()).toBeVisible();
+  await expect(page.getByText('Понятен стиль общения').first()).toBeVisible();
   await expectOperationalAdminSurface(page);
 });
 

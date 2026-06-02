@@ -728,7 +728,9 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         <AdminPillButton
-                          onClick={() => void requestParentStatusChange(selectedParent, 'in_review')}
+                          onClick={() =>
+                            void requestParentStatusChange(selectedParent, 'in_review')
+                          }
                           tone="neutral"
                         >
                           На проверку

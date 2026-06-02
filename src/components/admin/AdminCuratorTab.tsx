@@ -257,7 +257,9 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
                           )}
                         </div>
                         <div className="shrink-0 flex flex-col items-end gap-2">
-                          <div className={`text-xs font-bold px-2 py-0.5 rounded-full ${level.className}`}>
+                          <div
+                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${level.className}`}
+                          >
                             {level.label}
                           </div>
                           <AdminPillButton

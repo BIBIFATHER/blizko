@@ -28,12 +28,15 @@ export function getNannyTrustBadges(n: NannyProfile): TrustBadge[] {
       status: docsStatus,
     },
     {
-      label:
-        n.experience && Number(n.experience) > 0 ? 'Опыт указан' : 'Опыт нужно уточнить',
+      label: n.experience && Number(n.experience) > 0 ? 'Опыт указан' : 'Опыт нужно уточнить',
       status: n.experience && Number(n.experience) > 0 ? 'ok' : 'missing',
     },
     {
-      label: n.video ? 'Видео есть' : n.videoIntro ? 'Видео ожидает просмотра' : 'Видео не загружено',
+      label: n.video
+        ? 'Видео есть'
+        : n.videoIntro
+          ? 'Видео ожидает просмотра'
+          : 'Видео не загружено',
       status: n.video ? 'ok' : n.videoIntro ? 'pending' : 'missing',
     },
   ];

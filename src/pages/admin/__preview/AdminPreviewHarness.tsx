@@ -23,14 +23,7 @@ import { mockNannies, mockParents, mockBookings, mockActionFeed } from './fixtur
 
 const noop = () => {};
 
-type View =
-  | 'overview'
-  | 'parents'
-  | 'nannies'
-  | 'bookings'
-  | 'curator'
-  | 'support'
-  | 'journal';
+type View = 'overview' | 'parents' | 'nannies' | 'bookings' | 'curator' | 'support' | 'journal';
 
 const NAV_ITEMS: {
   view: View;

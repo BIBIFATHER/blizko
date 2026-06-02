@@ -29,9 +29,30 @@ export const mockNannies = [
     createdAt: now - 2 * day,
     schedule: 'Будни 9:00–18:00',
     documents: [
-      { type: 'passport', status: 'verified', aiConfidence: 96, aiNotes: 'Паспорт распознан, данные совпадают.', fileName: 'passport.pdf', fileDataUrl: 'data:application/pdf;base64,AAAA' },
-      { type: 'medical_book', status: 'verified', aiConfidence: 91, aiNotes: 'Медкнижка действительна.', fileName: 'med.pdf', fileDataUrl: 'data:application/pdf;base64,AAAA' },
-      { type: 'resume', status: 'verified', aiConfidence: 88, aiNotes: 'Резюме распознано.', fileName: 'cv.pdf', fileDataUrl: 'data:application/pdf;base64,AAAA' },
+      {
+        type: 'passport',
+        status: 'verified',
+        aiConfidence: 96,
+        aiNotes: 'Паспорт распознан, данные совпадают.',
+        fileName: 'passport.pdf',
+        fileDataUrl: 'data:application/pdf;base64,AAAA',
+      },
+      {
+        type: 'medical_book',
+        status: 'verified',
+        aiConfidence: 91,
+        aiNotes: 'Медкнижка действительна.',
+        fileName: 'med.pdf',
+        fileDataUrl: 'data:application/pdf;base64,AAAA',
+      },
+      {
+        type: 'resume',
+        status: 'verified',
+        aiConfidence: 88,
+        aiNotes: 'Резюме распознано.',
+        fileName: 'cv.pdf',
+        fileDataUrl: 'data:application/pdf;base64,AAAA',
+      },
     ],
     softSkills: {
       dominantStyle: 'Заботливый-структурный',
@@ -66,7 +87,14 @@ export const mockNannies = [
     createdAt: now - 6 * 3600 * 1000,
     schedule: 'Гибкий график',
     documents: [
-      { type: 'passport', status: 'pending', aiConfidence: 64, aiNotes: 'Низкое качество скана, нужна ручная проверка.', fileName: 'pass.jpg', fileDataUrl: 'data:image/png;base64,iVBORw0KGgo=' },
+      {
+        type: 'passport',
+        status: 'pending',
+        aiConfidence: 64,
+        aiNotes: 'Низкое качество скана, нужна ручная проверка.',
+        fileName: 'pass.jpg',
+        fileDataUrl: 'data:image/png;base64,iVBORw0KGgo=',
+      },
     ],
     softSkills: {
       dominantStyle: 'Игровой',
@@ -74,7 +102,9 @@ export const mockNannies = [
       moderationSummary: 'Энергичная; стоит уточнить отношение к режиму.',
       method: 'assessment_v2',
       coverage: 0.7,
-      signals: [{ signal: 'low_structure_preference', direction: 'watch', strength: 0.6, evidence: [] }],
+      signals: [
+        { signal: 'low_structure_preference', direction: 'watch', strength: 0.6, evidence: [] },
+      ],
     },
     reviews: [],
   },
@@ -112,9 +142,29 @@ export const mockNannies = [
     createdAt: now - 9 * day,
     schedule: 'Будни, возможны выходные',
     documents: [
-      { type: 'passport', status: 'verified', aiConfidence: 94, aiNotes: 'OK.', fileName: 'p.pdf', fileDataUrl: 'data:application/pdf;base64,AAAA' },
-      { type: 'medical_book', status: 'rejected', aiConfidence: 40, aiNotes: 'Истёк срок действия.', fileName: 'm.pdf', fileDataUrl: 'data:application/pdf;base64,AAAA' },
-      { type: 'education_document', status: 'pending', aiConfidence: 72, aiNotes: 'Диплom медсестры, проверяем.', fileName: 'edu.pdf' },
+      {
+        type: 'passport',
+        status: 'verified',
+        aiConfidence: 94,
+        aiNotes: 'OK.',
+        fileName: 'p.pdf',
+        fileDataUrl: 'data:application/pdf;base64,AAAA',
+      },
+      {
+        type: 'medical_book',
+        status: 'rejected',
+        aiConfidence: 40,
+        aiNotes: 'Истёк срок действия.',
+        fileName: 'm.pdf',
+        fileDataUrl: 'data:application/pdf;base64,AAAA',
+      },
+      {
+        type: 'education_document',
+        status: 'pending',
+        aiConfidence: 72,
+        aiNotes: 'Диплom медсестры, проверяем.',
+        fileName: 'edu.pdf',
+      },
     ],
     softSkills: {
       dominantStyle: 'Медицинский-внимательный',
@@ -228,14 +278,50 @@ export const mockParents = [
 ] as unknown as ParentRequest[];
 
 export const mockBookings = [
-  { id: 'bk-1', parent_id: 'parent-0003', nanny_id: 'nanny-maria-01', status: 'confirmed', createdAt: now - 2 * day, date: now + 1 * day, amount: '6 000 ₽' },
-  { id: 'bk-2', parent_id: 'parent-0002', nanny_id: 'nanny-anna-04', status: 'pending', createdAt: now - 1 * day, date: now + 3 * day, amount: '9 000 ₽' },
-  { id: 'bk-3', parent_id: 'parent-0001', nanny_id: 'nanny-maria-01', status: 'completed', createdAt: now - 12 * day, date: now - 5 * day, amount: '5 500 ₽' },
+  {
+    id: 'bk-1',
+    parent_id: 'parent-0003',
+    nanny_id: 'nanny-maria-01',
+    status: 'confirmed',
+    createdAt: now - 2 * day,
+    date: now + 1 * day,
+    amount: '6 000 ₽',
+  },
+  {
+    id: 'bk-2',
+    parent_id: 'parent-0002',
+    nanny_id: 'nanny-anna-04',
+    status: 'pending',
+    createdAt: now - 1 * day,
+    date: now + 3 * day,
+    amount: '9 000 ₽',
+  },
+  {
+    id: 'bk-3',
+    parent_id: 'parent-0001',
+    nanny_id: 'nanny-maria-01',
+    status: 'completed',
+    createdAt: now - 12 * day,
+    date: now - 5 * day,
+    amount: '5 500 ₽',
+  },
 ] as unknown as Booking[];
 
 export const mockActionFeed = [
-  { action: 'workflow_success', at: now - 600000, kind: 'success', message: 'Профиль няни подтверждён', meta: { message: 'Профиль няни подтверждён' } },
+  {
+    action: 'workflow_success',
+    at: now - 600000,
+    kind: 'success',
+    message: 'Профиль няни подтверждён',
+    meta: { message: 'Профиль няни подтверждён' },
+  },
   { action: 'clear_test', at: now - 3600000, message: 'Удалены тестовые записи', meta: {} },
   { action: 'booking_status_change', at: now - 7200000, meta: { id: 'bk-2', status: 'confirmed' } },
-  { action: 'workflow_error', at: now - 9000000, kind: 'error', message: 'Не удалось отправить уведомление', meta: { message: 'Не удалось отправить уведомление' } },
+  {
+    action: 'workflow_error',
+    at: now - 9000000,
+    kind: 'error',
+    message: 'Не удалось отправить уведомление',
+    meta: { message: 'Не удалось отправить уведомление' },
+  },
 ] as unknown as AdminActionEntry[];

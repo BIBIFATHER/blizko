@@ -348,9 +348,7 @@ describe('api/data handler', () => {
     });
 
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
-    expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      'https://example.supabase.co/rest/v1/admin_actions',
-    );
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('https://example.supabase.co/rest/v1/admin_actions');
     expect(init).toEqual(
       expect.objectContaining({
         method: 'POST',

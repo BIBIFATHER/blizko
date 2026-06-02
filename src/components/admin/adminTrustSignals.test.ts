@@ -1,10 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NannyProfile, ParentRequest } from '@/core/types';
-import {
-  getNannyRiskFlags,
-  getNannyTrustBadges,
-  getParentRiskFlags,
-} from './adminTrustSignals';
+import { getNannyRiskFlags, getNannyTrustBadges, getParentRiskFlags } from './adminTrustSignals';
 
 const baseNanny = {
   id: 'nanny-1',

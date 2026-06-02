@@ -117,24 +117,21 @@ export const AdminSupportTab: React.FC<AdminSupportTabProps> = ({ focusTicketId 
   const [loading, setLoading] = React.useState(true);
   const [sending, setSending] = React.useState(false);
 
-  const loadInbox = React.useCallback(
-    async (ticketId?: string) => {
-      setLoading(true);
-      try {
-        const result = await fetchAdminSupportInbox(ticketId);
-        if (result) {
-          setInbox(result);
-          if (result.selected?.id) setSelectedTicketId(result.selected.id);
-          if (!ticketId && result.items[0]?.id) {
-            setSelectedTicketId(result.items[0].id);
-          }
+  const loadInbox = React.useCallback(async (ticketId?: string) => {
+    setLoading(true);
+    try {
+      const result = await fetchAdminSupportInbox(ticketId);
+      if (result) {
+        setInbox(result);
+        if (result.selected?.id) setSelectedTicketId(result.selected.id);
+        if (!ticketId && result.items[0]?.id) {
+          setSelectedTicketId(result.items[0].id);
         }
-      } finally {
-        setLoading(false);
       }
-    },
-    [],
-  );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   React.useEffect(() => {
     void loadInbox(focusTicketId || undefined);

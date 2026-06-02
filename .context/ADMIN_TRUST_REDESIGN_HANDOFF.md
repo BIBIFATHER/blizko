@@ -361,3 +361,46 @@ Verification:
 Remaining limit:
 
 - Real authenticated server `PATCH/POST` was not verified because local env has no Supabase session/service keys. The new e2e covers real route UI, fallback data source, modals, and confirmation surfaces.
+
+## 2026-06-02 Admin Server Write Contract Follow-Up
+
+Purpose:
+
+- Close the biggest remaining gap after real `/admin` e2e: server-side admin writes.
+- Local env still has no `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, or browser Supabase session, so this is not a live staging write test.
+
+Changes:
+
+- Added `api/data.test.ts` coverage for `PATCH /api/data?resource=parents`.
+- The test verifies:
+  - existing parent row is loaded through Supabase REST using service-role auth;
+  - admin status update writes merged payload through `PATCH`;
+  - `updatedAt` is refreshed;
+  - `changeLog` receives `{ type: "status_changed", by: "admin" }`;
+  - `rejectionInfo` is cleared when status moves away from `rejected`;
+  - original `user_id` is preserved in the saved row.
+- Added `api/data.test.ts` coverage for `POST /api/data?resource=admin-actions`.
+- The test verifies:
+  - action is saved through service-role auth;
+  - `admin_id` comes from `verifyBearerAdmin`;
+  - metadata is preserved;
+  - response is normalized into admin journal shape.
+
+Verification:
+
+- `npm run env:doctor` — Supabase/server env missing locally.
+- `npx vitest run api/data.test.ts` — 7 passed.
+- `npm run typecheck` — passed.
+- `npm run lint` — passed.
+- `npm test -- --run` — 24 files / 81 tests passed.
+- `npm run test:e2e` — 7 passed, 3 scoped skips.
+- `npm run build` — passed.
+
+Remaining live-test requirement:
+
+- To verify real authenticated writes end-to-end, provide a staging/local env with:
+  - `VITE_SUPABASE_URL`;
+  - `VITE_SUPABASE_ANON_KEY`;
+  - `SUPABASE_URL`;
+  - `SUPABASE_SERVICE_ROLE_KEY`;
+  - an admin user/session whose email is included in `VITE_ADMIN_EMAILS`.

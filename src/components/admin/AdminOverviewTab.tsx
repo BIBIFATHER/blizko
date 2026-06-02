@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { Badge, Card } from '../UI';
 import { NannyProfile, ParentRequest } from '@/core/types';
 import {
@@ -34,6 +35,7 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
   unseenParentsCount,
 }) => {
   const navigate = useNavigate();
+  const [attentionDismissed, setAttentionDismissed] = React.useState(false);
   const metrics = React.useMemo(
     () =>
       buildDashboardMetrics({
@@ -57,68 +59,85 @@ export const AdminOverviewTab: React.FC<AdminOverviewTabProps> = ({
   );
   const aReady = readiness.filter((item) => item.readyForReview).length;
   const qualityApproved = readiness.filter((item) => item.qualityApproved).length;
-  const topMetrics: { label: string; value: number; icon: React.ReactNode; note: string; to: string }[] =
-    [
-      {
-        label: 'Заявки родителей',
-        value: metrics.parentOps.total,
-        icon: <ListChecks size={18} />,
-        note: `Требуют действия: ${metrics.parentOps.needsAction}`,
-        to: '/admin/parents',
-      },
-      {
-        label: 'Анкеты нянь',
-        value: metrics.supply.total,
-        icon: <Users size={18} />,
-        note: 'Всё активное предложение',
-        to: '/admin/nannies',
-      },
-      {
-        label: 'Готовы к проверке',
-        value: aReady,
-        icon: <CheckCircle size={18} />,
-        note: 'Можно брать в модерацию',
-        to: '/admin/nannies',
-      },
-      {
-        label: 'Проверенные анкеты',
-        value: qualityApproved,
-        icon: <TrendingUp size={18} />,
-        note: 'Готовы к показу семье',
-        to: '/admin/nannies',
-      },
-      {
-        label: 'Документы загружены',
-        value: withDocs,
-        icon: <FileCheck2 size={18} />,
-        note: 'Есть база для проверки',
-        to: '/admin/nannies',
-      },
-      {
-        label: 'Верифицировано',
-        value: verified,
-        icon: <ShieldCheck size={18} />,
-        note: `На проверке документов: ${pendingDocs}`,
-        to: '/admin/nannies',
-      },
-    ];
+  const topMetrics: {
+    label: string;
+    value: number;
+    icon: React.ReactNode;
+    note: string;
+    to: string;
+  }[] = [
+    {
+      label: 'Заявки родителей',
+      value: metrics.parentOps.total,
+      icon: <ListChecks size={18} />,
+      note: `Требуют действия: ${metrics.parentOps.needsAction}`,
+      to: '/admin/parents',
+    },
+    {
+      label: 'Анкеты нянь',
+      value: metrics.supply.total,
+      icon: <Users size={18} />,
+      note: 'Всё активное предложение',
+      to: '/admin/nannies',
+    },
+    {
+      label: 'Готовы к проверке',
+      value: aReady,
+      icon: <CheckCircle size={18} />,
+      note: 'Можно брать в модерацию',
+      to: '/admin/nannies',
+    },
+    {
+      label: 'Проверенные анкеты',
+      value: qualityApproved,
+      icon: <TrendingUp size={18} />,
+      note: 'Готовы к показу семье',
+      to: '/admin/nannies',
+    },
+    {
+      label: 'Документы загружены',
+      value: withDocs,
+      icon: <FileCheck2 size={18} />,
+      note: 'Есть база для проверки',
+      to: '/admin/nannies',
+    },
+    {
+      label: 'Верифицировано',
+      value: verified,
+      icon: <ShieldCheck size={18} />,
+      note: `На проверке документов: ${pendingDocs}`,
+      to: '/admin/nannies',
+    },
+  ];
 
   return (
     <>
-      {unseenParentsCount > 0 && (
-        <button
-          type="button"
-          onClick={() => navigate('/admin/parents')}
-          className="section-shell flex w-full items-center justify-between gap-3 rounded-[1.5rem] px-4 py-3 text-left text-sm text-stone-700 transition-all hover:shadow-sm"
-        >
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">
-              Требует внимания
+      {unseenParentsCount > 0 && !attentionDismissed && (
+        <div className="section-shell flex items-center gap-2 rounded-[1.5rem] px-4 py-3 text-sm text-stone-700">
+          <button
+            type="button"
+            onClick={() => navigate('/admin/parents')}
+            className="flex flex-1 items-center justify-between gap-3 text-left transition-all"
+          >
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+                Требует внимания
+              </div>
+              <div className="mt-1">
+                Новые или обновлённые заявки родителей: {unseenParentsCount}
+              </div>
             </div>
-            <div className="mt-1">Новые или обновлённые заявки родителей: {unseenParentsCount}</div>
-          </div>
-          <Badge variant="danger">Открыть</Badge>
-        </button>
+            <Badge variant="danger">Открыть</Badge>
+          </button>
+          <button
+            type="button"
+            onClick={() => setAttentionDismissed(true)}
+            aria-label="Скрыть баннер"
+            className="rounded-full p-1.5 text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700"
+          >
+            <X size={16} />
+          </button>
+        </div>
       )}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {topMetrics.map((metric) => (

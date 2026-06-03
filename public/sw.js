@@ -2,9 +2,10 @@
 const CACHE_NAME = 'blizko-v2';
 const OFFLINE_URL = '/offline.html';
 
-// Assets to pre-cache for offline support
+// Pre-cache only truly static offline assets — NOT the HTML document.
+// Caching '/' here causes the SW to serve stale HTML after a new deploy,
+// which keeps the splash screen alive until the user reloads twice.
 const PRE_CACHE = [
-    '/',
     '/offline.html',
     '/icons/icon-192.png',
     '/icons/icon-512.png',

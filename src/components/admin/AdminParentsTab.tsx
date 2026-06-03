@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Badge } from '../UI';
 import { ParentRequest } from '@/core/types';
 import { X, ChevronDown, Copy, ExternalLink, PhoneCall } from 'lucide-react';
+import { buildFamilyCompatibilityProfile } from '@/core/compatibility/model';
 import {
   AdminDocumentPreviewModal,
   AdminPillButton,
@@ -97,6 +98,79 @@ function buildParentBrief(parent: ParentRequest) {
 Важно: ${requirements}
 Комментарий: ${comment}
 Следующее действие: ${getNextAction(parent)}`;
+}
+
+function riskLabel(value: string | undefined, labels: Record<string, string>) {
+  return value ? (labels[value] ?? value) : undefined;
+}
+
+function getFamilyCompatibilitySummary(parent: ParentRequest) {
+  const risk = parent.riskProfile;
+  const profile = buildFamilyCompatibilityProfile(parent);
+  const chips = [
+    riskLabel(risk?.familyStyle, {
+      warm: 'тёплая семья',
+      structured: 'структурная семья',
+      balanced: 'баланс',
+    }),
+    riskLabel(risk?.homeRhythm, {
+      calm: 'спокойный дом',
+      active: 'активный ритм',
+      variable: 'переменный ритм',
+    }),
+    riskLabel(risk?.adaptationStyle, {
+      slow: 'бережная адаптация',
+      balanced: 'мягкий старт',
+      fast: 'быстро включаться',
+    }),
+    riskLabel(risk?.boundaryStyle, {
+      soft: 'мягкие границы',
+      clear: 'понятные границы',
+      strict: 'строго по правилам',
+    }),
+    riskLabel(risk?.communicationPreference, {
+      minimal: 'минимум сообщений',
+      regular: 'регулярная связь',
+      frequent: 'частая связь',
+    }),
+    riskLabel(risk?.parentAnxiety, {
+      low: 'спокойный родитель',
+      medium: 'нужна опора',
+      high: 'нужны подробности',
+    }),
+    riskLabel(risk?.decisionStyle, {
+      trust_curator: 'доверяет куратору',
+      compare_options: 'хочет сравнить',
+      needs_details: 'нужны детали',
+    }),
+  ].filter(Boolean) as string[];
+
+  const curatorQuestions = [
+    risk?.parentAnxiety === 'high'
+      ? 'Согласовать частоту сообщений и формат отчёта после первого выхода.'
+      : undefined,
+    risk?.adaptationStyle === 'slow'
+      ? 'Запланировать короткое знакомство до первого длинного выхода.'
+      : undefined,
+    risk?.decisionStyle === 'compare_options'
+      ? 'Показывать 2–3 варианта с ясными отличиями, а не один профиль.'
+      : undefined,
+    risk?.decisionStyle === 'needs_details'
+      ? 'Дать семье больше фактов: опыт, документы, отзывы, сценарий первого дня.'
+      : undefined,
+  ].filter(Boolean) as string[];
+
+  return {
+    chips,
+    hasSignals:
+      chips.length > 0 ||
+      profile.childStressSignals.length > 0 ||
+      profile.explicitNeeds.length > 0 ||
+      curatorQuestions.length > 0,
+    childStressSignals: profile.childStressSignals,
+    explicitNeeds: profile.explicitNeeds,
+    curatorQuestions,
+  };
 }
 
 interface RejectInlineFormProps {
@@ -205,6 +279,11 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
     setNotifyText('');
     setNotifyBusy(false);
   }, [selectedParent?.id, selectedParent?.status, selectedParent?.analysisNotes]);
+
+  const selectedFamilyCompatibility = React.useMemo(
+    () => (selectedParent ? getFamilyCompatibilitySummary(selectedParent) : null),
+    [selectedParent],
+  );
 
   useEffect(() => {
     const needle = focusParentId?.trim().toLowerCase();
@@ -827,6 +906,60 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
                     ? selectedParent.requirements.join(', ')
                     : 'Не указаны'}
                 </div>
+              </div>
+
+              <div className={adminSubsectionPanel}>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="text-xs text-stone-500">Профиль совместимости семьи</div>
+                  <span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">
+                    Необязательно
+                  </span>
+                </div>
+                {selectedFamilyCompatibility?.hasSignals ? (
+                  <div className="space-y-3">
+                    {selectedFamilyCompatibility.chips.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {selectedFamilyCompatibility.chips.map((chip) => (
+                          <span
+                            key={chip}
+                            className="rounded-full border border-stone-200/80 bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-stone-700"
+                          >
+                            {chip}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {selectedFamilyCompatibility.childStressSignals.length > 0 && (
+                      <div className="text-xs text-stone-600">
+                        <span className="font-semibold text-stone-700">Стресс ребёнка: </span>
+                        {selectedFamilyCompatibility.childStressSignals.join(', ')}
+                      </div>
+                    )}
+                    {selectedFamilyCompatibility.explicitNeeds.length > 0 && (
+                      <div className="text-xs text-stone-600">
+                        <span className="font-semibold text-stone-700">Важные потребности: </span>
+                        {selectedFamilyCompatibility.explicitNeeds.slice(0, 6).join(', ')}
+                      </div>
+                    )}
+                    {selectedFamilyCompatibility.curatorQuestions.length > 0 && (
+                      <div className="rounded-[1rem] border border-amber-100 bg-amber-50/60 p-2.5">
+                        <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-amber-800">
+                          Уточнить до подбора
+                        </div>
+                        <ul className="space-y-1 text-xs text-amber-900">
+                          {selectedFamilyCompatibility.curatorQuestions.map((question) => (
+                            <li key={question}>{question}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-xs text-stone-400 italic">
+                    Семья не проходила необязательный профиль. Куратор может уточнить стиль
+                    общения, ритм дома и формат первого выхода вручную.
+                  </div>
+                )}
               </div>
 
               <div className={adminSubsectionPanel}>

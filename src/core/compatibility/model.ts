@@ -18,6 +18,10 @@ export interface FamilyCompatibilityProfile {
   communicationNeeds: string[];
   childStressSignals: string[];
   stylePreferences: string[];
+  homeRhythmSignals: string[];
+  adaptationNeeds: string[];
+  parentSupportNeeds: string[];
+  decisionSignals: string[];
   explicitNeeds: string[];
   generatedAt: number;
 }
@@ -105,6 +109,10 @@ function pairId(parent: ParentRequest, nanny: NannyProfile) {
   return `${parent.id}:${nanny.id}`;
 }
 
+function labelFrom(value: string | undefined, labels: Record<string, string>) {
+  return value ? (labels[value] ?? value) : undefined;
+}
+
 function reason(
   id: string,
   kind: CompatibilityReason['kind'],
@@ -130,7 +138,16 @@ export function buildFamilyCompatibilityProfile(
     careContext: present([parent.childAge, parent.schedule, parent.budget, parent.comment]),
     communicationNeeds: present([risk?.communicationPreference, risk?.reportingFrequency]),
     childStressSignals: present([risk?.childStress, ...(risk?.triggers || [])]),
-    stylePreferences: present([risk?.familyStyle, risk?.priorityStyle, risk?.nannyStylePreference]),
+    stylePreferences: present([
+      risk?.familyStyle,
+      risk?.priorityStyle,
+      risk?.nannyStylePreference,
+      risk?.boundaryStyle,
+    ]),
+    homeRhythmSignals: present([risk?.homeRhythm]),
+    adaptationNeeds: present([risk?.adaptationStyle]),
+    parentSupportNeeds: present([risk?.parentAnxiety]),
+    decisionSignals: present([risk?.decisionStyle]),
     explicitNeeds: present([...(parent.requirements || []), ...(risk?.needs || [])]),
     generatedAt,
   };
@@ -277,6 +294,116 @@ export function explainCompatibility(
         ),
       );
     }
+  }
+
+  if (parent.riskProfile?.homeRhythm && nanny.riskProfile?.routineStyle) {
+    const calmMatch =
+      parent.riskProfile.homeRhythm === 'calm' &&
+      ['structured', 'balanced'].includes(nanny.riskProfile.routineStyle);
+    const activeMatch =
+      parent.riskProfile.homeRhythm === 'active' &&
+      ['adaptive', 'balanced'].includes(nanny.riskProfile.routineStyle);
+    const variableMatch =
+      parent.riskProfile.homeRhythm === 'variable' &&
+      ['adaptive', 'balanced'].includes(nanny.riskProfile.routineStyle);
+
+    if (calmMatch || activeMatch || variableMatch) {
+      reasons.push(
+        reason(
+          `${pair}:home-rhythm`,
+          'match',
+          'Подходит к ритму семьи',
+          'Стиль работы няни близок к домашнему ритму семьи.',
+          'Ритм семьи совместим с тем, как няня держит режим и адаптируется.',
+          [parent.riskProfile.homeRhythm, nanny.riskProfile.routineStyle],
+          'family_profile',
+        ),
+      );
+    }
+  }
+
+  if (parent.riskProfile?.adaptationStyle && nanny.riskProfile?.tantrumFirstStep) {
+    const slowAndCalm =
+      parent.riskProfile.adaptationStyle === 'slow' &&
+      nanny.riskProfile.tantrumFirstStep === 'calm';
+    const balancedStart =
+      parent.riskProfile.adaptationStyle === 'balanced' &&
+      ['calm', 'distract'].includes(nanny.riskProfile.tantrumFirstStep);
+
+    if (slowAndCalm || balancedStart) {
+      reasons.push(
+        reason(
+          `${pair}:first-shift`,
+          'match',
+          'Бережный первый выход',
+          'Няня подходит для спокойного знакомства и адаптации.',
+          'Формат первого выхода семьи совпадает с подходом няни к стрессу ребёнка.',
+          [parent.riskProfile.adaptationStyle, nanny.riskProfile.tantrumFirstStep],
+          'family_profile',
+        ),
+      );
+    }
+  }
+
+  if (parent.riskProfile?.boundaryStyle && nanny.riskProfile?.disciplineStyle) {
+    const boundaryMatch =
+      (parent.riskProfile.boundaryStyle === 'soft' &&
+        nanny.riskProfile.disciplineStyle === 'gentle') ||
+      (parent.riskProfile.boundaryStyle === 'clear' &&
+        ['gentle', 'structured'].includes(nanny.riskProfile.disciplineStyle)) ||
+      (parent.riskProfile.boundaryStyle === 'strict' &&
+        ['structured', 'strict'].includes(nanny.riskProfile.disciplineStyle));
+
+    if (boundaryMatch) {
+      reasons.push(
+        reason(
+          `${pair}:boundaries`,
+          'match',
+          'Совпадает язык границ',
+          'Няня будет говорить с ребёнком о правилах в понятной для семьи манере.',
+          'Предпочтение семьи по границам совместимо со стилем дисциплины няни.',
+          [parent.riskProfile.boundaryStyle, nanny.riskProfile.disciplineStyle],
+          'family_profile',
+        ),
+      );
+    }
+  }
+
+  if (parent.riskProfile?.parentAnxiety === 'high') {
+    reasons.push(
+      reason(
+        `${pair}:parent-support`,
+        'discussion',
+        'Родителю нужна подробная опора',
+        'Куратор заранее согласует формат обратной связи после первого выхода.',
+        'Семье важно больше деталей и спокойное сопровождение: обсудить частоту сообщений, фото и итог дня.',
+        present([
+          parent.riskProfile.parentAnxiety,
+          parent.riskProfile.communicationPreference,
+          parent.riskProfile.reportingFrequency,
+        ]),
+        'family_profile',
+      ),
+    );
+  }
+
+  if (parent.riskProfile?.decisionStyle) {
+    reasons.push(
+      reason(
+        `${pair}:decision-style`,
+        'discussion',
+        'Понятно, как семье принять решение',
+        'Куратор покажет подбор так, чтобы семье было проще выбрать следующий шаг.',
+        `Стиль решения семьи: ${labelFrom(parent.riskProfile.decisionStyle, {
+          trust_curator: 'доверяет куратору',
+          compare_options: 'хочет сравнить варианты',
+          needs_details: 'нужны детали',
+        })}.`,
+        [parent.riskProfile.decisionStyle],
+        'family_profile',
+        'curator',
+      ),
+    );
   }
 
   if (parent.riskProfile?.needs?.length && nanny.riskProfile?.strengths?.length) {

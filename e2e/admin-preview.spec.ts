@@ -57,7 +57,21 @@ test('curator matching flow explains why a nanny fits', async ({ page }, testInf
   await expect(page.getByText('ПОЧЕМУ ПОДХОДИТ').first()).toBeVisible();
   await expect(page.getByText('Частичное совпадение').first()).toBeVisible();
   await expect(page.getByText('Есть сигналы доверия').first()).toBeVisible();
-  await expect(page.getByText('Понятен стиль общения').first()).toBeVisible();
+  await expect(page.getByText('Понятно, как семье принять решение').first()).toBeVisible();
+  await expectOperationalAdminSurface(page);
+});
+
+test('parent card shows optional family compatibility profile', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Covered once on desktop.');
+
+  await openAdminPreview(page);
+  await page.getByText('Москва, Хамовники').first().waitFor();
+  await page.getByRole('button', { name: 'Открыть карточку' }).first().click();
+
+  await expect(page.getByText('Профиль совместимости семьи')).toBeVisible();
+  await expect(page.getByText('спокойный дом')).toBeVisible();
+  await expect(page.getByText('нужны подробности')).toBeVisible();
+  await expect(page.getByText('Уточнить до подбора')).toBeVisible();
   await expectOperationalAdminSurface(page);
 });
 

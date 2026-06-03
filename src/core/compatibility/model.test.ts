@@ -17,8 +17,14 @@ const parent: ParentRequest = {
   createdAt: 1,
   riskProfile: {
     familyStyle: 'warm',
+    homeRhythm: 'calm',
+    adaptationStyle: 'slow',
+    boundaryStyle: 'clear',
+    parentAnxiety: 'high',
+    decisionStyle: 'needs_details',
     nannyStylePreference: 'gentle',
     communicationPreference: 'frequent',
+    reportingFrequency: 'frequent',
     childStress: 'cry',
     needs: ['бережная адаптация'],
   },
@@ -80,8 +86,47 @@ describe('compatibility model v0', () => {
     expect(profile.requestId).toBe(parent.id);
     expect(profile.locationSignals).toContain('Москва');
     expect(profile.communicationNeeds).toContain('frequent');
+    expect(profile.homeRhythmSignals).toContain('calm');
+    expect(profile.adaptationNeeds).toContain('slow');
+    expect(profile.parentSupportNeeds).toContain('high');
+    expect(profile.decisionSignals).toContain('needs_details');
     expect(profile.explicitNeeds).toContain('бережная адаптация');
     expect(profile.generatedAt).toBe(10);
+  });
+
+  it('does not invent optional family profile signals when parent skipped them', () => {
+    const profile = buildFamilyCompatibilityProfile(
+      {
+        ...parent,
+        riskProfile: undefined,
+        requirements: [],
+      },
+      10,
+    );
+    const explanation = explainCompatibility(
+      {
+        ...parent,
+        riskProfile: undefined,
+        requirements: [],
+      },
+      nanny,
+      10,
+    );
+
+    expect(profile.communicationNeeds).toEqual([]);
+    expect(profile.childStressSignals).toEqual([]);
+    expect(profile.stylePreferences).toEqual([]);
+    expect(profile.homeRhythmSignals).toEqual([]);
+    expect(profile.adaptationNeeds).toEqual([]);
+    expect(profile.parentSupportNeeds).toEqual([]);
+    expect(profile.decisionSignals).toEqual([]);
+    expect(profile.explicitNeeds).toEqual([]);
+    expect(explanation.reasons.map((reason) => reason.id)).not.toContain(
+      `${parent.id}:${nanny.id}:decision-style`,
+    );
+    expect(explanation.reasons.map((reason) => reason.id)).not.toContain(
+      `${parent.id}:${nanny.id}:parent-support`,
+    );
   });
 
   it('explains why a nanny fits without exposing a hard percent or diagnostic label', () => {
@@ -97,6 +142,11 @@ describe('compatibility model v0', () => {
         'Опыт с возрастом ребёнка',
         'Совпадает формат связи',
         'Похожий подход к границам',
+        'Подходит к ритму семьи',
+        'Бережный первый выход',
+        'Совпадает язык границ',
+        'Родителю нужна подробная опора',
+        'Понятно, как семье принять решение',
         'Попали в важные потребности семьи',
       ]),
     );

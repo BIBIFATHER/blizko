@@ -2,6 +2,26 @@
 
 ---
 
+## 2026-06-03 (Wed) — BLI-88: optional parent compatibility layer
+
+### Changed
+
+- ✅ Added optional parent compatibility signals for curator matching: home rhythm, adaptation style, boundary style, parent support needs, and decision style.
+- ✅ Extended the v0 compatibility explanation model with family-profile reasons for rhythm, first shift, boundaries, parent support, and decision format.
+- ✅ Added an admin parent-card panel for the optional family compatibility profile and curator follow-up prompts.
+- ✅ Hardened the parent form state so skipped optional compatibility answers are not auto-filled with defaults.
+- ✅ Added regression and e2e coverage for optional profile behavior and admin preview visibility.
+
+### Verified
+
+- ✅ `npm run typecheck`
+- ✅ `npm run lint`
+- ✅ `npm test -- --run`
+- ✅ `npm run build`
+- ✅ `npm run test:e2e` (`8 passed / 4 skipped`)
+
+---
+
 ## 2026-05-26 (Tue) — DEV DEBT: vite proxy мисроутит весь /api в AI worker
 
 ### Tech debt (dev-experience, prod НЕ затронут)

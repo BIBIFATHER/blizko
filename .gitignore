@@ -26,6 +26,7 @@ test-results/
 *.sln
 *.sw?
 .vercel
+.claude/
 .cleanup_quarantine/
 archive/.quarantine/
 

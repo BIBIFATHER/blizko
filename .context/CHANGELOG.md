@@ -22,6 +22,24 @@
 
 ---
 
+## 2026-06-03 (Wed) — BLI-85: доступность из РФ без VPN (Вариант A)
+
+### Changed
+
+- `vercel.json` — добавлены явные `Cache-Control` заголовки:
+  - `/assets/*` → `public, max-age=31536000, immutable` (Vite content-hash → long cache безопасен; CF кеширует на российских edge-узлах)
+  - `*.png|ico|svg|woff2` → `public, max-age=604800, stale-while-revalidate=86400`
+  - `/` → `public, max-age=0, must-revalidate`
+- `index.html` — Google Fonts загружается асинхронно (`preload` → `onload`); страница рендерится с системными шрифтами если Google Fonts недоступен на сети
+- `public/sw.js` — убран `/` из `PRE_CACHE`; SW не кеширует HTML-документ и не блокирует обновление при новом деплое
+
+### Added
+
+- `infra/nginx-rf-proxy.conf` — готовый Nginx-конфиг для российского VPS (Timeweb/Selectel); использовать как Вариант B если CF edge кеша недостаточно
+- `docs/adr/001-rf-availability.md` — зафиксировано архитектурное решение и критерии перехода к VPS
+
+---
+
 ## 2026-05-26 (Tue) — DEV DEBT: vite proxy мисроутит весь /api в AI worker
 
 ### Tech debt (dev-experience, prod НЕ затронут)

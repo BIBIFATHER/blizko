@@ -2,6 +2,30 @@
 
 ---
 
+## 2026-06-04 (Thu) — BLI-97: revoke client grants на service-only таблицах
+
+### Security
+
+- Все `public.*` имели дефолтные anon/authenticated гранты (вкл. INSERT/UPDATE/
+  DELETE) и держались только на RLS. Пять служебных таблиц, которые клиент
+  **никогда** не читает (verified: 0 supabase-обращений в `src/`; realtime только
+  на support/chat), захардненены: `REVOKE ALL` с anon/authenticated.
+  - `phone_otps` (OTP-коды), `admin_actions`, `support_agents`,
+    `analytics_events`, `referrals`.
+- API ходит service-ключом (bypass) → нулевое влияние на работу; defense in depth
+  поверх RLS. Совпадает с acceptance BLI-20.
+- `supabase/migrations/20260604140000_revoke_service_only_table_grants.sql`.
+  **Применено в прод** (MCP), verified: гранты сняты у всех 5; anon →
+  `permission denied for table phone_otps`.
+
+### Follow-up (вне scope, заведены отдельно)
+
+- `nannies_public` SECURITY DEFINER (ERROR) — флип на `security_invoker` с
+  проверкой RLS на `nannies`.
+- `function_search_path_mutable`, `auth_leaked_password_protection`.
+
+---
+
 ## 2026-06-04 (Thu) — BLI-93/96/95: cleanup + восстановление аудита
 
 Follow-up из BLI-64. (BLI-94 — baseline reconciliation — **остаётся открытым**:

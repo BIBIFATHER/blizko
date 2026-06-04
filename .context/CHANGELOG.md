@@ -2,6 +2,47 @@
 
 ---
 
+## 2026-06-04 (Thu) — BLI-93/94/95: cleanup + восстановление аудита
+
+Follow-up из BLI-64.
+
+### BLI-93 — Dev Supabase URL
+
+- `.env.local` (local-only): `VITE_SUPABASE_URL` и `SUPABASE_URL` указывали на
+  `blizko-seo-worker.blizko-ai.workers.dev` (SEO-воркер, отдаёт HTML-404 на
+  `/rest/v1/*`) → локальная разработка била supabase через сломанный прокси.
+  Исправлено на канонический хост `geomyyfjvemdphaeimkz.supabase.co`.
+- `.env.example` — добавлен документированный блок client-side `VITE_SUPABASE_URL`
+  / `VITE_SUPABASE_ANON_KEY` с предупреждением «канон-хост, не прокси».
+
+### BLI-94 — security_audit_log отсутствовал в проде
+
+- Проверка прод-БД (MCP): таблицы `security_audit_log` **не существовало**
+  (`to_regclass = null`), хотя `api/_audit.ts` пишет в неё (fire-and-forget,
+  silent `.catch()`) и `api/data.ts` читает как источник product-аналитики.
+  Итог: **все аудит-события в проде молча терялись**, часть аналитики битая.
+  Определена только в `migrations_legacy/`, в прод не накатывалась.
+- `supabase/migrations/20260604130000_create_security_audit_log.sql` — создаёт
+  таблицу (схема из legacy), RLS service-role only, индексы; `REVOKE ALL` с
+  anon/authenticated (sensitive: IP/phone/user_id, API ходит service-ключом).
+  **Применено в прод** (MCP), verified: таблица есть, RLS on, anon доступа нет,
+  advisors без новых ERROR.
+
+### BLI-95 — CI format-gate
+
+- `.prettierignore` — корневые `*.md` (рукописные доки) выведены из-под prettier;
+  раньше `npm run format` тянул 100+ доков (и мог снести `BOOTSTRAP.md` из diff'а).
+- Одноразово отформатирован накопленный код-долг (17 файлов: src/api/scripts/
+  config, `index.html`, `vercel.json` и пр.).
+- `.github/workflows/ci.yml` — добавлен шаг `Format check` (`npm run format:check`)
+  после Lint → формат-долг больше не копится молча.
+
+### Verified
+
+- ✅ `npm run format:check` / `lint` / `typecheck` / `build`
+
+---
+
 ## 2026-06-04 (Thu) — BLI-64: починка production matching-chain
 
 Симптомы в проде: `/api/ai` aborted, `matching_weights`/`matching_insights` 404,

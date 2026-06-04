@@ -2,6 +2,54 @@
 
 ---
 
+## 2026-06-04 (Thu) — BLI-64: починка production matching-chain
+
+Симптомы в проде: `/api/ai` aborted, `matching_weights`/`matching_insights` 404,
+`matching_outcomes` 400. Код фронта корректен и деградирует мягко — отказы были
+на уровне schema/permissions/таймаут-бюджета, не TS-логики.
+
+### Root cause
+
+- **`/api/ai` aborted** — `api/ai.ts`: 2 модели × (1+`MAX_RETRIES`=3) попытки ×
+  `REQUEST_TIMEOUT_MS=20s` ≈ до 120s, без `config.maxDuration`. После BLI-85 сайт
+  за Cloudflare (~100s proxy timeout) → длинные вызовы Gemini обрывались апстримом
+  до ответа; клиент (`aiGateway.ts`, без AbortController) видел aborted.
+- **weights/insights 404** — таблицы есть (`prod_baseline`), но RLS только
+  `FOR ALL ... service_role`, без GRANT/SELECT-политики для anon/authenticated.
+  Лоадеры (`matchingWeights.ts`, `insightsLoader.ts`) читают их client-side под
+  anon-ключом → PostgREST 404 → молчаливый фолбэк на дефолты, learning-слой мёртв.
+- **`matching_outcomes` 400** — upsert `onConflict:'parent_id,nanny_id'` без
+  unique-constraint. Миграция `20260529000000_matching_outcomes_unique_pair.sql`
+  это чинит, но **не была применена в проде**.
+
+### Changed
+
+- `api/ai.ts` — добавлен `export const config = { maxDuration: 60 }`;
+  `REQUEST_TIMEOUT_MS` 20s→12s; глобальный дедлайн `TOTAL_DEADLINE_MS=45s` в
+  retry-цикле — новые upstream-вызовы не стартуют, если выйдут за бюджет.
+  Worst case ~45s < 60s maxDuration < ~100s CF. Нормальный путь (flash <10s) не задет.
+
+### Added
+
+- `supabase/migrations/20260604120000_matching_weights_insights_client_read.sql` —
+  `GRANT SELECT` + read-only RLS-политики (`weights_client_read`,
+  `insights_client_read`) для anon/authenticated на двух non-PII таблицах. Записи
+  остаются service-role only.
+
+### Verified
+
+- ✅ `npm run typecheck`
+- ✅ `npx vitest run` (AI + matching: 18 passed)
+- ✅ `npm run build`
+
+### ⚠️ Требует деплой-действия (вне кода)
+
+- Применить к **проду** обе миграции: `20260529000000_matching_outcomes_unique_pair.sql`
+  (фикс 400) и `20260604120000_...client_read.sql` (фикс 404) через `supabase db push`.
+  Без этого 400/404 в проде сохранятся.
+
+---
+
 ## 2026-06-03 (Wed) — BLI-88: optional parent compatibility layer
 
 ### Changed

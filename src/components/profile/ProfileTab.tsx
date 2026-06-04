@@ -184,6 +184,33 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
     window.dispatchEvent(new CustomEvent('blizko:open-support-chat'));
   };
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    setDeleteError('');
+    try {
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      const res = await fetch('/api/auth/delete-account', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'Ошибка удаления');
+      }
+      onLogout();
+    } catch (e: unknown) {
+      setDeleteError(e instanceof Error ? e.message : 'Ошибка. Напишите нам на help@blizko.app');
+      setDeleteLoading(false);
+    }
+  };
+
   const parentStatusLabel = (status?: ParentRequest['status']) => {
     if (status === 'payment_pending') return 'Ожидает оплаты';
     if (status === 'in_review') return 'На проверке';
@@ -526,7 +553,50 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
           >
             <LogOut size={16} /> {text.logout}
           </Button>
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="text-xs text-stone-400 hover:text-red-400 transition-colors underline underline-offset-2 text-center py-1"
+          >
+            Удалить аккаунт и все данные
+          </button>
         </div>
+
+        {/* Delete account confirmation modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-70 bg-stone-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-[1.5rem] w-full max-w-sm p-6 space-y-4 shadow-2xl">
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto">
+                  <LogOut size={22} className="text-red-500" />
+                </div>
+                <h3 className="font-bold text-stone-900 text-lg">Удалить аккаунт?</h3>
+                <p className="text-sm text-stone-500 leading-relaxed">
+                  Все ваши данные будут безвозвратно удалены: профиль, запросы, история переписки.
+                  Восстановить аккаунт будет невозможно.
+                </p>
+              </div>
+              {deleteError && (
+                <p className="text-xs text-red-500 text-center">{deleteError}</p>
+              )}
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleteLoading}
+                  className="w-full bg-red-500 text-white rounded-xl py-3 text-sm font-medium hover:bg-red-600 disabled:opacity-50 transition-colors"
+                >
+                  {deleteLoading ? 'Удаляем...' : 'Да, удалить аккаунт'}
+                </button>
+                <button
+                  onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }}
+                  disabled={deleteLoading}
+                  className="w-full bg-stone-100 text-stone-700 rounded-xl py-3 text-sm font-medium hover:bg-stone-200 disabled:opacity-50 transition-colors"
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Calendar modal */}

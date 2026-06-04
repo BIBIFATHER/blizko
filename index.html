@@ -302,7 +302,7 @@
         // PROD — регистрируем SW
         window.addEventListener('load', () => {
           navigator.serviceWorker
-            .register('/sw.js')
+            .register('/sw.js', { updateViaCache: 'none' })
             .then(() => console.log('[SW] registered'))
             .catch((err) => console.log('[SW] failed', err));
         });

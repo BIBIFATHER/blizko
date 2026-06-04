@@ -92,9 +92,7 @@ function norm(value?: string) {
 }
 
 function present(values: Array<string | undefined | null>) {
-  return values
-    .map((value) => String(value ?? '').trim())
-    .filter(Boolean);
+  return values.map((value) => String(value ?? '').trim()).filter(Boolean);
 }
 
 function hasOverlap(left: string[], right: string[]) {
@@ -468,10 +466,7 @@ export function explainCompatibility(
     );
   }
 
-  const level = levelFrom(
-    reasons.filter((item) => item.kind === 'match').length,
-    risks,
-  );
+  const level = levelFrom(reasons.filter((item) => item.kind === 'match').length, risks);
   const familyReasons = reasons.filter((item) => item.visibility === 'family');
   const nextQuestions = reasons
     .filter((item) => item.kind !== 'match')

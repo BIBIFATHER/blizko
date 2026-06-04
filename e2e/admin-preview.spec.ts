@@ -38,7 +38,9 @@ async function expectOperationalAdminSurface(page: Page) {
   });
 }
 
-test('admin preview tabs render without splash, overlay, or horizontal overflow', async ({ page }) => {
+test('admin preview tabs render without splash, overlay, or horizontal overflow', async ({
+  page,
+}) => {
   await openAdminPreview(page);
 
   for (const tab of adminTabs) {

@@ -84,12 +84,11 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
     setRiskProfile((prev) => ({ ...(prev ?? {}), familyStyle: v })),
   );
 
-  const homeRhythmOpts: { label: string; value: NonNullable<ParentRiskProfile['homeRhythm']> }[] =
-    [
-      { label: ru ? 'Спокойный дом' : 'Calm home', value: 'calm' },
-      { label: ru ? 'Активный ритм' : 'Active rhythm', value: 'active' },
-      { label: ru ? 'По-разному' : 'Variable', value: 'variable' },
-    ];
+  const homeRhythmOpts: { label: string; value: NonNullable<ParentRiskProfile['homeRhythm']> }[] = [
+    { label: ru ? 'Спокойный дом' : 'Calm home', value: 'calm' },
+    { label: ru ? 'Активный ритм' : 'Active rhythm', value: 'active' },
+    { label: ru ? 'По-разному' : 'Variable', value: 'variable' },
+  ];
   const homeRhythm = useEnumChip(homeRhythmOpts, riskProfile?.homeRhythm, (v) =>
     setRiskProfile((prev) => ({ ...(prev ?? {}), homeRhythm: v })),
   );
@@ -102,10 +101,8 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
     { label: ru ? 'Баланс' : 'Balanced', value: 'balanced' },
     { label: ru ? 'Быстро включаться' : 'Fast start', value: 'fast' },
   ];
-  const adaptationStyle = useEnumChip(
-    adaptationStyleOpts,
-    riskProfile?.adaptationStyle,
-    (v) => setRiskProfile((prev) => ({ ...(prev ?? {}), adaptationStyle: v })),
+  const adaptationStyle = useEnumChip(adaptationStyleOpts, riskProfile?.adaptationStyle, (v) =>
+    setRiskProfile((prev) => ({ ...(prev ?? {}), adaptationStyle: v })),
   );
 
   const boundaryStyleOpts: {
@@ -300,7 +297,9 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
           onClick={() => setShowExtras((v) => !v)}
           className="flex w-full items-center justify-between text-sm font-semibold text-stone-600"
         >
-          <span>{ru ? 'Профиль совместимости (необязательно)' : 'Compatibility profile (optional)'}</span>
+          <span>
+            {ru ? 'Профиль совместимости (необязательно)' : 'Compatibility profile (optional)'}
+          </span>
           {showExtras ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
 

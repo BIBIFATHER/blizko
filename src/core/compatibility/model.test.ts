@@ -131,9 +131,11 @@ describe('compatibility model v0', () => {
 
   it('explains why a nanny fits without exposing a hard percent or diagnostic label', () => {
     const explanation = explainCompatibility(parent, nanny, 10);
-    const text = [explanation.levelLabel, explanation.familySummary, explanation.curatorSummary].join(
-      ' ',
-    );
+    const text = [
+      explanation.levelLabel,
+      explanation.familySummary,
+      explanation.curatorSummary,
+    ].join(' ');
 
     expect(explanation.level).toBe('strong');
     expect(explanation.reasons.map((reason) => reason.title)).toEqual(

@@ -1,8 +1,5 @@
 {
   "name": "Blizko",
   "description": "Nanny matching service with care and verification. Technology with a human heart.",
-  "requestFramePermissions": [
-    "camera",
-    "microphone"
-  ]
+  "requestFramePermissions": ["camera", "microphone"]
 }

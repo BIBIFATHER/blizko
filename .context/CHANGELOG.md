@@ -2,9 +2,10 @@
 
 ---
 
-## 2026-06-04 (Thu) — BLI-93/94/95: cleanup + восстановление аудита
+## 2026-06-04 (Thu) — BLI-93/96/95: cleanup + восстановление аудита
 
-Follow-up из BLI-64.
+Follow-up из BLI-64. (BLI-94 — baseline reconciliation — **остаётся открытым**:
+сюда по ошибке попал security_audit_log фикс, он вынесен в BLI-96.)
 
 ### BLI-93 — Dev Supabase URL
 
@@ -15,7 +16,7 @@ Follow-up из BLI-64.
 - `.env.example` — добавлен документированный блок client-side `VITE_SUPABASE_URL`
   / `VITE_SUPABASE_ANON_KEY` с предупреждением «канон-хост, не прокси».
 
-### BLI-94 — security_audit_log отсутствовал в проде
+### BLI-96 — security_audit_log отсутствовал в проде
 
 - Проверка прод-БД (MCP): таблицы `security_audit_log` **не существовало**
   (`to_regclass = null`), хотя `api/_audit.ts` пишет в неё (fire-and-forget,

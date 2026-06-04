@@ -14,13 +14,18 @@
   `REQUEST_TIMEOUT_MS=20s` ≈ до 120s, без `config.maxDuration`. После BLI-85 сайт
   за Cloudflare (~100s proxy timeout) → длинные вызовы Gemini обрывались апстримом
   до ответа; клиент (`aiGateway.ts`, без AbortController) видел aborted.
-- **weights/insights 404** — таблицы есть (`prod_baseline`), но RLS только
-  `FOR ALL ... service_role`, без GRANT/SELECT-политики для anon/authenticated.
-  Лоадеры (`matchingWeights.ts`, `insightsLoader.ts`) читают их client-side под
-  anon-ключом → PostgREST 404 → молчаливый фолбэк на дефолты, learning-слой мёртв.
+- **weights/insights 404** — проверка прод-БД через Supabase MCP: таблиц
+  `matching_weights` / `matching_insights` **не существует вообще**
+  (`to_regclass = null`). `prod_baseline` числится applied, но эти таблицы там
+  не накатились — локальный baseline.sql рассинхронен с реально применённым.
+  PostgREST на missing relation → 404. Лоадеры (`matchingWeights.ts`,
+  `insightsLoader.ts`) читают client-side под anon-ключом → молчаливый фолбэк на
+  дефолты, learning-слой мёртв. (Первоначальная гипотеза «RLS service_role only»
+  оказалась неполной — таблиц нет.)
 - **`matching_outcomes` 400** — upsert `onConflict:'parent_id,nanny_id'` без
-  unique-constraint. Миграция `20260529000000_matching_outcomes_unique_pair.sql`
-  это чинит, но **не была применена в проде**.
+  unique-constraint. По факту в проде constraint
+  `matching_outcomes_parent_nanny_key UNIQUE(parent_id,nanny_id)` **уже применён**
+  (`20260529091537`) → 400 **уже закрыт**, отдельных действий не требует.
 
 ### Changed
 
@@ -32,9 +37,10 @@
 ### Added
 
 - `supabase/migrations/20260604120000_matching_weights_insights_client_read.sql` —
-  `GRANT SELECT` + read-only RLS-политики (`weights_client_read`,
-  `insights_client_read`) для anon/authenticated на двух non-PII таблицах. Записи
-  остаются service-role only.
+  **создаёт** таблицы `matching_weights` (+seed 17 весов = текущие
+  `DEFAULT_WEIGHTS`) и `matching_insights`, включает RLS, оставляет записи
+  service-role only, даёт read-only (`*_client_read` SELECT + GRANT) для
+  anon/authenticated. Таблицы non-PII. Идемпотентно (`IF NOT EXISTS` + guard'ы).
 
 ### Verified
 
@@ -42,11 +48,23 @@
 - ✅ `npx vitest run` (AI + matching: 18 passed)
 - ✅ `npm run build`
 
-### ⚠️ Требует деплой-действия (вне кода)
+### Applied to prod (Supabase MCP, project geomyyfjvemdphaeimkz)
 
-- Применить к **проду** обе миграции: `20260529000000_matching_outcomes_unique_pair.sql`
-  (фикс 400) и `20260604120000_...client_read.sql` (фикс 404) через `supabase db push`.
-  Без этого 400/404 в проде сохранятся.
+- ✅ Миграция `matching_weights_insights_client_read` применена (`apply_migration`).
+- ✅ Проверено: обе таблицы существуют, `matching_weights` = 17 строк, политики
+  `*_client_read` + `*_service_only` на месте; чтение под ролью `anon` возвращает
+  17 строк → **404 закрыт**.
+- ✅ `400` уже был закрыт ранее (constraint `matching_outcomes_parent_nanny_key`).
+- ✅ `get_advisors security` — новых ERROR нет; weights/insights попадают в
+  `pg_graphql_anon_table_exposed` (WARN) **намеренно** (non-PII, нужен client read).
+- `/api/ai` abort-фикс — во фронт-деплое (merge в `main`), едет через Vercel.
+
+### Follow-up (отдельные мелкие задачи, не BLI-64)
+
+- `prod_baseline.sql` рассинхронен с реальным продом (декларирует таблицы, которых
+  нет) — выверить baseline.
+- CI не гоняет `format:check` → формат-долг копится молча (см. 5 неформатированных
+  файлов из BLI-85/88). Добавить шаг в CI.
 
 ---
 

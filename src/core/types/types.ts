@@ -33,6 +33,11 @@ export interface ParentRiskProfile {
   reportingFrequency?: 'daily' | '2_3_times' | 'frequent';
   trustLevel?: 1 | 2 | 3 | 4 | 5;
   familyStyle?: 'warm' | 'structured' | 'balanced';
+  homeRhythm?: 'calm' | 'active' | 'variable';
+  adaptationStyle?: 'slow' | 'balanced' | 'fast';
+  boundaryStyle?: 'soft' | 'clear' | 'strict';
+  parentAnxiety?: 'low' | 'medium' | 'high';
+  decisionStyle?: 'trust_curator' | 'compare_options' | 'needs_details';
   childStress?: 'cry' | 'withdraw' | 'aggressive' | 'tantrum';
   triggers?: string[];
   nannyStylePreference?: 'gentle' | 'strict' | 'playful';

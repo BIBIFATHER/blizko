@@ -1,104 +1,104 @@
 {
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist",
-    "framework": "vite",
-    "crons": [
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "crons": [
+    {
+      "path": "/api/cron/ghosted-outcomes",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/update-matching-weights",
+      "schedule": "0 4 * * 1"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/humanity-plus",
+      "destination": "/how-it-works",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
         {
-            "path": "/api/cron/ghosted-outcomes",
-            "schedule": "0 3 * * *"
-        },
-        {
-            "path": "/api/cron/update-matching-weights",
-            "schedule": "0 4 * * 1"
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
-    ],
-    "redirects": [
+      ]
+    },
+    {
+      "source": "/(.*\\.(?:png|ico|svg|woff2|woff|ttf))",
+      "headers": [
         {
-            "source": "/humanity-plus",
-            "destination": "/how-it-works",
-            "permanent": true
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
         }
-    ],
-    "rewrites": [
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
         {
-            "source": "/(.*)",
-            "destination": "/index.html"
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
         }
-    ],
-    "headers": [
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
         {
-            "source": "/assets/(.*)",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=31536000, immutable"
-                }
-            ]
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
-            "source": "/(.*\\.(?:png|ico|svg|woff2|woff|ttf))",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=604800, stale-while-revalidate=86400"
-                }
-            ]
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
         },
         {
-            "source": "/",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=0, must-revalidate"
-                }
-            ]
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
         },
         {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "X-Content-Type-Options",
-                    "value": "nosniff"
-                },
-                {
-                    "key": "X-Frame-Options",
-                    "value": "SAMEORIGIN"
-                },
-                {
-                    "key": "Referrer-Policy",
-                    "value": "strict-origin-when-cross-origin"
-                },
-                {
-                    "key": "Permissions-Policy",
-                    "value": "camera=(self), microphone=(self), geolocation=(self), payment=(self)"
-                },
-                {
-                    "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://*.telegram.org https://mc.yandex.ru https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://mc.yandex.ru https://cm.g.doubleclick.net https://images.unsplash.com https://yandex.ru https://*.yandex.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.telegram.org https://mc.yandex.ru wss://mc.yandex.ru https://yandex.ru https://*.yandex.net https://*.sentry.io https://*.ingest.de.sentry.io https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org; frame-src 'self' https://web.telegram.org https://mc.yandex.ru;"
-                }
-            ]
+          "key": "Permissions-Policy",
+          "value": "camera=(self), microphone=(self), geolocation=(self), payment=(self)"
         },
         {
-            "source": "/sw.js",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "no-cache"
-                },
-                {
-                    "key": "Service-Worker-Allowed",
-                    "value": "/"
-                }
-            ]
-        },
-        {
-            "source": "/manifest.json",
-            "headers": [
-                {
-                    "key": "Content-Type",
-                    "value": "application/manifest+json"
-                }
-            ]
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://*.telegram.org https://mc.yandex.ru https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://mc.yandex.ru https://cm.g.doubleclick.net https://images.unsplash.com https://yandex.ru https://*.yandex.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.telegram.org https://mc.yandex.ru wss://mc.yandex.ru https://yandex.ru https://*.yandex.net https://*.sentry.io https://*.ingest.de.sentry.io https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org; frame-src 'self' https://web.telegram.org https://mc.yandex.ru;"
         }
-    ]
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        }
+      ]
+    }
+  ]
 }

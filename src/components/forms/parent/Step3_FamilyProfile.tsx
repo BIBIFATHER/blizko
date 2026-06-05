@@ -84,6 +84,63 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
     setRiskProfile((prev) => ({ ...(prev ?? {}), familyStyle: v })),
   );
 
+  const homeRhythmOpts: { label: string; value: NonNullable<ParentRiskProfile['homeRhythm']> }[] = [
+    { label: ru ? 'Спокойный дом' : 'Calm home', value: 'calm' },
+    { label: ru ? 'Активный ритм' : 'Active rhythm', value: 'active' },
+    { label: ru ? 'По-разному' : 'Variable', value: 'variable' },
+  ];
+  const homeRhythm = useEnumChip(homeRhythmOpts, riskProfile?.homeRhythm, (v) =>
+    setRiskProfile((prev) => ({ ...(prev ?? {}), homeRhythm: v })),
+  );
+
+  const adaptationStyleOpts: {
+    label: string;
+    value: NonNullable<ParentRiskProfile['adaptationStyle']>;
+  }[] = [
+    { label: ru ? 'Медленно и бережно' : 'Slow and gentle', value: 'slow' },
+    { label: ru ? 'Баланс' : 'Balanced', value: 'balanced' },
+    { label: ru ? 'Быстро включаться' : 'Fast start', value: 'fast' },
+  ];
+  const adaptationStyle = useEnumChip(adaptationStyleOpts, riskProfile?.adaptationStyle, (v) =>
+    setRiskProfile((prev) => ({ ...(prev ?? {}), adaptationStyle: v })),
+  );
+
+  const boundaryStyleOpts: {
+    label: string;
+    value: NonNullable<ParentRiskProfile['boundaryStyle']>;
+  }[] = [
+    { label: ru ? 'Мягко договариваться' : 'Soft agreements', value: 'soft' },
+    { label: ru ? 'Понятные границы' : 'Clear boundaries', value: 'clear' },
+    { label: ru ? 'Строго по правилам' : 'Strict rules', value: 'strict' },
+  ];
+  const boundaryStyle = useEnumChip(boundaryStyleOpts, riskProfile?.boundaryStyle, (v) =>
+    setRiskProfile((prev) => ({ ...(prev ?? {}), boundaryStyle: v })),
+  );
+
+  const parentAnxietyOpts: {
+    label: string;
+    value: NonNullable<ParentRiskProfile['parentAnxiety']>;
+  }[] = [
+    { label: ru ? 'Спокойно' : 'Calm', value: 'low' },
+    { label: ru ? 'Нужна опора' : 'Need support', value: 'medium' },
+    { label: ru ? 'Важно подробно' : 'Need details', value: 'high' },
+  ];
+  const parentAnxiety = useEnumChip(parentAnxietyOpts, riskProfile?.parentAnxiety, (v) =>
+    setRiskProfile((prev) => ({ ...(prev ?? {}), parentAnxiety: v })),
+  );
+
+  const decisionStyleOpts: {
+    label: string;
+    value: NonNullable<ParentRiskProfile['decisionStyle']>;
+  }[] = [
+    { label: ru ? 'Доверяю куратору' : 'Trust curator', value: 'trust_curator' },
+    { label: ru ? 'Сравнить варианты' : 'Compare options', value: 'compare_options' },
+    { label: ru ? 'Нужны детали' : 'Need details', value: 'needs_details' },
+  ];
+  const decisionStyle = useEnumChip(decisionStyleOpts, riskProfile?.decisionStyle, (v) =>
+    setRiskProfile((prev) => ({ ...(prev ?? {}), decisionStyle: v })),
+  );
+
   // ── Child stress (optional) ──────────────────────────────────────────────
   const childStressOpts: { label: string; value: NonNullable<ParentRiskProfile['childStress']> }[] =
     [
@@ -240,12 +297,19 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
           onClick={() => setShowExtras((v) => !v)}
           className="flex w-full items-center justify-between text-sm font-semibold text-stone-600"
         >
-          <span>{ru ? 'Дополнительно (необязательно)' : 'More details (optional)'}</span>
+          <span>
+            {ru ? 'Профиль совместимости (необязательно)' : 'Compatibility profile (optional)'}
+          </span>
           {showExtras ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
 
         {showExtras && (
           <div className="mt-5 space-y-1 animate-fade-in">
+            <p className="pb-2 text-xs leading-relaxed text-stone-500">
+              {ru
+                ? 'Эти ответы не обязательны и не являются психологической оценкой. Они помогают куратору точнее подобрать няню под ритм семьи, стиль общения и первый выход.'
+                : 'These answers are optional and are not a psychological assessment. They help the curator match around family rhythm, communication style, and the first shift.'}
+            </p>
             <ChipGroup
               label={ru ? 'Важно для семьи' : 'What matters most'}
               options={text.reqOptions}
@@ -274,6 +338,27 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
               single
             />
             <ChipGroup
+              label={ru ? 'Ритм дома' : 'Home rhythm'}
+              options={homeRhythm.chipOptions}
+              selected={homeRhythm.chipSelected}
+              onChange={homeRhythm.chipOnChange}
+              single
+            />
+            <ChipGroup
+              label={ru ? 'Как лучше начинать с новой няней' : 'First shift style'}
+              options={adaptationStyle.chipOptions}
+              selected={adaptationStyle.chipSelected}
+              onChange={adaptationStyle.chipOnChange}
+              single
+            />
+            <ChipGroup
+              label={ru ? 'Границы и правила' : 'Boundaries and rules'}
+              options={boundaryStyle.chipOptions}
+              selected={boundaryStyle.chipSelected}
+              onChange={boundaryStyle.chipOnChange}
+              single
+            />
+            <ChipGroup
               label={ru ? 'Реакция ребёнка на стресс' : 'Child stress response'}
               options={childStress.chipOptions}
               selected={childStress.chipSelected}
@@ -291,6 +376,20 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
               options={commPref.chipOptions}
               selected={commPref.chipSelected}
               onChange={commPref.chipOnChange}
+              single
+            />
+            <ChipGroup
+              label={ru ? 'Сколько опоры нужно родителю' : 'Parent support level'}
+              options={parentAnxiety.chipOptions}
+              selected={parentAnxiety.chipSelected}
+              onChange={parentAnxiety.chipOnChange}
+              single
+            />
+            <ChipGroup
+              label={ru ? 'Как семье проще принять решение' : 'Decision style'}
+              options={decisionStyle.chipOptions}
+              selected={decisionStyle.chipSelected}
+              onChange={decisionStyle.chipOnChange}
               single
             />
             <ChipGroup

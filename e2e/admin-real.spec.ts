@@ -222,7 +222,8 @@ test('real admin parent card and curator assignment expose trust decisions', asy
   await page.locator('button').filter({ hasText: 'Москва' }).first().click();
   await expect(page.getByText('Почему подходит').first()).toBeVisible();
   await expect(page.getByText('Сильное совпадение').first()).toBeVisible();
-  await expect(page.getByText('Личность подтверждена').first()).toBeVisible();
+  await expect(page.getByText('Опыт с возрастом ребёнка').first()).toBeVisible();
+  await expect(page.getByText('Совпадает формат связи').first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Назначить' }).first().click();
   await expect(page.getByText('Подтверждение')).toBeVisible();

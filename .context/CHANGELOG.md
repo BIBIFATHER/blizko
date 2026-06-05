@@ -2,6 +2,158 @@
 
 ---
 
+## 2026-06-04 (Thu) — BLI-97: revoke client grants на service-only таблицах
+
+### Security
+
+- Все `public.*` имели дефолтные anon/authenticated гранты (вкл. INSERT/UPDATE/
+  DELETE) и держались только на RLS. Пять служебных таблиц, которые клиент
+  **никогда** не читает (verified: 0 supabase-обращений в `src/`; realtime только
+  на support/chat), захардненены: `REVOKE ALL` с anon/authenticated.
+  - `phone_otps` (OTP-коды), `admin_actions`, `support_agents`,
+    `analytics_events`, `referrals`.
+- API ходит service-ключом (bypass) → нулевое влияние на работу; defense in depth
+  поверх RLS. Совпадает с acceptance BLI-20.
+- `supabase/migrations/20260604140000_revoke_service_only_table_grants.sql`.
+  **Применено в прод** (MCP), verified: гранты сняты у всех 5; anon →
+  `permission denied for table phone_otps`.
+
+### Follow-up (вне scope, заведены отдельно)
+
+- `nannies_public` SECURITY DEFINER (ERROR) — флип на `security_invoker` с
+  проверкой RLS на `nannies`.
+- `function_search_path_mutable`, `auth_leaked_password_protection`.
+
+---
+
+## 2026-06-04 (Thu) — BLI-93/96/95: cleanup + восстановление аудита
+
+Follow-up из BLI-64. (BLI-94 — baseline reconciliation — **остаётся открытым**:
+сюда по ошибке попал security_audit_log фикс, он вынесен в BLI-96.)
+
+### BLI-93 — Dev Supabase URL
+
+- `.env.local` (local-only): `VITE_SUPABASE_URL` и `SUPABASE_URL` указывали на
+  `blizko-seo-worker.blizko-ai.workers.dev` (SEO-воркер, отдаёт HTML-404 на
+  `/rest/v1/*`) → локальная разработка била supabase через сломанный прокси.
+  Исправлено на канонический хост `geomyyfjvemdphaeimkz.supabase.co`.
+- `.env.example` — добавлен документированный блок client-side `VITE_SUPABASE_URL`
+  / `VITE_SUPABASE_ANON_KEY` с предупреждением «канон-хост, не прокси».
+
+### BLI-96 — security_audit_log отсутствовал в проде
+
+- Проверка прод-БД (MCP): таблицы `security_audit_log` **не существовало**
+  (`to_regclass = null`), хотя `api/_audit.ts` пишет в неё (fire-and-forget,
+  silent `.catch()`) и `api/data.ts` читает как источник product-аналитики.
+  Итог: **все аудит-события в проде молча терялись**, часть аналитики битая.
+  Определена только в `migrations_legacy/`, в прод не накатывалась.
+- `supabase/migrations/20260604130000_create_security_audit_log.sql` — создаёт
+  таблицу (схема из legacy), RLS service-role only, индексы; `REVOKE ALL` с
+  anon/authenticated (sensitive: IP/phone/user_id, API ходит service-ключом).
+  **Применено в прод** (MCP), verified: таблица есть, RLS on, anon доступа нет,
+  advisors без новых ERROR.
+
+### BLI-95 — CI format-gate
+
+- `.prettierignore` — корневые `*.md` (рукописные доки) выведены из-под prettier;
+  раньше `npm run format` тянул 100+ доков (и мог снести `BOOTSTRAP.md` из diff'а).
+- Одноразово отформатирован накопленный код-долг (17 файлов: src/api/scripts/
+  config, `index.html`, `vercel.json` и пр.).
+- `.github/workflows/ci.yml` — добавлен шаг `Format check` (`npm run format:check`)
+  после Lint → формат-долг больше не копится молча.
+
+### Verified
+
+- ✅ `npm run format:check` / `lint` / `typecheck` / `build`
+
+---
+
+## 2026-06-04 (Thu) — BLI-64: починка production matching-chain
+
+Симптомы в проде: `/api/ai` aborted, `matching_weights`/`matching_insights` 404,
+`matching_outcomes` 400. Код фронта корректен и деградирует мягко — отказы были
+на уровне schema/permissions/таймаут-бюджета, не TS-логики.
+
+### Root cause
+
+- **`/api/ai` aborted** — `api/ai.ts`: 2 модели × (1+`MAX_RETRIES`=3) попытки ×
+  `REQUEST_TIMEOUT_MS=20s` ≈ до 120s, без `config.maxDuration`. После BLI-85 сайт
+  за Cloudflare (~100s proxy timeout) → длинные вызовы Gemini обрывались апстримом
+  до ответа; клиент (`aiGateway.ts`, без AbortController) видел aborted.
+- **weights/insights 404** — проверка прод-БД через Supabase MCP: таблиц
+  `matching_weights` / `matching_insights` **не существует вообще**
+  (`to_regclass = null`). `prod_baseline` числится applied, но эти таблицы там
+  не накатились — локальный baseline.sql рассинхронен с реально применённым.
+  PostgREST на missing relation → 404. Лоадеры (`matchingWeights.ts`,
+  `insightsLoader.ts`) читают client-side под anon-ключом → молчаливый фолбэк на
+  дефолты, learning-слой мёртв. (Первоначальная гипотеза «RLS service_role only»
+  оказалась неполной — таблиц нет.)
+- **`matching_outcomes` 400** — upsert `onConflict:'parent_id,nanny_id'` без
+  unique-constraint. По факту в проде constraint
+  `matching_outcomes_parent_nanny_key UNIQUE(parent_id,nanny_id)` **уже применён**
+  (`20260529091537`) → 400 **уже закрыт**, отдельных действий не требует.
+
+### Changed
+
+- `api/ai.ts` — добавлен `export const config = { maxDuration: 60 }`;
+  `REQUEST_TIMEOUT_MS` 20s→12s; глобальный дедлайн `TOTAL_DEADLINE_MS=45s` в
+  retry-цикле — новые upstream-вызовы не стартуют, если выйдут за бюджет.
+  Worst case ~45s < 60s maxDuration < ~100s CF. Нормальный путь (flash <10s) не задет.
+
+### Added
+
+- `supabase/migrations/20260604120000_matching_weights_insights_client_read.sql` —
+  **создаёт** таблицы `matching_weights` (+seed 17 весов = текущие
+  `DEFAULT_WEIGHTS`) и `matching_insights`, включает RLS, оставляет записи
+  service-role only, даёт read-only (`*_client_read` SELECT + GRANT) для
+  anon/authenticated. Таблицы non-PII. Идемпотентно (`IF NOT EXISTS` + guard'ы).
+
+### Verified
+
+- ✅ `npm run typecheck`
+- ✅ `npx vitest run` (AI + matching: 18 passed)
+- ✅ `npm run build`
+
+### Applied to prod (Supabase MCP, project geomyyfjvemdphaeimkz)
+
+- ✅ Миграция `matching_weights_insights_client_read` применена (`apply_migration`).
+- ✅ Проверено: обе таблицы существуют, `matching_weights` = 17 строк, политики
+  `*_client_read` + `*_service_only` на месте; чтение под ролью `anon` возвращает
+  17 строк → **404 закрыт**.
+- ✅ `400` уже был закрыт ранее (constraint `matching_outcomes_parent_nanny_key`).
+- ✅ `get_advisors security` — новых ERROR нет; weights/insights попадают в
+  `pg_graphql_anon_table_exposed` (WARN) **намеренно** (non-PII, нужен client read).
+- `/api/ai` abort-фикс — во фронт-деплое (merge в `main`), едет через Vercel.
+
+### Follow-up (отдельные мелкие задачи, не BLI-64)
+
+- `prod_baseline.sql` рассинхронен с реальным продом (декларирует таблицы, которых
+  нет) — выверить baseline.
+- CI не гоняет `format:check` → формат-долг копится молча (см. 5 неформатированных
+  файлов из BLI-85/88). Добавить шаг в CI.
+
+---
+
+## 2026-06-03 (Wed) — BLI-88: optional parent compatibility layer
+
+### Changed
+
+- ✅ Added optional parent compatibility signals for curator matching: home rhythm, adaptation style, boundary style, parent support needs, and decision style.
+- ✅ Extended the v0 compatibility explanation model with family-profile reasons for rhythm, first shift, boundaries, parent support, and decision format.
+- ✅ Added an admin parent-card panel for the optional family compatibility profile and curator follow-up prompts.
+- ✅ Hardened the parent form state so skipped optional compatibility answers are not auto-filled with defaults.
+- ✅ Added regression and e2e coverage for optional profile behavior and admin preview visibility.
+
+### Verified
+
+- ✅ `npm run typecheck`
+- ✅ `npm run lint`
+- ✅ `npm test -- --run`
+- ✅ `npm run build`
+- ✅ `npm run test:e2e` (`8 passed / 4 skipped`)
+
+---
+
 ## 2026-06-03 (Wed) — BLI-85: доступность из РФ без VPN (Вариант A)
 
 ### Changed

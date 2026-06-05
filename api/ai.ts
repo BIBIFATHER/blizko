@@ -10,8 +10,18 @@ import {
   normalizeGeminiTemperature,
 } from './_gemini.js';
 
-const REQUEST_TIMEOUT_MS = 20000;
+// Vercel function ceiling. Must stay below the upstream edge/proxy timeout.
+// After BLI-85 the site sits behind Cloudflare (~100s proxy limit); we keep the
+// whole function well under that so long Gemini calls never get aborted upstream.
+export const config = { maxDuration: 60 };
+
+// Per-attempt upstream timeout. Gemini flash normally answers in <10s.
+const REQUEST_TIMEOUT_MS = 12000;
 const MAX_RETRIES = 2;
+// Global wall-clock budget for the whole handler (all models × attempts).
+// Bounds the worst case well under the edge proxy timeout so the client never
+// sees an aborted /api/ai request. Once exceeded we stop retrying and return.
+const TOTAL_DEADLINE_MS = 45000;
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -136,10 +146,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const models = getGeminiModels();
   let lastStatus = 500;
   let lastError = 'Unknown AI provider error';
+  const deadline = Date.now() + TOTAL_DEADLINE_MS;
 
   try {
     for (const model of models) {
       for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        // Stop before another upstream call could overrun the edge proxy timeout.
+        if (Date.now() + REQUEST_TIMEOUT_MS > deadline) {
+          lastStatus = 504;
+          lastError = 'AI provider timeout (deadline budget exhausted)';
+          return res.status(lastStatus).json({ error: lastError });
+        }
+
         try {
           const { response, data } = await callGemini(apiKey, model, body);
 

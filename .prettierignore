@@ -19,6 +19,10 @@ docs/
 archive/
 output/
 ops/
+# Root-level hand-maintained markdown docs (specs, runbooks, strategy notes).
+# These are prose, not source — keep prettier away so format:check can gate code
+# without churning docs (see BLI-95).
+/*.md
 
 # Generated / vendored / platform artifacts
 android/

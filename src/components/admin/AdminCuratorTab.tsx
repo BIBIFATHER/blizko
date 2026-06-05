@@ -5,6 +5,7 @@ import { Card, Badge } from '../UI';
 import { AdminPillButton } from './adminPrimitives';
 import { createBooking } from '@/services/booking';
 import { useAdminWorkflowUI } from './adminWorkflowUI';
+import { explainCompatibility, type CompatibilityExplanation } from '@/core/compatibility/model';
 
 interface AdminCuratorTabProps {
   parents: ParentRequest[];
@@ -13,66 +14,24 @@ interface AdminCuratorTabProps {
   logAdminAction: (action: string, meta?: Record<string, unknown>) => void;
 }
 
-function norm(s?: string) {
-  return String(s ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/ё/g, 'е');
-}
+const levelOrder: Record<CompatibilityExplanation['level'], number> = {
+  strong: 3,
+  partial: 2,
+  needs_review: 1,
+  low_signal: 0,
+};
 
-function compatBreakdown(p: ParentRequest, n: NannyProfile): { score: number; reasons: string[] } {
-  let score = 0;
-  const reasons: string[] = [];
-  const pc = norm(p.city);
-  const nc = norm(n.city);
-  if (pc && nc && nc === pc) {
-    score += 3;
-    reasons.push('Один город');
-  } else if (pc && nc && (nc.includes(pc) || pc.includes(nc))) {
-    score += 1;
-    reasons.push('Близкая локация');
+function matchLevel(explanation: CompatibilityExplanation): { label: string; className: string } {
+  if (explanation.level === 'strong') {
+    return { label: explanation.levelLabel, className: 'bg-green-100 text-green-700' };
   }
-  if (n.isVerified) {
-    score += 2;
-    reasons.push('Личность подтверждена');
+  if (explanation.level === 'partial') {
+    return { label: explanation.levelLabel, className: 'bg-amber-100 text-amber-700' };
   }
-  const ps = norm(p.schedule);
-  const ns = norm(n.schedule);
-  if (ps && ns) {
-    if (ns === ps) {
-      score += 2;
-      reasons.push('График совпадает');
-    } else if (ns.includes('полный') && ps.includes('полный')) {
-      score += 1;
-      reasons.push('Оба — полный день');
-    } else if (ns.includes('частич') && ps.includes('частич')) {
-      score += 1;
-      reasons.push('Оба — частичная занятость');
-    }
+  if (explanation.level === 'needs_review') {
+    return { label: explanation.levelLabel, className: 'bg-rose-100 text-rose-700' };
   }
-  const pa = norm(p.childAge);
-  if (pa && n.childAges?.some((a) => norm(a).includes(pa) || pa.includes(norm(a)))) {
-    score += 1;
-    reasons.push('Опыт с возрастом ребёнка');
-  }
-  return { score, reasons };
-}
-
-const MAX_SCORE = 8;
-
-function scorePct(score: number) {
-  return Math.min(100, Math.round((score / MAX_SCORE) * 100));
-}
-
-function matchLevel(score: number): { label: string; className: string } {
-  const pct = scorePct(score);
-  if (pct >= 60) {
-    return { label: 'Сильное совпадение', className: 'bg-green-100 text-green-700' };
-  }
-  if (pct >= 30) {
-    return { label: 'Частичное совпадение', className: 'bg-amber-100 text-amber-700' };
-  }
-  return { label: 'Мало сигналов', className: 'bg-stone-100 text-stone-500' };
+  return { label: explanation.levelLabel, className: 'bg-stone-100 text-stone-500' };
 }
 
 function parentLabel(p: ParentRequest) {
@@ -110,10 +69,14 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
     if (!selectedParent) return [];
     return [...nannies]
       .map((n) => {
-        const { score, reasons } = compatBreakdown(selectedParent, n);
-        return { nanny: n, score, reasons };
+        const explanation = explainCompatibility(selectedParent, n);
+        return { nanny: n, explanation };
       })
-      .sort((a, b) => b.score - a.score);
+      .sort(
+        (a, b) =>
+          levelOrder[b.explanation.level] - levelOrder[a.explanation.level] ||
+          b.explanation.reasons.length - a.explanation.reasons.length,
+      );
   }, [selectedParent, nannies]);
 
   const handleAssign = async (nanny: NannyProfile) => {
@@ -213,8 +176,11 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
                 Няни для «{selectedParent.city}» · {nannies.length} всего
               </div>
               <div className="space-y-2">
-                {rankedNannies.map(({ nanny: n, score, reasons }) => {
-                  const level = matchLevel(score);
+                {rankedNannies.map(({ nanny: n, explanation }) => {
+                  const level = matchLevel(explanation);
+                  const visibleReasons = explanation.reasons
+                    .filter((reason) => reason.kind !== 'watchout')
+                    .slice(0, 4);
                   return (
                     <Card key={n.id} className="p-3!">
                       <div className="flex items-start justify-between gap-3">
@@ -238,21 +204,24 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
                               Возраст: {n.childAges.join(', ')}
                             </div>
                           )}
-                          {reasons.length > 0 && (
+                          {visibleReasons.length > 0 && (
                             <div className="mt-2">
                               <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-stone-400 mb-1">
                                 Почему подходит
                               </div>
                               <div className="flex flex-wrap gap-1">
-                                {reasons.map((r) => (
+                                {visibleReasons.map((r) => (
                                   <span
-                                    key={r}
+                                    key={r.id}
                                     className="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-[10px] font-medium"
                                   >
-                                    {r}
+                                    {r.title}
                                   </span>
                                 ))}
                               </div>
+                              <p className="mt-1.5 text-[11px] leading-snug text-stone-500">
+                                {explanation.curatorSummary}
+                              </p>
                             </div>
                           )}
                         </div>
@@ -272,9 +241,14 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
                           </AdminPillButton>
                         </div>
                       </div>
-                      {score === 0 && (
+                      {explanation.level === 'low_signal' && (
                         <div className="mt-1.5 text-[10px] text-stone-400 italic">
-                          Нет совпадений по городу / графику
+                          Мало данных: нужно уточнить профиль семьи или няни
+                        </div>
+                      )}
+                      {explanation.riskFlags.length > 0 && (
+                        <div className="mt-2 rounded-2xl bg-rose-50 px-3 py-2 text-[11px] text-rose-700">
+                          {explanation.nextQuestions[0]}
                         </div>
                       )}
                     </Card>

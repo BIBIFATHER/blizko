@@ -8,8 +8,8 @@ import { getDbPool } from '../_db.js';
 function getSupabaseAdminHeaders() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
   return {
-    'apikey': key,
-    'Authorization': `Bearer ${key}`,
+    apikey: key,
+    Authorization: `Bearer ${key}`,
     'Content-Type': 'application/json',
   };
 }
@@ -34,8 +34,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     // 1. Anonymize personal data payloads
-    await pool.query(`UPDATE parents SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
-    await pool.query(`UPDATE nannies SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
+    await pool.query(`UPDATE parents SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [
+      userId,
+    ]);
+    await pool.query(`UPDATE nannies SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [
+      userId,
+    ]);
 
     // 2. Delete support conversation
     await pool.query(
@@ -46,9 +50,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await pool.query(`DELETE FROM support_tickets WHERE family_id = $1`, [userId]);
 
     // 3. Nullify non-cascade FK references so auth user can be deleted
-    await pool.query(`UPDATE matching_outcomes SET parent_id = NULL WHERE parent_id = $1`, [userId]);
-    await pool.query(`UPDATE matching_outcomes SET nanny_id  = NULL WHERE nanny_id  = $1`, [userId]);
-    await pool.query(`UPDATE chat_messages    SET sender_id  = NULL WHERE sender_id  = $1`, [userId]);
+    await pool.query(`UPDATE matching_outcomes SET parent_id = NULL WHERE parent_id = $1`, [
+      userId,
+    ]);
+    await pool.query(`UPDATE matching_outcomes SET nanny_id  = NULL WHERE nanny_id  = $1`, [
+      userId,
+    ]);
+    await pool.query(`UPDATE chat_messages    SET sender_id  = NULL WHERE sender_id  = $1`, [
+      userId,
+    ]);
 
     // 4. Delete the auth user — cascades to parents, nannies, phone_otps, etc.
     const base = getSupabaseUrl();

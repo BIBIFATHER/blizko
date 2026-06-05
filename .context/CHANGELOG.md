@@ -2,6 +2,24 @@
 
 ---
 
+## 2026-06-05 (Fri)
+
+### fix(db): TYPE mismatch + атомарное удаление аккаунта
+
+- `20260101000000`: `chat_threads.match_id TEXT→UUID` (FK был невалиден, блокировал `db reset`)
+- `delete-account.ts`: SQL в транзакции BEGIN/ROLLBACK/COMMIT; auth.delete до COMMIT — откат при ошибке
+
+### BLI-94: In Progress (не Done)
+
+`supabase db reset` не верифицирован — требует Docker Desktop.
+После запуска Docker:
+```bash
+supabase start && supabase db reset && supabase db diff --linked
+```
+Закрывать BLI-94 только после чистого `db reset`.
+
+---
+
 ## 2026-06-04 (Thu) — BLI-97: revoke client grants на service-only таблицах
 
 ### Security

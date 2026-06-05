@@ -31,26 +31,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const userId = user.id;
   const pool = getDbPool();
+  const client = await pool.connect();
 
   try {
-    // 1. Anonymize personal data payloads
-    await pool.query(`UPDATE parents SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
-    await pool.query(`UPDATE nannies SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
+    await client.query('BEGIN');
 
-    // 2. Delete support conversation
-    await pool.query(
+    // Anonymize PII and clean up data within a transaction
+    await client.query(`UPDATE parents SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
+    await client.query(`UPDATE nannies SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
+    await client.query(
       `DELETE FROM support_messages
          WHERE ticket_id IN (SELECT id FROM support_tickets WHERE family_id = $1)`,
       [userId],
     );
-    await pool.query(`DELETE FROM support_tickets WHERE family_id = $1`, [userId]);
+    await client.query(`DELETE FROM support_tickets WHERE family_id = $1`, [userId]);
+    await client.query(`UPDATE matching_outcomes SET parent_id = NULL WHERE parent_id = $1`, [userId]);
+    await client.query(`UPDATE matching_outcomes SET nanny_id  = NULL WHERE nanny_id  = $1`, [userId]);
+    await client.query(`UPDATE chat_messages    SET sender_id  = NULL WHERE sender_id  = $1`, [userId]);
 
-    // 3. Nullify non-cascade FK references so auth user can be deleted
-    await pool.query(`UPDATE matching_outcomes SET parent_id = NULL WHERE parent_id = $1`, [userId]);
-    await pool.query(`UPDATE matching_outcomes SET nanny_id  = NULL WHERE nanny_id  = $1`, [userId]);
-    await pool.query(`UPDATE chat_messages    SET sender_id  = NULL WHERE sender_id  = $1`, [userId]);
-
-    // 4. Delete the auth user — cascades to parents, nannies, phone_otps, etc.
+    // Delete the auth user — this is outside the DB transaction (HTTP call).
+    // We attempt auth deletion BEFORE committing so we can roll back if it fails.
     const base = getSupabaseUrl();
     const delResp = await fetch(`${base}/auth/v1/admin/users/${userId}`, {
       method: 'DELETE',
@@ -58,14 +58,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     if (!delResp.ok) {
+      await client.query('ROLLBACK');
       const err = await delResp.text().catch(() => 'unknown');
-      console.error(`[delete-account] Supabase delete failed for ${userId}:`, err);
+      console.error(`[delete-account] Supabase auth delete failed for ${userId}:`, err);
       return res.status(500).json({ error: 'Failed to delete account' });
     }
 
+    await client.query('COMMIT');
     return res.status(200).json({ ok: true });
   } catch (e: any) {
+    await client.query('ROLLBACK').catch(() => {});
     console.error('[delete-account] Error:', e);
     return res.status(500).json({ error: 'Internal error' });
+  } finally {
+    client.release();
   }
 }

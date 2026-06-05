@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS chat_threads (
     type TEXT NOT NULL DEFAULT 'support' CHECK (type IN ('support', 'match')),
     family_id UUID REFERENCES auth.users(id),
     nanny_id UUID REFERENCES auth.users(id),
-    match_id TEXT REFERENCES parents(id),
+    match_id UUID REFERENCES parents(id),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- 6. Chat Messages

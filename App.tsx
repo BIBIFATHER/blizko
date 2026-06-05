@@ -210,6 +210,9 @@ export default function App() {
 
   // Remove HTML splash screen after minimum display time
   useEffect(() => {
+    // Signal that React mounted successfully (cancels the JS-load-timeout fallback)
+    window.dispatchEvent(new CustomEvent('blizko:app-ready'));
+
     const splash = document.getElementById('blizko-splash');
     if (!splash) return;
 

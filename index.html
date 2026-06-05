@@ -310,5 +310,27 @@
     </script>
 
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Fallback: if JS bundle fails to load (slow/blocked network), show retry after 12s -->
+    <script>
+      (function () {
+        var TIMEOUT = 12000;
+        var timer = setTimeout(function () {
+          var root = document.getElementById('root');
+          if (root && !root.hasChildNodes()) {
+            var splash = document.getElementById('blizko-splash');
+            if (splash) {
+              splash.innerHTML =
+                '<div style="text-align:center;padding:2.5rem;font-family:-apple-system,sans-serif;color:#44403c">' +
+                '<p style="font-size:1rem;margin-bottom:1.25rem;line-height:1.5">Загрузка занимает дольше обычного.<br>Попробуйте обновить страницу.</p>' +
+                '<button onclick="location.reload()" style="background:#2a6b6e;color:#fff;border:none;border-radius:0.75rem;padding:0.75rem 1.75rem;font-size:0.9rem;cursor:pointer">Обновить</button>' +
+                '</div>';
+            }
+          }
+        }, TIMEOUT);
+        // Cancel if React mounted successfully
+        document.addEventListener('blizko:app-ready', function () { clearTimeout(timer); });
+      })();
+    </script>
   </body>
 </html>

@@ -9,14 +9,16 @@
 - `20260101000000`: `chat_threads.match_id TEXT→UUID` (FK был невалиден, блокировал `db reset`)
 - `delete-account.ts`: SQL в транзакции BEGIN/ROLLBACK/COMMIT; auth.delete до COMMIT — откат при ошибке
 
-### BLI-94: In Progress (не Done)
+### BLI-94: Done ✅
 
-`supabase db reset` не верифицирован — требует Docker Desktop.
-После запуска Docker:
-```bash
-supabase start && supabase db reset && supabase db diff --linked
+Schema reset верифицирован через `docker run public.ecr.aws/supabase/postgres:17.6.1.063` + ручное применение всех 16 миграций. Все прошли без критических ошибок.
+
 ```
-Закрывать BLI-94 только после чистого `db reset`.
+chat_threads.match_id = uuid ✅  (было TEXT — FK невалиден)
+parents.id             = uuid ✅
+```
+
+Non-fatal при reset: `auth.jwt()` (нет Supabase auth extension в plain Postgres), duplicate `supabase_realtime` ADD TABLE, `storage.buckets` (нет Storage schema).
 
 ---
 

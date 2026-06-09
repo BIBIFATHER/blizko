@@ -2,6 +2,52 @@
 
 ---
 
+## 2026-06-09 (Tue) — URGENT: authenticated chat сломан (BLI-97 × chat policy)
+
+### Симптом
+
+`authenticated` (любой клиент по JWT) не мог читать/писать `chat_messages` в
+проде с ~06-04: `ERROR 42501: permission denied for table support_agents`.
+
+### Root cause
+
+BLI-97 (`20260604140000`) сделал `REVOKE ALL ON public.support_agents FROM
+anon, authenticated`. Но политики `chat_messages` SELECT/INSERT
+(`20260602153000`) ссылаются на `public.support_agents` инлайн через
+`EXISTS (... FROM public.support_agents ...)`. Postgres проверяет привилегии на
+таблицы из RLS-политики **на этапе планирования**, до оценки строк → отказ
+независимо от числа строк. Smoke `check_chat_messages_rls.sh` это и ловил
+(краснота = реальный prod-баг, не дефект теста).
+
+### Fix
+
+- `20260609000000_fix_chat_messages_support_agent_definer.sql` (вся миграция в
+  одной транзакции — `BEGIN` перед `CREATE FUNCTION`):
+  `public.can_current_user_access_support_thread(p_thread_id uuid)` —
+  `SECURITY DEFINER`, `LANGUAGE sql`, `STABLE`, `SET search_path = ''`;
+  `REVOKE ALL ... FROM PUBLIC` + `GRANT EXECUTE ... TO authenticated`. Обе
+  политики `chat_messages` зовут функцию вместо инлайн-`support_agents`.
+- Функция обходит RLS для **двух** таблиц: `support_agents` (членство, revoked
+  BLI-97) и `chat_threads` (агент не участник треда → его RLS иначе скрыл бы
+  support-тред, и проверка членства не дала бы доступ). Аргумент — `thread_id`
+  строки (не user_id): узкий boolean-API, нельзя пробить произвольного юзера.
+- BLI-97 `REVOKE` **сохранён** — клиент по-прежнему не читает `support_agents`
+  напрямую; доступ только через definer-функцию.
+- Smoke расширен: функция existует, `SECURITY DEFINER`, ровно `(p_thread_id uuid)`,
+  `search_path=''`, PUBLIC без EXECUTE, authenticated с EXECUTE; `authenticated`
+  direct `SELECT support_agents` остаётся `permission denied`.
+- Добавлена positive-matrix `scripts/sql/chat_messages_rls_matrix.sql`
+  (`check:chat-rls-matrix`): participant read/write своего треда, outsider denied,
+  support-agent только в support-треде, anon denied, support_agents direct denied.
+
+### Verified
+
+- `check:chat-rls-matrix` против прода (`BEGIN … ROLLBACK`, прод не изменён):
+  все 7 сценариев зелёные (`matrix-ok`).
+- Apply в прод — под deploy-gate (approve): `execute_sql` DDL, затем
+  `supabase migration repair 20260609000000 --status applied --linked`,
+  `migration list`, `db push --dry-run`; затем production RLS smoke.
+
 ## 2026-06-08 (Mon) — fix(vercel): разморозка деплоя (Hobby ≤12 функций)
 
 ### Проблема

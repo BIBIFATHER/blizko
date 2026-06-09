@@ -83,6 +83,62 @@ BEGIN
   END IF;
 END $$;
 ROLLBACK;
+
+-- The support-agent branch of the chat_messages policy must run through the
+-- SECURITY DEFINER helper, otherwise authenticated cannot evaluate the policy
+-- at all (permission denied on support_agents at plan time). Assert the helper
+-- exists with the expected hardening.
+DO $$
+DECLARE
+  fn_oid oid;
+  fn_secdef boolean;
+  fn_nargs integer;
+  fn_argtypes text;
+  fn_config text[];
+BEGIN
+  SELECT p.oid, p.prosecdef, p.pronargs, pg_get_function_identity_arguments(p.oid), p.proconfig
+    INTO fn_oid, fn_secdef, fn_nargs, fn_argtypes, fn_config
+  FROM pg_proc p
+  JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'public'
+    AND p.proname = 'can_current_user_access_support_thread';
+
+  IF fn_oid IS NULL THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() is missing';
+  END IF;
+  IF NOT fn_secdef THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() is not SECURITY DEFINER';
+  END IF;
+  IF fn_nargs <> 1 OR fn_argtypes <> 'p_thread_id uuid' THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() must take exactly (p_thread_id uuid) (got %)', fn_argtypes;
+  END IF;
+  -- Postgres stores `SET search_path = ''` as either `search_path=` or
+  -- `search_path=""` depending on version; accept both (both mean empty).
+  IF fn_config IS NULL
+     OR NOT ('search_path=' = ANY(fn_config) OR 'search_path=""' = ANY(fn_config)) THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() must SET search_path = '''' (got %)', fn_config;
+  END IF;
+  IF has_function_privilege('public', fn_oid, 'EXECUTE') THEN
+    RAISE EXCEPTION 'PUBLIC must NOT have EXECUTE on can_current_user_access_support_thread()';
+  END IF;
+  IF NOT has_function_privilege('authenticated', fn_oid, 'EXECUTE') THEN
+    RAISE EXCEPTION 'authenticated must have EXECUTE on can_current_user_access_support_thread()';
+  END IF;
+END $$;
+
+-- BLI-97 invariant must hold: client roles still cannot read support_agents
+-- directly. The definer helper is the only sanctioned path.
+BEGIN;
+SET LOCAL ROLE authenticated;
+DO $$
+BEGIN
+  PERFORM 1 FROM public.support_agents;
+  RAISE EXCEPTION 'authenticated can read support_agents directly — BLI-97 regressed';
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    NULL; -- expected: REVOKE from BLI-97 still in effect
+END $$;
+ROLLBACK;
 SQL
 
 if [[ -n "$DATABASE_URL" ]]; then

@@ -112,7 +112,10 @@ BEGIN
   IF fn_nargs <> 1 OR fn_argtypes <> 'p_thread_id uuid' THEN
     RAISE EXCEPTION 'can_current_user_access_support_thread() must take exactly (p_thread_id uuid) (got %)', fn_argtypes;
   END IF;
-  IF fn_config IS NULL OR NOT ('search_path=' = ANY(fn_config)) THEN
+  -- Postgres stores `SET search_path = ''` as either `search_path=` or
+  -- `search_path=""` depending on version; accept both (both mean empty).
+  IF fn_config IS NULL
+     OR NOT ('search_path=' = ANY(fn_config) OR 'search_path=""' = ANY(fn_config)) THEN
     RAISE EXCEPTION 'can_current_user_access_support_thread() must SET search_path = '''' (got %)', fn_config;
   END IF;
   IF has_function_privilege('public', fn_oid, 'EXECUTE') THEN

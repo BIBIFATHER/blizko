@@ -2,6 +2,41 @@
 
 ---
 
+## 2026-06-09 (Tue) — URGENT: authenticated chat сломан (BLI-97 × chat policy)
+
+### Симптом
+
+`authenticated` (любой клиент по JWT) не мог читать/писать `chat_messages` в
+проде с ~06-04: `ERROR 42501: permission denied for table support_agents`.
+
+### Root cause
+
+BLI-97 (`20260604140000`) сделал `REVOKE ALL ON public.support_agents FROM
+anon, authenticated`. Но политики `chat_messages` SELECT/INSERT
+(`20260602153000`) ссылаются на `public.support_agents` инлайн через
+`EXISTS (... FROM public.support_agents ...)`. Postgres проверяет привилегии на
+таблицы из RLS-политики **на этапе планирования**, до оценки строк → отказ
+независимо от числа строк. Smoke `check_chat_messages_rls.sh` это и ловил
+(краснота = реальный prod-баг, не дефект теста).
+
+### Fix
+
+- `20260609000000_fix_chat_messages_support_agent_definer.sql`:
+  `public.is_current_user_support_agent()` — `SECURITY DEFINER`, `LANGUAGE sql`,
+  `STABLE`, `SET search_path = ''`, без аргументов (всегда текущий юзер);
+  `REVOKE ALL ... FROM PUBLIC` + `GRANT EXECUTE ... TO authenticated`. Обе
+  политики `chat_messages` зовут функцию вместо инлайн-`support_agents`.
+- BLI-97 `REVOKE` **сохранён** — клиент по-прежнему не читает `support_agents`
+  напрямую; доступ только через definer-функцию.
+- Smoke расширен: функция existует+`SECURITY DEFINER`; `authenticated` direct
+  `SELECT support_agents` → должно оставаться `permission denied`.
+
+### Verified
+
+- Dry-run против прода (`BEGIN … ROLLBACK`, прод не изменён): с фиксом
+  `authenticated SELECT count(*) chat_messages` = 0 без ошибки.
+- Apply в прод — под deploy-gate (approve), затем полный RLS smoke.
+
 ## 2026-06-08 (Mon) — fix(vercel): разморозка деплоя (Hobby ≤12 функций)
 
 ### Проблема

@@ -83,6 +83,38 @@ BEGIN
   END IF;
 END $$;
 ROLLBACK;
+
+-- The support-agent branch of the chat_messages policy must run through the
+-- SECURITY DEFINER helper, otherwise authenticated cannot evaluate the policy
+-- at all (permission denied on support_agents at plan time). Assert it exists
+-- and is SECURITY DEFINER.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public'
+      AND p.proname = 'is_current_user_support_agent'
+      AND p.prosecdef
+  ) THEN
+    RAISE EXCEPTION 'is_current_user_support_agent() is missing or not SECURITY DEFINER';
+  END IF;
+END $$;
+
+-- BLI-97 invariant must hold: client roles still cannot read support_agents
+-- directly. The definer helper is the only sanctioned path.
+BEGIN;
+SET LOCAL ROLE authenticated;
+DO $$
+BEGIN
+  PERFORM 1 FROM public.support_agents;
+  RAISE EXCEPTION 'authenticated can read support_agents directly — BLI-97 regressed';
+EXCEPTION
+  WHEN insufficient_privilege THEN
+    NULL; -- expected: REVOKE from BLI-97 still in effect
+END $$;
+ROLLBACK;
 SQL
 
 if [[ -n "$DATABASE_URL" ]]; then

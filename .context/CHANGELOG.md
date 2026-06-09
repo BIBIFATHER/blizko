@@ -21,21 +21,32 @@ anon, authenticated`. Но политики `chat_messages` SELECT/INSERT
 
 ### Fix
 
-- `20260609000000_fix_chat_messages_support_agent_definer.sql`:
-  `public.is_current_user_support_agent()` — `SECURITY DEFINER`, `LANGUAGE sql`,
-  `STABLE`, `SET search_path = ''`, без аргументов (всегда текущий юзер);
+- `20260609000000_fix_chat_messages_support_agent_definer.sql` (вся миграция в
+  одной транзакции — `BEGIN` перед `CREATE FUNCTION`):
+  `public.can_current_user_access_support_thread(p_thread_id uuid)` —
+  `SECURITY DEFINER`, `LANGUAGE sql`, `STABLE`, `SET search_path = ''`;
   `REVOKE ALL ... FROM PUBLIC` + `GRANT EXECUTE ... TO authenticated`. Обе
   политики `chat_messages` зовут функцию вместо инлайн-`support_agents`.
+- Функция обходит RLS для **двух** таблиц: `support_agents` (членство, revoked
+  BLI-97) и `chat_threads` (агент не участник треда → его RLS иначе скрыл бы
+  support-тред, и проверка членства не дала бы доступ). Аргумент — `thread_id`
+  строки (не user_id): узкий boolean-API, нельзя пробить произвольного юзера.
 - BLI-97 `REVOKE` **сохранён** — клиент по-прежнему не читает `support_agents`
   напрямую; доступ только через definer-функцию.
-- Smoke расширен: функция existует+`SECURITY DEFINER`; `authenticated` direct
-  `SELECT support_agents` → должно оставаться `permission denied`.
+- Smoke расширен: функция existует, `SECURITY DEFINER`, ровно `(p_thread_id uuid)`,
+  `search_path=''`, PUBLIC без EXECUTE, authenticated с EXECUTE; `authenticated`
+  direct `SELECT support_agents` остаётся `permission denied`.
+- Добавлена positive-matrix `scripts/sql/chat_messages_rls_matrix.sql`
+  (`check:chat-rls-matrix`): participant read/write своего треда, outsider denied,
+  support-agent только в support-треде, anon denied, support_agents direct denied.
 
 ### Verified
 
-- Dry-run против прода (`BEGIN … ROLLBACK`, прод не изменён): с фиксом
-  `authenticated SELECT count(*) chat_messages` = 0 без ошибки.
-- Apply в прод — под deploy-gate (approve), затем полный RLS smoke.
+- `check:chat-rls-matrix` против прода (`BEGIN … ROLLBACK`, прод не изменён):
+  все 7 сценариев зелёные (`matrix-ok`).
+- Apply в прод — под deploy-gate (approve): `execute_sql` DDL, затем
+  `supabase migration repair 20260609000000 --status applied --linked`,
+  `migration list`, `db push --dry-run`; затем production RLS smoke.
 
 ## 2026-06-08 (Mon) — fix(vercel): разморозка деплоя (Hobby ≤12 функций)
 

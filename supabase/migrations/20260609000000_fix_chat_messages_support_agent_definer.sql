@@ -9,17 +9,24 @@
 -- chat_messages failed with `42501: permission denied for table support_agents`
 -- regardless of row count. Chat was broken in prod since BLI-97 (~2026-06-04).
 --
--- Fix: move the support-agent membership check into a SECURITY DEFINER helper that
--- runs as its owner (which retains access to support_agents). The policies call the
--- helper instead of touching support_agents directly, so `authenticated` needs only
--- EXECUTE on the function — the BLI-97 REVOKE stays in place and clients still cannot
--- read support_agents directly.
+-- Fix: move the whole support-agent branch into a SECURITY DEFINER helper that runs
+-- as its owner. It must bypass RLS for TWO relations:
+--   1. public.support_agents — to check membership (revoked from clients by BLI-97);
+--   2. public.chat_threads    — a support agent is NOT a thread participant, so the
+--      agent's own RLS on chat_threads would otherwise hide the support thread and
+--      the membership check alone would never grant access.
+-- The helper takes the row's own thread_id (a thread reference, never a user id) and
+-- returns a narrow boolean. `authenticated` needs only EXECUTE on it — the BLI-97
+-- REVOKE stays in place and clients still cannot read support_agents directly.
 --
--- Hardening: SET search_path = '' (no mutable search_path; every object is
--- schema-qualified), no arguments (always the current user — cannot probe arbitrary
--- UUIDs), STABLE, EXECUTE granted only to authenticated.
+-- Hardening: SECURITY DEFINER, STABLE, SET search_path = '' (every object schema-
+-- qualified), EXECUTE granted only to authenticated.
+--
+-- Whole migration is one transaction: if a policy fails, the function and grants
+-- roll back too (no half-applied state).
+BEGIN;
 
-CREATE OR REPLACE FUNCTION public.is_current_user_support_agent()
+CREATE OR REPLACE FUNCTION public.can_current_user_access_support_thread(p_thread_id uuid)
 RETURNS boolean
 LANGUAGE sql
 STABLE
@@ -27,18 +34,17 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
   SELECT EXISTS (
-    SELECT 1
-    FROM public.support_agents
-    WHERE user_id = auth.uid()
+    SELECT 1 FROM public.support_agents WHERE user_id = auth.uid()
+  )
+  AND EXISTS (
+    SELECT 1 FROM public.chat_threads WHERE id = p_thread_id AND type = 'support'
   );
 $$;
 
-REVOKE ALL ON FUNCTION public.is_current_user_support_agent() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.is_current_user_support_agent() TO authenticated;
+REVOKE ALL ON FUNCTION public.can_current_user_access_support_thread(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.can_current_user_access_support_thread(uuid) TO authenticated;
 
-BEGIN;
-
--- SELECT: thread participant, or a support agent inside a support thread.
+-- SELECT: thread participant, or a support agent on a support thread (via helper).
 DROP POLICY IF EXISTS "chat_messages_select_participant" ON public.chat_messages;
 CREATE POLICY "chat_messages_select_participant"
 ON public.chat_messages
@@ -52,19 +58,11 @@ USING (
     WHERE p.thread_id = chat_messages.thread_id
       AND p.user_id = auth.uid()
   )
-  OR (
-    public.is_current_user_support_agent()
-    AND EXISTS (
-      SELECT 1
-      FROM public.chat_threads t
-      WHERE t.id = chat_messages.thread_id
-        AND t.type = 'support'
-    )
-  )
+  OR public.can_current_user_access_support_thread(chat_messages.thread_id)
 );
 
--- INSERT: sender must be the user, and either a participant or a support agent in a
--- support thread.
+-- INSERT: sender must be the user, and either a participant or a support agent on a
+-- support thread (via helper).
 DROP POLICY IF EXISTS "chat_messages_insert_participant" ON public.chat_messages;
 CREATE POLICY "chat_messages_insert_participant"
 ON public.chat_messages
@@ -81,15 +79,7 @@ WITH CHECK (
         WHERE p.thread_id = chat_messages.thread_id
           AND p.user_id = auth.uid()
       )
-      OR (
-        public.is_current_user_support_agent()
-        AND EXISTS (
-          SELECT 1
-          FROM public.chat_threads t
-          WHERE t.id = chat_messages.thread_id
-            AND t.type = 'support'
-        )
-      )
+      OR public.can_current_user_access_support_thread(chat_messages.thread_id)
     )
   )
 );

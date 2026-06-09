@@ -86,19 +86,40 @@ ROLLBACK;
 
 -- The support-agent branch of the chat_messages policy must run through the
 -- SECURITY DEFINER helper, otherwise authenticated cannot evaluate the policy
--- at all (permission denied on support_agents at plan time). Assert it exists
--- and is SECURITY DEFINER.
+-- at all (permission denied on support_agents at plan time). Assert the helper
+-- exists with the expected hardening.
 DO $$
+DECLARE
+  fn_oid oid;
+  fn_secdef boolean;
+  fn_nargs integer;
+  fn_argtypes text;
+  fn_config text[];
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM pg_proc p
-    JOIN pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname = 'public'
-      AND p.proname = 'is_current_user_support_agent'
-      AND p.prosecdef
-  ) THEN
-    RAISE EXCEPTION 'is_current_user_support_agent() is missing or not SECURITY DEFINER';
+  SELECT p.oid, p.prosecdef, p.pronargs, pg_get_function_identity_arguments(p.oid), p.proconfig
+    INTO fn_oid, fn_secdef, fn_nargs, fn_argtypes, fn_config
+  FROM pg_proc p
+  JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'public'
+    AND p.proname = 'can_current_user_access_support_thread';
+
+  IF fn_oid IS NULL THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() is missing';
+  END IF;
+  IF NOT fn_secdef THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() is not SECURITY DEFINER';
+  END IF;
+  IF fn_nargs <> 1 OR fn_argtypes <> 'p_thread_id uuid' THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() must take exactly (p_thread_id uuid) (got %)', fn_argtypes;
+  END IF;
+  IF fn_config IS NULL OR NOT ('search_path=' = ANY(fn_config)) THEN
+    RAISE EXCEPTION 'can_current_user_access_support_thread() must SET search_path = '''' (got %)', fn_config;
+  END IF;
+  IF has_function_privilege('public', fn_oid, 'EXECUTE') THEN
+    RAISE EXCEPTION 'PUBLIC must NOT have EXECUTE on can_current_user_access_support_thread()';
+  END IF;
+  IF NOT has_function_privilege('authenticated', fn_oid, 'EXECUTE') THEN
+    RAISE EXCEPTION 'authenticated must have EXECUTE on can_current_user_access_support_thread()';
   END IF;
 END $$;
 

@@ -12,6 +12,7 @@
 --   s4 support agent reads a match thread          => 0
 --   s5 anon reads chat_messages                    => 0
 --   s6a outsider INSERT into match thread          => blocked
+--   s6b participant INSERT into own match thread   => allowed
 --   s6c support agent INSERT into support thread   => allowed
 --   s7 authenticated direct SELECT support_agents  => permission denied (BLI-97 holds)
 
@@ -77,6 +78,12 @@ DO $$ BEGIN
   INSERT INTO public.chat_messages(thread_id, sender_id, text) VALUES('dddddddd-dddd-4ddd-8ddd-dddddddddddd','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb','x');
   RAISE EXCEPTION 's6a outsider INSERT into match thread succeeded — should be blocked';
 EXCEPTION WHEN insufficient_privilege THEN NULL; END $$;
+
+-- s6b participant INSERT into own (match) thread must be allowed
+SELECT set_config('request.jwt.claims', '{"sub":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","role":"authenticated"}', true);
+DO $$ BEGIN
+  INSERT INTO public.chat_messages(thread_id, sender_id, text) VALUES('dddddddd-dddd-4ddd-8ddd-dddddddddddd','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','participant-msg');
+EXCEPTION WHEN others THEN RAISE EXCEPTION 's6b participant INSERT into own thread blocked: %', SQLERRM; END $$;
 
 -- s6c support agent INSERT into support thread must be allowed
 SELECT set_config('request.jwt.claims', '{"sub":"cccccccc-cccc-4ccc-8ccc-cccccccccccc","role":"authenticated"}', true);

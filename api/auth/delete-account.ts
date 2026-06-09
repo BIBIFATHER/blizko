@@ -8,8 +8,8 @@ import { getDbPool } from '../_db.js';
 function getSupabaseAdminHeaders() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
   return {
-    'apikey': key,
-    'Authorization': `Bearer ${key}`,
+    apikey: key,
+    Authorization: `Bearer ${key}`,
     'Content-Type': 'application/json',
   };
 }
@@ -37,17 +37,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await client.query('BEGIN');
 
     // Anonymize PII and clean up data within a transaction
-    await client.query(`UPDATE parents SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
-    await client.query(`UPDATE nannies SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [userId]);
+    await client.query(`UPDATE parents SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [
+      userId,
+    ]);
+    await client.query(`UPDATE nannies SET payload = '{}', updated_at = NOW() WHERE user_id = $1`, [
+      userId,
+    ]);
     await client.query(
       `DELETE FROM support_messages
          WHERE ticket_id IN (SELECT id FROM support_tickets WHERE family_id = $1)`,
       [userId],
     );
     await client.query(`DELETE FROM support_tickets WHERE family_id = $1`, [userId]);
-    await client.query(`UPDATE matching_outcomes SET parent_id = NULL WHERE parent_id = $1`, [userId]);
-    await client.query(`UPDATE matching_outcomes SET nanny_id  = NULL WHERE nanny_id  = $1`, [userId]);
-    await client.query(`UPDATE chat_messages    SET sender_id  = NULL WHERE sender_id  = $1`, [userId]);
+    await client.query(`UPDATE matching_outcomes SET parent_id = NULL WHERE parent_id = $1`, [
+      userId,
+    ]);
+    await client.query(`UPDATE matching_outcomes SET nanny_id  = NULL WHERE nanny_id  = $1`, [
+      userId,
+    ]);
+    await client.query(`UPDATE chat_messages    SET sender_id  = NULL WHERE sender_id  = $1`, [
+      userId,
+    ]);
 
     // Delete the auth user — this is outside the DB transaction (HTTP call).
     // We attempt auth deletion BEFORE committing so we can roll back if it fails.

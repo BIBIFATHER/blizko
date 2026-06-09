@@ -33,7 +33,7 @@ vi.mock('./_shared.js', async () => {
 });
 
 import handler from './finalize';
-import { createMockResponse } from '../testUtils';
+import { createMockResponse } from '../_testUtils';
 
 describe('api/payments/finalize handler', () => {
   beforeEach(() => {

@@ -23,7 +23,7 @@ vi.mock('../_audit.js', () => ({
 }));
 
 import handler from './phone';
-import { createMockResponse } from '../testUtils';
+import { createMockResponse } from '../_testUtils';
 
 describe('api/auth/phone handler', () => {
   const originalEnv = { ...process.env };

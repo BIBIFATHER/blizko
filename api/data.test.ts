@@ -28,7 +28,7 @@ vi.mock('./_db.js', () => ({
 }));
 
 import handler from './data';
-import { createMockResponse } from './testUtils';
+import { createMockResponse } from './_testUtils';
 
 describe('api/data handler', () => {
   beforeEach(() => {

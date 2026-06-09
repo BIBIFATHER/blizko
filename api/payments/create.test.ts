@@ -21,7 +21,7 @@ vi.mock('../_db.js', () => ({
 }));
 
 import handler from './create';
-import { createMockResponse } from '../testUtils';
+import { createMockResponse } from '../_testUtils';
 
 describe('api/payments/create handler', () => {
   const originalEnv = { ...process.env };

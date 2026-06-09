@@ -2,6 +2,38 @@
 
 ---
 
+## 2026-06-08 (Mon) — fix(vercel): разморозка деплоя (Hobby ≤12 функций)
+
+### Проблема
+
+Все деплои Error ~5 дней (prod + preview): build OK → `Deploying outputs` →
+Error. Прод заморожен на 5-дневном Ready-билде, фиксы не доезжали.
+
+### Root cause
+
+- `api/testUtils.ts` — тест-хелпер (импортит `vitest`, без default-handler,
+  используется только `*.test.ts`) лежал в `api/` → Vercel билдил его как
+  serverless-функцию → падёж на бандлинге.
+- Всего **14** функций при Hobby-лимите **12** (рост: BLI-36 delete-account и пр.).
+
+### Fix (логика не тронута, только ре-вайр)
+
+- `api/testUtils.ts` → `api/_testUtils.ts` (`_`-префикс → Vercel не строит как
+  функцию); обновлены 5 импортов в `*.test.ts`.
+- 2 cron → `_`-хелперы (`_ghosted-outcomes.ts`, `_update-matching-weights.ts`) +
+  один диспатчер `api/cron/index.ts` (`?job=...`); `vercel.json` crons обновлены.
+- Итог: **12** deployable-функций (ровно в лимит).
+
+### Verified
+
+- ✅ `tsc --noEmit` · `vitest` 85 passed · `vite build`.
+- Деплой — под deploy-gate (твой approve).
+
+> Запас нулевой (12/12). Следующая новая функция снова упрётся → тогда слить
+> payments в роутер (→10) или Pro.
+
+---
+
 ## 2026-06-05 (Fri)
 
 ### fix(db): TYPE mismatch + атомарное удаление аккаунта

@@ -575,9 +575,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                   Восстановить аккаунт будет невозможно.
                 </p>
               </div>
-              {deleteError && (
-                <p className="text-xs text-red-500 text-center">{deleteError}</p>
-              )}
+              {deleteError && <p className="text-xs text-red-500 text-center">{deleteError}</p>}
               <div className="flex flex-col gap-2">
                 <button
                   onClick={handleDeleteAccount}
@@ -587,7 +585,10 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
                   {deleteLoading ? 'Удаляем...' : 'Да, удалить аккаунт'}
                 </button>
                 <button
-                  onClick={() => { setShowDeleteConfirm(false); setDeleteError(''); }}
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteError('');
+                  }}
                   disabled={deleteLoading}
                   className="w-full bg-stone-100 text-stone-700 rounded-xl py-3 text-sm font-medium hover:bg-stone-200 disabled:opacity-50 transition-colors"
                 >

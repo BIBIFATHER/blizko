@@ -4,11 +4,11 @@
   "framework": "vite",
   "crons": [
     {
-      "path": "/api/cron/ghosted-outcomes",
+      "path": "/api/cron?job=ghosted-outcomes",
       "schedule": "0 3 * * *"
     },
     {
-      "path": "/api/cron/update-matching-weights",
+      "path": "/api/cron?job=update-matching-weights",
       "schedule": "0 4 * * 1"
     }
   ],

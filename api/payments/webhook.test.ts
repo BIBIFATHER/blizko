@@ -25,7 +25,7 @@ vi.mock('./_shared.js', async () => {
 });
 
 import handler from './webhook';
-import { createMockResponse } from '../testUtils';
+import { createMockResponse } from '../_testUtils';
 
 const makeReq = () =>
   ({

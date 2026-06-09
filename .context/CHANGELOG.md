@@ -2,7 +2,6 @@
 
 ---
 
-<<<<<<< HEAD
 ## 2026-06-09 (Tue) — URGENT: authenticated chat сломан (BLI-97 × chat policy)
 
 ### Симптом
@@ -120,10 +119,34 @@ hand-built прод. Поэтому `db reset` с нуля падал, а baseli
 - `tsc --noEmit` ✅ · `vitest run` 85 passed ✅ · `vite build` ✅.
 - Прод **не тронут** — только read-only `db dump`/`db diff`.
 
+### Ре-верификация 06-09 (rebase на main + chat-fix в истории)
+
+- Ветка ребейзнута на `main`; `20260609000000_fix_chat_messages_support_agent_definer`
+  (chat-RLS, уже в проде через PR #12) включён в authoritative history — лежит в
+  `migrations/` **после** baseline, не в legacy.
+- `supabase start` / `db reset` (локально, Docker): **все 6 миграций применяются с
+  нуля чисто** — `00000000000000`, `00000000000001`, `20260527000000`,
+  `20260604130000`, `20260604140000`, `20260609000000` (NOTICE идемпотентны:
+  keepers поверх baseline). Падёж только на healthcheck `storage`-контейнера —
+  инфра, не миграция.
+- Schema ≡ prod подтверждено через Supabase MCP (CLI `--linked` был отрезан
+  TLS-throttle RU-сети): `parents.id`/`nannies.id` = `text` (baseline-авторитет, не
+  ложный UUID); definer-функция `can_current_user_access_support_thread(p_thread_id
+  uuid)` есть, `SECURITY DEFINER`; обе политики `chat_messages` ссылаются на неё.
+- Sverka `schema_migrations` (MCP): remote числит 10 старых fictional-версий +
+  `20260609000000`; local — 6 baseline-версий. Совпадает только `20260609000000`
+  (уже applied). Drift = **ровно** reverted/applied списки из runbook → ожидаем до
+  репейра.
+
+> **Требуется после merge** (deploy-gate, только метаданные): прод
+> `schema_migrations` ещё числит старые versions, не совпадающие с новыми
+> файлами → `db push` к проду попытается переприменить baseline. Runbook:
+> `supabase/PROD_HISTORY_REPAIR.md` (`supabase migration repair`, схему не меняет).
+> `20260609000000` уже applied (PR #12) — репейра не требует.
+
 > Замечание (вне scope, отдельные issue): `nannies_public` создан с
 > `security_invoker=false` (SECURITY DEFINER, ERROR-адвайзер) — захвачен в baseline
 > как есть; флип на invoker — отдельный риск-план.
->>>>>>> 4248760 (fix(db): authoritative prod baseline — migration history ≡ prod (BLI-94))
 
 ---
 

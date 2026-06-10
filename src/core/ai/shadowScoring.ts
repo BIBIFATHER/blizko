@@ -35,8 +35,10 @@ export function logShadowScores(
   parentId?: string,
   wildcardId?: string | null,
 ): void {
-  _logShadowScoresAsync(ranked, requestId, parentId, wildcardId).catch(() => {
-    // Silent fail — shadow scoring must never break matching
+  _logShadowScoresAsync(ranked, requestId, parentId, wildcardId).catch((err) => {
+    // Must never break matching — but log so a persistent failure (e.g. a
+    // schema drift like BLI-98) is visible instead of silently swallowed.
+    console.error('[shadowScoring] failed to log shadow scores:', err);
   });
 }
 
@@ -65,9 +67,16 @@ async function _logShadowScoresAsync(
     // update display_position, explore_flag, score_at_match to reflect the latest
     // context before the outcome decision. outcome is absent from the row object
     // so Supabase never overwrites it in the UPDATE SET.
-    await supabase.from('matching_outcomes').upsert(rows, { onConflict: 'parent_id,nanny_id' });
-  } catch {
-    // Silent fail
+    const { error } = await supabase
+      .from('matching_outcomes')
+      .upsert(rows, { onConflict: 'parent_id,nanny_id' });
+    if (error) {
+      // Non-throwing (caller is fire-and-forget) but never silent: a schema
+      // mismatch (BLI-98) surfaces here as a PostgREST error instead of vanishing.
+      console.error('[shadowScoring] matching_outcomes upsert error:', error);
+    }
+  } catch (err) {
+    console.error('[shadowScoring] unexpected error during shadow score upsert:', err);
   }
 }
 

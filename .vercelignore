@@ -13,6 +13,13 @@ memory/
 *.tgz
 *.zip
 
+# Test files must never be deployed as Serverless Functions. Vercel turns every
+# non-`_` file under api/ into a function — INCLUDING *.test.ts — which both
+# wastes the Hobby 12-function budget and exposes phantom /api/*.test endpoints.
+*.test.ts
+*.test.tsx
+*.handler.test.ts
+
 .env
 .env.local
 .env.*.local

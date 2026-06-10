@@ -2,6 +2,42 @@
 
 ---
 
+## 2026-06-10 (Wed) — Vercel: деплой падал из-за 8 фантомных test-функций
+
+### Истинный корень (ground truth из `vercel build`)
+
+Локальный `vercel build` кладёт в `.vercel/output/functions/` **19** функций, не
+12. Vercel превращает в Serverless Function **каждый** не-`_` файл под `api/` —
+**включая `*.test.ts`**. 8 тест-файлов (`api/data.test`, `api/cron/index.test`,
+`api/auth/phone.test`, `api/auth/phone.handler.test`, `api/payments/{create,
+finalize,webhook}.test`, и др.) деплоились как функции → 11 реальных + 8 фантомных
+= 19 > Hobby-лимит 12 → `exceeded_serverless_functions_per_deployment` на
+`patchBuild`. Это и есть многодневная «Versal опять», а не флап на 12.
+Побочно — латентная экспозиция: `/api/data.test`, `/api/payments/webhook.test` —
+живые задеплоенные эндпоинты.
+
+### Fix (config + ре-вайр, логика не тронута) — 19 → 11
+
+- `.vercelignore`: `*.test.ts`, `*.test.tsx`, `*.handler.test.ts` — Vercel больше
+  не видит тест-файлы → −8 фантомных функций. (CI vitest их по-прежнему гоняет —
+  `.vercelignore` влияет только на деплой.)
+- Консолидация двух public-GET read-only эндпоинтов (минимальный prod-риск из
+  сравнения пар; `phone+delete-account` и `ai+ai-support` отклонены — auth/security
+  границы): `api/nannies.ts` → `api/_nannies.ts` (helper), `api/geocode.ts` —
+  guard `?resource=nannies` делегирует в `_nannies`; `vercel.json` rewrite
+  `/api/nannies → /api/geocode?resource=nannies` (Vercel доклеивает `?id=…`).
+  Клиенты не меняются. `/api/geocode` нативный путь нетронут. −1 реальная функция.
+- `api/geocode.test.ts` — routing-тесты dispatch (теперь сам тоже не деплоится).
+
+### Verified
+
+- `vercel build` локально → `.vercel/output/functions/` = **11** (.func): 11
+  реальных handler'ов, ноль `.test`. Запас 1 под лимитом 12.
+- `tsc --noEmit` 0 · `eslint` 0 · `format:check` pass · `vitest` 27 файлов/94.
+- Деплой — под deploy-gate (approve).
+
+> Не зависит от PR #14 (BLI-98). payments сознательно не трогали.
+
 ## 2026-06-09 (Tue) — URGENT: authenticated chat сломан (BLI-97 × chat policy)
 
 ### Симптом

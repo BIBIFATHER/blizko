@@ -2,8 +2,16 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
+import nanniesHandler from './_nannies.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Shared public-read function to stay under the Vercel Hobby 12-function cap.
+  // `/api/nannies` is rewritten (vercel.json) to `/api/geocode?resource=nannies`
+  // and dispatched here; the public nanny lookup keeps its own CORS/method/rate
+  // limits inside the delegated handler. The native `/api/geocode` path (no
+  // `resource` param) falls through to the geocoder logic below, unchanged.
+  if (req.query.resource === 'nannies') return nanniesHandler(req, res);
+
   setCors(req.headers.origin, res);
 
   if (req.method === 'OPTIONS') return res.status(204).end();

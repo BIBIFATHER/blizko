@@ -21,6 +21,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/nannies",
+      "destination": "/api/geocode?resource=nannies"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

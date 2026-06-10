@@ -2,6 +2,43 @@
 
 ---
 
+## 2026-06-10 (Wed) — Vercel: запас под Hobby-лимит 12 функций (geocode+nannies)
+
+### Проблема
+
+Репозиторий прибит ровно к 12 serverless-функций (Hobby cap). Нулевой запас →
+preview-деплои периодически падают `exceeded_serverless_functions_per_deployment`
+на шаге `patchBuild` (граничный флап 12→13 на стороне Vercel). PR-проверки
+краснеют независимо от валидности кода (GitHub Actions при этом зелёные).
+
+### Выбор консолидации (по минимальному prod-риску)
+
+Сравнение пар: `phone`+`delete-account` (public-unauth ↔ authed DELETE-деструктив
+— макс. риск), `ai`+`ai-support` (authed ↔ public — router-баг снял бы auth с
+платного `/api/ai` → security/cost) — **отклонены**. Выбрана `geocode`+`nannies`:
+обе **public GET, read-only, без auth-границы**, без внешних/webhook-вызовов.
+`/api/geocode` (3 клиента) оставлен нативным и нетронутым; поглощён только
+`/api/nannies` (1 клиент).
+
+### Fix (логика не тронута, только ре-вайр) — 12 → 11
+
+- `api/nannies.ts` → `api/_nannies.ts` (`_`-префикс → Vercel не строит как
+  функцию). Содержимое идентично.
+- `api/geocode.ts` — тонкий guard в начале: `?resource=nannies` делегирует в
+  `_nannies` (со своими CORS/method/rate); иначе — прежняя geocode-логика без
+  изменений.
+- `vercel.json` rewrite `/api/nannies → /api/geocode?resource=nannies` (перед
+  SPA catch-all; Vercel доклеивает исходный `?id=…`). Клиенты не меняются.
+- `api/geocode.test.ts` — routing-тесты: dispatch resource=nannies (вкл. не-GET),
+  geocode-ветка без сети, неизвестный resource → geocoder.
+
+### Verified
+
+- `tsc --noEmit` 0 · `eslint` 0 · `format:check` pass · `vitest` 27 файлов/94.
+- Deployable-функций: **11** (запас 1). Деплой — под deploy-gate (approve).
+
+> Не зависит от PR #14 (BLI-98). payments сознательно не трогали.
+
 ## 2026-06-09 (Tue) — URGENT: authenticated chat сломан (BLI-97 × chat policy)
 
 ### Симптом

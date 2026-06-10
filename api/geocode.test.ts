@@ -46,6 +46,23 @@ describe('api/geocode — public-read dispatcher', () => {
     expect(nanniesHandler).toHaveBeenCalledWith(req, res);
   });
 
+  it('preserves the ?id query param through the rewrite (/api/nannies?id=… → delegate)', async () => {
+    // Vercel rewrites /api/nannies?id=X to /api/geocode?resource=nannies&id=X.
+    // The dispatcher must forward that request untouched so the nanny lookup
+    // still sees `id`. Capture the request the delegate actually receives.
+    let receivedQuery: Record<string, unknown> | undefined;
+    nanniesHandler.mockImplementationOnce(async (req: unknown) => {
+      receivedQuery = (req as VercelRequest).query as Record<string, unknown>;
+    });
+
+    const req = makeReq({ resource: 'nannies', id: 'abc123' });
+    const res = makeRes();
+
+    await handler(req, res);
+
+    expect(receivedQuery).toMatchObject({ resource: 'nannies', id: 'abc123' });
+  });
+
   it('dispatches the nannies resource before any method guard (delegate owns its own checks)', async () => {
     // Even a non-GET method must reach the delegate untouched — the geocoder's
     // 405 guard must not pre-empt the nanny route.

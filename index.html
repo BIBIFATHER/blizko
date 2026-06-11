@@ -15,7 +15,10 @@
       rel="preload"
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
     />
     <noscript>
       <link
@@ -329,7 +332,9 @@
           }
         }, TIMEOUT);
         // Cancel if React mounted successfully
-        document.addEventListener('blizko:app-ready', function () { clearTimeout(timer); });
+        document.addEventListener('blizko:app-ready', function () {
+          clearTimeout(timer);
+        });
       })();
     </script>
   </body>

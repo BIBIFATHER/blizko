@@ -102,6 +102,7 @@ export default [
   {
     ignores: [
       'dist/**',
+      '.vercel/**',
       'node_modules/**',
       '*.config.*',
       'api/**',

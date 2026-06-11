@@ -2,7 +2,14 @@ import fs from 'node:fs';
 import { chromium, type FullConfig } from '@playwright/test';
 import { createClient } from '@supabase/supabase-js';
 
-import { ADMIN_STATE, AUTH_DIR, PARENT_STATE, assertTestAuthAllowed, baseURL } from './support/env';
+import {
+  ADMIN_STATE,
+  AUTH_DIR,
+  PARENT_STATE,
+  assertE2EProject,
+  assertTestAuthAllowed,
+  baseURL,
+} from './support/env';
 
 /** Hard-fail (not skip) when a required preview secret is missing. */
 function requireEnv(name: string): string {
@@ -20,7 +27,7 @@ function supabaseRef(url: string): string {
 
 /** Parent: real UI OTP flow (test phone) -> persisted storageState. */
 async function createParentState(): Promise<void> {
-  const phone = process.env.TEST_OTP_PHONE || '+79000000000';
+  const phone = requireEnv('TEST_OTP_PHONE');
   const code = process.env.E2E_TEST_OTP_CODE || '000000';
 
   const browser = await chromium.launch();
@@ -106,6 +113,7 @@ async function createAdminState(): Promise<void> {
 
 export default async function globalSetup(_config: FullConfig): Promise<void> {
   assertTestAuthAllowed(); // fail-closed: E2E_TEST_AUTH=1 + allow-listed non-prod host
+  assertE2EProject(); // fail-closed: all creds target the declared E2E project, never prod
   fs.mkdirSync(AUTH_DIR, { recursive: true });
   await createParentState();
   await createAdminState();

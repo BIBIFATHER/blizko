@@ -1,0 +1,94 @@
+name: E2E Smoke (BLI-103)
+
+# Runs ONLY against a READY Vercel Preview deployment (never production). The
+# deployment_status event fires when Vercel finishes a deployment; we gate on
+# state == success and a non-Production environment, check out the EXACT deployed
+# commit SHA, and drive the smoke against its target_url.
+#
+# Secrets resolve from the protected `e2e-preview` GitHub Environment, which must
+# hold ONLY the dedicated E2E (non-production) Supabase project credentials.
+on:
+  deployment_status:
+
+jobs:
+  e2e-smoke:
+    name: Parent/admin deterministic smoke (5x)
+    runs-on: ubuntu-latest
+    environment: e2e-preview
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment != 'Production' &&
+      github.event.deployment_status.environment != 'production'
+    env:
+      PLAYWRIGHT_BASE_URL: ${{ github.event.deployment_status.target_url }}
+      GH_RUN_ID: ${{ github.run_id }}
+      E2E_TEST_AUTH: '1' # test-auth enabled ONLY in this job
+      # Service-role + project creds — dedicated E2E project only (Environment-scoped).
+      E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+      SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+      E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      TEST_OTP_PHONE: ${{ secrets.E2E_TEST_OTP_PHONE }}
+      E2E_FORBIDDEN_PROD_REF: ${{ secrets.E2E_FORBIDDEN_PROD_REF }}
+    steps:
+      # Check out the EXACT deployed commit so specs/scripts match the preview.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - name: 'Fail-closed: require preview URL and all secrets (no skip)'
+        run: |
+          set -euo pipefail
+          missing=0
+          require() { if [ -z "${!1:-}" ]; then echo "::error::missing $1"; missing=1; fi; }
+          require PLAYWRIGHT_BASE_URL
+          require E2E_SUPABASE_URL
+          require SUPABASE_URL
+          require SUPABASE_SERVICE_ROLE_KEY
+          require E2E_SUPABASE_ANON_KEY
+          require E2E_ADMIN_EMAIL
+          require E2E_DATABASE_URL
+          require TEST_OTP_PHONE
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::required preview secrets/URL missing — failing (not skipping)"
+            exit 1
+          fi
+          echo "Preview target: $PLAYWRIGHT_BASE_URL"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Run 5 consecutive smokes (separate attempts, no Playwright retries)
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5; do
+            echo "::group::smoke attempt $i/5"
+            E2E_RUN_ID="${GH_RUN_ID}-$i" \
+              npx playwright test --config playwright.smoke.config.ts
+            echo "::endgroup::"
+          done
+
+      - name: Cleanup test data (always; failure fails the job)
+        if: always()
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5; do
+            echo "::group::cleanup run ${GH_RUN_ID}-$i"
+            E2E_RUN_ID="${GH_RUN_ID}-$i" node scripts/e2e-cleanup.mjs
+            echo "::endgroup::"
+          done
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-smoke
+          path: playwright-report-smoke
+          retention-days: 7

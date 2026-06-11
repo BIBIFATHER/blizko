@@ -70,6 +70,16 @@ Rules:
 - Code must not require a new production column before that column is verified live, unless a tested compatibility fallback or feature flag exists.
 - Every migration needs a forward-fix or rollback runbook.
 - Never manually edit `supabase_migrations.schema_migrations`; use supported migration tooling and verify the ledger afterward.
+- A fallback that temporarily separates the production schema from the migration
+  ledger is prohibited for routine work. Wait for the supported migration path
+  to recover instead of offering drift as an equal option.
+- The only exception is an active production outage where delaying the schema
+  fix causes greater user harm. It requires explicit production approval, a
+  documented recovery sequence, and ledger reconciliation in the same
+  operational window whenever technically possible.
+- The agent must choose the clean supported path automatically for non-outage
+  work. Ask the user only for the final production approval, not to choose
+  between a clean path and a drift-producing fallback.
 
 ## Phase 3: Error Visibility
 

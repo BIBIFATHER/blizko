@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-06-11 (Thu) — Non-urgent migration drift prohibited
+
+- Routine migrations must wait for the supported Supabase migration path when
+  CLI/TLS access is unavailable.
+- Manual DDL followed by later ledger repair may not be offered as an equal
+  alternative because it recreates schema/history drift.
+- Emergency fallback is limited to an active production outage, requires
+  explicit approval, and must reconcile the migration ledger in the same
+  operational window whenever possible.
+- For non-outage work, the agent chooses the clean path automatically and asks
+  the user only for final production approval.
+
+---
+
 ## 2026-06-11 (Thu) — Mandatory database change protocol
 
 - Added `.context/CODEX_DB_CHANGE_PROTOCOL.md` as the shared contract for

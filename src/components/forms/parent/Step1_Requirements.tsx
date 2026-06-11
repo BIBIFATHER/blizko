@@ -261,7 +261,13 @@ export const Step1_Requirements: React.FC<Props> = ({ lang }) => {
           </div>
         )}
 
-        <Button type="button" onClick={nextStep} disabled={!isFormValid} pulse={isFormValid}>
+        <Button
+          type="button"
+          data-testid="find-continue"
+          onClick={nextStep}
+          disabled={!isFormValid}
+          pulse={isFormValid}
+        >
           {lang === 'ru' ? 'Продолжить к графику и календарю' : 'Continue to schedule and calendar'}
         </Button>
       </div>

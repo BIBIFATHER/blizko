@@ -691,9 +691,11 @@ export const AdminParentsTab: React.FC<AdminParentsTabProps> = ({
               Здесь пока пусто. Новые заявки от семей появятся, как только они отправят форму.
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3" data-testid="admin-parents-list">
               {filteredParents.map((p) => (
-                <div key={p.id}>{renderParentCard(p)}</div>
+                <div key={p.id} data-testid="parent-row" data-parent-id={p.id}>
+                  {renderParentCard(p)}
+                </div>
               ))}
             </div>
           )

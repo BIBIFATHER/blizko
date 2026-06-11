@@ -87,6 +87,7 @@ export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
 
         <button
           type="button"
+          data-testid="cta-start-matching"
           onClick={() => startRequest()}
           className="animate-fade-up mt-5 flex min-h-[4rem] w-full items-center justify-center rounded-full bg-[#2A6B6E] px-6 text-[1.0625rem] font-semibold tracking-[0.01em] text-white shadow-[0_16px_40px_rgba(42,107,110,0.26)] transition-all duration-200 hover:bg-[#235B5E] active:scale-[0.97] active:shadow-[0_6px_16px_rgba(42,107,110,0.16)]"
           style={{ animationDelay: '280ms' }}

@@ -164,7 +164,13 @@ export const Step2_Calendar: React.FC<Props> = ({ lang }) => {
         <Button type="button" variant="outline" className="flex-1" onClick={prevStep}>
           {lang === 'ru' ? 'Назад' : 'Back'}
         </Button>
-        <Button type="button" className="flex-1" onClick={nextStep} pulse={true}>
+        <Button
+          type="button"
+          data-testid="find-continue"
+          className="flex-1"
+          onClick={nextStep}
+          pulse={true}
+        >
           {lang === 'ru' ? 'Продолжить' : 'Continue'}
         </Button>
       </div>

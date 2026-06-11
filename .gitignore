@@ -61,5 +61,5 @@ supabase/.branches/
 .vercel/
 blizko-check.png
 
-# User documents (not product code — never tracked, never deleted by tooling)
-*.docx
+# User document (not product code — never tracked, never deleted by tooling)
+/Публичная оферта Blizko для клиентов.docx

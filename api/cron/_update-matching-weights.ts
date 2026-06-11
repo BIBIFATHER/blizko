@@ -3,7 +3,7 @@
  *
  * Reads matching_outcomes (factor breakdowns + outcomes) and nudges
  * matching_weights toward factors that correlate with positive outcomes
- * (hired / interested) vs negative (rejected / ghosted).
+ * (hired) vs negative (rejected / ghosted).
  *
  * Guard: skips if total labelled rows < MIN_SIGNALS.
  * Shrinkage: alpha = N / (N + PRIOR_STRENGTH) — limits drift from prior.
@@ -18,6 +18,36 @@ import { getDbPool } from '../_db.js';
 const MIN_SIGNALS = 50;
 const PRIOR_STRENGTH = 200; // sample count at which alpha = 0.5
 const MAX_DRIFT = 0.3; // max ±30% multiplier on prior per run
+
+// Outcome classes for weight learning. Every value MUST be a valid
+// `matching_outcome_type` enum label — comparing the enum column to a non-member
+// literal (the old 'interested') makes Postgres coerce it to the enum and reject
+// the whole query (BLI-100). Interest is recorded as outcome = NULL +
+// feedback_text interest_signal and is intentionally NOT counted here; weighting
+// interest as a weak-positive signal is tracked as a separate follow-up.
+export const POSITIVE_OUTCOMES = ['hired'] as const;
+export const NEGATIVE_OUTCOMES = ['rejected', 'ghosted'] as const;
+export const LABELLED_OUTCOMES = [...POSITIVE_OUTCOMES, ...NEGATIVE_OUTCOMES] as const;
+
+// Values are fixed internal constants (no user input) → safe to inline.
+const sqlInList = (values: readonly string[]) => values.map((v) => `'${v}'`).join(', ');
+
+export const COUNT_LABELLED_SQL = `SELECT COUNT(*) AS n FROM matching_outcomes
+       WHERE outcome IN (${sqlInList(LABELLED_OUTCOMES)})`;
+
+export const FACTOR_STATS_SQL = `
+      SELECT
+        kv.key AS factor,
+        AVG(CASE WHEN o.outcome IN (${sqlInList(POSITIVE_OUTCOMES)}) THEN (kv.value)::float END) AS pos_mean,
+        AVG(CASE WHEN o.outcome IN (${sqlInList(NEGATIVE_OUTCOMES)}) THEN (kv.value)::float END) AS neg_mean,
+        COUNT(*)::text AS sample_count
+      FROM matching_outcomes o,
+           jsonb_each_text(o.factors) kv
+      WHERE o.outcome IN (${sqlInList(LABELLED_OUTCOMES)})
+        AND o.factors IS NOT NULL
+      GROUP BY kv.key
+      HAVING COUNT(*) >= 10
+    `;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET' && req.method !== 'POST') {
@@ -34,10 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const pool = getDbPool();
 
     // Count labelled signals
-    const countResult = await pool.query<{ n: string }>(
-      `SELECT COUNT(*) AS n FROM matching_outcomes
-       WHERE outcome IN ('hired', 'interested', 'rejected', 'ghosted')`,
-    );
+    const countResult = await pool.query<{ n: string }>(COUNT_LABELLED_SQL);
     const totalSignals = parseInt(countResult.rows[0]?.n ?? '0', 10);
 
     if (totalSignals < MIN_SIGNALS) {
@@ -54,19 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       pos_mean: string | null;
       neg_mean: string | null;
       sample_count: string;
-    }>(`
-      SELECT
-        kv.key AS factor,
-        AVG(CASE WHEN o.outcome IN ('hired', 'interested') THEN (kv.value)::float END) AS pos_mean,
-        AVG(CASE WHEN o.outcome IN ('rejected', 'ghosted')  THEN (kv.value)::float END) AS neg_mean,
-        COUNT(*)::text AS sample_count
-      FROM matching_outcomes o,
-           jsonb_each_text(o.factors) kv
-      WHERE o.outcome IN ('hired', 'interested', 'rejected', 'ghosted')
-        AND o.factors IS NOT NULL
-      GROUP BY kv.key
-      HAVING COUNT(*) >= 10
-    `);
+    }>(FACTOR_STATS_SQL);
 
     // Fetch current priors
     const priorsResult = await pool.query<{ factor: string; prior_weight: number }>(

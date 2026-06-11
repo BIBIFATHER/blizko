@@ -45,6 +45,15 @@ Do not say "ready", "done", "deployed", "can push", or "release is clean" when t
 - if Vercel env vars changed, confirm target environment without exposing secret values
 - if Supabase migrations were applied, list migration names and target environment
 
+4.1 Database Contract
+
+- if the release touches Supabase, SQL, Auth, Storage, RLS, RPC, or database-backed payloads, follow `.context/CODEX_DB_CHANGE_PROTOCOL.md`
+- show that application code, committed migrations, a clean reset, and production agree
+- verify the exact production schema objects and migration ledger
+- run acceptance with the real client roles; `service_role` is not a substitute
+- confirm exact-ID cleanup of smoke data
+- a pending migration, unexplained schema diff, ledger drift, missing UI/API smoke, or pending cleanup blocks release readiness
+
 5. Deploy Evidence
 
 - provide deployment URL or deployment id when claiming deploy
@@ -91,6 +100,8 @@ Rollback
 - If lint/test/build was not run, say so directly.
 - If one gate failed, release status is not "ready".
 - If a migration exists, mention sequencing requirements.
+- If database-backed code relies on schema not independently verified in production, release status is not "ready".
+- If required smoke data cleanup is pending, release status is not "ready".
 - If runtime monitoring is absent, say that explicitly.
 - If a rollback path is weak, say that explicitly.
 - "Deployed locally from dirty worktree" is not the same as "ready to push".

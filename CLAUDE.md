@@ -23,6 +23,20 @@ Before code changes, read only the smallest relevant set:
 
 Do not load the whole Obsidian/global memory vault or the whole repository unless the task explicitly requires it.
 
+### Mandatory Database Protocol
+
+Before diagnosing, implementing, reviewing, deploying, or approving any Supabase,
+PostgreSQL, Auth, Storage, RLS, RPC, migration, cron-SQL, or database-backed
+change, read and follow:
+
+- `.context/CODEX_DB_CHANGE_PROTOCOL.md`
+
+At the start of the work, explicitly confirm that the protocol was read and state
+the selected migration path. Prefer supported Supabase migration tooling
+(`supabase db push --linked`) over manual DDL plus migration-history repair.
+Manual DDL and `migration repair` are fallback-only after a demonstrated CLI
+failure and require an explicit production approval.
+
 ## Token Budget
 
 - Read summary files before long archives.
@@ -88,6 +102,7 @@ Do not load the whole Obsidian/global memory vault or the whole repository unles
 ## Completion Checklist
 
 - Run the narrowest relevant verification command.
+- For database-backed changes, complete the gates in `.context/CODEX_DB_CHANGE_PROTOCOL.md`.
 - Update `.context/CHANGELOG.md` after meaningful repository changes.
 - Update ADRs when an architectural decision changes.
 - Keep `CLAUDE.md` under 2500 tokens; consolidate before expanding it.

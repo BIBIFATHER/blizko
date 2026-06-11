@@ -36,6 +36,10 @@ the selected migration path. Prefer supported Supabase migration tooling
 (`supabase db push --linked`) over manual DDL plus migration-history repair.
 Manual DDL and `migration repair` are fallback-only after a demonstrated CLI
 failure and require an explicit production approval.
+Never offer temporary schema/ledger drift for routine work. Wait for the
+supported path to recover. A drift-producing emergency fallback is allowed only
+to resolve an active production outage, with explicit approval and immediate
+ledger reconciliation.
 
 ## Token Budget
 

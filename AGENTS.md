@@ -17,6 +17,7 @@ Before doing anything else:
 5. Read `.context/CODEX_OPERATING_PROTOCOL.md`
 6. If reviewing code, read `.context/CODEX_REVIEW_PROTOCOL.md`
 7. If assessing release readiness, read `.context/CODEX_RELEASE_PROTOCOL.md`
+8. If touching Supabase, SQL, Auth, Storage, RLS, RPC, or database-backed code, read `.context/CODEX_DB_CHANGE_PROTOCOL.md`
 
 Don't ask permission. Just do it.
 
@@ -236,6 +237,7 @@ For Codex sessions in this workspace:
 - follow `.context/CODEX_OPERATING_PROTOCOL.md`
 - use `.context/CODEX_REVIEW_PROTOCOL.md` for review requests
 - use `.context/CODEX_RELEASE_PROTOCOL.md` before release-readiness claims
+- use `.context/CODEX_DB_CHANGE_PROTOCOL.md` for every database-backed change
 - use `.context/CODEX_DECISION_LOGGING.md` to write down changes that must survive the session
 - mirror the same memory / model / agent / skill discipline configured for Antigravity
 - treat file-backed context as source of truth, not session memory

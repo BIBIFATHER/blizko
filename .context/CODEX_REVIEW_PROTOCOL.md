@@ -48,6 +48,11 @@ Each finding should include:
 - Prefer behavioral regressions over style comments.
 - Prefer missing tests over subjective taste.
 - Call out security, data integrity, auth, payments, and trust flows early.
+- If the diff touches Supabase, SQL, Auth, Storage, RLS, RPC, or database-backed payloads, follow `.context/CODEX_DB_CHANGE_PROTOCOL.md`.
+- For each changed database field, verify creation, production presence, typing, writers, readers, enum compatibility, authorization, deployment order, and rollback.
+- A build or unit test is not evidence that the production schema accepts a payload.
+- Review transitive RLS dependencies: policies and views may query tables hidden from the current role.
+- Treat silent database error handling as a functional defect.
 - If no findings exist, say that explicitly.
 - If testing was not run, say that explicitly.
 - If the diff is too large for certainty, say where confidence drops.

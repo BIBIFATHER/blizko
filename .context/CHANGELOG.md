@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-06-11 (Thu) — Mandatory database change protocol
+
+- Added `.context/CODEX_DB_CHANGE_PROTOCOL.md` as the shared contract for
+  Supabase/PostgreSQL/Auth/Storage/RLS/RPC and database-backed work.
+- `CLAUDE.md` now requires Claude Code to read it before diagnosis,
+  implementation, review, deployment, or production approval and to state the
+  selected migration path.
+- Operating, review, release, and `AGENTS.md` rules now enforce contract
+  comparison across application code, committed migrations, clean reset, and
+  production before a database change can be called ready.
+- Standard path is supported Supabase migration tooling. Manual DDL plus
+  migration-history repair is a documented fallback only after a demonstrated
+  CLI failure and explicit production approval.
+
+---
+
 ## 2026-06-10 (Wed) — Vercel: деплой падал из-за 8 фантомных test-функций
 
 ### Истинный корень (ground truth из `vercel build`)

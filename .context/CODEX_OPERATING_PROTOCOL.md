@@ -37,6 +37,10 @@ Before release-readiness claims, also read:
 
 - `.context/CODEX_RELEASE_PROTOCOL.md`
 
+Before any database, Supabase, Auth, Storage, RLS, RPC, or database-backed feature work, also read:
+
+- `.context/CODEX_DB_CHANGE_PROTOCOL.md`
+
 For operating changes and lessons, follow:
 
 - `.context/CODEX_DECISION_LOGGING.md`
@@ -141,6 +145,7 @@ Open questions
 
 - doing multi-step feature work as one undifferentiated stream
 - mixing several active tasks in one response
+- editing database-backed code before building the code/local-schema/production contract matrix
 - claiming work is already running when waiting for approval
 - treating stale knowledge as current market fact
 - inventing memory instead of writing files

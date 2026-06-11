@@ -1,0 +1,78 @@
+name: E2E Smoke (BLI-103)
+
+# Runs ONLY against a READY Vercel Preview deployment (never production). The
+# deployment_status event fires when Vercel finishes a deployment; we gate on
+# state == success and a non-Production environment and use its target_url.
+on:
+  deployment_status:
+
+jobs:
+  e2e-smoke:
+    name: Parent/admin deterministic smoke (5x)
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment != 'Production' &&
+      github.event.deployment_status.environment != 'production'
+    env:
+      PLAYWRIGHT_BASE_URL: ${{ github.event.deployment_status.target_url }}
+      GH_RUN_ID: ${{ github.run_id }}
+      E2E_TEST_AUTH: '1' # test-auth enabled ONLY in this job
+      SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+      E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      TEST_OTP_PHONE: ${{ secrets.E2E_TEST_OTP_PHONE }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail-closed: require preview URL and secrets (no skip)
+        run: |
+          set -euo pipefail
+          missing=0
+          require() { if [ -z "${!1:-}" ]; then echo "::error::missing $1"; missing=1; fi; }
+          require PLAYWRIGHT_BASE_URL
+          require SUPABASE_URL
+          require SUPABASE_SERVICE_ROLE_KEY
+          require E2E_SUPABASE_ANON_KEY
+          require E2E_ADMIN_EMAIL
+          require E2E_DATABASE_URL
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::required preview secrets/URL missing — failing (not skipping)"
+            exit 1
+          fi
+          echo "Preview target: $PLAYWRIGHT_BASE_URL"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Run 5 consecutive smokes (separate attempts, no Playwright retries)
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5; do
+            echo "::group::smoke attempt $i/5"
+            E2E_RUN_ID="${GH_RUN_ID}-$i" \
+              npx playwright test --config playwright.smoke.config.ts
+            echo "::endgroup::"
+          done
+
+      - name: Cleanup test data (always)
+        if: always()
+        run: |
+          for i in 1 2 3 4 5; do
+            E2E_RUN_ID="${GH_RUN_ID}-$i" node scripts/e2e-cleanup.mjs || true
+          done
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-smoke
+          path: playwright-report-smoke
+          retention-days: 7

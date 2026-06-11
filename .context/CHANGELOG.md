@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-06-12 (Fri) — Durable active-task continuity
+
+- Added `.context/ACTIVE_TASK.md` as the single compact checkpoint for live
+  execution state, blockers, next steps, approval gates, and safety boundaries.
+- Claude and Codex must read it at session start and after compaction, verify
+  live git/PR/CI/deployment state, and continue the first safe pending step.
+- The checkpoint must be updated before token/session limits, handoff, or
+  stopping; secrets are prohibited.
+- Seeded the checkpoint with the current BLI-103/BLI-55 E2E work so it can
+  resume without relying on chat history.
+
+---
+
 ## 2026-06-11 (Thu) — `20260610000000` applied to production (BLI-98)
 
 Shadow-scoring columns migration applied and independently verified. Production

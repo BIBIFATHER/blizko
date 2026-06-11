@@ -17,17 +17,18 @@ Codex should behave as a strong execution partner:
 
 Before meaningful work, read:
 
-1. `SOUL.md`
-2. `USER.md`
-3. `memory/today`
-4. `memory/yesterday` if present
-5. `MEMORY.md`
-6. `.context/DNA.md`
-7. `.context/JOURNAL.md`
-8. `.context/CHANGELOG.md`
-9. `.context/AI_STACK.md`
-10. `.agents/workflows/model-orchestrator.md`
-11. `.agents/context/AGENT_SKILL_MAP.md`
+1. `.context/ACTIVE_TASK.md` when it exists
+2. `SOUL.md`
+3. `USER.md`
+4. `memory/today`
+5. `memory/yesterday` if present
+6. `MEMORY.md`
+7. `.context/DNA.md`
+8. `.context/JOURNAL.md`
+9. `.context/CHANGELOG.md`
+10. `.context/AI_STACK.md`
+11. `.agents/workflows/model-orchestrator.md`
+12. `.agents/context/AGENT_SKILL_MAP.md`
 
 Before review work, also read:
 
@@ -52,11 +53,18 @@ Before refactoring or extending AI-generated UI, also read:
 
 ## Memory Discipline
 
+- live task state -> `.context/ACTIVE_TASK.md`
 - important decisions -> `memory/YYYY-MM-DD.md`
 - durable context -> `MEMORY.md`
 - architecture / operating changes -> `.context/*`
 - never rely on chat memory for continuity
 - if a decision matters tomorrow, write it today
+- update the active checkpoint after material milestones and before compaction,
+  token/session limits, handoff, or stopping
+- after resume, verify all external statuses before acting, then continue the
+  first pending safe step automatically
+- approval gates remain approval gates; continuity does not authorize merges,
+  production changes, destructive actions, or secret handling
 
 ## Task Routing
 

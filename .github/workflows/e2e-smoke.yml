@@ -1,59 +1,103 @@
 name: E2E Smoke (BLI-103)
 
-# Runs ONLY against a READY Vercel Preview deployment (never production). The
-# deployment_status event fires when Vercel finishes a deployment; we gate on
-# state == success and a non-Production environment, check out the EXACT deployed
-# commit SHA, and drive the smoke against its target_url.
+# Runs ONLY against a READY Vercel Preview deployment of the DEDICATED E2E
+# project (never production, never the production blizko-3 project). The
+# deployment_status event fires when Vercel finishes a deployment.
 #
-# Secrets resolve from the protected `e2e-preview` GitHub Environment, which must
-# hold ONLY the dedicated E2E (non-production) Supabase project credentials.
+# THREAT: this job holds E2E service-role + DB secrets. They must never reach
+# arbitrary preview code. Defenses, in order:
+#   1. `environment: e2e-preview` with REQUIRED REVIEWERS — every run pauses for
+#      human approval before any secret is exposed.
+#   2. Positive environment filter — only the dedicated E2E Vercel project's
+#      previews (named "Preview – blizko-e2e") can trigger; prod/prod-project
+#      previews are excluded.
+#   3. Provenance guard (runs FIRST, GITHUB_TOKEN only, no E2E secrets) — refuses
+#      unless the deployed SHA belongs to a SAME-REPO PR onto main (no forks) and
+#      the app URL is a real *.vercel.app preview (not a Vercel dashboard page).
+#   4. Step-scoped secrets — service-role / DB / anon live ONLY on the run +
+#      cleanup steps. `npm ci` and `playwright install` get NO E2E secrets, so a
+#      malicious lockfile/postinstall cannot read them.
 on:
   deployment_status:
+
+permissions:
+  contents: read
+  deployments: read
+  pull-requests: read
 
 jobs:
   e2e-smoke:
     name: Parent/admin deterministic smoke (5x)
     runs-on: ubuntu-latest
     environment: e2e-preview
+    # Positive allow: only the dedicated E2E project's successful preview.
+    # NOTE: confirm the exact environment string (Vercel uses an en-dash) and the
+    # E2E project name before enabling. Until that project exists, this never fires.
     if: >-
       github.event.deployment_status.state == 'success' &&
-      github.event.deployment_status.environment != 'Production' &&
-      github.event.deployment_status.environment != 'production'
+      github.event.deployment_status.environment == 'Preview – blizko-e2e'
     env:
-      PLAYWRIGHT_BASE_URL: ${{ github.event.deployment_status.target_url }}
+      # Non-secret only at job scope. The app URL is environment_url (the real
+      # deployment), NOT target_url (which can be a Vercel dashboard page).
+      PLAYWRIGHT_BASE_URL: ${{ github.event.deployment_status.environment_url }}
       GH_RUN_ID: ${{ github.run_id }}
-      E2E_TEST_AUTH: '1' # test-auth enabled ONLY in this job
-      # Service-role + project creds — dedicated E2E project only (Environment-scoped).
-      E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
-      SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
-      E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
-      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
-      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
-      TEST_OTP_PHONE: ${{ secrets.E2E_TEST_OTP_PHONE }}
-      E2E_FORBIDDEN_PROD_REF: ${{ secrets.E2E_FORBIDDEN_PROD_REF }}
+      E2E_TEST_AUTH: '1' # non-secret flag; test-auth enabled ONLY in this job
     steps:
-      # Check out the EXACT deployed commit so specs/scripts match the preview.
+      # 1) Provenance guard — trusted (default-branch YAML), GITHUB_TOKEN only,
+      #    NO E2E secrets in scope. Runs before checkout so the untrusted tree
+      #    never touches disk pre-validation.
+      - name: Provenance guard (same-repo PR onto main; real preview URL)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          DEPLOY_SHA: ${{ github.event.deployment.sha }}
+          ENV_URL: ${{ github.event.deployment_status.environment_url }}
+          ENV_NAME: ${{ github.event.deployment_status.environment }}
+        run: |
+          set -euo pipefail
+          echo "env=$ENV_NAME sha=$DEPLOY_SHA url=$ENV_URL"
+          # App URL must be a real *.vercel.app preview, not vercel.com/dashboard.
+          if ! printf '%s' "$ENV_URL" | grep -Eq '^https://[a-z0-9-]+\.vercel\.app/?$'; then
+            echo "::error::environment_url is not a *.vercel.app app URL: $ENV_URL"; exit 1
+          fi
+          # SHA must be hex and belong to a SAME-REPO PR targeting main (no forks).
+          if ! printf '%s' "$DEPLOY_SHA" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "::error::deployment sha is not a 40-hex commit: $DEPLOY_SHA"; exit 1
+          fi
+          prs=$(gh api "repos/$REPO/commits/$DEPLOY_SHA/pulls" \
+            --jq "[.[] | select(.base.ref==\"main\" and .head.repo.full_name==\"$REPO\")] | length")
+          if [ "${prs:-0}" -lt 1 ]; then
+            echo "::error::no same-repo PR onto main contains $DEPLOY_SHA — refusing (possible fork/untrusted)"; exit 1
+          fi
+          echo "provenance OK: $prs same-repo PR(s) onto main"
+
+      # 2) Check out the EXACT deployed commit (no code executed yet).
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.deployment.sha }}
 
+      # 3) Require preview URL + all E2E secrets (hard-fail, never skip).
       - name: 'Fail-closed: require preview URL and all secrets (no skip)'
+        env:
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+          E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+          E2E_TEST_OTP_PHONE: ${{ secrets.E2E_TEST_OTP_PHONE }}
         run: |
           set -euo pipefail
           missing=0
           require() { if [ -z "${!1:-}" ]; then echo "::error::missing $1"; missing=1; fi; }
           require PLAYWRIGHT_BASE_URL
           require E2E_SUPABASE_URL
-          require SUPABASE_URL
-          require SUPABASE_SERVICE_ROLE_KEY
+          require E2E_SUPABASE_SERVICE_ROLE_KEY
           require E2E_SUPABASE_ANON_KEY
           require E2E_ADMIN_EMAIL
           require E2E_DATABASE_URL
-          require TEST_OTP_PHONE
+          require E2E_TEST_OTP_PHONE
           if [ "$missing" -ne 0 ]; then
-            echo "::error::required preview secrets/URL missing — failing (not skipping)"
-            exit 1
+            echo "::error::required preview secrets/URL missing — failing (not skipping)"; exit 1
           fi
           echo "Preview target: $PLAYWRIGHT_BASE_URL"
 
@@ -62,10 +106,20 @@ jobs:
           node-version: 20
           cache: npm
 
+      # 4) Dependency install — NO E2E secrets in scope (supply-chain isolation).
       - run: npm ci
       - run: npx playwright install --with-deps chromium
 
+      # 5) Run the 5 smokes — E2E secrets scoped to THIS step only.
       - name: Run 5 consecutive smokes (separate attempts, no Playwright retries)
+        env:
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+          TEST_OTP_PHONE: ${{ secrets.E2E_TEST_OTP_PHONE }}
+          E2E_FORBIDDEN_PROD_REF: ${{ secrets.E2E_FORBIDDEN_PROD_REF }}
         run: |
           set -euo pipefail
           for i in 1 2 3 4 5; do
@@ -75,8 +129,13 @@ jobs:
             echo "::endgroup::"
           done
 
+      # 6) Cleanup — DB secret scoped to THIS step only; failure FAILS the job.
       - name: Cleanup test data (always; failure fails the job)
         if: always()
+        env:
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+          E2E_FORBIDDEN_PROD_REF: ${{ secrets.E2E_FORBIDDEN_PROD_REF }}
         run: |
           set -euo pipefail
           for i in 1 2 3 4 5; do

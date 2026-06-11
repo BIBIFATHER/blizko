@@ -2,6 +2,41 @@
 
 ---
 
+## 2026-06-11 (Thu) — `20260610000000` applied to production (BLI-98)
+
+Shadow-scoring columns migration applied and independently verified. Production
+schema/data not otherwise changed.
+
+### Apply
+
+- Migration: `20260610000000_add_shadow_scoring_columns`.
+- Tool: standard `supabase db push --db-url …` (no manual DDL, no MCP
+  `execute_sql` DDL, no `migration repair`).
+- Connection: **Supavisor Session Pooler, port 5432**. The direct host
+  `db.<ref>:5432` is IPv6-only and its TLS handshake was network-throttled (raw
+  TCP succeeded, TLS timed out); the session pooler TLS path worked. (URL,
+  password, and project ref are not recorded here.)
+- Dry-run first showed only `20260610000000`; apply finished cleanly.
+
+### Verification (read-only)
+
+- Schema: `heuristic_score` double precision (null), `factors` jsonb (null),
+  `weight_snapshot` jsonb (null), `explore_flag` boolean NOT NULL DEFAULT false —
+  exactly per spec; `parent_id/nanny_id` (UUID → `auth.users`) unchanged.
+- Ledger: remote now 7 versions incl. `20260610000000`; `local == remote`;
+  re-run `db push --dry-run` → "Remote database is up to date".
+- Write/read smoke (marker `smoke-dbcol-20260611`): INSERT row with all four
+  columns → read-back persisted → DELETE by exact id + marker guard → verified
+  0/0 remaining.
+
+### Effect & scope
+
+- `shadowScoring` upsert now persists the four columns without a schema error.
+- Not touched: BLI-100 (`matching_outcome_type` `'interested'`), enum, cron.
+  `DROP COLUMN` not performed (destructive — separate approval).
+
+---
+
 ## 2026-06-11 (Thu) — Non-urgent migration drift prohibited
 
 - Routine migrations must wait for the supported Supabase migration path when

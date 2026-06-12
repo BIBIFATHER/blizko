@@ -175,7 +175,7 @@ export const SuccessScreen: React.FC<SuccessScreenProps> = ({ lang }) => {
 
   // Main success state — normal submission or paid fallback
   return (
-    <div className="form-shell animate-slide-up">
+    <div className="form-shell animate-slide-up" data-testid="success-screen">
       <div className="mx-auto flex max-w-sm flex-col gap-8 py-8 px-2">
         {/* Hero */}
         <div className="flex flex-col items-center gap-4 text-center">

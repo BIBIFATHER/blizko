@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
+  // BLI-103 smoke specs run under playwright.smoke.config.ts (preview-only,
+  // globalSetup auth). Keep them out of the default preview/admin run.
+  testIgnore: '**/*.smoke.spec.ts',
   timeout: 60_000,
   expect: {
     timeout: 10_000,

@@ -110,10 +110,14 @@ interface CheckboxProps {
   label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  testId?: string;
 }
 
-export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onChange }) => (
-  <label className="ml-[-0.25rem] flex min-h-[44px] cursor-pointer select-none items-center gap-3 rounded-xl px-1 py-3 transition-all active:scale-[0.98]">
+export const Checkbox: React.FC<CheckboxProps> = ({ label, checked, onChange, testId }) => (
+  <label
+    data-testid={testId}
+    className="ml-[-0.25rem] flex min-h-[44px] cursor-pointer select-none items-center gap-3 rounded-xl px-1 py-3 transition-all active:scale-[0.98]"
+  >
     <div
       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-all ${
         checked

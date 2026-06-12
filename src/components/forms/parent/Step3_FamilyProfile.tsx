@@ -486,6 +486,7 @@ export const Step3_FamilyProfile: React.FC<Props> = ({ lang, onFinalSubmit, load
         </Button>
         <Button
           type="button"
+          data-testid="find-start-search"
           className="flex-1"
           onClick={onFinalSubmit}
           isLoading={loading}

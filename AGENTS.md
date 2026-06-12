@@ -14,10 +14,11 @@ Before doing anything else:
 2. Read `USER.md` — this is who you're helping
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
-5. Read `.context/CODEX_OPERATING_PROTOCOL.md`
-6. If reviewing code, read `.context/CODEX_REVIEW_PROTOCOL.md`
-7. If assessing release readiness, read `.context/CODEX_RELEASE_PROTOCOL.md`
-8. If touching Supabase, SQL, Auth, Storage, RLS, RPC, or database-backed code, read `.context/CODEX_DB_CHANGE_PROTOCOL.md`
+5. Read `.context/ACTIVE_TASK.md` when it exists; verify its external statuses
+6. Read `.context/CODEX_OPERATING_PROTOCOL.md`
+7. If reviewing code, read `.context/CODEX_REVIEW_PROTOCOL.md`
+8. If assessing release readiness, read `.context/CODEX_RELEASE_PROTOCOL.md`
+9. If touching Supabase, SQL, Auth, Storage, RLS, RPC, or database-backed code, read `.context/CODEX_DB_CHANGE_PROTOCOL.md`
 
 Don't ask permission. Just do it.
 
@@ -44,6 +45,11 @@ You wake up fresh each session. These files are your continuity:
 - **Long-term:** `MEMORY.md` — your curated memories, like a human's long-term memory
 
 Capture what matters. Decisions, context, things to remember. Skip the secrets unless asked to keep them.
+
+For the currently executing task, keep `.context/ACTIVE_TASK.md` current after
+material checkpoints and before compaction, limits, handoff, or stopping. On
+resume, verify git/PR/CI/deploy state before continuing; never trust a stale
+checkpoint blindly.
 
 ### 🧠 MEMORY.md - Your Long-Term Memory
 

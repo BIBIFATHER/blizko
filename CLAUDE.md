@@ -16,12 +16,28 @@ Before code changes, read only the smallest relevant set:
 
 - `BOOTSTRAP.md`
 - `CLAUDE.md`
+- `.context/ACTIVE_TASK.md` when it exists
 - `README.md`
 - `.context/DNA.md`
 - `.context/CHANGELOG.md` when recent project history matters
 - relevant files in `src/`, `api/`, `supabase/`, `SQL/`, or `docs/`
 
 Do not load the whole Obsidian/global memory vault or the whole repository unless the task explicitly requires it.
+
+## Session Continuity
+
+- Treat `.context/ACTIVE_TASK.md` as the source of truth for live execution
+  state, pending steps, blockers, and safety boundaries.
+- At every session start or resume after `/compact`, read it before historical
+  notes, then verify live git, PR, CI, deployment, Linear, and production state.
+  A recorded status is a checkpoint, not proof that the external state is still
+  current.
+- Continue the first pending safe step automatically. Stop only at an explicit
+  approval gate, a real blocker, or completed acceptance criteria.
+- Update the checkpoint after every material milestone and before compaction,
+  token/session limits, handoff, or stopping. Never put secrets in it.
+- When the task is complete, record durable evidence in Linear/CHANGELOG and
+  clear or archive the active checkpoint.
 
 ### Mandatory Database Protocol
 
@@ -109,4 +125,5 @@ ledger reconciliation.
 - For database-backed changes, complete the gates in `.context/CODEX_DB_CHANGE_PROTOCOL.md`.
 - Update `.context/CHANGELOG.md` after meaningful repository changes.
 - Update ADRs when an architectural decision changes.
+- Update or clear `.context/ACTIVE_TASK.md` before handing off or stopping.
 - Keep `CLAUDE.md` under 2500 tokens; consolidate before expanding it.

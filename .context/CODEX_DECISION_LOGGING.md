@@ -14,6 +14,8 @@ Codex decision logging shortcut for this workspace.
 
 ## Where To Write
 
+- `.context/ACTIVE_TASK.md` for the current objective, verified checkpoint,
+  blockers, next action, and safety boundaries
 - `memory/YYYY-MM-DD.md` for session facts
 - `MEMORY.md` for durable human-level context
 - `.context/CHANGELOG.md` for project-visible milestones
@@ -29,6 +31,10 @@ Codex decision logging shortcut for this workspace.
 ## Shortcut Rule
 
 If a decision will matter tomorrow, write it today.
+
+If unfinished work must survive compaction, a limit, or a new session, update
+`.context/ACTIVE_TASK.md` before stopping. Do not store secrets or assume its
+external statuses are still current on resume.
 
 ## Anti-patterns
 

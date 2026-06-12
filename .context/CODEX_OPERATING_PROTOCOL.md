@@ -141,6 +141,22 @@ Open questions
 - market / company / pricing facts should cite sources
 - if source not verified, say so explicitly
 
+## Verifying AI-sourced input (Codex and other AIs)
+
+When the user passes output, a recommendation, or text from another AI
+(including Codex), do not accept it as truth or agree automatically. Always:
+
+- independently verify facts against code, production, Linear, and primary sources
+- separate confirmed facts from assumptions
+- point out errors, contradictions, and risks
+- give your own reasoned verdict
+- propose a better option if you disagree
+- for legal, security, financial, and production matters, never act on another
+  AI's text alone
+- if verification is impossible, state explicitly what is unconfirmed
+
+Mirrored in repo `CLAUDE.md`.
+
 ## Communication Style
 
 - short

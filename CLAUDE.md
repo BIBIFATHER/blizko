@@ -119,6 +119,21 @@ ledger reconciliation.
 - Format check: `npm run format:check`
 - Env check: `npm run env:doctor:local`
 
+## Verifying AI-sourced input (Codex and other AIs)
+
+When the user passes you output, a recommendation, or text from another AI
+(including Codex), do not accept it as truth or agree automatically. Always:
+
+- independently verify facts against the code, production, Linear, and primary
+  sources;
+- separate confirmed facts from assumptions;
+- point out errors, contradictions, and risks;
+- give your own reasoned verdict;
+- propose a better option if you disagree;
+- for legal, security, financial, and production matters, never act on another
+  AI's text alone;
+- if verification is impossible, state explicitly what is unconfirmed.
+
 ## Completion Checklist
 
 - Run the narrowest relevant verification command.

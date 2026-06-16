@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { ParentRequest } from '../../src/core/types/types.js';
 import { setCors } from '../_cors.js';
 import { verifyBearerUser } from '../_auth.js';
+import { identityAdmissionClosed } from '../_synthetic.js';
 import { rateLimit } from '../_rate-limit.js';
 import { getDbPool } from '../_db.js';
 import { MATCHING_FEE_RUB } from './_shared.js';
@@ -133,6 +134,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const verifiedUser = await verifyBearerUser(req);
   if (!verifiedUser) {
     return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  // Synthetic-only closed contour: reject non-allow-listed identities (incl.
+  // restored sessions) before any YooKassa egress. This enforces admission only.
+  // Real payments are not used in this development contour; the code does not
+  // verify test-vs-production YooKassa keys — enabling real payments is a
+  // separate pre-open gate.
+  if (identityAdmissionClosed(verifiedUser)) {
+    return res.status(403).json({ error: 'Closed test contour: payments are disabled.' });
   }
 
   try {

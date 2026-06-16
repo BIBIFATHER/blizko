@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
 import { getGeminiApiKey, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
+import { identityAdmissionClosed } from './_synthetic.js';
 
 const REQUEST_TIMEOUT_MS = 25000;
 
@@ -51,7 +52,9 @@ function getSupabaseUrl() {
 // ============================================
 // Auth validation — verify JWT and ticket ownership
 // ============================================
-async function verifyAuth(req: VercelRequest): Promise<{ userId: string } | null> {
+async function verifyAuth(
+  req: VercelRequest,
+): Promise<{ userId: string; email: string | null } | null> {
   const base = getSupabaseUrl();
   const authHeader = req.headers.authorization;
   if (!base || !authHeader) return null;
@@ -68,7 +71,9 @@ async function verifyAuth(req: VercelRequest): Promise<{ userId: string } | null
     });
     if (!resp.ok) return null;
     const user = await resp.json();
-    return user?.id ? { userId: user.id } : null;
+    return user?.id
+      ? { userId: user.id, email: user?.email ? String(user.email).toLowerCase() : null }
+      : null;
   } catch {
     return null;
   }
@@ -408,6 +413,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Auth: verify JWT
   const auth = await verifyAuth(req);
   if (!auth) return res.status(401).json({ error: 'Unauthorized' });
+
+  // Synthetic-only: reject non-allow-listed identities (incl. restored sessions).
+  if (identityAdmissionClosed(auth)) {
+    return res.status(403).json({ error: 'Closed test contour: identity not admitted.' });
+  }
 
   const apiKey = getGeminiApiKey();
   if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY' });

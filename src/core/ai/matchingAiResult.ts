@@ -18,7 +18,8 @@ function buildTrustBadges(nanny: NannyProfile): TrustBadge[] {
   if (nanny.isVerified) badges.push('verified_moderation');
   if (nanny.softSkills) badges.push('soft_skills');
   if (nanny.reviews && nanny.reviews.length > 0) badges.push('has_reviews');
-  badges.push('ai_checked');
+  // No unconditional `ai_checked` trust claim — an AI gloss is not verification
+  // evidence and must not be shown as a trust badge. (memo §9.4)
 
   return badges;
 }

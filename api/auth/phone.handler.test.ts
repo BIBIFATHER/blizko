@@ -53,6 +53,25 @@ describe('api/auth/phone handler', () => {
     expect(res.body).toEqual({ ok: false, error: 'Unknown action' });
   });
 
+  it('closes real-user admission for non-allowlisted phones in synthetic-only mode', async () => {
+    process.env.BLIZKO_SYNTHETIC_ONLY = 'true';
+    process.env.SYNTHETIC_TEST_PHONES = '+79991112233';
+    getServiceSupabase.mockReturnValue(null);
+
+    const req = {
+      method: 'POST',
+      headers: {},
+      query: {},
+      body: { action: 'send', phone: '+7 700 123 45 67' },
+    } as unknown as VercelRequest;
+    const res = createMockResponse();
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(403);
+    expect((res.body as { ok: boolean }).ok).toBe(false);
+  });
+
   it('rejects invalid phone numbers before accessing OTP storage', async () => {
     getServiceSupabase.mockReturnValue(null);
 
@@ -72,6 +91,7 @@ describe('api/auth/phone handler', () => {
 
   it('stores and returns a demo otp when sms provider is not configured', async () => {
     process.env.NODE_ENV = 'development';
+    process.env.BLIZKO_SYNTHETIC_ONLY = 'false'; // admission open for the OTP-mechanics test
 
     const upsert = vi.fn(async () => ({ error: null }));
     const maybeSingle = vi.fn(async () => ({ data: null, error: null }));
@@ -116,6 +136,7 @@ describe('api/auth/phone handler', () => {
   it('verifies otp and returns a supabase token for an existing phone user', async () => {
     process.env.SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+    process.env.BLIZKO_SYNTHETIC_ONLY = 'false'; // admission open for the OTP-mechanics test
 
     const deleteEq = vi.fn(async () => ({ error: null }));
     const updateEq = vi.fn(async () => ({ error: null }));

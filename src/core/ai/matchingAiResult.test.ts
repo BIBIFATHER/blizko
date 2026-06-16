@@ -118,8 +118,8 @@ describe('buildMatchResult', () => {
       'verified_moderation',
       'soft_skills',
       'has_reviews',
-      'ai_checked',
     ]);
+    expect(result.candidates[0].trustBadges).not.toContain('ai_checked');
     expect(result.overallAdvice).toContain('3 няни');
   });
 

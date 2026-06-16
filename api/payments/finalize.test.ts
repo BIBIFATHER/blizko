@@ -41,6 +41,7 @@ describe('api/payments/finalize handler', () => {
     verifyBearerUser.mockReset();
     activatePaidParentRequest.mockReset();
     verifyPaymentWithYooKassa.mockReset();
+    process.env.BLIZKO_SYNTHETIC_ONLY = 'false'; // payment-mechanics test; admission open
   });
 
   it('finalizes a succeeded payment and activates the parent request', async () => {

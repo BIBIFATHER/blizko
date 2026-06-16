@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/services/supabase';
 import { User } from '@/core/types';
+import { isIdentityAdmitted, isSyntheticOnly } from '@/core/config/synthetic';
+
+// Synthetic-only: a restored session / existing JWT must not grant access to a
+// non-allow-listed identity. Defense-in-depth; hard enforcement is Supabase-side
+// session revocation + Auth config (owner-gated).
+function admittedRestoredSession(source: {
+  email?: string | null;
+  phone?: string | null;
+}): boolean {
+  return !isSyntheticOnly() || isIdentityAdmitted(source);
+}
 
 function toAppUser(
   source: {
@@ -37,6 +48,11 @@ export function useAuthSession() {
       .getUser()
       .then(({ data }) => {
         if (!data.user) return;
+        if (!admittedRestoredSession(data.user)) {
+          void supabase.auth.signOut();
+          setUser(null);
+          return;
+        }
         setUser((prev) => toAppUser(data.user, prev));
       })
       .finally(() => setAuthLoading(false));
@@ -44,6 +60,12 @@ export function useAuthSession() {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       const sessionUser = session?.user;
       if (!sessionUser) {
+        setUser(null);
+        return;
+      }
+
+      if (!admittedRestoredSession(sessionUser)) {
+        void supabase.auth.signOut();
         setUser(null);
         return;
       }

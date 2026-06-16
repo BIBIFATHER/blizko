@@ -5,6 +5,7 @@ import { Language, User } from '@/core/types';
 import { t } from '@/core/i18n/translations';
 import { supabase } from '@/services/supabase';
 import { getTmaHeaders } from '@/core/auth/tma-validate';
+import { isEmailAdmitted, isIdentityAdmitted, isSyntheticOnly } from '@/core/config/synthetic';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -94,6 +95,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const u = session?.user;
       if (!u) return;
+      // Synthetic-only: do not log a non-allow-listed identity in (consistency
+      // with useAuthSession, which also signs such sessions out).
+      if (isSyntheticOnly() && !isIdentityAdmitted({ email: u.email, phone: u.phone })) {
+        await supabase.auth.signOut();
+        return;
+      }
       const nextUser: User = {
         id: u.id,
         role,
@@ -133,6 +140,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
     }
 
     const email = contactValue.trim();
+    // Synthetic-only closed contour: email magic-link goes straight to Supabase
+    // Auth, so close real-user admission here for non-allow-listed emails.
+    // Hard enforcement is the Supabase Auth project config (owner-gated).
+    if (isSyntheticOnly() && !isEmailAdmitted(email)) {
+      throw new Error(
+        lang === 'ru'
+          ? 'Закрытый тестовый контур: вход для реальных пользователей отключён до RU-core.'
+          : 'Closed test contour: real-user sign-in is disabled until RU-core.',
+      );
+    }
     const { error } = await supabase.auth.signInWithOtp({ email });
     if (error) throw new Error(error.message);
   };

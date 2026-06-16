@@ -4,6 +4,15 @@ import { getServiceSupabase } from './_supabase.js';
 import { setCors } from '../_cors.js';
 import { rateLimit } from '../_rate-limit.js';
 import { auditLog, maskPhone } from '../_audit.js';
+import { isPhoneAdmitted, isSyntheticOnly } from '../_synthetic.js';
+
+// Synthetic-only closed contour: real-user admission is disabled. Only
+// allow-listed test phones may authenticate until RU-core + owner Go.
+function admissionClosed(phone: string): boolean {
+  return isSyntheticOnly() && !isPhoneAdmitted(phone);
+}
+const ADMISSION_CLOSED_MSG =
+  'Закрытый тестовый контур: регистрация реальных пользователей отключена до готовности RU-core.';
 
 const json = (res: VercelResponse, status: number, payload: any) =>
   res.status(status).json(payload);
@@ -67,6 +76,11 @@ async function handleSend(req: VercelRequest, res: VercelResponse) {
   const phone = normalizePhone(req.body?.phone);
   if (!isValidE164(phone))
     return json(res, 400, { ok: false, error: 'Некорректный номер телефона' });
+
+  if (admissionClosed(phone)) {
+    auditLog(req, 'admission_closed', { endpoint: 'send-otp', phone: maskPhone(phone) });
+    return json(res, 403, { ok: false, error: ADMISSION_CLOSED_MSG });
+  }
 
   // Test phone bypass — no SMS, fixed code
   if (isTestPhone(phone)) {
@@ -184,6 +198,11 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
   const code = String(req.body?.code || '').trim();
   if (!phone || !/^\d{4,8}$/.test(code))
     return json(res, 400, { ok: false, error: 'Некорректные данные' });
+
+  if (admissionClosed(phone)) {
+    auditLog(req, 'admission_closed', { endpoint: 'verify-otp', phone: maskPhone(phone) });
+    return json(res, 403, { ok: false, error: ADMISSION_CLOSED_MSG });
+  }
 
   const supabase = getServiceSupabase();
   if (!supabase) return json(res, 503, { ok: false, error: 'Auth service unavailable' });

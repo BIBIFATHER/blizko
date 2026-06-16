@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { verifyBearerUser } from './_auth.js';
+import { identityAdmissionClosed } from './_synthetic.js';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
 import {
@@ -133,6 +134,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const verifiedUser = await verifyBearerUser(req);
   if (!verifiedUser) return res.status(401).json({ error: 'Unauthorized' });
+
+  // Synthetic-only closed contour: reject even an already-authenticated identity
+  // (restored session / existing JWT) unless it is allow-listed. Closes the
+  // existing-session admission bypass, not just new logins.
+  if (identityAdmissionClosed(verifiedUser)) {
+    return res.status(403).json({ error: 'Closed test contour: identity not admitted.' });
+  }
 
   const apiKey = getGeminiApiKey();
   if (!apiKey) return res.status(500).json({ error: 'Missing GEMINI_API_KEY on server' });

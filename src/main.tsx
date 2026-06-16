@@ -6,7 +6,7 @@ import '../index.css';
 import App from '../App';
 import { setStorageAdapter } from '@/core/platform/storage';
 import { webStorageAdapter } from '@/web/platform/storage.web';
-import { scrubEvent, scrubBreadcrumb } from '@/services/sentryScrub';
+import { scrubEvent, scrubBreadcrumb, filterSentryIntegrations } from '@/services/sentryScrub';
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -18,7 +18,10 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     // PD-sensitive app their debugging value does not outweigh the egress risk
     // before legal/security acceptance. Re-enable with span/replay scrubbing
     // (beforeSendTransaction/beforeSendSpan) post-RU-core.
-    integrations: [],
+    //
+    // Also drop the default BrowserSession integration: release-health sessions
+    // egress non-error envelopes (sid / user-agent / env) that bypass beforeSend.
+    integrations: filterSentryIntegrations,
     tracesSampleRate: 0,
     // Hard guarantee: even if a sample rate is later raised, no transaction or
     // performance event leaves the browser.

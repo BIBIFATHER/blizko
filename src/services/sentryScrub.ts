@@ -40,17 +40,29 @@ export function scrubUrl(url: string): string {
   return scrubText(base);
 }
 
-/** Recursively redact string leaves of an arbitrary value (depth-capped). */
+/** Recursively redact string leaves AND keys of an arbitrary value. */
 function scrubDeep(value: unknown, depth = 0): unknown {
   if (depth > 6) return undefined;
   if (typeof value === 'string') return scrubText(value);
   if (Array.isArray(value)) return value.map((v) => scrubDeep(v, depth + 1));
   if (value && typeof value === 'object') {
     const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value)) out[k] = scrubDeep(v, depth + 1);
+    for (const [k, v] of Object.entries(value)) out[scrubText(k)] = scrubDeep(v, depth + 1);
     return out;
   }
   return value;
+}
+
+// Default browser integrations that egress non-error envelopes or PD-heavy
+// payloads are removed until RU-core: BrowserSession (release-health sessions
+// with sid / user-agent / env), plus Replay and BrowserTracing as a guard in
+// case a default set ever includes them.
+const DISABLED_SENTRY_INTEGRATIONS = new Set(['BrowserSession', 'Replay', 'BrowserTracing']);
+
+/** Pass to Sentry.init `integrations` to drop non-error-egress defaults while
+ * keeping error capture (GlobalHandlers, Breadcrumbs, HttpContext, …). */
+export function filterSentryIntegrations<T extends { name: string }>(defaults: T[]): T[] {
+  return defaults.filter((integration) => !DISABLED_SENTRY_INTEGRATIONS.has(integration.name));
 }
 
 /**
@@ -85,9 +97,24 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
   if (typeof event.message === 'string') event.message = scrubText(event.message);
   if (typeof event.transaction === 'string') event.transaction = scrubUrl(event.transaction);
 
+  if (event.logentry) {
+    if (typeof event.logentry.message === 'string') {
+      event.logentry.message = scrubText(event.logentry.message);
+    }
+    if (Array.isArray(event.logentry.params)) {
+      event.logentry.params = event.logentry.params.map((p) =>
+        typeof p === 'string' ? scrubText(p) : p,
+      );
+    }
+  }
+
   if (event.exception?.values) {
     for (const ex of event.exception.values) {
       if (typeof ex.value === 'string') ex.value = scrubText(ex.value);
+      for (const frame of ex.stacktrace?.frames ?? []) {
+        if (typeof frame.filename === 'string') frame.filename = scrubUrl(frame.filename);
+        if (typeof frame.abs_path === 'string') frame.abs_path = scrubUrl(frame.abs_path);
+      }
     }
   }
 

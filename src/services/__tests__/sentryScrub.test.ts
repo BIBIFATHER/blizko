@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { ErrorEvent } from '@sentry/react';
-import { scrubText, scrubUrl, scrubBreadcrumb, scrubEvent } from '@/services/sentryScrub';
+import {
+  scrubText,
+  scrubUrl,
+  scrubBreadcrumb,
+  scrubEvent,
+  filterSentryIntegrations,
+} from '@/services/sentryScrub';
 
 describe('scrubText', () => {
   it('redacts email, phone, long id and uuid; keeps benign text', () => {
@@ -107,5 +113,45 @@ describe('scrubEvent', () => {
     expect((out.breadcrumbs?.[0].data as Record<string, unknown>).url).toBe(
       'https://blizko.app/api/x',
     );
+  });
+
+  it('scrubs object KEYS in deep metadata and logentry + stack frames', () => {
+    const event = {
+      tags: { 'elena@example.ru': 'value' },
+      logentry: { message: 'user 4509123456 failed', params: ['+7 999 123 45 67', 7] },
+      exception: {
+        values: [
+          {
+            value: 'boom',
+            stacktrace: {
+              frames: [{ filename: 'https://blizko.app/app.js?token=abc', function: 'render' }],
+            },
+          },
+        ],
+      },
+    } as unknown as ErrorEvent;
+
+    const out = scrubEvent(event);
+    expect(out.tags).toEqual({ '[email]': 'value' });
+    expect(out.logentry?.message).toBe('user [phone] failed');
+    expect(out.logentry?.params).toEqual(['[phone]', 7]);
+    expect(out.exception?.values?.[0].stacktrace?.frames?.[0].filename).toBe(
+      'https://blizko.app/app.js',
+    );
+  });
+});
+
+describe('filterSentryIntegrations', () => {
+  it('drops BrowserSession / Replay / BrowserTracing, keeps error integrations', () => {
+    const defaults = [
+      { name: 'GlobalHandlers' },
+      { name: 'Breadcrumbs' },
+      { name: 'HttpContext' },
+      { name: 'BrowserSession' },
+      { name: 'Replay' },
+      { name: 'BrowserTracing' },
+    ];
+    const kept = filterSentryIntegrations(defaults).map((i) => i.name);
+    expect(kept).toEqual(['GlobalHandlers', 'Breadcrumbs', 'HttpContext']);
   });
 });

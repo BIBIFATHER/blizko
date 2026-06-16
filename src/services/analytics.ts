@@ -172,6 +172,65 @@ export async function fetchRemoteAnalyticsEvents(
 
 // ---- Core Functions ----
 
+// BLI-110: analytics events egress to PostHog / Yandex Metrica and a server
+// store. Free-text and PII must not ride in event properties. Fail-closed: keep
+// only short scalar values; drop objects, oversized free-text, contact-like
+// strings, and identifying keys. `session_id` is added separately in `track`.
+const ANALYTICS_PII_KEY_DENYLIST = new Set([
+  'name',
+  'nanny_name',
+  'parent_name',
+  'full_name',
+  'first_name',
+  'last_name',
+  'email',
+  'phone',
+  'contact',
+  'address',
+  'about',
+  'comment',
+  'message',
+  'text',
+  'query',
+]);
+const ANALYTICS_VALUE_MAX_LEN = 120;
+const ANALYTICS_EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+const ANALYTICS_PHONE_RE = /\+?\d[\d\s()-]{6,}\d/;
+const ANALYTICS_LONG_ID_RE = /\b\d{9,}\b/;
+
+export function sanitizeAnalyticsProperties(
+  properties?: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (!properties || typeof properties !== 'object') return out;
+  for (const [key, value] of Object.entries(properties)) {
+    if (ANALYTICS_PII_KEY_DENYLIST.has(key.toLowerCase())) continue;
+    if (typeof value === 'number') {
+      if (Number.isFinite(value)) out[key] = value;
+      continue;
+    }
+    if (typeof value === 'boolean') {
+      out[key] = value;
+      continue;
+    }
+    if (typeof value === 'string') {
+      const v = value.trim();
+      if (!v || v.length > ANALYTICS_VALUE_MAX_LEN) continue;
+      if (
+        ANALYTICS_EMAIL_RE.test(v) ||
+        ANALYTICS_PHONE_RE.test(v) ||
+        ANALYTICS_LONG_ID_RE.test(v)
+      ) {
+        continue;
+      }
+      out[key] = v;
+      continue;
+    }
+    // drop objects, arrays, null, undefined, functions
+  }
+  return out;
+}
+
 /** Track an event with optional properties */
 export function track(event: EventName, properties?: Record<string, unknown>): void {
   try {
@@ -181,7 +240,7 @@ export function track(event: EventName, properties?: Record<string, unknown>): v
       event,
       properties: {
         session_id: sessionId,
-        ...(properties || {}),
+        ...sanitizeAnalyticsProperties(properties),
       },
       timestamp: new Date().toISOString(),
       url: typeof window !== 'undefined' ? window.location.pathname : undefined,
@@ -267,10 +326,10 @@ export function trackMatchingResults(candidateCount: number, topScore: number): 
   });
 }
 
-/** Track nanny card click */
-export function trackNannyCardClick(nannyName: string, position: number, score: number): void {
+/** Track nanny card click. The nanny name is intentionally NOT emitted — it is
+ * personal data and not needed for funnel metrics (position/score suffice). */
+export function trackNannyCardClick(_nannyName: string, position: number, score: number): void {
   track(ANALYTICS_EVENTS.NANNY_CARD_CLICKED, {
-    nanny_name: nannyName,
     position,
     score,
   });

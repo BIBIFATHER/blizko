@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-06-16 (Tue) — Jurisdiction Router MVP foundation (BLI-110)
+
+- Added `api/_jurisdiction.ts`: a pure server-side Jurisdiction Router policy
+  resolver with the MVP matrix for `RU`, `UNKNOWN`, and `EU`.
+- Locked fail-closed behavior: missing verified signals, unsupported countries,
+  or conflicting RU applicability resolve to `UNKNOWN`; advisory IP/locale/timezone
+  are minimized for audit and cannot select a weaker policy.
+- Added `api/_jurisdiction.test.ts` covering RU, UNKNOWN, EU placeholder,
+  conflicts, advisory-only behavior, and supported +7 phone-country inference.
+- Added `docs/architecture/jurisdiction-router-mvp.md` to define the foundation
+  scope and the follow-up integration steps. This change does not open real-user
+  admission and does not switch storage, AI, payments, or Supabase data planes.
+
 ## 2026-06-16 (Tue) — Synthetic-only closed contour (BLI-105/106 rebuild)
 
 - Reverted the prior "disable PD features" diff: forms, photo, documents, video,

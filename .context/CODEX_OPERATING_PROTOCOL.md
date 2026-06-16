@@ -29,6 +29,7 @@ Before meaningful work, read:
 10. `.context/AI_STACK.md`
 11. `.agents/workflows/model-orchestrator.md`
 12. `.agents/context/AGENT_SKILL_MAP.md`
+13. `.context/AGENT_COORDINATION.md`
 
 Before review work, also read:
 
@@ -41,6 +42,14 @@ Before release-readiness claims, also read:
 Before any database, Supabase, Auth, Storage, RLS, RPC, or database-backed feature work, also read:
 
 - `.context/CODEX_DB_CHANGE_PROTOCOL.md`
+
+Before personal-data, document, AI, analytics, payment, vendor, consent,
+privacy, moderation, verification, trust-claim, or infrastructure work, also
+read:
+
+- `.context/CODEX_LEGAL_SECURITY_PROTOCOL.md`
+- `docs/compliance/DATA_REGISTER.md`
+- `docs/compliance/PROCESSOR_REGISTER.md`
 
 For operating changes and lessons, follow:
 
@@ -65,6 +74,15 @@ Before refactoring or extending AI-generated UI, also read:
   first pending safe step automatically
 - approval gates remain approval gates; continuity does not authorize merges,
   production changes, destructive actions, or secret handling
+
+## Git Hygiene
+
+Before editing files, Codex must run `git status --short` and classify the
+dirty tree. If unrelated or older changes exist, do not build on top of them
+silently. Keep the next change in a scoped set, and before starting a new task
+create a scoped checkpoint commit when the previous task is complete. Never use
+`git add .`; stage explicit paths only. If a task ends with remaining dirty
+files, report exactly which files were intentionally left unstaged and why.
 
 ## Task Routing
 
@@ -131,6 +149,15 @@ Open questions
 - skill routing comes from `.agents/context/AGENT_SKILL_MAP.md`
 - use preferred skills from each agent profile before improvising
 - do not assign random skills when a role already has a defined set
+- Claude is the default lead; Codex is the independent reviewer unless Anton
+  assigns Codex the task directly
+- Anton gives a task once; do not ask him to carry prompts or findings between
+  Claude and Codex
+- follow `.context/AGENT_COORDINATION.md` for direct independent review and
+  consolidated reporting
+- at a mandatory review gate, send the actual Codex conclusion to Claude with
+  `npm run review:claude -- "..."`, verify the response against evidence, and
+  request a second check after material corrections
 
 ## Research Policy
 

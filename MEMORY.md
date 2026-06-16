@@ -10,6 +10,8 @@ Curated long-term memory for the main Blizko workspace.
 ## User Preferences
 
 - Prefer short internal task compression before execution.
+- Prefer Claude Code as the default lead agent for Blizko, with Codex acting as
+  the independent reviewer; the user should not relay messages between them.
 - Prefer execution-ready artifacts over long discussion.
 - For larger tasks, parallelize only when the work splits into genuinely independent blocks.
 - Value directness, speed, and high technical standards over reassuring chatter.
@@ -21,12 +23,20 @@ Curated long-term memory for the main Blizko workspace.
 
 - Main product: `Blizko`
 - Secondary project in orbit: `Photo-Business`
+- Blizko's approved monetization model is family payment through a
+  provider-supported split/multipayout flow; after completed work the nanny
+  receives 80-85% and Blizko retains a 15-20% commission. The first closed
+  pilot must validate this real payment cycle.
 - Current frontend runtime is `Vite 6 + React 19`, not Next.js.
 - Core backend/data layer is `Supabase` with strong emphasis on RLS and production hardening.
+- RU data-contour decision is open. Do not treat self-hosted Supabase or UZ-1 as preselected; first confirm real production PII, legal/security classification, and permitted AI data flows using `docs/ru-data-contour-decision-memo.md`.
 
 ## Operating Lessons
 
 - The workspace already has enough strategic documentation; the bigger leverage comes from connectors, verification loops, and repeatable execution paths.
+- Claude/Codex own routine legal/privacy/security evidence collection and
+  register maintenance. Anton should not be asked to fill compliance forms;
+  escalate only business choices or official/irreversible actions.
 - MCP readiness must be validated from the active client, not inferred from config files.
 - Durable context belongs in files, not in chat memory.
 - Highest-leverage collaboration pattern is: concise task framing, fast context pull, immediate implementation, short closeout.

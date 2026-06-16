@@ -49,6 +49,11 @@ Each finding should include:
 - Prefer missing tests over subjective taste.
 - Call out security, data integrity, auth, payments, and trust flows early.
 - If the diff touches Supabase, SQL, Auth, Storage, RLS, RPC, or database-backed payloads, follow `.context/CODEX_DB_CHANGE_PROTOCOL.md`.
+- If the diff touches personal data, documents, AI, analytics, payments,
+  external services, consent/privacy, moderation, verification, or trust
+  claims, follow `.context/CODEX_LEGAL_SECURITY_PROTOCOL.md`.
+- Treat missing updates to `docs/compliance/DATA_REGISTER.md` or
+  `docs/compliance/PROCESSOR_REGISTER.md` as a finding when behavior changed.
 - For each changed database field, verify creation, production presence, typing, writers, readers, enum compatibility, authorization, deployment order, and rollback.
 - A build or unit test is not evidence that the production schema accepts a payload.
 - Review transitive RLS dependencies: policies and views may query tables hidden from the current role.

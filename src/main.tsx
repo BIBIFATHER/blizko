@@ -1,12 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {
-  BrowserRouter,
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-  useNavigationType,
-} from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import '../index.css';
 import App from '../App';
@@ -17,31 +11,20 @@ import { scrubEvent, scrubBreadcrumb } from '@/services/sentryScrub';
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
-    integrations: [
-      Sentry.reactRouterV6BrowserTracingIntegration({
-        useEffect,
-        useLocation,
-        useNavigationType,
-        createRoutesFromChildren,
-        matchRoutes,
-      }),
-      // Session Replay is PD-sensitive (forms with child/contact/document data):
-      // mask all text + inputs, block media, and never capture request/response
-      // bodies. Explicit so the privacy posture is verified, not relied on as a
-      // default (DATA_REGISTER: payload scrubbing must be verified).
-      Sentry.replayIntegration({
-        maskAllText: true,
-        maskAllInputs: true,
-        blockAllMedia: true,
-        networkDetailAllowUrls: [],
-      }),
-    ],
-    tracesSampleRate: 0.1,
-    replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 1.0,
     environment: import.meta.env.MODE,
-    // Never attach default PII (ip, cookies, headers). Scrub every event and
-    // breadcrumb before egress to Sentry's DE ingest.
+    // Error reporting only. Performance tracing and Session Replay are DISABLED
+    // until RU-core: http.client spans carry geocode address/GPS query strings
+    // and replay records PD-heavy forms (passport/medical/child). For a closed
+    // PD-sensitive app their debugging value does not outweigh the egress risk
+    // before legal/security acceptance. Re-enable with span/replay scrubbing
+    // (beforeSendTransaction/beforeSendSpan) post-RU-core.
+    integrations: [],
+    tracesSampleRate: 0,
+    // Hard guarantee: even if a sample rate is later raised, no transaction or
+    // performance event leaves the browser.
+    beforeSendTransaction: () => null,
+    // Never attach default PII (ip, cookies, headers). Scrub every error event
+    // and breadcrumb before egress to Sentry's DE ingest.
     sendDefaultPii: false,
     beforeSend: scrubEvent,
     beforeBreadcrumb: scrubBreadcrumb,

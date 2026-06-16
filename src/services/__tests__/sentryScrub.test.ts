@@ -6,9 +6,14 @@ describe('scrubText', () => {
   it('redacts email, phone, long id and uuid; keeps benign text', () => {
     expect(scrubText('write elena@example.ru now')).toBe('write [email] now');
     expect(scrubText('call +7 999 123 45 67')).toBe('call [phone]');
-    expect(scrubText('passport 4509123456')).toBe('passport [id]');
+    expect(scrubText('compact +79991234567 here')).toBe('compact [phone] here');
     expect(scrubText('id 550e8400-e29b-41d4-a716-446655440000')).toBe('id [uuid]');
     expect(scrubText('rendering NannyCard failed')).toBe('rendering NannyCard failed');
+  });
+
+  it('redacts a bare long digit run (no leftover punctuation)', () => {
+    // PHONE runs before the bare-id pass: a compact number is fully consumed.
+    expect(scrubText('num 4509123456 end')).toBe('num [phone] end');
   });
 });
 
@@ -29,7 +34,7 @@ describe('scrubBreadcrumb', () => {
     expect(scrubBreadcrumb({ category: 'console', message: 'user elena@example.ru' })).toBeNull();
   });
 
-  it('strips query from fetch/navigation urls and redacts message', () => {
+  it('strips query from fetch urls and redacts message', () => {
     const out = scrubBreadcrumb({
       category: 'fetch',
       message: 'GET +7 999 123 45 67',
@@ -41,19 +46,17 @@ describe('scrubBreadcrumb', () => {
   });
 
   it('strips navigation from/to urls', () => {
-    const out = scrubBreadcrumb({
-      category: 'navigation',
-      data: { from: '/a?x=1', to: '/b?y=2' },
-    });
+    const out = scrubBreadcrumb({ category: 'navigation', data: { from: '/a?x=1', to: '/b?y=2' } });
     expect((out?.data as Record<string, unknown>).from).toBe('/a');
     expect((out?.data as Record<string, unknown>).to).toBe('/b');
   });
 });
 
 describe('scrubEvent', () => {
-  it('redacts message/exception, strips request, minimizes user, scrubs breadcrumbs', () => {
+  it('redacts message/exception/transaction, strips request, drops user, scrubs metadata + breadcrumbs', () => {
     const event = {
       message: 'failed for elena@example.ru',
+      transaction: '/nanny/ekaterina-550e8400-e29b-41d4-a716-446655440000?ref=x',
       exception: { values: [{ value: 'phone +7 999 123 45 67 invalid' }] },
       request: {
         url: 'https://blizko.app/api/geocode?q=Арбат',
@@ -63,6 +66,15 @@ describe('scrubEvent', () => {
         headers: { authorization: 'Bearer t' },
       },
       user: { id: 'user-1', email: 'elena@example.ru', ip_address: '1.2.3.4' },
+      server_name: 'host-1',
+      tags: { contact: 'elena@example.ru', screen: 'parent_form' },
+      extra: { note: 'call +7 999 123 45 67', count: 3 },
+      contexts: {
+        react: { componentStack: 'at NannyCard' },
+        custom: { addr: 'Москва, Арбат elena@example.ru' },
+        trace: { trace_id: 'abc', span_id: 'def' },
+      },
+      fingerprint: ['elena@example.ru', 'boundary'],
       breadcrumbs: [
         { category: 'console', message: 'leak elena@example.ru' },
         { category: 'fetch', data: { url: 'https://blizko.app/api/x?token=abc' } },
@@ -72,21 +84,28 @@ describe('scrubEvent', () => {
     const out = scrubEvent(event);
 
     expect(out.message).toBe('failed for [email]');
+    expect(out.transaction).toBe('/nanny/ekaterina-[uuid]');
     expect(out.exception?.values?.[0].value).toBe('phone [phone] invalid');
     expect(out.request?.url).toBe('https://blizko.app/api/geocode');
     expect(out.request?.query_string).toBeUndefined();
     expect(out.request?.data).toBeUndefined();
     expect(out.request?.cookies).toBeUndefined();
     expect(out.request?.headers).toBeUndefined();
-    expect(out.user).toEqual({ id: 'user-1' });
+    expect(out.user).toBeUndefined();
+    expect(out.server_name).toBeUndefined();
+    expect(out.tags).toEqual({ contact: '[email]', screen: 'parent_form' });
+    expect(out.extra).toEqual({ note: 'call [phone]', count: 3 });
+    expect((out.contexts as Record<string, Record<string, unknown>>).custom.addr).toBe(
+      'Москва, Арбат [email]',
+    );
+    expect((out.contexts as Record<string, Record<string, unknown>>).trace).toEqual({
+      trace_id: 'abc',
+      span_id: 'def',
+    });
+    expect(out.fingerprint).toEqual(['[email]', 'boundary']);
     expect(out.breadcrumbs).toHaveLength(1);
     expect((out.breadcrumbs?.[0].data as Record<string, unknown>).url).toBe(
       'https://blizko.app/api/x',
     );
-  });
-
-  it('empties user when there is no id', () => {
-    const out = scrubEvent({ user: { email: 'a@b.ru' } } as unknown as ErrorEvent);
-    expect(out.user).toEqual({});
   });
 });

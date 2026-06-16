@@ -3,10 +3,15 @@
  * payload scrubbing must be verified").
  *
  * Sentry is an external processor (DE ingest). Error events, breadcrumbs and
- * request context can otherwise carry personal data: addresses in geocode URLs,
- * phone/OTP in auth URLs, emails in messages, opaque ids. These helpers redact
- * contact-like values and strip URL query/hash before anything leaves the
- * browser. Pure and dependency-free so they are unit-testable.
+ * request/transaction context can otherwise carry personal data: addresses in
+ * geocode URLs, phone/OTP in auth URLs, emails in messages, opaque ids. These
+ * helpers redact contact-like values and strip URL query/hash before anything
+ * leaves the browser. Pure and dependency-free so they are unit-testable.
+ *
+ * Scope: this governs the browser error-event payload. Performance tracing and
+ * Session Replay are DISABLED until RU-core (see src/main.tsx) rather than
+ * scrubbed, because their span/DOM payloads are a broad PD surface for a
+ * passport/medical/child app. Server-side (api/ -> Vercel logs) is separate.
  */
 import type { ErrorEvent, Breadcrumb } from '@sentry/react';
 
@@ -15,14 +20,16 @@ const PHONE_RE = /\+?\d[\d\s()-]{6,}\d/g;
 const LONG_ID_RE = /\b\d{9,}\b/g;
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 
-/** Redact contact-like values and opaque identifiers from free text. */
+/** Redact contact-like values and opaque identifiers from free text. Phone runs
+ * before the bare-id pass so a compact `+7999…` is labelled `[phone]` with no
+ * leftover `+`. */
 export function scrubText(input: string): string {
   if (!input) return input;
   return input
     .replace(EMAIL_RE, '[email]')
     .replace(UUID_RE, '[uuid]')
-    .replace(LONG_ID_RE, '[id]')
-    .replace(PHONE_RE, '[phone]');
+    .replace(PHONE_RE, '[phone]')
+    .replace(LONG_ID_RE, '[id]');
 }
 
 /** Drop query string and fragment from a URL (they carry addresses, tokens). */
@@ -31,6 +38,19 @@ export function scrubUrl(url: string): string {
   const cut = url.search(/[?#]/);
   const base = cut >= 0 ? url.slice(0, cut) : url;
   return scrubText(base);
+}
+
+/** Recursively redact string leaves of an arbitrary value (depth-capped). */
+function scrubDeep(value: unknown, depth = 0): unknown {
+  if (depth > 6) return undefined;
+  if (typeof value === 'string') return scrubText(value);
+  if (Array.isArray(value)) return value.map((v) => scrubDeep(v, depth + 1));
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) out[k] = scrubDeep(v, depth + 1);
+    return out;
+  }
+  return value;
 }
 
 /**
@@ -55,12 +75,15 @@ export function scrubBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb | null {
 }
 
 /**
- * beforeSend hook. Redacts message and exception values, strips request URL and
- * drops request body/headers/cookies, removes user PII (keeps only an id), and
- * scrubs breadcrumbs. Returning null would drop the event; we always keep it.
+ * beforeSend hook. Redacts message/exception, strips the request (url + drops
+ * body/headers/cookies/query), drops the user entirely (no browser-side id until
+ * RU-core), scrubs the transaction name and any app-set contexts/tags/extra/
+ * fingerprint, deletes server_name, and scrubs breadcrumbs. Always keeps the
+ * event (never returns null).
  */
 export function scrubEvent(event: ErrorEvent): ErrorEvent {
   if (typeof event.message === 'string') event.message = scrubText(event.message);
+  if (typeof event.transaction === 'string') event.transaction = scrubUrl(event.transaction);
 
   if (event.exception?.values) {
     for (const ex of event.exception.values) {
@@ -76,9 +99,23 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
     delete event.request.headers;
   }
 
-  if (event.user) {
-    event.user = event.user.id ? { id: event.user.id } : {};
+  // Drop the user entirely: a Supabase user id is a stable pseudonymous
+  // identifier and is not needed in browser error reports before RU-core.
+  delete event.user;
+  delete event.server_name;
+
+  if (event.contexts) {
+    const contexts: Record<string, unknown> = {};
+    for (const [key, ctx] of Object.entries(event.contexts)) {
+      // Preserve the SDK trace context for correlation; scrub everything else.
+      contexts[key] = key === 'trace' ? ctx : (scrubDeep(ctx) as typeof ctx);
+    }
+    event.contexts = contexts as ErrorEvent['contexts'];
   }
+
+  if (event.tags) event.tags = scrubDeep(event.tags) as ErrorEvent['tags'];
+  if (event.extra) event.extra = scrubDeep(event.extra) as ErrorEvent['extra'];
+  if (Array.isArray(event.fingerprint)) event.fingerprint = event.fingerprint.map(scrubText);
 
   if (event.breadcrumbs) {
     event.breadcrumbs = event.breadcrumbs

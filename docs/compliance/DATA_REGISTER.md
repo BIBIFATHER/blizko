@@ -1,7 +1,7 @@
 # Blizko Data Register
 
-Status: agent-maintained working register  
-Last evidence review: 2026-06-16  
+Status: agent-maintained working register
+Last evidence review: 2026-06-16
 Owner: Claude/Codex operating process
 
 Agents update this file from code, migrations, configuration, provider evidence,

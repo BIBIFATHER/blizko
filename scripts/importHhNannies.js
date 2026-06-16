@@ -2,36 +2,35 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { fileURLToPath } from 'node:url';
 
-// Load env vars
-const envPath = path.resolve(process.cwd(), '.env.local');
-let envContent = '';
-try {
-  envContent = fs.readFileSync(envPath, 'utf-8');
-} catch (e) {
-  console.error('Could not read .env.local', e.message);
-  process.exit(1);
-}
-
-const env = {};
-envContent.split('\n').forEach((line) => {
-  const match = line.match(/^([^=]+)=(.*)$/);
-  if (match) {
-    let val = match[2].replace(/^["']|["']$/g, '');
-    env[match[1]] = val;
+// Fail-closed seed-target guard (pure, unit-testable). Refuses unless an explicit
+// non-production project ref is declared via BLIZKO_SEED_ALLOWED_REF and the
+// configured SUPABASE_URL matches it. Forbidden production ref(s) are also read
+// from env (BLIZKO_FORBIDDEN_PROD_REFS) — never hardcoded.
+export function assertSeedTargetAllowed(supabaseUrl, { allowedRef, forbiddenRefs = [] } = {}) {
+  const url = String(supabaseUrl || '');
+  if (!url) throw new Error('SUPABASE_URL is required.');
+  if (!allowedRef) {
+    throw new Error(
+      'set BLIZKO_SEED_ALLOWED_REF to the non-production project ref before seeding.',
+    );
   }
-});
-
-const SUPABASE_URL = env['SUPABASE_URL'];
-const SUPABASE_SERVICE_ROLE_KEY = env['SUPABASE_SERVICE_ROLE_KEY'];
-
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error('Missing Supabase credentials in .env.local');
-  process.exit(1);
+  if (!url.includes(allowedRef)) {
+    throw new Error('SUPABASE_URL is not the allowed non-production project.');
+  }
+  for (const ref of forbiddenRefs) {
+    const trimmed = String(ref || '').trim();
+    if (trimmed && url.includes(trimmed)) {
+      throw new Error('SUPABASE_URL matches a forbidden production ref.');
+    }
+  }
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const ADMIN_USER_ID = crypto.randomUUID();
+// Clients are created only inside runCli so importing this module for tests has
+// no side effects (no env read, no client, no seeding).
+let supabase;
+let ADMIN_USER_ID;
 
 // Data arrays for procedural generation
 const FIRST_NAMES = [
@@ -319,4 +318,52 @@ async function seed() {
   console.log(`\nSuccessfully seeded ${successCount}/${TOTAL_PROFILES} nannies!`);
 }
 
-seed().catch(console.error);
+function runCli() {
+  if (process.env.HH_SEED_SYNTHETIC !== '1') {
+    console.error(
+      'Blocked: this legacy seeder writes synthetic nanny profiles with privileged credentials. ' +
+        'Set HH_SEED_SYNTHETIC=1 only for an explicitly non-production Supabase project.',
+    );
+    process.exit(1);
+  }
+
+  const envPath = path.resolve(process.cwd(), '.env.local');
+  let envContent = '';
+  try {
+    envContent = fs.readFileSync(envPath, 'utf-8');
+  } catch (e) {
+    console.error('Could not read .env.local', e.message);
+    process.exit(1);
+  }
+
+  const env = {};
+  envContent.split('\n').forEach((line) => {
+    const match = line.match(/^([^=]+)=(.*)$/);
+    if (match) env[match[1]] = match[2].replace(/^["']|["']$/g, '');
+  });
+
+  const SUPABASE_URL = env['SUPABASE_URL'];
+  const SUPABASE_SERVICE_ROLE_KEY = env['SUPABASE_SERVICE_ROLE_KEY'];
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Missing Supabase credentials in .env.local');
+    process.exit(1);
+  }
+
+  try {
+    assertSeedTargetAllowed(SUPABASE_URL, {
+      allowedRef: process.env.BLIZKO_SEED_ALLOWED_REF,
+      forbiddenRefs: (process.env.BLIZKO_FORBIDDEN_PROD_REFS || '').split(','),
+    });
+  } catch (e) {
+    console.error(`Blocked: ${e.message}`);
+    process.exit(1);
+  }
+
+  supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  ADMIN_USER_ID = crypto.randomUUID();
+  seed().catch(console.error);
+}
+
+if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {
+  runCli();
+}

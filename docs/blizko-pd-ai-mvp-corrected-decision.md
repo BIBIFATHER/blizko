@@ -1,7 +1,7 @@
 # Blizko PD/AI MVP: corrected decision candidate
 
-Date: 2026-06-13  
-Status: candidate for independent Claude review; not an implementation approval  
+Date: 2026-06-13
+Status: candidate for independent Claude review; not an implementation approval
 Decision ID: `BLI-PD-AI-MVP-001-R1`
 
 ## 1. Purpose

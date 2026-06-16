@@ -1,6 +1,6 @@
 # Blizko Processor Register
 
-Status: agent-maintained working register  
+Status: agent-maintained working register
 Last evidence review: 2026-06-13
 
 This register records technical evidence, not vendor marketing conclusions.

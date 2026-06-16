@@ -1,5 +1,10 @@
 # Recruiting Triage — A/B/C Criteria + Templates
 
+> **Superseded for real candidates as of 2026-06-13.** This file requests
+> passports and resumes too early and does not match the current data-contour
+> decision. Use `docs/nanny-warm-pool-ops.md`. Keep this document only as
+> historical input for the future approved verification stage.
+
 ## A-ready (готова к сделкам)
 **Критерии (минимум):**
 - Паспорт (скан/фото) + резюме

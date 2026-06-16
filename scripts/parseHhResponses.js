@@ -4,38 +4,35 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import csv from 'csv-parser';
+import { fileURLToPath } from 'node:url';
 
-// 1. Load env vars
-const envPath = path.resolve(process.cwd(), '.env.local');
-let envContent = '';
-try {
-  envContent = fs.readFileSync(envPath, 'utf-8');
-} catch (e) {
-  console.error('Could not read .env.local', e.message);
-  process.exit(1);
+// --- Synthetic-only guard (pure, unit-testable) ------------------------------
+// This legacy path sends resume text to Gemini and writes to Supabase EU. It is
+// permitted ONLY for verified synthetic data. The guard enforces that the input
+// contains no real email/phone — it is not an honor-system flag.
+const CONTACT_RE = /@|\+?\d[\d\s()-]{6,}\d/;
+
+export function looksLikeContact(value) {
+  return CONTACT_RE.test(String(value ?? ''));
 }
 
-const env = {};
-envContent.split('\n').forEach((line) => {
-  const match = line.match(/^([^=]+)=(.*)$/);
-  if (match) {
-    let val = match[2].replace(/^["']|["']$/g, '');
-    env[match[1]] = val;
+export function assertSyntheticRows(rows) {
+  for (let i = 0; i < rows.length; i++) {
+    for (const [key, val] of Object.entries(rows[i])) {
+      if (looksLikeContact(val)) {
+        throw new Error(
+          `Row ${i + 1} field "${key}" looks like a real email/phone. This path is ` +
+            'synthetic-only; real candidate contacts must stay on the source platform.',
+        );
+      }
+    }
   }
-});
-
-const SUPABASE_URL = env['SUPABASE_URL'];
-const SUPABASE_SERVICE_ROLE_KEY = env['SUPABASE_SERVICE_ROLE_KEY'];
-const GEMINI_API_KEY = env['GEMINI_API_KEY'];
-
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !GEMINI_API_KEY) {
-  console.error('Missing Supabase credentials or GEMINI_API_KEY in .env.local');
-  process.exit(1);
 }
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-const ADMIN_USER_ID = crypto.randomUUID();
+// Real contact data is never copied into the profile, even for synthetic runs.
+export function buildSyntheticContact(nannyId) {
+  return `hh_${String(nannyId).substring(0, 6)}@blizko.local`;
+}
 
 // 2. Define structured output schema for Gemini
 const responseSchema = {
@@ -112,7 +109,12 @@ const responseSchema = {
   ],
 };
 
-// Rate limiting utility
+// Clients are created only inside the CLI runner so importing this module for
+// tests has no side effects (no env read, no network clients, no process.exit).
+let supabase;
+let ai;
+let ADMIN_USER_ID;
+
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function parseResumeWithGemini(resumeText) {
@@ -132,7 +134,7 @@ ${resumeText.substring(0, 5000)} // Truncating to avoid huge prompts
       config: {
         responseMimeType: 'application/json',
         responseSchema: responseSchema,
-        temperature: 0.2, // Low temperature for deterministic extraction
+        temperature: 0.2,
       },
     });
 
@@ -152,8 +154,6 @@ async function processHhExport(filePath) {
   const resumes = [];
   console.log('Reading CSV file...');
 
-  // Assuming columns might contain 'Резюме', 'Имя', 'Желаемая зарплата', etc.
-  // We will dump the whole row into a text blob for Gemini to figure out.
   await new Promise((resolve, reject) => {
     fs.createReadStream(filePath)
       .pipe(csv())
@@ -162,13 +162,15 @@ async function processHhExport(filePath) {
       .on('error', reject);
   });
 
+  // Hard stop if the "synthetic" input actually contains real contacts.
+  assertSyntheticRows(resumes);
+
   console.log(`Found ${resumes.length} rows to process.`);
 
   let successCount = 0;
 
   for (let i = 0; i < resumes.length; i++) {
     const rawRow = resumes[i];
-    // Combine all columns into a readable text block
     const resumeText = Object.entries(rawRow)
       .map(([key, val]) => `${key}: ${val}`)
       .join('\n');
@@ -188,19 +190,20 @@ async function processHhExport(filePath) {
       id: nannyId,
       type: 'nanny',
       name: `${extracted.name} (HH.ru)`,
-      photo: `https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop`, // Placeholder
+      photo: `https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop`,
       city: 'Москва',
       district: 'Уточняется',
       metro: extracted.metro || 'Не указано',
       experience: extracted.experience,
-      schedule: 'Уточняется', // HH standard schedule might be part of context
+      schedule: 'Уточняется',
       expectedRate: extracted.expectedRate,
       childAges: extracted.childAges,
       skills: extracted.skills,
       about: extracted.about,
-      contact: rawRow['Email'] || rawRow['Телефон'] || `hh_${nannyId.substring(0, 6)}@blizko.app`,
+      // Never copy a real email/phone into the profile.
+      contact: buildSyntheticContact(nannyId),
       isVerified: false,
-      documents: [], // To be uploaded during onboarding
+      documents: [],
       softSkills: {
         ...extracted.softSkills,
         completedAt: now,
@@ -210,11 +213,7 @@ async function processHhExport(filePath) {
       createdAt: now,
     };
 
-    const dbRow = {
-      id: nannyId,
-      user_id: ADMIN_USER_ID,
-      payload: payload,
-    };
+    const dbRow = { id: nannyId, user_id: ADMIN_USER_ID, payload };
 
     const { error } = await supabase.from('nannies').upsert(dbRow, { onConflict: 'id' });
 
@@ -225,7 +224,6 @@ async function processHhExport(filePath) {
       successCount++;
     }
 
-    // Rate limit mitigation (free tier Gemini is 15 RPM, but we assume paid tier or fast rate)
     await delay(2000);
   }
 
@@ -234,10 +232,55 @@ async function processHhExport(filePath) {
   );
 }
 
-const inputPath = process.argv[2];
-if (!inputPath) {
-  console.log('Usage: node scripts/parseHhResponses.js <path-to-csv>');
-  process.exit(1);
+function runCli() {
+  if (process.env.HH_IMPORT_SYNTHETIC_ONLY !== '1') {
+    console.error(
+      'Blocked: this legacy script sends resume contents to Gemini and writes profiles to Supabase EU. ' +
+        'Use docs/nanny-warm-pool-ops.md for real candidates. ' +
+        'HH_IMPORT_SYNTHETIC_ONLY=1 is permitted only for verified synthetic test data.',
+    );
+    process.exit(1);
+  }
+
+  const envPath = path.resolve(process.cwd(), '.env.local');
+  let envContent = '';
+  try {
+    envContent = fs.readFileSync(envPath, 'utf-8');
+  } catch (e) {
+    console.error('Could not read .env.local', e.message);
+    process.exit(1);
+  }
+
+  const env = {};
+  envContent.split('\n').forEach((line) => {
+    const match = line.match(/^([^=]+)=(.*)$/);
+    if (match) {
+      env[match[1]] = match[2].replace(/^["']|["']$/g, '');
+    }
+  });
+
+  const SUPABASE_URL = env['SUPABASE_URL'];
+  const SUPABASE_SERVICE_ROLE_KEY = env['SUPABASE_SERVICE_ROLE_KEY'];
+  const GEMINI_API_KEY = env['GEMINI_API_KEY'];
+
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !GEMINI_API_KEY) {
+    console.error('Missing Supabase credentials or GEMINI_API_KEY in .env.local');
+    process.exit(1);
+  }
+
+  supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  ADMIN_USER_ID = crypto.randomUUID();
+
+  const inputPath = process.argv[2];
+  if (!inputPath) {
+    console.log('Usage: node scripts/parseHhResponses.js <path-to-csv>');
+    process.exit(1);
+  }
+
+  processHhExport(inputPath).catch(console.error);
 }
 
-processHhExport(inputPath).catch(console.error);
+if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {
+  runCli();
+}

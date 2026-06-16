@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
 import { externalPersonalDataAiEgressDecision } from './_aiEgress.js';
+import { externalPersonalDataNotificationEgressDecision } from './_notificationEgress.js';
 import { getGeminiApiKey, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
 import { identityAdmissionClosed } from './_synthetic.js';
 
@@ -347,6 +348,7 @@ async function fetchUserTelegramContext(userId: string): Promise<string[]> {
 async function sendTelegramHumanHandoff(params: {
   ticketId: string;
   userId: string;
+  userEmail: string | null;
   userMessage: string;
   sentiment: number;
   reason: string;
@@ -354,6 +356,17 @@ async function sendTelegramHumanHandoff(params: {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
   if (!botToken || !chatId) return;
+
+  const notificationEgress = externalPersonalDataNotificationEgressDecision({
+    email: params.userEmail,
+  });
+  if (notificationEgress.closed) {
+    console.warn('[Telegram] Human handoff blocked by notification egress policy', {
+      jurisdiction: notificationEgress.jurisdiction,
+      reason: notificationEgress.reason,
+    });
+    return;
+  }
 
   const [historyRows, contextLines] = await Promise.all([
     fetchRecentHistoryRows(params.ticketId, params.userMessage),
@@ -513,6 +526,7 @@ Rules:
         await sendTelegramHumanHandoff({
           ticketId: supportTicketId,
           userId: auth.userId,
+          userEmail: auth.email,
           userMessage,
           sentiment,
           reason: keywordHandoff

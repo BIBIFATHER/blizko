@@ -60,4 +60,89 @@ describe('api/ai-support jurisdiction egress guard', () => {
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it('blocks Telegram human handoff when AI gates are open but notification gate is closed', async () => {
+    process.env.BLIZKO_CROSS_BORDER_AI_GATE_OPEN = 'true';
+    process.env.BLIZKO_SENSITIVE_AI_FLOW_GATE_OPEN = 'true';
+    process.env.BLIZKO_EXTERNAL_NOTIFICATION_GATE_OPEN = 'false';
+    process.env.TELEGRAM_BOT_TOKEN = 'telegram-token';
+    process.env.TELEGRAM_ADMIN_CHAT_ID = 'admin-chat';
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url === 'https://example.supabase.co/auth/v1/user') {
+        return {
+          ok: true,
+          json: async () => ({ id: 'user-1', email: 'phone_79990000000@blizko.local' }),
+        };
+      }
+
+      if (url.includes('/rest/v1/support_tickets?id=eq.ticket-1&family_id=eq.user-1')) {
+        return { ok: true, json: async () => [{ id: 'ticket-1' }] };
+      }
+
+      if (url.includes('/rest/v1/support_messages?ticket_id=eq.ticket-1')) {
+        return { ok: true, json: async () => [] };
+      }
+
+      if (url.includes('/rest/v1/parents?user_id=eq.user-1')) {
+        return { ok: true, json: async () => [] };
+      }
+
+      if (url.includes('generativelanguage.googleapis.com')) {
+        return {
+          ok: true,
+          json: async () => ({
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    {
+                      text: JSON.stringify({
+                        reply: 'Передам человеку.',
+                        sentiment: 0,
+                        needs_human: true,
+                      }),
+                    },
+                  ],
+                },
+              },
+            ],
+          }),
+        };
+      }
+
+      if (
+        url === 'https://example.supabase.co/rest/v1/support_tickets?id=eq.ticket-1' &&
+        init?.method === 'PATCH'
+      ) {
+        return { ok: true, json: async () => ({}) };
+      }
+
+      if (
+        url === 'https://example.supabase.co/rest/v1/support_messages' &&
+        init?.method === 'POST'
+      ) {
+        return { ok: true, json: async () => ({}) };
+      }
+
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const req = {
+      method: 'POST',
+      headers: { authorization: 'Bearer token' },
+      body: { ticketId: 'ticket-1', message: 'Позовите оператора' },
+    } as unknown as VercelRequest;
+    const res = createMockResponse();
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toMatchObject({ escalated: true });
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('api.telegram.org'))).toBe(
+      false,
+    );
+  });
 });

@@ -3,6 +3,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
 import { envWithLocalFallback, getServerEnv, verifyBearerUser } from './_auth.js';
+import { externalPersonalDataNotificationEgressDecision } from './_notificationEgress.js';
+import { identityAdmissionClosed } from './_synthetic.js';
 
 type NotifyPayload = {
   channel?: 'email' | 'telegram';
@@ -120,6 +122,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!verifiedUser) {
       return res.status(401).json({ ok: false, error: 'Unauthorized' });
     }
+    if (identityAdmissionClosed(verifiedUser)) {
+      return res
+        .status(403)
+        .json({ ok: false, error: 'Closed test contour: identity not admitted.' });
+    }
   }
 
   try {
@@ -138,6 +145,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const message = String(body.text || body.message || '').trim();
       if (!chatId || !message) {
         return res.status(400).json({ ok: false, error: 'chat_id and message are required' });
+      }
+
+      const egress = externalPersonalDataNotificationEgressDecision(verifiedUser);
+      if (egress.closed) {
+        return res.status(egress.status).json({
+          ok: false,
+          error: egress.error,
+          jurisdiction: egress.jurisdiction,
+          reason: egress.reason,
+        });
       }
 
       const result = await sendTelegramMessage(chatId, message, {
@@ -161,6 +178,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!to) {
       return res.status(200).json({ ok: false, skipped: true, reason: 'no-recipient' });
+    }
+
+    const egress = externalPersonalDataNotificationEgressDecision(verifiedUser);
+    if (egress.closed) {
+      return res.status(egress.status).json({
+        ok: false,
+        error: egress.error,
+        jurisdiction: egress.jurisdiction,
+        reason: egress.reason,
+      });
     }
 
     const result = await sendResendEmail(to, subject, text);

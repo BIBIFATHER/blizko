@@ -8,6 +8,7 @@ vi.mock('./_nannies.js', () => ({ default: vi.fn() }));
 
 import { geocodeExternalEgressDecision } from './_geocodeEgress.js';
 import handler from './geocode';
+import nanniesHandler from './_nannies.js';
 import { createMockResponse } from './_testUtils';
 
 afterEach(() => {
@@ -55,6 +56,60 @@ describe('api/geocode handler — fail-closed egress', () => {
 
     expect(res.statusCode).toBe(403);
     expect(res.body).toMatchObject({ items: [], blocked: true });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('does not call external geocoders on the reverse lat/lon path when blocked', async () => {
+    vi.stubEnv('BLIZKO_SYNTHETIC_ONLY', 'false');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const req = {
+      method: 'GET',
+      query: { lat: '55.75', lon: '37.61' },
+      headers: {},
+    } as unknown as VercelRequest;
+    const res = createMockResponse();
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(403);
+    expect(res.body).toMatchObject({ items: [], blocked: true });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('blocks before Yandex even when a Yandex key is configured', async () => {
+    vi.stubEnv('BLIZKO_SYNTHETIC_ONLY', 'false');
+    vi.stubEnv('YANDEX_GEOCODER_API_KEY', 'test-key');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const req = {
+      method: 'GET',
+      query: { q: 'Москва, Хамовники' },
+      headers: {},
+    } as unknown as VercelRequest;
+    const res = createMockResponse();
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(403);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('delegates resource=nannies to the nannies handler without the geocode guard or any fetch', async () => {
+    vi.stubEnv('BLIZKO_SYNTHETIC_ONLY', 'false');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    vi.mocked(nanniesHandler).mockClear();
+
+    const req = {
+      method: 'GET',
+      query: { resource: 'nannies' },
+      headers: {},
+    } as unknown as VercelRequest;
+    const res = createMockResponse();
+    await handler(req, res);
+
+    expect(nanniesHandler).toHaveBeenCalledTimes(1);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

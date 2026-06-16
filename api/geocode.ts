@@ -3,6 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
 import nanniesHandler from './_nannies.js';
+import { geocodeExternalEgressDecision } from './_geocodeEgress.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Shared public-read function to stay under the Vercel Hobby 12-function cap.
@@ -27,6 +28,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const hasReverseCoords = lat !== '' && lon !== '';
   if (!hasReverseCoords && (!q || q.length < 2)) return res.status(200).json({ items: [] });
+
+  // BLI-110: fail-closed before any external geocode egress (free-text address /
+  // GPS to Yandex + Nominatim). Allowed in the synthetic contour; blocked once
+  // real data could be admitted, until an explicit gate is approved.
+  const egress = geocodeExternalEgressDecision();
+  if (egress.closed) {
+    return res.status(egress.status).json({ items: [], blocked: true, reason: egress.reason });
+  }
 
   try {
     const yandexKey = process.env.YANDEX_GEOCODER_API_KEY;

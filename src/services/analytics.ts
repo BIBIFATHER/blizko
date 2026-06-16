@@ -194,15 +194,21 @@ const ANALYTICS_PII_KEY_DENYLIST = new Set([
   'query',
   'user_id',
 ]);
-// Keys that intentionally carry a system-generated DB identifier for the
-// matching-outcomes learning loop. These are trusted (server-issued UUIDs, not
-// free user input) and are exempt from the opaque-id value filter below.
+// Keys that intentionally carry a server-issued DB identifier for the
+// matching-outcomes learning loop. Trusted, but accepted only as a whole UUID.
 const ANALYTICS_CORRELATION_ID_KEYS = new Set(['parent_id', 'nanny_id']);
+// System-generated session identifier; passes a safe-id shape (UUID or legacy
+// token) so the analytics session is never mistaken for an opaque user id.
+const ANALYTICS_RESERVED_ID_KEYS = new Set(['session_id']);
 const ANALYTICS_VALUE_MAX_LEN = 120;
 const ANALYTICS_EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
 const ANALYTICS_PHONE_RE = /\+?\d[\d\s()-]{6,}\d/;
 const ANALYTICS_LONG_ID_RE = /\b\d{9,}\b/;
+// Substring match: drops values that merely contain a UUID under ordinary keys.
 const ANALYTICS_UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+// Whole-value match: a trusted correlation id must BE a UUID, not contain one.
+const ANALYTICS_UUID_FULL_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ANALYTICS_SAFE_ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
 
 export function sanitizeAnalyticsProperties(
   properties?: Record<string, unknown>,
@@ -222,10 +228,16 @@ export function sanitizeAnalyticsProperties(
     if (typeof value === 'string') {
       const v = value.trim();
       if (!v || v.length > ANALYTICS_VALUE_MAX_LEN) continue;
-      // Trusted correlation-id keys accept only a server-issued UUID shape;
-      // anything else (email, phone, free text) is dropped.
-      if (ANALYTICS_CORRELATION_ID_KEYS.has(key.toLowerCase())) {
-        if (ANALYTICS_UUID_RE.test(v)) out[key] = v;
+      const lowerKey = key.toLowerCase();
+      // Reserved system session id: accept only a safe-id shape.
+      if (ANALYTICS_RESERVED_ID_KEYS.has(lowerKey)) {
+        if (ANALYTICS_SAFE_ID_RE.test(v)) out[key] = v;
+        continue;
+      }
+      // Trusted correlation-id keys accept only a whole server-issued UUID;
+      // anything else (mixed UUID+PII, email, phone, free text) is dropped.
+      if (ANALYTICS_CORRELATION_ID_KEYS.has(lowerKey)) {
+        if (ANALYTICS_UUID_FULL_RE.test(v)) out[key] = v;
         continue;
       }
       // Ordinary keys: drop contact-like values and opaque identifiers.
@@ -253,8 +265,9 @@ export function track(event: EventName, properties?: Record<string, unknown>): v
       id: generateAnalyticsId(),
       event,
       properties: {
-        session_id: sessionId,
         ...sanitizeAnalyticsProperties(properties),
+        // Force the generated session id last so caller props can't override it.
+        session_id: sessionId,
       },
       timestamp: new Date().toISOString(),
       url: typeof window !== 'undefined' ? window.location.pathname : undefined,

@@ -81,6 +81,25 @@ describe('sanitizeAnalyticsProperties (BLI-110)', () => {
     expect(out).toEqual({});
   });
 
+  it('drops a correlation value that merely contains a UUID plus PII', () => {
+    const out = sanitizeAnalyticsProperties({
+      parent_id: '550e8400-e29b-41d4-a716-446655440000 elena@example.ru',
+      nanny_id: '550e8400-e29b-41d4-a716-446655440000 extra',
+    });
+    expect(out).toEqual({});
+  });
+
+  it('keeps a generated UUID-shaped session_id (no regression)', () => {
+    const out = sanitizeAnalyticsProperties({
+      session_id: '550e8400-e29b-41d4-a716-446655440000',
+      page: 'home',
+    });
+    expect(out).toEqual({
+      session_id: '550e8400-e29b-41d4-a716-446655440000',
+      page: 'home',
+    });
+  });
+
   it('returns an empty object for non-object input', () => {
     expect(sanitizeAnalyticsProperties(undefined)).toEqual({});
   });

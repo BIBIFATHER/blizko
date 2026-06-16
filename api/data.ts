@@ -190,13 +190,18 @@ const ANALYTICS_PII_KEY_DENYLIST = new Set([
   'user_id',
 ]);
 // Keys that intentionally carry a server-issued DB identifier for the
-// matching-outcomes learning loop; exempt from the opaque-id value filter.
+// matching-outcomes learning loop; accepted only as a whole UUID.
 const ANALYTICS_CORRELATION_ID_KEYS = new Set(['parent_id', 'nanny_id']);
+// System-generated session identifier; passes a safe-id shape so a generated
+// UUID session is not dropped as an opaque user id.
+const ANALYTICS_RESERVED_ID_KEYS = new Set(['session_id']);
 const ANALYTICS_VALUE_MAX_LEN = 120;
 const ANALYTICS_EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
 const ANALYTICS_PHONE_RE = /\+?\d[\d\s()\-]{6,}\d/;
 const ANALYTICS_LONG_ID_RE = /\b\d{9,}\b/;
 const ANALYTICS_UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+const ANALYTICS_UUID_FULL_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ANALYTICS_SAFE_ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
 
 export function sanitizeAnalyticsPropertiesServer(
   properties: Record<string, unknown>,
@@ -216,8 +221,13 @@ export function sanitizeAnalyticsPropertiesServer(
     if (typeof value === 'string') {
       const v = value.trim();
       if (!v || v.length > ANALYTICS_VALUE_MAX_LEN) continue;
-      if (ANALYTICS_CORRELATION_ID_KEYS.has(key.toLowerCase())) {
-        if (ANALYTICS_UUID_RE.test(v)) out[key] = v;
+      const lowerKey = key.toLowerCase();
+      if (ANALYTICS_RESERVED_ID_KEYS.has(lowerKey)) {
+        if (ANALYTICS_SAFE_ID_RE.test(v)) out[key] = v;
+        continue;
+      }
+      if (ANALYTICS_CORRELATION_ID_KEYS.has(lowerKey)) {
+        if (ANALYTICS_UUID_FULL_RE.test(v)) out[key] = v;
         continue;
       }
       if (

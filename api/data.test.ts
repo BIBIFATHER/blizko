@@ -138,7 +138,7 @@ describe('api/data handler', () => {
           id: 'evt-2',
           event: 'match_outcome_recorded',
           properties: {
-            session_id: 'session-9',
+            session_id: 'b3f1c2d4-5e6a-47b8-9c0d-1e2f3a4b5c6d',
             outcome: 'hired',
             parent_id: '550e8400-e29b-41d4-a716-446655440000',
             nanny_name: 'Екатерина Смирнова',
@@ -162,12 +162,14 @@ describe('api/data handler', () => {
     const insertArgs = poolQuery.mock.calls[0][1] as unknown[];
     const storedProps = JSON.parse(insertArgs[2] as string);
 
-    // Intentional correlation id + safe scalars survive.
+    // Intentional correlation id, generated session id + safe scalars survive.
     expect(storedProps).toEqual({
-      session_id: 'session-9',
+      session_id: 'b3f1c2d4-5e6a-47b8-9c0d-1e2f3a4b5c6d',
       outcome: 'hired',
       parent_id: '550e8400-e29b-41d4-a716-446655440000',
     });
+    // The generated UUID session id reaches the dedicated column (no regression).
+    expect(insertArgs[4]).toBe('b3f1c2d4-5e6a-47b8-9c0d-1e2f3a4b5c6d');
     // PII / opaque-id / free-text / nested objects are gone.
     expect(storedProps).not.toHaveProperty('nanny_name');
     expect(storedProps).not.toHaveProperty('note');

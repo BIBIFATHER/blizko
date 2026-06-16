@@ -51,6 +51,36 @@ describe('sanitizeAnalyticsProperties (BLI-110)', () => {
     expect(out).toEqual({ tag: 'calm' });
   });
 
+  it('drops opaque identifiers (UUID, user_id) under ordinary keys', () => {
+    const out = sanitizeAnalyticsProperties({
+      ref: '550e8400-e29b-41d4-a716-446655440000',
+      user_id: '550e8400-e29b-41d4-a716-446655440000',
+      stage: 'fresh',
+    });
+    expect(out).toEqual({ stage: 'fresh' });
+  });
+
+  it('keeps server-issued correlation ids under trusted keys', () => {
+    const out = sanitizeAnalyticsProperties({
+      parent_id: '550e8400-e29b-41d4-a716-446655440000',
+      nanny_id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+      score: 91,
+    });
+    expect(out).toEqual({
+      parent_id: '550e8400-e29b-41d4-a716-446655440000',
+      nanny_id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+      score: 91,
+    });
+  });
+
+  it('still drops contact-like values even under a correlation key', () => {
+    const out = sanitizeAnalyticsProperties({
+      parent_id: 'elena@example.ru',
+      nanny_id: '+7 999 123 45 67',
+    });
+    expect(out).toEqual({});
+  });
+
   it('returns an empty object for non-object input', () => {
     expect(sanitizeAnalyticsProperties(undefined)).toEqual({});
   });

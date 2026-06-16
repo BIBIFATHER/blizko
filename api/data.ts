@@ -187,11 +187,16 @@ const ANALYTICS_PII_KEY_DENYLIST = new Set([
   'message',
   'text',
   'query',
+  'user_id',
 ]);
+// Keys that intentionally carry a server-issued DB identifier for the
+// matching-outcomes learning loop; exempt from the opaque-id value filter.
+const ANALYTICS_CORRELATION_ID_KEYS = new Set(['parent_id', 'nanny_id']);
 const ANALYTICS_VALUE_MAX_LEN = 120;
 const ANALYTICS_EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
 const ANALYTICS_PHONE_RE = /\+?\d[\d\s()\-]{6,}\d/;
 const ANALYTICS_LONG_ID_RE = /\b\d{9,}\b/;
+const ANALYTICS_UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
 export function sanitizeAnalyticsPropertiesServer(
   properties: Record<string, unknown>,
@@ -211,10 +216,15 @@ export function sanitizeAnalyticsPropertiesServer(
     if (typeof value === 'string') {
       const v = value.trim();
       if (!v || v.length > ANALYTICS_VALUE_MAX_LEN) continue;
+      if (ANALYTICS_CORRELATION_ID_KEYS.has(key.toLowerCase())) {
+        if (ANALYTICS_UUID_RE.test(v)) out[key] = v;
+        continue;
+      }
       if (
         ANALYTICS_EMAIL_RE.test(v) ||
         ANALYTICS_PHONE_RE.test(v) ||
-        ANALYTICS_LONG_ID_RE.test(v)
+        ANALYTICS_LONG_ID_RE.test(v) ||
+        ANALYTICS_UUID_RE.test(v)
       ) {
         continue;
       }

@@ -2,6 +2,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
+import { externalPersonalDataAiEgressDecision } from './_aiEgress.js';
 import { getGeminiApiKey, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
 import { identityAdmissionClosed } from './_synthetic.js';
 
@@ -417,6 +418,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Synthetic-only: reject non-allow-listed identities (incl. restored sessions).
   if (identityAdmissionClosed(auth)) {
     return res.status(403).json({ error: 'Closed test contour: identity not admitted.' });
+  }
+
+  const aiEgress = externalPersonalDataAiEgressDecision(
+    { email: auth.email },
+    { sensitiveFlow: true },
+  );
+  if (aiEgress.closed) {
+    return res.status(aiEgress.status).json({
+      error: aiEgress.error,
+      jurisdiction: aiEgress.jurisdiction,
+      reason: aiEgress.reason,
+    });
   }
 
   const apiKey = getGeminiApiKey();

@@ -2,6 +2,23 @@
 
 ---
 
+## 2026-06-16 (Tue) — Stateless AI egress guard (BLI-110 follow-up)
+
+- Added `api/_aiEgress.ts`: a no-persistence jurisdiction guard for external AI
+  calls that may contain personal data.
+- Connected the guard to `/api/ai` and `/api/ai-support` before Gemini calls and
+  before support context enrichment. Synthetic-only test contour remains usable;
+  when synthetic-only is off, `UNKNOWN` / `EU` are blocked and `RU` is blocked
+  until `BLIZKO_CROSS_BORDER_AI_GATE_OPEN=true` after the separate cross-border
+  gate. Current AI endpoints are sensitive-capable, so they also require
+  `BLIZKO_SENSITIVE_AI_FLOW_GATE_OPEN=true` before any real RU personal data can
+  reach external AI.
+- Added endpoint and helper tests proving blocked AI egress does not call Gemini.
+- Documented the closed-by-default cross-border AI gate in `.env.example` and
+  updated the Jurisdiction Router architecture note and processor register. No
+  jurisdiction pin/audit table was added; persistence remains gated on the RU
+  data-plane decision.
+
 ## 2026-06-16 (Tue) — Jurisdiction Router MVP foundation (BLI-110)
 
 - Added `api/_jurisdiction.ts`: a pure server-side Jurisdiction Router policy

@@ -52,6 +52,25 @@ and cannot select a weaker policy.
   `BLIZKO_CROSS_BORDER_AI_GATE_OPEN=true` after the separate cross-border gate.
   Current AI endpoints are sensitive-capable (documents, child/family context),
   so they also require `BLIZKO_SENSITIVE_AI_FLOW_GATE_OPEN=true`.
+- `api/_notificationEgress.ts` applies the same stateless pattern to external
+  notification processors. `/api/notify` and the AI-support Telegram human
+  handoff stay closed for real personal-data notification flows unless
+  `BLIZKO_EXTERNAL_NOTIFICATION_GATE_OPEN=true`.
+  This gate currently applies only to authenticated bearer flows with an
+  inferable RU phone identity. Internal-token/server-originated notification
+  calls have no subject identity in this stateless slice and remain fail-closed
+  in real-data mode even when the gate is open.
+- Notification egress currently keys jurisdiction from the authenticated sender,
+  not from the notification recipient/data subject. Recipient-level routing
+  belongs to a later slice after subject jurisdiction can be resolved without
+  adding a new personal-data store. Before
+  `BLIZKO_EXTERNAL_NOTIFICATION_GATE_OPEN` is enabled for real data, the
+  legal/security gate must explicitly ratify this limitation or replace it with
+  subject-level routing.
+- If the AI-support Telegram human handoff is blocked by notification policy,
+  the user-facing escalation reply still succeeds while no external Telegram
+  alert is sent. This is the current fail-closed tradeoff; a later real-data
+  workflow should add an in-contour staff queue before relying on the copy.
 
 ## Next Integration Steps
 

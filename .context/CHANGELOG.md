@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-06-16 (Tue) — Stateless notification egress guard (BLI-110 follow-up)
+
+- Added `api/_notificationEgress.ts`: a no-persistence jurisdiction guard for
+  external notification processors.
+- Connected the guard to `/api/notify` before Resend/Telegram provider calls
+  and to AI-support Telegram human handoff before handoff context is assembled.
+  Synthetic-only test contour remains usable; when synthetic-only is off,
+  `UNKNOWN` / `EU` are blocked and `RU` requires
+  `BLIZKO_EXTERNAL_NOTIFICATION_GATE_OPEN=true`.
+- Added endpoint and helper tests proving blocked notification egress does not
+  call Resend or Telegram.
+- Documented the closed-by-default notification gate in `.env.example`, the
+  Jurisdiction Router architecture note, and the processor register.
+
 ## 2026-06-16 (Tue) — Stateless AI egress guard (BLI-110 follow-up)
 
 - Added `api/_aiEgress.ts`: a no-persistence jurisdiction guard for external AI

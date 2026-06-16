@@ -79,6 +79,28 @@ complete handoff under `.context/`; that fallback write is not part of the
 read-only reviewer session. Report the technical blocker. Anton must not be
 asked to compose or transport the review prompt.
 
+## Pre-Task Proposal Gate
+
+Before starting any new non-trivial implementation, architecture, legal,
+security, database, release, or infrastructure task, the lead agent must first
+write a short proposal and send it to the other agent for challenge review:
+
+- Codex-led task: Codex runs `npm run review:claude -- "<proposal>"`.
+- Claude-led task: Claude runs `npm run review:codex -- "<proposal>"`.
+
+The lead agent then returns one consolidated final opinion to Anton before
+editing product files. The final opinion must state:
+
+1. recommended next task;
+2. why it is the right next task now;
+3. what the other agent challenged;
+4. what changed in the plan after that challenge;
+5. whether execution should proceed.
+
+Do not ask Anton to relay prompts, proposals, or findings between agents. If
+the direct review command is unavailable, record that blocker and use a complete
+handoff file instead.
+
 ## Shared State
 
 - Implementation truth: code, tests, migrations, and configuration.

@@ -70,9 +70,9 @@ Notification egress guard:
 
 ## Next Steps
 
-1. Push the current branch.
-2. Open a draft PR for the notification egress slice.
-3. Wait for CI/Vercel preview checks.
-4. Update Linear BLI-110 with PR URL, verification, Claude result, and residual
-   limitations.
-5. Keep BLI-110 `In Progress`.
+1. Before selecting the next BLI-110 slice, run the Pre-Task Proposal Gate from
+   `.context/AGENT_COORDINATION.md`.
+2. Codex must send its proposed next slice to Claude with
+   `npm run review:claude -- "<proposal>"`.
+3. Return a consolidated final opinion to Anton before editing product files.
+4. Keep BLI-110 `In Progress`.

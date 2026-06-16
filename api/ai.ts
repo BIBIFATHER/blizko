@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { verifyBearerUser } from './_auth.js';
+import { externalPersonalDataAiEgressDecision } from './_aiEgress.js';
 import { identityAdmissionClosed } from './_synthetic.js';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
@@ -140,6 +141,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // existing-session admission bypass, not just new logins.
   if (identityAdmissionClosed(verifiedUser)) {
     return res.status(403).json({ error: 'Closed test contour: identity not admitted.' });
+  }
+
+  const aiEgress = externalPersonalDataAiEgressDecision(verifiedUser, { sensitiveFlow: true });
+  if (aiEgress.closed) {
+    return res.status(aiEgress.status).json({
+      error: aiEgress.error,
+      jurisdiction: aiEgress.jurisdiction,
+      reason: aiEgress.reason,
+    });
   }
 
   const apiKey = getGeminiApiKey();

@@ -14,7 +14,11 @@
  */
 
 import { getItem, setItem } from '@/core/platform/storage';
-import { sanitizeEventProperties, type AnalyticsEventName } from './analyticsSchema';
+import {
+  sanitizeEventProperties,
+  isAnalyticsSafeId,
+  type AnalyticsEventName,
+} from './analyticsSchema';
 
 // PostHog types (inline to avoid dependency)
 interface PostHogInstance {
@@ -103,8 +107,10 @@ function getAnalyticsSessionId(): string {
   try {
     if (typeof window === 'undefined') return 'server';
 
+    // Only trust a stored session id that still matches the safe-id shape; a
+    // polluted value is replaced so the id can never carry free text / PII.
     const existing = getItem(ANALYTICS_SESSION_KEY);
-    if (existing) return existing;
+    if (existing && isAnalyticsSafeId(existing)) return existing;
 
     const next = generateAnalyticsId();
     setItem(ANALYTICS_SESSION_KEY, next);
@@ -187,11 +193,10 @@ export function track(event: EventName, properties?: Record<string, unknown>): v
     const record: AnalyticsEventRecord = {
       id: generateAnalyticsId(),
       event,
-      properties: {
-        ...sanitizeEventProperties(event, properties),
-        // Force the generated session id last so caller props can't override it.
-        session_id: sessionId,
-      },
+      // Merge the generated session id LAST (overrides any caller-supplied one)
+      // and run the whole object through the schema guard, so session_id is
+      // validated too — no value bypasses the allowlist + value guard.
+      properties: sanitizeEventProperties(event, { ...properties, session_id: sessionId }),
       timestamp: new Date().toISOString(),
       url: typeof window !== 'undefined' ? window.location.pathname : undefined,
     };

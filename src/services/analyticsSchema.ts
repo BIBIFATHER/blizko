@@ -10,6 +10,11 @@
  * keys. Anything not declared here is dropped before it leaves the client and
  * again on server ingest. On top of the key allowlist, a value-level guard drops
  * contact-like values and opaque identifiers and constrains the trusted id keys.
+ *
+ * Scope: this governs property payloads emitted through `track()` only. It does
+ * NOT cover PostHog autocapture or the Yandex Metrica snippet in index.html,
+ * which auto-collect DOM/pageview data through separate channels — minimizing
+ * those is a separate follow-up (disable autocapture / restrict Metrica).
  */
 
 /**
@@ -53,6 +58,14 @@ export type AnalyticsEventName = keyof typeof ANALYTICS_EVENT_PROPERTIES;
 /** Always-allowed keys injected by the tracker, independent of the event. */
 export const ANALYTICS_GLOBAL_PROPERTY_KEYS: readonly string[] = ['session_id'];
 
+const ANALYTICS_SAFE_ID_SHAPE = /^[A-Za-z0-9_-]{1,128}$/;
+
+/** A system identifier (e.g. session id) is safe when it carries no free text,
+ * contact data, or separators — only `[A-Za-z0-9_-]`, up to 128 chars. */
+export function isAnalyticsSafeId(value: string): boolean {
+  return ANALYTICS_SAFE_ID_SHAPE.test(value);
+}
+
 // ---- Value-level guards (defense-in-depth on top of the key allowlist) ----
 
 const ANALYTICS_VALUE_MAX_LEN = 120;
@@ -63,7 +76,6 @@ const ANALYTICS_LONG_ID_RE = /\b\d{9,}\b/;
 const ANALYTICS_UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 // Whole-value match: a trusted correlation id must BE a UUID, not contain one.
 const ANALYTICS_UUID_FULL_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const ANALYTICS_SAFE_ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
 
 // Server-issued correlation ids for the matching-outcomes learning loop:
 // accepted only as a whole UUID.
@@ -82,7 +94,7 @@ function valueIsAllowed(lowerKey: string, value: unknown): { ok: boolean; value?
   if (!v || v.length > ANALYTICS_VALUE_MAX_LEN) return { ok: false };
 
   if (ANALYTICS_RESERVED_ID_KEYS.has(lowerKey)) {
-    return ANALYTICS_SAFE_ID_RE.test(v) ? { ok: true, value: v } : { ok: false };
+    return isAnalyticsSafeId(v) ? { ok: true, value: v } : { ok: false };
   }
   if (ANALYTICS_CORRELATION_ID_KEYS.has(lowerKey)) {
     return ANALYTICS_UUID_FULL_RE.test(v) ? { ok: true, value: v } : { ok: false };

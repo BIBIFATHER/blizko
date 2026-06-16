@@ -1,5 +1,10 @@
 # Recruiting & Onboarding Pipeline — Nannies (Blizko)
 
+> **Superseded for real candidates as of 2026-06-13.** The registration flow
+> below collects more personal data than the current warm-pool stage permits.
+> Follow `docs/nanny-warm-pool-ops.md`; documents and full onboarding remain
+> blocked until the approved RU-core is available.
+
 ## 1) Воронка (End‑to‑End)
 **Цель:** быстро и безопасно перевести отклик → регистрацию → triage A/B/C → verified core.
 

@@ -19,8 +19,24 @@ Before doing anything else:
 7. If reviewing code, read `.context/CODEX_REVIEW_PROTOCOL.md`
 8. If assessing release readiness, read `.context/CODEX_RELEASE_PROTOCOL.md`
 9. If touching Supabase, SQL, Auth, Storage, RLS, RPC, or database-backed code, read `.context/CODEX_DB_CHANGE_PROTOCOL.md`
+10. If touching personal data, documents, AI, analytics, payments, vendors,
+   consent/privacy, moderation, verification, trust claims, or infrastructure,
+   read `.context/CODEX_LEGAL_SECURITY_PROTOCOL.md`
 
 Don't ask permission. Just do it.
+
+## Git Hygiene Before Changes
+
+Before any code or documentation edit:
+
+- run `git status --short`;
+- if the tree is dirty, identify whether the changes belong to the current task;
+- do not start new work on top of unrelated dirty files;
+- either make a scoped commit/checkpoint for the current task first, or clearly
+  leave unrelated files unstaged and document that boundary;
+- never use `git add .` in this workspace;
+- every meaningful task should end with either a scoped commit or an explicit
+  dirty-tree handoff listing what remains unstaged and why.
 
 ## Release Hygiene
 

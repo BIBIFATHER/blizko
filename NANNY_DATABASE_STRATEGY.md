@@ -1,5 +1,10 @@
 # NANNY DATABASE STRATEGY
 
+> **Historical scale concept.** Current execution is the minimized encrypted
+> warm pool in `docs/nanny-warm-pool-ops.md`. Do not apply the volume targets,
+> document scoring, automated ranking, or Supabase import to real candidates
+> before the RU-core and legal/security gates pass.
+
 ## Цель
 Построить крупнейшую и одновременно качественную базу нянь в РФ:
 - большой входящий пул кандидатов (Pool)

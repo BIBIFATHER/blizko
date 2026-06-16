@@ -61,5 +61,10 @@ supabase/.branches/
 .vercel/
 blizko-check.png
 
+# Local encrypted recruiting registry and plaintext migration exports
+.local/recruiting/
+nanny-warm-pool-export*.json
+nanny-warm-pool-export*.csv
+
 # User document (not product code — never tracked, never deleted by tooling)
 /Публичная оферта Blizko для клиентов.docx

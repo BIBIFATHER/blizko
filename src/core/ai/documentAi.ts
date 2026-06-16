@@ -19,8 +19,10 @@ export const analyzeDocument = async (
       new Promise<DocumentVerification>((resolve) => {
         setTimeout(() => {
           resolve({
+            // A document is never auto-"verified" by a failed/partial AI pass.
+            // Verification is an explicit curator action. (memo §9.2)
             type,
-            status: 'verified',
+            status: 'pending',
             aiConfidence: 65,
             aiNotes:
               lang === 'ru'
@@ -151,8 +153,9 @@ Return JSON with:
   } catch (error) {
     console.error('AI Analysis Error:', error);
     return {
+      // Never auto-"verified" on AI failure — surfaced as pending for review.
       type,
-      status: 'verified',
+      status: 'pending',
       aiConfidence: 50,
       aiNotes:
         lang === 'ru'

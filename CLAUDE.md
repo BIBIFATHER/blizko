@@ -17,6 +17,7 @@ Before code changes, read only the smallest relevant set:
 - `BOOTSTRAP.md`
 - `CLAUDE.md`
 - `.context/ACTIVE_TASK.md` when it exists
+- `.context/AGENT_COORDINATION.md`
 - `README.md`
 - `.context/DNA.md`
 - `.context/CHANGELOG.md` when recent project history matters
@@ -39,6 +40,28 @@ Do not load the whole Obsidian/global memory vault or the whole repository unles
 - When the task is complete, record durable evidence in Linear/CHANGELOG and
   clear or archive the active checkpoint.
 
+### Git Hygiene Before Changes
+
+Before editing files, run `git status --short` and classify the dirty tree. Do
+not start new work on top of unrelated dirty files silently. If previous work is
+complete, make a scoped checkpoint commit before changing more files. Never use
+`git add .`; stage explicit paths only. If dirty files remain at handoff, list
+exactly what is unstaged and why.
+
+### Claude / Codex Coordination
+
+Claude is the default lead agent for Blizko. Anton gives a task once; own it
+end to end and do not ask him to relay prompts, findings, or files between
+Claude and Codex. Follow
+`.context/AGENT_COORDINATION.md`: request independent review only at its defined
+risk gates, resolve ordinary findings yourself, and return one consolidated
+answer. Use repository context and Linear as shared state.
+
+At a mandatory review gate, send your actual conclusion to Codex with
+`npm run review:codex -- "..."`. Verify its findings, correct valid issues, and
+request a second check if the conclusion materially changes. Do not ask Anton
+to relay the review.
+
 ### Mandatory Database Protocol
 
 Before diagnosing, implementing, reviewing, deploying, or approving any Supabase,
@@ -56,6 +79,21 @@ Never offer temporary schema/ledger drift for routine work. Wait for the
 supported path to recover. A drift-producing emergency fallback is allowed only
 to resolve an active production outage, with explicit approval and immediate
 ledger reconciliation.
+
+### Mandatory Legal and Security Protocol
+
+Before planning, implementing, reviewing, deploying, or approving work touching
+personal data, documents, AI, analytics, payments, external services,
+consent/privacy, moderation, verification, trust claims, or infrastructure,
+read and follow:
+
+- `.context/CODEX_LEGAL_SECURITY_PROTOCOL.md`
+- `docs/compliance/DATA_REGISTER.md`
+- `docs/compliance/PROCESSOR_REGISTER.md`
+
+Use `blizko-lawyer` and `blizko-security`. Infer facts from code, configuration,
+migrations, and runtime evidence; do not ask Anton to fill compliance forms.
+Unknown mandatory evidence is a release blocker, not an accepted assumption.
 
 ## Token Budget
 

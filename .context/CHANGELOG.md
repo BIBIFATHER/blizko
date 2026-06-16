@@ -2,6 +2,172 @@
 
 ---
 
+## 2026-06-16 (Tue) — Synthetic-only closed contour (BLI-105/106 rebuild)
+
+- Reverted the prior "disable PD features" diff: forms, photo, documents, video,
+  AI, matching, chat, support, bookings restored to full functionality for
+  testing on synthetic data. Removed the egress-guard / sanitize / upload-disable
+  infra.
+- Kept two correctness guards: `documentAi` returns `pending` (never a false
+  `verified`) on AI failure/partial; no unconditional `ai_checked` trust badge
+  (also removed from dev preview fixtures).
+- Added a simple global synthetic-only mode (`BLIZKO_SYNTHETIC_ONLY` /
+  `VITE_SYNTHETIC_ONLY`, default ON / fail-closed): closed dev/staging contour on
+  synthetic data; real users, real PD, and production payments not admitted.
+- Closed admission: phone OTP (`api/auth/phone.ts` 403), email magic-link
+  (`AuthModal`), authenticated server external-egress APIs reject non-allow-listed
+  identities incl. restored sessions/existing JWTs — AI (`api/ai.ts`,
+  `api/ai-support.ts`) and payments/YooKassa (`api/payments/create.ts`,
+  `finalize.ts`) via `identityAdmissionClosed`; the client signs out non-admitted
+  restored sessions (`useAuthSession`, `AuthModal`).
+- No visual TEST UI: removed the in-product banner and the admin TEST badge.
+  Synthetic-only is internal env flags + server guards, not a visible test stand.
+- Payments: admission is enforced (non-allow-listed identities rejected before
+  YooKassa egress). Real payments are not used in this contour; the code does not
+  verify test-vs-production keys, so enabling real payments is a separate pre-open
+  gate — not claimed as code-enforced "sandbox-only".
+- `docs/architecture/synthetic-only-mode.md` holds a pre-real-data checklist
+  (disable open email signups, revoke existing sessions, production payment gate +
+  webhook guard, outbound-notifications guard). These are pre-open steps, not dev
+  blockers, and do not block BLI-110 / RU-core work.
+- Verification (branch `feat/bli-106-105-pd-stop-risk`, worktree, 2026-06-16):
+  `npx tsc --noEmit` clean; `npx vitest run` 137 passed / 33 files; `npm run
+  build` ok; `npx eslint` 0 errors on changed src; `prettier --check` clean;
+  `git diff --check` clean. Independent Codex review run via `npm run
+  review:codex`.
+
+## 2026-06-13 (Sat) — Single-entry Claude / Codex coordination
+
+- Added `.context/AGENT_COORDINATION.md` so Anton can give a task to either
+  agent once instead of relaying prompts and findings manually.
+- Set Claude Code as the default lead and Codex as the default independent
+  reviewer; direct assignments to Codex remain supported.
+- Added symmetric read-only review commands: `npm run review:codex` and
+  `npm run review:claude`.
+- Required each agent to challenge the other's conclusions, resolve findings
+  against repository evidence, and repeat review after material corrections.
+- Hardened reviewer isolation: Codex ignores user config/MCPs; Claude requires
+  version `2.1.170+`, safe mode, no persistence, and only read/search tools.
+- Clarified that restricted challenge-review supplements rather than replaces
+  the normal legal, security, database, and release specialist gates.
+- Assigned end-to-end ownership to the receiving agent and limited mandatory
+  dual-agent review to legal, security, production, release, and material
+  architecture gates.
+- Documented a local read-only Claude Code invocation for Codex and required a
+  single consolidated owner-facing result.
+- Connected the coordination contract to both Claude and Codex startup rules.
+
+---
+
+## 2026-06-13 (Sat) — Minimized nanny warm-pool workflow
+
+- Added `docs/nanny-warm-pool-ops.md` with the current nanny proposition,
+  scripts for unanswered and interrupted HH conversations, permitted fields,
+  daily workflow, status model, and RU-core migration path.
+- Added a local AES-256-GCM encrypted lead registry whose key is held in macOS
+  Keychain; real lead data and plaintext exports are ignored by Git.
+- Kept full resumes and direct contacts in the source platform and prohibited
+  documents, health data, AI scoring, bulk scraping, and Supabase EU import.
+- Marked legacy recruiting scripts as superseded for real candidates.
+- Made the legacy HH-to-Gemini-to-Supabase importer fail closed unless the
+  input is explicitly declared synthetic.
+- Incorporated Claude's independent review: added hard erasure, 90-day purge,
+  explicit-yes follow-up selection, pilot-status consent enforcement, source
+  reference checks, and tests for each control.
+- Gated the second privileged synthetic seeder against production and renamed
+  the HH fixture to make its synthetic nature explicit, removing its
+  realistic-looking phone number.
+- Updated the data and processor registers. No real candidate data was read,
+  imported, messaged, or sent to an external service.
+
+---
+
+## 2026-06-13 (Sat) — Jurisdiction Router decision incorporated
+
+- Added a server-side, versioned `JurisdictionPolicy` design to the RU
+  data-contour memo.
+- Set `UNKNOWN` to fail closed with RU-grade strictness and made the EU branch
+  a non-collecting placeholder with no personal-data plane.
+- Required verified signals, server pinning, strictest-wins conflict handling,
+  and supervised country-change migration without cross-region dual-write.
+- Added jurisdiction-routing evidence and external geo admission rules to the
+  data and processor registers.
+- Clarified that the cross-border AI gate cannot enable personal-data AI for
+  `UNKNOWN` or the MVP EU placeholder.
+- No code, migration, provider, production, filing, or contract action was
+  authorized.
+
+---
+
+## 2026-06-13 (Sat) — Corrected PD/AI MVP decision candidate
+
+- Added `docs/blizko-pd-ai-mvp-corrected-decision.md` for independent Claude
+  review.
+- Corrected the original proposal's treatment of pseudonymized profiles,
+  child/personal data in external AI, denylist-based filtering, trust evidence,
+  and the nonexistent `nanny_profiles` table.
+- Set external AI to deny-by-default for real-user personal data until the
+  cross-border legal, contractual, retention, and security gates pass.
+- Documented current code risk: file-to-data-URL document AI and false
+  `verified` fallback behavior.
+- Incorporated Claude's independent technical review: historical-egress
+  remediation, support-AI gateway enforcement, gateway abuse controls,
+  recipient-country assessment, defensible public trust wording, and the
+  `nannies_public` denylist exposure.
+- Kept `security_invoker` as a role-tested design choice rather than a blind
+  flag change because the current public-catalog access contract must be
+  preserved securely.
+- This is a review candidate only; it authorizes no code, migration, filing,
+  production, contract, or deletion action.
+
+---
+
+## 2026-06-13 (Sat) — Mandatory agent-owned legal/security gate
+
+- Added `.context/CODEX_LEGAL_SECURITY_PROTOCOL.md`.
+- Made Claude/Codex responsible for evidence collection, legal/security review,
+  and compliance-register maintenance without asking Anton to fill forms.
+- Added initial agent-maintained data and processor registers under
+  `docs/compliance/`.
+- Connected the gate to operating, review, release, agent routing,
+  `AGENTS.md`, and `CLAUDE.md`.
+- Added a heartbeat drift check for undocumented data, processor, AI, logging,
+  retention, and access changes.
+- Unknown mandatory evidence now blocks release or forces a conservative
+  synthetic-data/disabled-flow fallback.
+
+---
+
+## 2026-06-13 (Sat) — Codex legal and security skills
+
+- Added user-level Codex skills `blizko-lawyer` and `blizko-security`.
+- Added focused reference checklists for current-law verification and
+  Blizko-specific application/security review.
+- Connected the skills to the RU data-contour memo and mandatory database,
+  review, and release protocols.
+- The legal skill requires current primary-source verification and separates
+  verified rules, application, assumptions, and counsel escalation.
+- The security skill enforces role-correct testing for RLS/Auth, server-only
+  service credentials, fail-closed test auth, private document storage, and
+  PII-safe logs and external AI flows.
+
+---
+
+## 2026-06-13 (Sat) — RU personal-data contour decision framework
+
+- Added `docs/ru-data-contour-decision-memo.md`.
+- Documented the current Supabase EU/Vercel/Gemini data flow, including document
+  image and personalized support prompts.
+- Defined four options: synthetic-only, minimal RU personal-data plane, full RU
+  application plane, and protected/attested contour.
+- Added legal, information-security, provider, product, and Supabase PoC
+  questions plus pilot/scale decision gates.
+- No infrastructure decision was made. Self-hosted Supabase and UZ-1 remain
+  conditional on confirmation of real production PII, required protection
+  level, and allowed external AI processing.
+
+---
+
 ## 2026-06-12 (Fri) — Durable active-task continuity
 
 - Added `.context/ACTIVE_TASK.md` as the single compact checkpoint for live

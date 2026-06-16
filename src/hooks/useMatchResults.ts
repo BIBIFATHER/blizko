@@ -104,7 +104,7 @@ function buildPreviewData(lang: Language): MatchResult {
           lang === 'ru'
             ? 'Екатерина сильна там, где семье нужен более структурный режим и опыт с дошкольниками.'
             : 'Ekaterina is strong where the family needs a more structured rhythm and preschool experience.',
-        trustBadges: ['verified_moderation', 'ai_checked'],
+        trustBadges: ['verified_moderation'],
         nanny: {
           id: 'preview-2',
           name: 'Екатерина Смирнова',
@@ -131,7 +131,7 @@ function buildPreviewData(lang: Language): MatchResult {
           lang === 'ru'
             ? 'Ольга живёт рядом и подходит по графику, но стоит уточнить опыт с малышами.'
             : 'Olga lives nearby and fits the schedule, but verify her experience with toddlers.',
-        trustBadges: ['ai_checked'],
+        trustBadges: [],
         nanny: {
           id: 'preview-3',
           name: 'Ольга Петрова',

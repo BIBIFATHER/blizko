@@ -1,5 +1,9 @@
 # Recruiting — Скрипты, триаж, шаблоны, критерии A/B/C (без внешних сервисов)
 
+> **Superseded for real candidates as of 2026-06-13.** Do not request passports,
+> direct contacts, document files, or full resumes using these scripts. Use
+> `docs/nanny-warm-pool-ops.md` until the RU verification contour is approved.
+
 > Цель: быстрый отбор кандидатов, единый стандарт общения, прозрачные критерии. Всё работает в таблице/файлах без ATS.
 
 ---

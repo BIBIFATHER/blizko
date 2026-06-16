@@ -54,6 +54,16 @@ Do not say "ready", "done", "deployed", "can push", or "release is clean" when t
 - confirm exact-ID cleanup of smoke data
 - a pending migration, unexplained schema diff, ledger drift, missing UI/API smoke, or pending cleanup blocks release readiness
 
+4.2 Legal and Security Contract
+
+- follow `.context/CODEX_LEGAL_SECURITY_PROTOCOL.md` for sensitive changes
+- verify the data and processor registers match actual behavior
+- require legal `Go` or satisfied `Conditional Go`
+- require no unresolved Critical/High security finding
+- verify affected consent, privacy, retention, deletion, AI, analytics, and
+  external-processor behavior
+- missing evidence or register drift blocks release readiness
+
 5. Deploy Evidence
 
 - provide deployment URL or deployment id when claiming deploy

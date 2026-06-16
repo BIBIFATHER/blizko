@@ -159,6 +159,40 @@
 - `content-design`
 - `blizko-ux-writing`
 
+**Mandatory cross-check:**
+- `blizko-lawyer`
+- `blizko-security`
+- `.context/CODEX_LEGAL_SECURITY_PROTOCOL.md`
+
+---
+
+## 5A. Legal / Privacy / Security Impact
+
+**Когда:**
+- ПДн, дети, документы, health/biometric questions
+- новый внешний сервис, страна, AI/analytics/logging flow
+- Auth/RLS/Storage/admin/payments
+- consent/privacy/retention/deletion
+- trust, safety, verification or compliance claim
+
+**Lead agent:**
+- `trust-safety`
+
+**Support agents:**
+- `tech-arch`
+- `qa-release`
+
+**Skills:**
+- `blizko-lawyer`
+- `blizko-security`
+- `security-review`
+- `blizko-supabase` when database-backed
+
+**Rule:**
+- agents maintain the data and processor registers
+- do not send Anton a compliance questionnaire
+- missing mandatory evidence means No-Go or synthetic-only fallback
+
 ---
 
 ## 6. Research / Competitors / Market

@@ -34,12 +34,33 @@ describe('api/payments/create handler', () => {
       YOOKASSA_SHOP_ID: 'shop-id',
       YOOKASSA_SECRET_KEY: 'secret-key',
       APP_URL: 'https://blizko.app',
+      BLIZKO_SYNTHETIC_ONLY: 'false', // payment-mechanics test; admission open
     };
   });
 
   afterEach(() => {
     process.env = { ...originalEnv };
     vi.restoreAllMocks();
+  });
+
+  it('rejects payments for a non-allow-listed identity while synthetic-only is ON', async () => {
+    process.env.BLIZKO_SYNTHETIC_ONLY = 'true';
+    process.env.SYNTHETIC_TEST_EMAILS = 'dev@example.com';
+    verifyBearerUser.mockResolvedValue({ id: 'user-x', email: 'real.user@gmail.com' });
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const req = {
+      method: 'POST',
+      headers: { authorization: 'Bearer token' },
+      body: { parentRequestId: 'parent-1', description: 'x' },
+    } as unknown as VercelRequest;
+    const res = createMockResponse();
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(403);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(poolQuery).not.toHaveBeenCalled();
   });
 
   it('creates a payment session for an owned parent request', async () => {

@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { setCors } from '../_cors.js';
 import { verifyBearerUser } from '../_auth.js';
+import { identityAdmissionClosed } from '../_synthetic.js';
 import { rateLimit } from '../_rate-limit.js';
 import { getDbPool } from '../_db.js';
 import {
@@ -20,6 +21,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const verifiedUser = await verifyBearerUser(req);
   if (!verifiedUser) {
     return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  // Synthetic-only closed contour: no production payments (see create.ts).
+  if (identityAdmissionClosed(verifiedUser)) {
+    return res.status(403).json({ error: 'Closed test contour: payments are disabled.' });
   }
 
   const paymentId = String(req.body?.paymentId || '').trim();

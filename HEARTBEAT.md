@@ -14,6 +14,10 @@ Run only if there is no active higher-priority user task.
 
 - Look for stale branches, broken local workflows, or unrecorded decisions.
 - Inspect whether current work should create a changelog or memory update.
+- Periodically compare recent code/config changes with
+  `docs/compliance/DATA_REGISTER.md` and
+  `docs/compliance/PROCESSOR_REGISTER.md`. Surface only material undocumented
+  data, vendor, country, AI, analytics, logging, retention, or access changes.
 - If the user is likely to waste motion by manually searching across tools, suggest one exact plugin and one exact next step.
 
 ### Evening

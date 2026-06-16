@@ -1,106 +1,90 @@
 import { describe, expect, it } from 'vitest';
-import { sanitizeAnalyticsProperties } from '@/services/analytics';
+import { sanitizeEventProperties, ANALYTICS_EVENT_PROPERTIES } from '@/services/analyticsSchema';
 
-describe('sanitizeAnalyticsProperties (BLI-110)', () => {
-  it('keeps short scalar values (enums, numbers, booleans)', () => {
-    const out = sanitizeAnalyticsProperties({
-      owner: 'nanny',
+describe('sanitizeEventProperties (BLI-116 per-event allowlist)', () => {
+  it('keeps only allowlisted scalar keys for the event', () => {
+    const out = sanitizeEventProperties('form_step_completed', {
+      form_type: 'nanny',
       step: 3,
-      score: 87,
-      ok: true,
+      step_name: 'verification',
       session_id: 'sess_abc123',
     });
     expect(out).toEqual({
-      owner: 'nanny',
+      form_type: 'nanny',
       step: 3,
-      score: 87,
-      ok: true,
+      step_name: 'verification',
       session_id: 'sess_abc123',
     });
   });
 
-  it('drops identifying keys regardless of value', () => {
-    const out = sanitizeAnalyticsProperties({
-      nanny_name: 'Екатерина Смирнова',
-      name: 'Анна',
-      email: 'a@b.ru',
-      phone: '+7 999 123 45 67',
-      position: 2,
-    });
-    expect(out).toEqual({ position: 2 });
-  });
-
-  it('drops contact-like values even under benign keys', () => {
-    const out = sanitizeAnalyticsProperties({
-      note: 'reach me at elena@example.ru',
-      ref: 'call +7 999 123 45 67',
-      passport: '4509123456',
+  it('drops keys that are not in the event allowlist (even benign free-text)', () => {
+    const out = sanitizeEventProperties('cta_clicked', {
+      button: 'find_nanny',
+      location: 'hero',
+      note: 'Екатерина Смирнова',
       city: 'Москва',
     });
-    expect(out).toEqual({ city: 'Москва' });
+    expect(out).toEqual({ button: 'find_nanny', location: 'hero' });
   });
 
-  it('drops free-text (oversized strings), objects and arrays', () => {
-    const out = sanitizeAnalyticsProperties({
-      about: 'x'.repeat(200),
-      story: 'y'.repeat(130),
-      nested: { a: 1 },
-      list: [1, 2, 3],
-      tag: 'calm',
+  it('drops everything for an unknown event', () => {
+    const out = sanitizeEventProperties('definitely_not_an_event', {
+      session_id: 'sess_abc',
+      page: 'home',
     });
-    expect(out).toEqual({ tag: 'calm' });
+    expect(out).toEqual({});
   });
 
-  it('drops opaque identifiers (UUID, user_id) under ordinary keys', () => {
-    const out = sanitizeAnalyticsProperties({
-      ref: '550e8400-e29b-41d4-a716-446655440000',
-      user_id: '550e8400-e29b-41d4-a716-446655440000',
-      stage: 'fresh',
-    });
-    expect(out).toEqual({ stage: 'fresh' });
-  });
-
-  it('keeps server-issued correlation ids under trusted keys', () => {
-    const out = sanitizeAnalyticsProperties({
+  it('keeps a whole-UUID correlation id under an allowed event', () => {
+    const out = sanitizeEventProperties('match_outcome_recorded', {
+      outcome: 'hired',
       parent_id: '550e8400-e29b-41d4-a716-446655440000',
       nanny_id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
-      score: 91,
+      score_at_match: 91,
     });
     expect(out).toEqual({
+      outcome: 'hired',
       parent_id: '550e8400-e29b-41d4-a716-446655440000',
       nanny_id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
-      score: 91,
+      score_at_match: 91,
     });
   });
 
-  it('still drops contact-like values even under a correlation key', () => {
-    const out = sanitizeAnalyticsProperties({
-      parent_id: 'elena@example.ru',
-      nanny_id: '+7 999 123 45 67',
-    });
-    expect(out).toEqual({});
-  });
-
-  it('drops a correlation value that merely contains a UUID plus PII', () => {
-    const out = sanitizeAnalyticsProperties({
+  it('drops a correlation value that only contains a UUID plus PII', () => {
+    const out = sanitizeEventProperties('booking_created', {
       parent_id: '550e8400-e29b-41d4-a716-446655440000 elena@example.ru',
-      nanny_id: '550e8400-e29b-41d4-a716-446655440000 extra',
+      nanny_id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
     });
-    expect(out).toEqual({});
+    expect(out).toEqual({ nanny_id: '7c9e6679-7425-40de-944b-e07fc1f90ae7' });
   });
 
   it('keeps a generated UUID-shaped session_id (no regression)', () => {
-    const out = sanitizeAnalyticsProperties({
-      session_id: '550e8400-e29b-41d4-a716-446655440000',
+    const out = sanitizeEventProperties('page_view', {
       page: 'home',
+      session_id: '550e8400-e29b-41d4-a716-446655440000',
     });
     expect(out).toEqual({
-      session_id: '550e8400-e29b-41d4-a716-446655440000',
       page: 'home',
+      session_id: '550e8400-e29b-41d4-a716-446655440000',
     });
   });
 
+  it('drops objects, arrays and oversized free-text under allowed keys', () => {
+    const out = sanitizeEventProperties('cta_clicked', {
+      button: 'x'.repeat(200),
+      location: 'hero',
+    });
+    expect(out).toEqual({ location: 'hero' });
+  });
+
   it('returns an empty object for non-object input', () => {
-    expect(sanitizeAnalyticsProperties(undefined)).toEqual({});
+    expect(sanitizeEventProperties('page_view', undefined)).toEqual({});
+  });
+
+  it('every declared event lists only string keys (schema sanity)', () => {
+    for (const [event, keys] of Object.entries(ANALYTICS_EVENT_PROPERTIES)) {
+      expect(Array.isArray(keys), `${event} keys must be an array`).toBe(true);
+      for (const k of keys) expect(typeof k).toBe('string');
+    }
   });
 });

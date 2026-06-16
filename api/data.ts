@@ -5,41 +5,18 @@ import { rateLimit } from './_rate-limit.js';
 import { getServerEnv, verifyBearerAdmin, verifyBearerUser } from './_auth.js';
 import { getDbPool } from './_db.js';
 import { getServiceSupabase } from './auth/_supabase.js';
+import {
+  sanitizeEventProperties,
+  ANALYTICS_EVENT_PROPERTIES,
+} from '../src/services/analyticsSchema.js';
 
 const json = (res: VercelResponse, status: number, payload: any) =>
   res.status(status).json(payload);
 const RESOURCES = new Set(['parents', 'nannies', 'analytics', 'admin-actions', 'support']);
 const ANALYTICS_EVENT_LIMIT = 5_000;
-const ANALYTICS_ALLOWED_EVENTS = new Set([
-  'page_view',
-  'cta_clicked',
-  'form_step_completed',
-  'form_submitted',
-  'matching_results_viewed',
-  'nanny_card_clicked',
-  'chat_opened',
-  'booking_created',
-  'return_visit',
-  'document_uploaded',
-  'location_detected',
-  'resume_parsed',
-  'resume_autofill_applied',
-  'nanny_ready_for_match',
-  'match_profile_opened',
-  'match_follow_up_shown',
-  'match_follow_up_clicked',
-  'share_clicked',
-  'auth_modal_opened',
-  'auth_completed',
-  'language_switched',
-  'install_prompt_shown',
-  'install_accepted',
-  'nanny_offer_shown',
-  'nanny_offer_accepted',
-  'admin_panel_opened',
-  'shortlist_delivered',
-  'match_outcome_recorded',
-]);
+// Allowed events derive from the shared analytics schema — single source of
+// truth shared with the client tracker.
+const ANALYTICS_ALLOWED_EVENTS = new Set<string>(Object.keys(ANALYTICS_EVENT_PROPERTIES));
 
 function getResource(
   req: VercelRequest,
@@ -168,82 +145,9 @@ function toAuditAnalyticsRecord(row: any) {
   };
 }
 
-// BLI-110: fail-closed server filter — analytics properties are stored and may
-// reach external analytics; drop free-text and PII. Mirrors the client filter
-// in src/services/analytics.ts (defense-in-depth; the client is not trusted).
-const ANALYTICS_PII_KEY_DENYLIST = new Set([
-  'name',
-  'nanny_name',
-  'parent_name',
-  'full_name',
-  'first_name',
-  'last_name',
-  'email',
-  'phone',
-  'contact',
-  'address',
-  'about',
-  'comment',
-  'message',
-  'text',
-  'query',
-  'user_id',
-]);
-// Keys that intentionally carry a server-issued DB identifier for the
-// matching-outcomes learning loop; accepted only as a whole UUID.
-const ANALYTICS_CORRELATION_ID_KEYS = new Set(['parent_id', 'nanny_id']);
-// System-generated session identifier; passes a safe-id shape so a generated
-// UUID session is not dropped as an opaque user id.
-const ANALYTICS_RESERVED_ID_KEYS = new Set(['session_id']);
-const ANALYTICS_VALUE_MAX_LEN = 120;
-const ANALYTICS_EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
-const ANALYTICS_PHONE_RE = /\+?\d[\d\s()\-]{6,}\d/;
-const ANALYTICS_LONG_ID_RE = /\b\d{9,}\b/;
-const ANALYTICS_UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
-const ANALYTICS_UUID_FULL_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const ANALYTICS_SAFE_ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
-
-export function sanitizeAnalyticsPropertiesServer(
-  properties: Record<string, unknown>,
-): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  if (!properties || typeof properties !== 'object') return out;
-  for (const [key, value] of Object.entries(properties)) {
-    if (ANALYTICS_PII_KEY_DENYLIST.has(key.toLowerCase())) continue;
-    if (typeof value === 'number') {
-      if (Number.isFinite(value)) out[key] = value;
-      continue;
-    }
-    if (typeof value === 'boolean') {
-      out[key] = value;
-      continue;
-    }
-    if (typeof value === 'string') {
-      const v = value.trim();
-      if (!v || v.length > ANALYTICS_VALUE_MAX_LEN) continue;
-      const lowerKey = key.toLowerCase();
-      if (ANALYTICS_RESERVED_ID_KEYS.has(lowerKey)) {
-        if (ANALYTICS_SAFE_ID_RE.test(v)) out[key] = v;
-        continue;
-      }
-      if (ANALYTICS_CORRELATION_ID_KEYS.has(lowerKey)) {
-        if (ANALYTICS_UUID_FULL_RE.test(v)) out[key] = v;
-        continue;
-      }
-      if (
-        ANALYTICS_EMAIL_RE.test(v) ||
-        ANALYTICS_PHONE_RE.test(v) ||
-        ANALYTICS_LONG_ID_RE.test(v) ||
-        ANALYTICS_UUID_RE.test(v)
-      ) {
-        continue;
-      }
-      out[key] = v;
-      continue;
-    }
-  }
-  return out;
-}
+// BLI-110/BLI-116: fail-closed server filter — analytics properties are stored
+// and may reach external analytics; only the per-event allowlist survives. Uses
+// the SAME shared schema as the client (defense-in-depth; client is untrusted).
 
 function sanitizeAnalyticsRecord(input: any) {
   if (!input || typeof input !== 'object') return null;
@@ -255,7 +159,7 @@ function sanitizeAnalyticsRecord(input: any) {
     input.properties && typeof input.properties === 'object' && !Array.isArray(input.properties)
       ? input.properties
       : {};
-  const properties = sanitizeAnalyticsPropertiesServer(rawProperties);
+  const properties = sanitizeEventProperties(event, rawProperties);
 
   const propertiesSize = JSON.stringify(properties).length;
   if (propertiesSize > 8_192) return null;

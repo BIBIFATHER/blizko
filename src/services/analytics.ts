@@ -172,6 +172,91 @@ export async function fetchRemoteAnalyticsEvents(
 
 // ---- Core Functions ----
 
+// BLI-110: analytics events egress to PostHog / Yandex Metrica and a server
+// store. Free-text and PII must not ride in event properties. Fail-closed: keep
+// only short scalar values; drop objects, oversized free-text, contact-like
+// strings, and identifying keys. `session_id` is added separately in `track`.
+const ANALYTICS_PII_KEY_DENYLIST = new Set([
+  'name',
+  'nanny_name',
+  'parent_name',
+  'full_name',
+  'first_name',
+  'last_name',
+  'email',
+  'phone',
+  'contact',
+  'address',
+  'about',
+  'comment',
+  'message',
+  'text',
+  'query',
+  'user_id',
+]);
+// Keys that intentionally carry a server-issued DB identifier for the
+// matching-outcomes learning loop. Trusted, but accepted only as a whole UUID.
+const ANALYTICS_CORRELATION_ID_KEYS = new Set(['parent_id', 'nanny_id']);
+// System-generated session identifier; passes a safe-id shape (UUID or legacy
+// token) so the analytics session is never mistaken for an opaque user id.
+const ANALYTICS_RESERVED_ID_KEYS = new Set(['session_id']);
+const ANALYTICS_VALUE_MAX_LEN = 120;
+const ANALYTICS_EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+const ANALYTICS_PHONE_RE = /\+?\d[\d\s()-]{6,}\d/;
+const ANALYTICS_LONG_ID_RE = /\b\d{9,}\b/;
+// Substring match: drops values that merely contain a UUID under ordinary keys.
+const ANALYTICS_UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+// Whole-value match: a trusted correlation id must BE a UUID, not contain one.
+const ANALYTICS_UUID_FULL_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ANALYTICS_SAFE_ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
+
+export function sanitizeAnalyticsProperties(
+  properties?: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (!properties || typeof properties !== 'object') return out;
+  for (const [key, value] of Object.entries(properties)) {
+    if (ANALYTICS_PII_KEY_DENYLIST.has(key.toLowerCase())) continue;
+    if (typeof value === 'number') {
+      if (Number.isFinite(value)) out[key] = value;
+      continue;
+    }
+    if (typeof value === 'boolean') {
+      out[key] = value;
+      continue;
+    }
+    if (typeof value === 'string') {
+      const v = value.trim();
+      if (!v || v.length > ANALYTICS_VALUE_MAX_LEN) continue;
+      const lowerKey = key.toLowerCase();
+      // Reserved system session id: accept only a safe-id shape.
+      if (ANALYTICS_RESERVED_ID_KEYS.has(lowerKey)) {
+        if (ANALYTICS_SAFE_ID_RE.test(v)) out[key] = v;
+        continue;
+      }
+      // Trusted correlation-id keys accept only a whole server-issued UUID;
+      // anything else (mixed UUID+PII, email, phone, free text) is dropped.
+      if (ANALYTICS_CORRELATION_ID_KEYS.has(lowerKey)) {
+        if (ANALYTICS_UUID_FULL_RE.test(v)) out[key] = v;
+        continue;
+      }
+      // Ordinary keys: drop contact-like values and opaque identifiers.
+      if (
+        ANALYTICS_EMAIL_RE.test(v) ||
+        ANALYTICS_PHONE_RE.test(v) ||
+        ANALYTICS_LONG_ID_RE.test(v) ||
+        ANALYTICS_UUID_RE.test(v)
+      ) {
+        continue;
+      }
+      out[key] = v;
+      continue;
+    }
+    // drop objects, arrays, null, undefined, functions
+  }
+  return out;
+}
+
 /** Track an event with optional properties */
 export function track(event: EventName, properties?: Record<string, unknown>): void {
   try {
@@ -180,8 +265,9 @@ export function track(event: EventName, properties?: Record<string, unknown>): v
       id: generateAnalyticsId(),
       event,
       properties: {
+        ...sanitizeAnalyticsProperties(properties),
+        // Force the generated session id last so caller props can't override it.
         session_id: sessionId,
-        ...(properties || {}),
       },
       timestamp: new Date().toISOString(),
       url: typeof window !== 'undefined' ? window.location.pathname : undefined,
@@ -203,11 +289,12 @@ export function track(event: EventName, properties?: Record<string, unknown>): v
   }
 }
 
-/** Identify a user (after login/signup) */
+/** Identify a user (after login/signup). Traits are sanitized to keep PII/free
+ * text out of the analytics processor; only safe scalar traits are forwarded. */
 export function identify(userId: string, traits?: Record<string, unknown>): void {
   try {
     if (typeof window !== 'undefined' && window.posthog) {
-      window.posthog.identify(userId, traits);
+      window.posthog.identify(userId, traits ? sanitizeAnalyticsProperties(traits) : undefined);
     }
   } catch {
     // silently fail
@@ -267,10 +354,10 @@ export function trackMatchingResults(candidateCount: number, topScore: number): 
   });
 }
 
-/** Track nanny card click */
-export function trackNannyCardClick(nannyName: string, position: number, score: number): void {
+/** Track nanny card click. The nanny name is intentionally NOT emitted — it is
+ * personal data and not needed for funnel metrics (position/score suffice). */
+export function trackNannyCardClick(_nannyName: string, position: number, score: number): void {
   track(ANALYTICS_EVENTS.NANNY_CARD_CLICKED, {
-    nanny_name: nannyName,
     position,
     score,
   });

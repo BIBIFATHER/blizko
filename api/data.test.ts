@@ -126,6 +126,58 @@ describe('api/data handler', () => {
     expect(poolQuery).toHaveBeenCalledTimes(1);
   });
 
+  it('strips PII from analytics properties before the postgres insert (BLI-110)', async () => {
+    poolQuery.mockResolvedValue({ rows: [] });
+
+    const req = {
+      method: 'POST',
+      headers: { authorization: 'Bearer user-token' },
+      query: { resource: 'analytics' },
+      body: {
+        record: {
+          id: 'evt-2',
+          event: 'match_outcome_recorded',
+          properties: {
+            session_id: 'b3f1c2d4-5e6a-47b8-9c0d-1e2f3a4b5c6d',
+            outcome: 'hired',
+            parent_id: '550e8400-e29b-41d4-a716-446655440000',
+            nanny_name: 'Екатерина Смирнова',
+            note: 'call +7 999 123 45 67',
+            passport: '4509123456',
+            ref: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+            nested: { a: 1 },
+          },
+          timestamp: '2026-04-07T10:00:00.000Z',
+          url: 'https://blizko.app/',
+        },
+      },
+    } as unknown as VercelRequest;
+    const res = createMockResponse();
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(201);
+    expect(poolQuery).toHaveBeenCalledTimes(1);
+
+    const insertArgs = poolQuery.mock.calls[0][1] as unknown[];
+    const storedProps = JSON.parse(insertArgs[2] as string);
+
+    // Intentional correlation id, generated session id + safe scalars survive.
+    expect(storedProps).toEqual({
+      session_id: 'b3f1c2d4-5e6a-47b8-9c0d-1e2f3a4b5c6d',
+      outcome: 'hired',
+      parent_id: '550e8400-e29b-41d4-a716-446655440000',
+    });
+    // The generated UUID session id reaches the dedicated column (no regression).
+    expect(insertArgs[4]).toBe('b3f1c2d4-5e6a-47b8-9c0d-1e2f3a4b5c6d');
+    // PII / opaque-id / free-text / nested objects are gone.
+    expect(storedProps).not.toHaveProperty('nanny_name');
+    expect(storedProps).not.toHaveProperty('note');
+    expect(storedProps).not.toHaveProperty('passport');
+    expect(storedProps).not.toHaveProperty('ref');
+    expect(storedProps).not.toHaveProperty('nested');
+  });
+
   it('persists parent records through supabase rest when owner user_id is present', async () => {
     vi.stubGlobal(
       'fetch',

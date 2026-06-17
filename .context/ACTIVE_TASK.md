@@ -24,8 +24,13 @@ merged to `main` and deployed to production.
   - **#33** BLI-116 analytics per-event schema allowlist (`94d7a71`) — shared
     `src/services/analyticsSchema.ts`, prod POST verified 201.
   - **#34** Sentry scrubbing + tracing/replay/BrowserSession disabled
-    (`7919e29`).
-- `main` HEAD `7919e29`. Release gate PASSED before each merge; Vercel
+    (`7919e29`) — Linear BLI-117.
+  - **#35** server-side function-log PII scrubbing (`5c6b874`) — Linear BLI-118;
+    prod analytics POST verified 201.
+- BLI-110 children in Linear: BLI-116/117/118 Done; BLI-119 (geocode public-path
+  auth/legal, High) + BLI-120 (PostHog/Metrica autocapture + log retention)
+  Backlog.
+- `main` HEAD `5c6b874`. Release gate PASSED before each merge; Vercel
   `blizko`+`blizko-3` deploys success; `www.blizko.app` 200.
 - Contour unchanged: synthetic-only ON, all egress/PII gates default-closed.
 - Open follow-ups (no deadline): geocode auth/jurisdiction for the public path

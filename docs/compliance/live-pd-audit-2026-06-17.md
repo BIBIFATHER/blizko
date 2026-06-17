@@ -9,6 +9,21 @@ logs, the CDN, server logs, and Sentry (error-only) are unavoidable technical
 traces. The bar is no *extra* behavioral/marketing collection and a proven
 closed entry.
 
+**Posture status (2026-06-17): the goal is NOT yet met.** Two live items still
+break it, both owner dashboard actions (BLI-121): (a) **Cloudflare Insights /
+Web Analytics is live** — cookieless, but it IS extra behavioral RUM, so
+"no extra behavioral collection" is false until it is turned off; (b) **open
+email signups** (`disable_signup=false`) mean entry is not closed. Until both
+are done, describe the posture as "Metrica/PostHog/doubleclick removed; app
+analytics + Sentry minimized/scrubbed; geocode default-closed — but closed-entry
+and no-extra-behavioral-collection are NOT true yet."
+
+Privacy-page note: the public `/privacy` is served by the **static
+`public/privacy/index.html`** (Vercel serves the static file before the SPA
+rewrite), not the React `LegalPages.tsx` route. The two texts diverge; the
+static page is the authoritative public artifact and the one the legal-drafts
+work (BLI-123) must complete/consolidate. The static page does not name Metrica.
+
 ## C — Supabase Auth (project `geomyyfjvemdphaeimkz`, EU)
 
 Read GoTrue `/auth/v1/settings` + `auth.users` (aggregated, PD masked) + security

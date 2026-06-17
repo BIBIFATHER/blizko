@@ -29,9 +29,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const hasReverseCoords = lat !== '' && lon !== '';
   if (!hasReverseCoords && (!q || q.length < 2)) return res.status(200).json({ items: [] });
 
-  // BLI-110: fail-closed before any external geocode egress (free-text address /
-  // GPS to Yandex + Nominatim). Allowed in the synthetic contour; blocked once
-  // real data could be admitted, until an explicit gate is approved.
+  // BLI-110/BLI-119: fail-closed before any external geocode egress (free-text
+  // address / GPS to Yandex + Nominatim). CLOSED BY DEFAULT regardless of
+  // synthetic-only (a real visitor can type a real address); egress only when
+  // BLIZKO_GEOCODE_EGRESS_GATE_OPEN=true.
   const egress = geocodeExternalEgressDecision();
   if (egress.closed) {
     return res.status(egress.status).json({ items: [], blocked: true, reason: egress.reason });

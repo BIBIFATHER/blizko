@@ -78,7 +78,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://*.telegram.org https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.telegram.org https://*.sentry.io https://*.ingest.de.sentry.io https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org; frame-src 'self' https://web.telegram.org;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org https://*.telegram.org https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.telegram.org https://*.sentry.io https://*.ingest.de.sentry.io https://static.cloudflareinsights.com https://cloudflareinsights.com; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org; frame-src 'self' https://web.telegram.org;"
         }
       ]
     },

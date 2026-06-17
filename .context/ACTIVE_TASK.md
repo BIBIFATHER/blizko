@@ -27,12 +27,21 @@ merged to `main` and deployed to production.
     (`7919e29`) — Linear BLI-117.
   - **#35** server-side function-log PII scrubbing (`5c6b874`) — Linear BLI-118;
     prod analytics POST verified 201.
-- BLI-110 children in Linear: BLI-116/117/118 Done; BLI-119 (geocode public-path
-  auth/legal, High) + BLI-120 (PostHog/Metrica autocapture + log retention)
-  Backlog.
-- `main` HEAD `5c6b874`. Release gate PASSED before each merge; Vercel
-  `blizko`+`blizko-3` deploys success; `www.blizko.app` 200.
-- Contour unchanged: synthetic-only ON, all egress/PII gates default-closed.
+  - **#36** cut live PD exposure (`f53396d`) — Metrica removed + geocode
+    default-closed; prod geocode 403 + Metrica gone verified.
+  - **#37** live-PD audit (A'+C) + CSP cleanup (`4f397d9`) — prod CSP verified
+    clean of Yandex/doubleclick. See `docs/compliance/live-pd-audit-2026-06-17.md`.
+- **`main` HEAD `4f397d9`.**
+- **Audit findings (2026-06-17):** PostHog NOT loaded (ghost). Live loaders:
+  Cloudflare Insights, Google Fonts, Unsplash (all IP egress). **C: Supabase
+  `disable_signup=false` — entry OPEN at project config; only 3 owner accounts
+  exist. CRITICAL owner dashboard action: disable signups (+ CF Web Analytics
+  OFF).** I cannot flip prod auth config autonomously.
+- Plan (consensus w/ Codex): C → A'(done) → privacy quick-gate (Art 18.1) → B
+  legal drafts. Phase 3 RU data-plane PoC deferred.
+- Release gate PASSED before each merge; Vercel deploys success; `www.blizko.app` 200.
+- Contour: synthetic-only ON, egress/PII gates default-closed. NOTE: closed-entry
+  claim is FALSE until the owner closes open signups.
 - Open follow-ups (no deadline): geocode auth/jurisdiction for the public path
   (legal Conditional-Go, needs counsel); analytics per-event allowlist edge
   follow-up = none (shipped); PostHog autocapture / Yandex Metrica minimization;

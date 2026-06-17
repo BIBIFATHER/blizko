@@ -6,26 +6,32 @@ have changed.
 
 ## Status
 
-`MERGED + DEPLOYED` (both BLI-110 review slices shipped 2026-06-16)
+`MERGED + DEPLOYED` (four BLI-110/116 egress/PII slices shipped 2026-06-16/17)
 
-Last updated: 2026-06-16 (Europe/Moscow)
+Last updated: 2026-06-17 (Europe/Moscow)
 
 ## Objective
 
-BLI-110 hardening: narrow, reversible stateless egress / PII guards for the
-closed synthetic-only contour. Two review slices, both self-reviewed via
-two-sided Claude/Codex, merged to `main` and deployed to production.
+BLI-110/116 hardening: narrow, reversible egress / PII guards for the closed
+synthetic-only contour. Each slice self-reviewed via two-sided Claude/Codex,
+merged to `main` and deployed to production.
 
 ## Current State
 
-- `main` includes PRs #28, #29, #30 plus:
-  - **PR #31** geocode egress guard — `MERGED` (merge `ebaa729`).
-  - **PR #32** analytics PII guard — `MERGED` (merge `35436922`).
-- `main` HEAD `3543692`. Release gate PASSED on both branches before merge.
-- Production deploy (Vercel `blizko` + `blizko-3`) = success. Verified live:
-  `www.blizko.app` 200; `/api/geocode?q=…` returns items (synthetic-only ON →
-  guard allows, no breakage). Analytics property filter is client-side, low risk.
+- `main` includes PRs #28–#30 plus, all `MERGED` + prod-deployed:
+  - **#31** geocode egress guard (`ebaa729`).
+  - **#32** analytics PII denylist (`35436922`).
+  - **#33** BLI-116 analytics per-event schema allowlist (`94d7a71`) — shared
+    `src/services/analyticsSchema.ts`, prod POST verified 201.
+  - **#34** Sentry scrubbing + tracing/replay/BrowserSession disabled
+    (`7919e29`).
+- `main` HEAD `7919e29`. Release gate PASSED before each merge; Vercel
+  `blizko`+`blizko-3` deploys success; `www.blizko.app` 200.
 - Contour unchanged: synthetic-only ON, all egress/PII gates default-closed.
+- Open follow-ups (no deadline): geocode auth/jurisdiction for the public path
+  (legal Conditional-Go, needs counsel); analytics per-event allowlist edge
+  follow-up = none (shipped); PostHog autocapture / Yandex Metrica minimization;
+  Vercel function-log PII review (server-side).
 
 ## Shipped slices (history)
 

@@ -8,12 +8,15 @@ Agents update this file from code, migrations, configuration, provider evidence,
 and runtime verification. Anton is not expected to maintain it manually.
 
 **Operating mode — synthetic-only closed contour (until RU-core).** The app runs
-as a closed dev/staging environment on synthetic data only. Real-user admission
-is closed server-side (`BLIZKO_SYNTHETIC_ONLY`, only allow-listed test phones);
+as a closed dev/staging environment on synthetic data only. Real-user *use* is
+gated server-side (`BLIZKO_SYNTHETIC_ONLY`, allow-listed test identities), and
 real personal data and production payments are forbidden until RU-core + owner
-Go. All product features (forms, photo, documents, video, AI, matching, chat,
-support, bookings) remain enabled and operate on fictional test data. Because no
-real subject is admitted, the flows below process synthetic data in this phase.
+Go. **Caveat (audit 2026-06-17): admission is NOT fully closed at the Supabase
+project — `disable_signup=false`, so a stranger can still create an `auth.users`
+row via email signup even though the client guard + server admission gate block
+authenticated actions. Currently only owner accounts exist; the open-signup
+toggle must be closed (owner action) before "closed real-user entry" is true.**
+All product features remain enabled on fictional test data.
 
 | Domain | Subjects | Data | Class | Purpose | Collection / first write | Storage / processing | External flow | Retention / deletion | Current status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

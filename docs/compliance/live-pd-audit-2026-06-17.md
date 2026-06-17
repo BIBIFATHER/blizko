@@ -41,6 +41,7 @@ Secondary posture (pre-real-data, currently synthetic):
 | Yandex Metrica | Removed (BLI-120). Live HTML verified clean. |
 | **Cloudflare Insights** | **LIVE** — `static.cloudflareinsights.com` beacon + `cf-nel` reporting (auto-injected by Cloudflare when Web Analytics/Browser Insights is ON). Behavioral RUM → disable in the Cloudflare dashboard. |
 | **Google Fonts** | **LIVE** — `fonts.googleapis.com` + `fonts.gstatic.com`; visitor IP to Google on every load. Fix: self-host the fonts. |
+| **Unsplash** | **LIVE** — `images.unsplash.com` (still in CSP `img-src`); homepage/demo imagery loads from Unsplash → visitor IP to Unsplash. Fix: self-host/replace the images, then drop `images.unsplash.com` from CSP. |
 | Cloudflare proxy | Live (CDN/WAF, server: cloudflare) — sees all visitor IPs. Unavoidable infra processor; documented. |
 | Sentry | Error-only (BLI-117); SDK beacons only on error, scrubbed. |
 | CSP | Was STALE (still allowed `mc.yandex.ru` + doubleclick after Metrica removal). **Cleaned this PR** — all Yandex/Metrica/doubleclick origins removed. |
@@ -50,8 +51,10 @@ Secondary posture (pre-real-data, currently synthetic):
 **Owner — dashboard (not code; cannot be done autonomously):**
 
 1. **🔴 Critical — Supabase → Authentication → Email provider → disable
-   "Allow new users to sign up"** (`disable_signup=true`). Closes the entry.
-   Re-enable briefly only to create new test accounts.
+   "Allow new users to sign up"** (`disable_signup=true`). The public prod site
+   is reachable, so this must be done **immediately** — until then the
+   "closed real-user entry" claim is false (a stranger can sign up and write a
+   real email into `auth.users`). Re-enable briefly only to create test accounts.
 2. Cloudflare → Web Analytics / Browser Insights → **OFF** (removes the behavioral beacon).
 3. (optional) Supabase → Auth → enable leaked-password protection.
 

@@ -4,6 +4,7 @@ import { setCors } from '../_cors.js';
 import { rateLimit } from '../_rate-limit.js';
 import { verifyBearerUser } from '../_auth.js';
 import { getDbPool } from '../_db.js';
+import { logError } from '../_logScrub.js';
 
 function getSupabaseAdminHeaders() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -70,7 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!delResp.ok) {
       await client.query('ROLLBACK');
       const err = await delResp.text().catch(() => 'unknown');
-      console.error(`[delete-account] Supabase auth delete failed for ${userId}:`, err);
+      logError(`[delete-account] Supabase auth delete failed for ${userId}:`, err);
       return res.status(500).json({ error: 'Failed to delete account' });
     }
 
@@ -78,7 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ ok: true });
   } catch (e: any) {
     await client.query('ROLLBACK').catch(() => {});
-    console.error('[delete-account] Error:', e);
+    logError('[delete-account] Error:', e);
     return res.status(500).json({ error: 'Internal error' });
   } finally {
     client.release();

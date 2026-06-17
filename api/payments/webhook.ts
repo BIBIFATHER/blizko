@@ -6,6 +6,7 @@ import {
   isAllowedPaymentStatus,
   verifyPaymentWithYooKassa,
 } from './_shared.js';
+import { logError, logWarn } from '../_logScrub.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -25,7 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const verification = await verifyPaymentWithYooKassa(ykPaymentId);
 
     if (!verification || !verification.status) {
-      console.warn(`Could not verify webhook for payment ${ykPaymentId}`);
+      logWarn(`Could not verify webhook for payment ${ykPaymentId}`);
       return res.status(200).json({ received: true, ignored: 'verification_failed' });
     }
 
@@ -44,14 +45,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     if (findRes.rowCount === 0) {
-      console.warn(`Webhook received for unknown ykPaymentId: ${ykPaymentId}`);
+      logWarn(`Webhook received for unknown ykPaymentId: ${ykPaymentId}`);
       return res.status(200).json({ received: true, ignored: 'unknown_payment' });
     }
 
     const payment = findRes.rows[0];
 
     if (verification.amount && Number(verification.amount) !== Number(payment.amount)) {
-      console.error(
+      logError(
         `Amount mismatch for payment ${payment.id}: expected ${payment.amount}, got ${verification.amount}`,
       );
       return res.status(200).json({ received: true, ignored: 'amount_mismatch' });
@@ -70,7 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
+    logError('Webhook error:', error);
     // Return 5xx so YooKassa retries. A DB/activation failure after capture must not
     // be reported as success, otherwise a paid request never activates. The handler is
     // idempotent (activatePaidParentRequest no-ops once activated), so retries are safe.

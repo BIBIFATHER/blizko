@@ -6,6 +6,7 @@ import { externalPersonalDataAiEgressDecision } from './_aiEgress.js';
 import { externalPersonalDataNotificationEgressDecision } from './_notificationEgress.js';
 import { getGeminiApiKey, getGeminiModels, normalizeGeminiTemperature } from './_gemini.js';
 import { identityAdmissionClosed } from './_synthetic.js';
+import { logError } from './_logScrub.js';
 
 const REQUEST_TIMEOUT_MS = 25000;
 
@@ -231,10 +232,7 @@ async function callGemini(
       const data: any = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        console.error(
-          `[Gemini] Model ${model} error ${response.status}:`,
-          JSON.stringify(data?.error || data),
-        );
+        logError(`[Gemini] Model ${model} error ${response.status}:`, data?.error || data);
         // Try next model on quota/rate limit or not found
         if (response.status === 404 || response.status === 429 || response.status === 400) continue;
         break;
@@ -254,7 +252,7 @@ async function callGemini(
       if (finishReason === 'SAFETY' || finishReason === 'RECITATION') continue;
       return text; // Return empty for other reasons
     } catch (e: any) {
-      console.error(`[Gemini] Model ${model} exception:`, e?.message || e);
+      logError(`[Gemini] Model ${model} exception:`, e?.message || e);
     } finally {
       clearTimeout(timeout);
     }
@@ -408,7 +406,7 @@ async function sendTelegramHumanHandoff(params: {
         ],
       },
     }),
-  }).catch((e) => console.error('[Telegram]', e));
+  }).catch((e) => logError('[Telegram]', e));
 }
 
 // ============================================
@@ -551,7 +549,7 @@ Rules:
     await insertAiMessage(supportTicketId, draftReply);
     return res.status(200).json({ reply: draftReply, sentiment, escalated: false });
   } catch (e: any) {
-    console.error('[AI Support] Error:', e);
+    logError('[AI Support] Error:', e);
     return res.status(500).json({ error: `AI Support error: ${String(e?.message ?? e)}` });
   }
 }

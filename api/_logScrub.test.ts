@@ -24,12 +24,13 @@ describe('redactForLog', () => {
     });
   });
 
-  it('drops sensitive keys wholesale and scrubs the rest deeply', () => {
+  it('drops credential/PD/content keys wholesale and scrubs the rest deeply', () => {
     const out = redactForLog({
       authorization: 'Bearer abc',
       phone: '+79991234567',
       email: 'a@b.ru',
-      note: 'call elena@example.ru',
+      description: 'Иван Петров, Москва',
+      inn: '7707083893',
       status: 'canceled',
       amount: 990,
       nested: { receipt: { items: [1] }, city: 'Москва' },
@@ -38,11 +39,27 @@ describe('redactForLog', () => {
       authorization: '[redacted]',
       phone: '[redacted]',
       email: '[redacted]',
-      note: 'call [email]',
+      description: '[redacted]',
+      inn: '[redacted]',
       status: 'canceled',
       amount: 990,
       nested: { receipt: '[redacted]', city: 'Москва' },
     });
+  });
+
+  it('does not throw on a throwing getter (fails closed)', () => {
+    const evil = {};
+    Object.defineProperty(evil, 'boom', {
+      enumerable: true,
+      get() {
+        throw new Error('trap');
+      },
+    });
+    // redactForLog may throw internally, but the logError wrapper must not.
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(() => logError('x', evil)).not.toThrow();
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
   });
 
   it('redacts sensitive-looking object keys', () => {
@@ -66,5 +83,11 @@ describe('logError / logWarn', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     logWarn('credentials missing');
     expect(spy).toHaveBeenCalledWith('credentials missing');
+  });
+
+  it('scrubs PD interpolated into the label', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    logWarn('Paid parent request not found: 550e8400-e29b-41d4-a716-446655440000');
+    expect(spy).toHaveBeenCalledWith('Paid parent request not found: [uuid]');
   });
 });

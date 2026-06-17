@@ -1,5 +1,5 @@
 import type { Pool } from 'pg';
-import { logError } from '../_logScrub.js';
+import { logError, logWarn } from '../_logScrub.js';
 
 export const MATCHING_FEE_RUB = 990;
 const ALLOWED_PAYMENT_STATUSES = [
@@ -65,7 +65,7 @@ export async function activatePaidParentRequest(
   ]);
 
   if (parentResult.rowCount === 0) {
-    console.warn(`Paid parent request not found: ${parentRequestId}`);
+    logWarn(`Paid parent request not found: ${parentRequestId}`);
     return false;
   }
 

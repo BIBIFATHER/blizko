@@ -55,7 +55,7 @@ Secondary posture (pre-real-data, currently synthetic):
 | **PostHog** | **NOT loaded.** No `posthog-js` import, no `posthog.init`, no `VITE_POSTHOG*` env, no snippet in `index.html`. Only a guarded `if (window.posthog) window.posthog.capture(...)` — dead unless an external injector adds `window.posthog` (none found). No live autocapture. |
 | Yandex Metrica | Removed (BLI-120). Live HTML verified clean. |
 | **Cloudflare Insights** | **LIVE** — `static.cloudflareinsights.com` beacon + `cf-nel` reporting (auto-injected by Cloudflare when Web Analytics/Browser Insights is ON). Behavioral RUM → disable in the Cloudflare dashboard. |
-| **Google Fonts** | **LIVE** — `fonts.googleapis.com` + `fonts.gstatic.com`; visitor IP to Google on every load. Fix: self-host the fonts. |
+| **Google Fonts** | **Removed (BLI-122)** — self-hosted via `@fontsource` (Vite-bundled, same-origin); Google `<link>` + `fonts.*` CSP removed. No IP egress to Google. |
 | **Unsplash** | **LIVE** — `images.unsplash.com` (still in CSP `img-src`); homepage/demo imagery loads from Unsplash → visitor IP to Unsplash. Fix: self-host/replace the images, then drop `images.unsplash.com` from CSP. |
 | Cloudflare proxy | Live (CDN/WAF, server: cloudflare) — sees all visitor IPs. Unavoidable infra processor; documented. |
 | Sentry | Error-only (BLI-117); SDK beacons only on error, scrubbed. |

@@ -6,6 +6,7 @@ import { identityAdmissionClosed } from '../_synthetic.js';
 import { rateLimit } from '../_rate-limit.js';
 import { getDbPool } from '../_db.js';
 import { MATCHING_FEE_RUB } from './_shared.js';
+import { logError } from '../_logScrub.js';
 
 type ParentRequestDraftInput = Omit<
   ParentRequest,
@@ -307,7 +308,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      console.error('YooKassa error:', data);
+      logError('YooKassa error:', data);
       await pool.query(`UPDATE payments SET status = 'canceled' WHERE id = $1`, [paymentRecordId]);
       return res.status(response.status).json({
         error: 'Payment gateway rejected the request',
@@ -338,7 +339,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: error.message });
     }
 
-    console.error('Payment creation error:', error);
+    logError('Payment creation error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }

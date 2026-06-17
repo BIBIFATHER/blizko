@@ -6,6 +6,7 @@ import {
   isAllowedPaymentStatus,
   verifyPaymentWithYooKassa,
 } from './_shared.js';
+import { logError } from '../_logScrub.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -70,7 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Webhook error:', error);
+    logError('Webhook error:', error);
     // Return 5xx so YooKassa retries. A DB/activation failure after capture must not
     // be reported as success, otherwise a paid request never activates. The handler is
     // idempotent (activatePaidParentRequest no-ops once activated), so retries are safe.

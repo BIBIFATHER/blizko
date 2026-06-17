@@ -9,6 +9,7 @@ import {
   sanitizeEventProperties,
   ANALYTICS_EVENT_PROPERTIES,
 } from '../src/services/analyticsSchema.js';
+import { logError, logWarn } from './_logScrub.js';
 
 const json = (res: VercelResponse, status: number, payload: any) =>
   res.status(status).json(payload);
@@ -272,7 +273,7 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
         source: 'postgres',
       });
     } catch (e) {
-      console.error('analytics GET: postgres query failed, falling back:', e);
+      logError('analytics GET: postgres query failed, falling back:', e);
       const items = await fetchAnalyticsViaSupabase(days);
       if (items) return json(res, 200, { items, days, source: 'security_audit_log' });
       return json(res, 200, { items: [], days, source: 'disabled' });
@@ -307,7 +308,7 @@ async function handleAnalytics(req: VercelRequest, res: VercelResponse) {
 
       return json(res, 201, { ok: true, source: 'postgres' });
     } catch (e) {
-      console.error('analytics POST: postgres insert failed, falling back:', e);
+      logError('analytics POST: postgres insert failed, falling back:', e);
       const saved = await saveAnalyticsViaSupabase(record, verifiedUser?.id || null);
       if (saved) return json(res, 201, { ok: true, source: 'security_audit_log' });
       return json(res, 202, { ok: false, skipped: 'analytics_store_unavailable' });
@@ -645,12 +646,12 @@ async function handleSignDoc(req: VercelRequest, res: VercelResponse) {
       .from('nanny-documents')
       .createSignedUrl(path, 300);
     if (error || !data?.signedUrl) {
-      console.warn('sign-doc failed:', error?.message);
+      logWarn('sign-doc failed:', error?.message);
       return json(res, 404, { error: 'Document not found' });
     }
     return json(res, 200, { url: data.signedUrl });
   } catch (e) {
-    console.error('sign-doc error:', e);
+    logError('sign-doc error:', e);
     return json(res, 500, { error: 'internal_error' });
   }
 }

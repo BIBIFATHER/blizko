@@ -14,6 +14,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDbPool } from '../_db.js';
+import { logError } from '../_logScrub.js';
 
 const MIN_SIGNALS = 50;
 const PRIOR_STRENGTH = 200; // sample count at which alpha = 0.5
@@ -162,7 +163,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       })),
     });
   } catch (err) {
-    console.error('[update-matching-weights] DB error:', err);
+    logError('[update-matching-weights] DB error:', err);
     return res.status(500).json({ error: 'Internal error' });
   }
 }

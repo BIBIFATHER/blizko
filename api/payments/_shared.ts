@@ -1,4 +1,5 @@
 import type { Pool } from 'pg';
+import { logError } from '../_logScrub.js';
 
 export const MATCHING_FEE_RUB = 990;
 const ALLOWED_PAYMENT_STATUSES = [
@@ -50,7 +51,7 @@ export async function verifyPaymentWithYooKassa(paymentId: string): Promise<{
       amount: data.amount?.value,
     };
   } catch (error) {
-    console.error('YooKassa verification request failed:', error);
+    logError('YooKassa verification request failed:', error);
     return null;
   }
 }

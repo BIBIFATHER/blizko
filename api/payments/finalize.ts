@@ -9,6 +9,7 @@ import {
   isAllowedPaymentStatus,
   verifyPaymentWithYooKassa,
 } from './_shared.js';
+import { logError } from '../_logScrub.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
@@ -93,7 +94,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       parentRequestId: payment.parent_request_id || null,
     });
   } catch (error) {
-    console.error('Payment finalization error:', error);
+    logError('Payment finalization error:', error);
     return res.status(200).json({ ok: false, error: 'finalization_failed' });
   }
 }

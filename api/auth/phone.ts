@@ -5,6 +5,7 @@ import { setCors } from '../_cors.js';
 import { rateLimit } from '../_rate-limit.js';
 import { auditLog, maskPhone } from '../_audit.js';
 import { isPhoneAdmitted, isSyntheticOnly } from '../_synthetic.js';
+import { logError, logWarn } from '../_logScrub.js';
 
 // Synthetic-only closed contour: real-user admission is disabled. Only
 // allow-listed test phones may authenticate until RU-core + owner Go.
@@ -245,7 +246,7 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
       .maybeSingle();
 
     if (lookupError) {
-      console.warn('Phone lookup warning:', lookupError.message);
+      logWarn('Phone lookup warning:', lookupError.message);
     }
 
     let userId: string;
@@ -273,7 +274,7 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
         if (existing) {
           userId = existing.id;
         } else {
-          console.error('Failed to create Supabase user:', createError);
+          logError('Failed to create Supabase user:', createError);
           return json(res, 200, { ok: true, phone, fallback: true });
         }
       } else {
@@ -317,7 +318,7 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
       tokenType: 'magiclink',
     });
   } catch (e: any) {
-    console.error('Unified auth error:', e?.message || e);
+    logError('Unified auth error:', e?.message || e);
     return json(res, 200, { ok: true, phone, fallback: true });
   }
 }

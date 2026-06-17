@@ -10,6 +10,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getDbPool } from '../_db.js';
+import { logError } from '../_logScrub.js';
 
 const GHOST_AFTER_DAYS = 7;
 
@@ -40,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ghosted: result.rowCount ?? 0,
     });
   } catch (err) {
-    console.error('[ghosted-outcomes] DB error:', err);
+    logError('[ghosted-outcomes] DB error:', err);
     return res.status(500).json({ error: 'Internal error' });
   }
 }

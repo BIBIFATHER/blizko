@@ -91,8 +91,7 @@ function buildPreviewData(lang: Language): MatchResult {
             traits: { empathy: 92, stability: 84, responsibility: 87, structure: 73 },
             signals: [],
           },
-          photo:
-            'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
+          photo: '/assets/nanny-placeholder-1.jpg',
           createdAt: Date.now(),
           type: 'nanny' as const,
         },
@@ -118,8 +117,7 @@ function buildPreviewData(lang: Language): MatchResult {
           skills: ['Подготовка к школе', 'Прогулки', 'Режим дня'],
           childAges: ['1-3', '3-6'],
           reviews: [],
-          photo:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop',
+          photo: '/assets/nanny-placeholder-2.jpg',
           createdAt: Date.now(),
           type: 'nanny' as const,
         },

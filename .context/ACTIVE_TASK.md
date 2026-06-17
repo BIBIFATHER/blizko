@@ -37,8 +37,13 @@ merged to `main` and deployed to production.
   `disable_signup=false` — entry OPEN at project config; only 3 owner accounts
   exist. CRITICAL owner dashboard action: disable signups (+ CF Web Analytics
   OFF).** I cannot flip prod auth config autonomously.
-- Plan (consensus w/ Codex): C → A'(done) → privacy quick-gate (Art 18.1) → B
-  legal drafts. Phase 3 RU data-plane PoC deferred.
+  - **#38** privacy `/privacy` factual sync — removed Yandex Metrica (`cea7e55`).
+- Plan (consensus w/ Codex): C → A'(done) → privacy quick-gate (DONE: /privacy
+  exists, Metrica removed; completeness → BLI-123) → B legal drafts. Phase 3
+  RU data-plane PoC deferred.
+- Linear (under BLI-110): **BLI-121 Urgent — owner closes open signups
+  (`disable_signup=true`) + CF Web Analytics OFF**; BLI-122 self-host
+  fonts/Unsplash; BLI-123 legal drafts (B). BLI-116/117/118 Done.
 - Release gate PASSED before each merge; Vercel deploys success; `www.blizko.app` 200.
 - Contour: synthetic-only ON, egress/PII gates default-closed. NOTE: closed-entry
   claim is FALSE until the owner closes open signups.

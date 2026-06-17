@@ -11,10 +11,9 @@
  * again on server ingest. On top of the key allowlist, a value-level guard drops
  * contact-like values and opaque identifiers and constrains the trusted id keys.
  *
- * Scope: this governs property payloads emitted through `track()` only. It does
- * NOT cover PostHog autocapture or the Yandex Metrica snippet in index.html,
- * which auto-collect DOM/pageview data through separate channels — minimizing
- * those is a separate follow-up (disable autocapture / restrict Metrica).
+ * Scope: this governs property payloads emitted through `track()` only. Yandex
+ * Metrica was removed (BLI-120); PostHog is not loaded. If PostHog is ever added,
+ * its autocapture is a separate channel to minimize (disable autocapture).
  */
 
 /**

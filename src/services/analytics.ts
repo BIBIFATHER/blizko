@@ -181,8 +181,9 @@ export async function fetchRemoteAnalyticsEvents(
 
 // ---- Core Functions ----
 
-// BLI-110/BLI-116: analytics events egress to PostHog / Yandex Metrica and a
-// server store. Free-text and PII must not ride in event properties. The shared
+// BLI-110/BLI-116: analytics events egress to a first-party server store (and
+// PostHog only if ever loaded; Yandex Metrica was removed in BLI-120). Free-text
+// and PII must not ride in event properties. The shared
 // `analyticsSchema` enforces a per-event property allowlist plus a value-level
 // guard; `session_id` is a global key added separately in `track`.
 

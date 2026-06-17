@@ -8,16 +8,19 @@ Agents update this file from code, migrations, configuration, provider evidence,
 and runtime verification. Anton is not expected to maintain it manually.
 
 **Operating mode — synthetic-only closed contour (until RU-core).** The app runs
-as a closed dev/staging environment on synthetic data only. Real-user admission
-is closed server-side (`BLIZKO_SYNTHETIC_ONLY`, only allow-listed test phones);
+as a closed dev/staging environment on synthetic data only. Real-user *use* is
+gated server-side (`BLIZKO_SYNTHETIC_ONLY`, allow-listed test identities), and
 real personal data and production payments are forbidden until RU-core + owner
-Go. All product features (forms, photo, documents, video, AI, matching, chat,
-support, bookings) remain enabled and operate on fictional test data. Because no
-real subject is admitted, the flows below process synthetic data in this phase.
+Go. **Caveat (audit 2026-06-17): admission is NOT fully closed at the Supabase
+project — `disable_signup=false`, so a stranger can still create an `auth.users`
+row via email signup even though the client guard + server admission gate block
+authenticated actions. Currently only owner accounts exist; the open-signup
+toggle must be closed (owner action) before "closed real-user entry" is true.**
+All product features remain enabled on fictional test data.
 
 | Domain | Subjects | Data | Class | Purpose | Collection / first write | Storage / processing | External flow | Retention / deletion | Current status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Auth | parents, nannies, staff | phone, email, user ID, session/JWT metadata | Personal | registration and access | browser/OTP API -> Supabase Auth | Supabase EU currently; API via Vercel | SMSAero for OTP | Identity deletion and backup evidence pending | `Blocked for legal Go`: RU first-write position unresolved |
+| Auth | parents, nannies, staff | phone, email, user ID, session/JWT metadata | Personal | registration and access | browser/OTP API -> Supabase Auth | Supabase EU currently; API via Vercel | SMSAero for OTP | Identity deletion and backup evidence pending | `Blocked for legal Go`: RU first-write unresolved. **Audit 2026-06-17: `disable_signup=false` — open email signups ENABLED at the project; a stranger could write a real email into `auth.users`. Client guard + server admission limit actions but not signup. Only 3 owner accounts exist. ACTION (owner dashboard): disable signups before/at pilot.** `mailer_autoconfirm=false` (confirmation required). See `live-pd-audit-2026-06-17.md` |
 | Jurisdiction routing | all users | jurisdiction, policy version, verified phone-country and declared residency/citizenship, minimized advisory IP/locale/timezone, pin and audit | Personal; online identifiers | route data plane, AI, consent, retention, and processors | server at/after Auth | RU core target; no personal-data plane for `UNKNOWN`/`EU` | None; external geo prohibited unless registered | Account lifetime plus immutable audit; short retention for advisory signals | `Conditional`: fail-closed `UNKNOWN`; geo source must be internal/offline or separately registered |
 | Nanny warm pool | prospective nannies | source reference, first name, broad area, experience/schedule/rate summary, contact status, recontact permission, operational dates/note | Personal; minimized recruiting data | resume interrupted conversations and invite a small closed-pilot cohort | manual entry after source-platform contact | encrypted local registry; key in macOS Keychain | Full resume/contact remains in source platform; no AI or Supabase EU flow | Delete on objection/refusal; purge all records not updated for 90 days | `Conditional`: later outreach only for explicit recontact `yes`; no documents, direct contacts, health data, full resumes, scoring, scraping, or bulk messaging |
 | Parent profile | parents, children | location, child age, schedule, budget, requirements, comment, contact | Personal; child-related | matching and service delivery | browser -> Supabase `parents` | Supabase EU; local fallback may exist | AI support may receive selected context | Full retention/backups proof pending | `Conditional`: minimize child data and resolve RU contour |

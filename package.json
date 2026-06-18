@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "check:chat-rls": "bash scripts/check_chat_messages_rls.sh",
     "check:chat-participants-rls": "bash scripts/check_chat_participants_rls.sh",
+    "check:chat-participants-rls-matrix": "bash scripts/check_chat_participants_rls_matrix.sh",
     "check:chat-rls-matrix": "bash scripts/check_chat_messages_rls_matrix.sh",
     "check:nannies-rls": "bash scripts/check_nannies_rls.sh",
     "test": "vitest run",

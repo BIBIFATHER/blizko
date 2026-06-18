@@ -51,14 +51,17 @@ AS $$
   SELECT
     -- The designated family or nanny on the thread may add themselves in that
     -- role (family_id is set on both match and support threads; nanny_id only on
-    -- match threads). NULL nanny_id fails closed.
+    -- match threads). NULL nanny_id fails closed. The nanny branch is pinned to
+    -- type='match' so a future support thread that ever carried a nanny_id could
+    -- not let that nanny self-join a support thread (defense-in-depth; no current
+    -- code creates support threads with nanny_id).
     EXISTS (
       SELECT 1
       FROM public.chat_threads t
       WHERE t.id = p_thread_id
         AND (
           (p_role = 'family' AND t.family_id = auth.uid())
-          OR (p_role = 'nanny' AND t.nanny_id = auth.uid())
+          OR (p_role = 'nanny' AND t.type = 'match' AND t.nanny_id = auth.uid())
         )
     )
     -- A support agent may add themselves as 'support' on a support thread.

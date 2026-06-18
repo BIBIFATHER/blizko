@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-06-18 (Thu) — BLI-124 RLS matrix checkpoint
+
+- Added `scripts/check_chat_participants_rls_matrix.sh` and
+  `scripts/sql/chat_participants_rls_matrix.sql` to exercise the
+  `chat_participants` self-join hardening and `support_messages` anti-spoofing
+  path in a rollback-safe matrix.
+- Hardened `supabase/migrations/20260618090000_bli124_harden_participant_and_support_insert.sql`
+  to pin the nanny self-join helper to `type='match'` and keep support-thread
+  access on the support-agent helper path.
+- Added the `check:chat-participants-rls-matrix` npm script.
+- Confirmed the matrix passes end-to-end on the linked database and recorded
+  the result in `RISK-009`.
+
 ## 2026-06-18 (Thu) — Supabase security hardening plan review
 
 - Updated `docs/architecture/supabase-security-hardening-plan.md` with the

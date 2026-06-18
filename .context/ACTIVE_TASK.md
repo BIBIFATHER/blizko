@@ -8,7 +8,7 @@ have changed.
 
 `MERGED + DEPLOYED` (four BLI-110/116 egress/PII slices shipped 2026-06-16/17)
 
-Last updated: 2026-06-17 (Europe/Moscow)
+Last updated: 2026-06-18 (Europe/Moscow)
 
 ## Objective
 
@@ -32,6 +32,9 @@ merged to `main` and deployed to production.
   - **#37** live-PD audit (A'+C) + CSP cleanup (`4f397d9`) — prod CSP verified
     clean of Yandex/doubleclick. See `docs/compliance/live-pd-audit-2026-06-17.md`.
 - **`main` HEAD `4f397d9`.**
+- BLI-124 hardening package now staged as checkpoint commit `ca3e62a`
+  (`Add RLS matrix for chat participant hardening`) with a passing RLS matrix
+  for `chat_participants` + `support_messages`.
 - **Audit findings (2026-06-17):** PostHog NOT loaded (ghost). Live loaders:
   Cloudflare Insights, Google Fonts, Unsplash (all IP egress). **C: Supabase
   `disable_signup=false` — entry OPEN at project config; only 3 owner accounts
@@ -113,3 +116,5 @@ merged to `main` and deployed to production.
    processing is confirmed.
 4. Keep two-sided Claude/Codex review at risk gates; use the evidence pack
    template before any readiness claim.
+5. Next autonomous hardening step: complete BLI-124 DB deployment path only
+   after owner approval and DB protocol gating.

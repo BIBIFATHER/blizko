@@ -51,6 +51,12 @@ if [ -n "${DATABASE_URL:-}" ] || [ -n "${SUPABASE_ACCESS_TOKEN:-}" ] || { comman
     bad "chat_messages RLS smoke failed"
     tail -20 /tmp/gate-chat-rls.log
   fi
+  if npm run check:chat-participants-rls >/tmp/gate-chat-participants-rls.log 2>&1; then
+    ok "chat_participants + support_messages RLS smoke ok"
+  else
+    bad "chat_participants + support_messages RLS smoke failed"
+    tail -20 /tmp/gate-chat-participants-rls.log
+  fi
 else
   ok "skipped: DATABASE_URL/SUPABASE_ACCESS_TOKEN не задан и Supabase CLI не linked"
 fi

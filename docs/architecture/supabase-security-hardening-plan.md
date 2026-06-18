@@ -15,10 +15,11 @@ advisors (project `geomyyfjvemdphaeimkz`, проверено 2026-06-18). Это
 
 ### F1 — ERROR: SECURITY DEFINER view `public.nannies_public`
 - Риск: вью исполняет права создателя, обходя RLS вызывающего.
-- Fix: пересоздать как `security_invoker = true` ИЛИ обосновать (это намеренный
-  публичный каталог с коротким key-denylist). Проверить, что вью отдаёт только
-  очищенные публичные поля.
-- Зависимость: публичный каталог. Сохранить функциональность.
+- Fix (Codex): `security_invoker=true` СЛОМАЕТ публичный каталог (нет другого
+  anon-пути). Текущий вью стрипит лишь **3 denylist-ключа** → риск утечки новых
+  payload-ключей. Правильно: **либо** вынести каталог полностью за server API
+  (`/api/nannies`, service-role), **либо** оставить DEFINER, но заменить
+  denylist на **явный allowlist** полей + сузить grants.
 
 ### F2 — WARN: function search_path mutable (`update_updated_at`, `update_matching_outcomes_updated_at`)
 - Риск: search_path injection в trigger-функциях.
@@ -63,6 +64,33 @@ advisors (project `geomyyfjvemdphaeimkz`, проверено 2026-06-18). Это
 
 ### F6 — WARN: Leaked Password Protection отключена
 - Fix: включить в Supabase Auth (dashboard, владелец) — проверка паролей по HIBP.
+
+### F7 — P1 (Codex): широкий `GRANT ALL` на PD-таблицах, а не только SELECT
+- Риск: текущие гранты — `GRANT ALL` для `anon`/`authenticated` на многих
+  PD-таблицах (включая INSERT/UPDATE/DELETE), плюс **default privileges** выдают
+  права и БУДУЩИМ таблицам/функциям.
+- Fix: заменить `GRANT ALL` на per-table least-privilege: `anon` — ничего, кроме
+  намеренных публичных вью/конфигов; `authenticated` — только точные
+  SELECT/INSERT/UPDATE, реально используемые приложением. `ALTER DEFAULT
+  PRIVILEGES ... REVOKE` для будущих объектов. (Хардening не ограничивать SELECT.)
+
+### F8 — P1 (Codex): слабый RLS `chat_participants` — эскалация в чужой чат
+- Риск: INSERT-политика проверяет только `auth.uid() = user_id` → любой
+  залогиненный пользователь может **добавить себя в ЛЮБОЙ тред** (зная
+  `thread_id`), затем SELECT сообщений доверяет членству в `chat_participants` →
+  **чтение чужой переписки.** Фронт делает прямой upsert participant
+  (`matchChat.ts:21`). В synthetic-only активно не эксплуатируется (только
+  owner-аккаунты), но **must-fix до реальных юзеров.**
+- Fix: INSERT/UPSERT participant разрешать только если вызывающий уже
+  `chat_threads.family_id`/`nanny_id`, существующий участник, support-agent через
+  безопасный helper, или service_role. Добавить как **новый RISK в RISK_REGISTER.**
+
+### F9 — P2 (Codex): `support_messages` INSERT допускает подмену отправителя
+- Риск: INSERT-политика проверяет только владение тикетом, не поля отправителя →
+  владелец тикета может писать любой `sender_type`/`sender_id` (выдать себя за
+  AI/агента). Фронт шлёт user-сообщения напрямую (`supportEngine.ts:88`).
+- Fix: authenticated-клиент INSERT — требовать `sender_type='user'` И
+  `sender_id=auth.uid()`; сообщения AI/агента — только service/admin.
 
 ## Порядок применения (после approve + проверки зависимостей)
 1. Проверить зависимости фронта (F3/F4): grep браузерных прямых чтений таблиц/бакетов.

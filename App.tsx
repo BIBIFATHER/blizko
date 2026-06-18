@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Home } from '@/components/Home';
 import { InstallPwaModal } from '@/web/pwa/InstallPwaPrompt';
 import { SeoHead } from '@/components/seo/SeoHead';
@@ -493,6 +494,9 @@ export default function App() {
           />
         </Suspense>
       )}
+
+      {/* Vercel Speed Insights */}
+      <SpeedInsights />
     </div>
   );
 }

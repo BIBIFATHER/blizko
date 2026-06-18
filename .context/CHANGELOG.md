@@ -504,11 +504,13 @@ hand-built прод. Поэтому `db reset` с нуля падал, а baseli
   (уже applied). Drift = **ровно** reverted/applied списки из runbook → ожидаем до
   репейра.
 
-> **Требуется после merge** (deploy-gate, только метаданные): прод
-> `schema_migrations` ещё числит старые versions, не совпадающие с новыми
-> файлами → `db push` к проду попытается переприменить baseline. Runbook:
-> `supabase/PROD_HISTORY_REPAIR.md` (`supabase migration repair`, схему не меняет).
-> `20260609000000` уже applied (PR #12) — репейра не требует.
+> **Выполнено 09.06.2026** (deploy-gate, только метаданные): после merge PR #9
+> прогнан `supabase/PROD_HISTORY_REPAIR.md` — `migration repair` 10 старых versions
+> → `reverted`, 5 baseline-versions → `applied` (схема не тронута). `schema_migrations`
+> теперь содержит ровно 6 версий, **local = remote** (verified через MCP):
+> `00000000000000, 00000000000001, 20260527000000, 20260604130000, 20260604140000,
+> 20260609000000`. Повторный repair не требуется; `20260609000000` был applied ещё
+> в PR #12. Rollback — в runbook.
 
 > Замечание (вне scope, отдельные issue): `nannies_public` создан с
 > `security_invoker=false` (SECURITY DEFINER, ERROR-адвайзер) — захвачен в baseline

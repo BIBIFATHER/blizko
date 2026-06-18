@@ -6,8 +6,8 @@ import type { AdminActionEntry } from '@/components/admin/AdminJournalTab';
 const day = 24 * 60 * 60 * 1000;
 const now = Date.now();
 
-const P = (id: string, w = 256) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${w}&q=80`;
+// Dev-only harness: use a self-hosted placeholder (no Unsplash egress / CSP need).
+const P = (_id: string, _w = 256) => '/assets/nanny-placeholder-1.jpg';
 
 export const mockNannies = [
   {

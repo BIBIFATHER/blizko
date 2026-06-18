@@ -23,8 +23,8 @@ const en = {
   headlineBottom: 'you can trust',
 };
 
-const heroImage =
-  'https://images.unsplash.com/photo-1713942590283-59867d5e3f8d?auto=format&fit=crop&w=900&q=84';
+// Self-hosted (BLI-122): no visitor IP egress to Unsplash.
+const heroImage = '/assets/hero-care.jpg';
 
 export const Home: React.FC<HomeProps> = ({ lang, onShare, onOpenAccount }) => {
   const navigate = useNavigate();

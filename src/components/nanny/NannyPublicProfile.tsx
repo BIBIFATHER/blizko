@@ -124,8 +124,7 @@ export const NannyPublicProfile: React.FC<NannyPublicProfileProps> = ({ lang }) 
             date: Date.now(),
           },
         ],
-        photo:
-          'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
+        photo: '/assets/nanny-placeholder-1.jpg',
         createdAt: Date.now(),
         type: 'nanny',
       });

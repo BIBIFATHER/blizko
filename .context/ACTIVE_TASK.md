@@ -47,6 +47,12 @@ merged to `main` and deployed to production.
 - Release gate PASSED before each merge; Vercel deploys success; `www.blizko.app` 200.
 - Contour: synthetic-only ON, egress/PII gates default-closed. NOTE: closed-entry
   claim is FALSE until the owner closes open signups.
+- AI operating model now formalized:
+  - `.context/AI_OPERATING_MODEL.md` defines Claude as lead executor and Codex
+    as evidence/risk controller.
+  - `.context/EVIDENCE_PACK_TEMPLATE.md` defines required proof before
+    readiness claims on risk gates.
+  - `.context/RISK_REGISTER.md` tracks long-lived launch/legal/security risks.
 - Open follow-ups (no deadline): geocode auth/jurisdiction for the public path
   (legal Conditional-Go, needs counsel); analytics per-event allowlist edge
   follow-up = none (shipped); PostHog autocapture / Yandex Metrica minimization;
@@ -98,8 +104,12 @@ merged to `main` and deployed to production.
 
 ## Next Steps
 
-1. No open execution task. Both slices merged + deployed.
-2. Open follow-ups (no deadline): BLI-116 analytics allowlist; geocode
-   legal-acceptance before opening `BLIZKO_GEOCODE_EGRESS_GATE_OPEN`.
-3. Keep two-sided Claude/Codex review at risk gates; verify findings
-   independently. Deploy only via release-gate PASS + owner approval.
+1. Owner action: close Supabase open signups (`disable_signup=true`) and disable
+   or explicitly accept/document Cloudflare Web Analytics (BLI-121).
+2. Agent action after owner confirmation: verify Auth config, user inventory,
+   session behavior, and update `.context/RISK_REGISTER.md` / compliance
+   registers.
+3. Next autonomous work: B legal draft package (BLI-123) after current factual
+   processing is confirmed.
+4. Keep two-sided Claude/Codex review at risk gates; use the evidence pack
+   template before any readiness claim.

@@ -1,6 +1,8 @@
 # Claude / Codex Coordination
 
 This file is the shared operating contract for Claude Code and Codex.
+The canonical maker/checker model is `.context/AI_OPERATING_MODEL.md`; this
+file describes the direct coordination mechanics.
 
 ## Default Ownership
 
@@ -39,6 +41,17 @@ Use the second agent for:
 Routine copy, isolated UI polish, documentation cleanup, and low-risk local
 refactors do not require dual-agent review.
 
+Reviewer findings must use the format:
+
+```text
+[severity] claim
+Evidence: ...
+Risk: ...
+Required fix / acceptance: ...
+```
+
+Severity levels are defined in `.context/AI_OPERATING_MODEL.md`.
+
 ## Direct Coordination
 
 Both agents have read-only review commands:
@@ -69,6 +82,10 @@ For every mandatory independent-review gate:
 4. If the conclusion materially changes, the reviewer checks the corrected
    conclusion once more.
 5. Anton receives the consolidated result, including any unresolved conflict.
+
+Before final status on a mandatory gate, the lead agent must include an evidence
+pack using `.context/EVIDENCE_PACK_TEMPLATE.md` or an equivalent shorter form
+that covers all relevant sections.
 
 This is bidirectional: Claude reviews Codex conclusions and Codex reviews Claude
 conclusions. A verdict from either agent alone is not sufficient at a mandatory

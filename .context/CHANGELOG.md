@@ -2,6 +2,33 @@
 
 ---
 
+## 2026-06-18 (Thu) — Supabase security hardening plan review
+
+- Updated `docs/architecture/supabase-security-hardening-plan.md` with the
+  current advisor findings and dependency checks:
+  - `nannies_public` should stay behind a curated allowlist or move behind
+    `/api/nannies`; `security_invoker=true` would break the public catalog.
+  - Added the `chat_participants` self-join escalation as new durable risk
+    `RISK-009`.
+  - Kept the plan explicitly scoped to the post-approve hardening path before
+    real users.
+- Updated `.context/RISK_REGISTER.md` with `RISK-009` so the chat escalation
+  remains durable across sessions.
+
+## 2026-06-17 (Wed) — Claude/Codex maker-checker operating model
+
+- Added `.context/AI_OPERATING_MODEL.md`: Claude is the lead executor, Codex is
+  the independent evidence/risk controller.
+- Added `.context/EVIDENCE_PACK_TEMPLATE.md` for Auth, RLS, database, personal
+  data, analytics, payments, deploy, legal/security, and release-readiness
+  gates.
+- Added `.context/RISK_REGISTER.md` for durable launch/legal/security risks that
+  must survive individual tasks.
+- Updated Codex and agent coordination protocols to require severity-tagged
+  findings and evidence packs before readiness claims.
+- Updated `.context/ACTIVE_TASK.md` to point the next work at BLI-121 owner
+  actions, BLI-123 legal drafts, and evidence-based risk-gate closure.
+
 ## 2026-06-16 (Tue) — Stateless notification egress guard (BLI-110 follow-up)
 
 - Added `api/_notificationEgress.ts`: a no-persistence jurisdiction guard for

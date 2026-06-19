@@ -139,6 +139,7 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
         <div className="relative">
           <textarea
             ref={textareaRef}
+            data-testid="find-story"
             value={formData.comment}
             onChange={(e) => setFormData((prev) => ({ ...prev, comment: e.target.value }))}
             placeholder={placeholder}
@@ -237,7 +238,13 @@ export const Step1_FamilyStory: React.FC<Props> = ({ lang }) => {
       </section>
 
       <div className="sticky-action-rail sticky-footer-fade">
-        <Button type="button" onClick={nextStep} disabled={!isFormValid} pulse={isFormValid}>
+        <Button
+          type="button"
+          data-testid="find-continue"
+          onClick={nextStep}
+          disabled={!isFormValid}
+          pulse={isFormValid}
+        >
           {ru ? 'Продолжить' : 'Continue'}
         </Button>
       </div>

@@ -155,7 +155,7 @@ export const ParentSummaryModal: React.FC<Props> = ({
       </div>
 
       <div className="p-5 border-t border-[#1C2B2D]/8 space-y-3">
-        <Button onClick={onConfirm} pulse>
+        <Button data-testid="summary-confirm" onClick={onConfirm} pulse>
           {ru ? 'Передать куратору' : 'Send to curator'}
         </Button>
         <button

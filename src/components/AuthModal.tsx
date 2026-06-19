@@ -324,6 +324,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
             <div className="surface-panel rounded-[24px] p-2 grid grid-cols-2 gap-2">
               <button
                 type="button"
+                data-testid="auth-role-parent"
                 onClick={() => setRole('parent')}
                 className={`rounded-[18px] px-4 py-3.5 flex flex-col items-center justify-center gap-1.5 transition-all ${
                   role === 'parent'
@@ -352,6 +353,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               {phoneAuthEnabled && (
                 <button
                   type="button"
+                  data-testid="auth-method-phone"
                   onClick={() => {
                     setMethod('phone');
                     setContactValue('');
@@ -399,6 +401,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
                       : 'Email'
                 }
                 type={method === 'phone' ? 'tel' : 'email'}
+                data-testid="auth-contact"
                 placeholder={method === 'phone' ? '+7 999 000-00-00' : 'hello@example.com'}
                 value={contactValue}
                 onChange={(e) => setContactValue(e.target.value)}
@@ -408,6 +411,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
 
               <Input
                 label={text.nameLabelSimple}
+                data-testid="auth-name"
                 placeholder={lang === 'ru' ? 'Как к вам обращаться?' : 'Your Name'}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -421,7 +425,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               </p>
             )}
 
-            <Button type="submit" isLoading={loading} className="mt-1">
+            <Button type="submit" data-testid="auth-send-code" isLoading={loading} className="mt-1">
               {method === 'email'
                 ? lang === 'ru'
                   ? 'Получить ссылку'
@@ -448,6 +452,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               </label>
               <input
                 type="text"
+                data-testid="auth-otp"
                 maxLength={6}
                 className={`w-full text-center text-3xl font-mono tracking-[0.35em] py-4 input-glass ${error ? 'border-amber-300 ring-2 ring-amber-100' : ''} rounded-[20px]`}
                 placeholder="000000"
@@ -466,7 +471,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onLogin, lang }) 
               </p>
             )}
 
-            <Button type="submit" isLoading={loading} disabled={otp.length < 4}>
+            <Button
+              type="submit"
+              data-testid="auth-verify"
+              isLoading={loading}
+              disabled={otp.length < 4}
+            >
               {lang === 'ru' ? 'Подтвердить' : 'Verify'}
             </Button>
 

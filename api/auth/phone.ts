@@ -18,10 +18,16 @@ const ADMISSION_CLOSED_MSG =
 const json = (res: VercelResponse, status: number, payload: any) =>
   res.status(status).json(payload);
 
-// Test phone for YooKassa verification (env: TEST_OTP_PHONE=+79000000000)
+// Test phone OTP bypass (env: TEST_OTP_PHONE=+79000000000).
+// Fail-closed: the bypass is honored ONLY in an explicit E2E run on a
+// non-production Vercel environment. In production it never applies — the test
+// phone falls through to the normal SMS path and cannot authenticate. (BLI-103)
 const TEST_PHONE = process.env.TEST_OTP_PHONE || '+79000000000';
 const TEST_CODE = '000000';
-const isTestPhone = (phone: string) => phone === TEST_PHONE;
+function isE2ETestAuthEnabled(): boolean {
+  return process.env.E2E_TEST_AUTH === '1' && process.env.VERCEL_ENV !== 'production';
+}
+const isTestPhone = (phone: string) => phone === TEST_PHONE && isE2ETestAuthEnabled();
 
 export function normalizePhone(raw: string): string {
   const trimmed = String(raw || '').trim();

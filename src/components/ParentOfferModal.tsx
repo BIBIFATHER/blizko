@@ -76,6 +76,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
       <div className="p-4 bg-white/50 border-t border-stone-100/50 space-y-3">
         <div className="bg-sky-50 border border-sky-100 rounded-xl p-3">
           <Checkbox
+            testId="consent-terms"
             label={text.parentOfferAccept}
             checked={termsAccepted}
             onChange={() => {
@@ -87,6 +88,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
 
         <div className="bg-stone-100 border border-stone-200 rounded-xl p-3">
           <Checkbox
+            testId="consent-pd"
             label={text.parentOfferPrivacyAccept}
             checked={privacyAccepted}
             onChange={() => {
@@ -97,6 +99,7 @@ export const ParentOfferModal: React.FC<ParentOfferModalProps> = ({ onClose, onA
         </div>
 
         <Button
+          data-testid="consent-submit"
           onClick={handleAccept}
           disabled={!termsAccepted || !privacyAccepted || isLoading}
           isLoading={isLoading}

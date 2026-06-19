@@ -68,3 +68,7 @@ nanny-warm-pool-export*.csv
 
 # User document (not product code — never tracked, never deleted by tooling)
 /Публичная оферта Blizko для клиентов.docx
+
+# E2E smoke: persisted auth sessions (secrets) and reports — never commit
+e2e/.auth/
+playwright-report-smoke/

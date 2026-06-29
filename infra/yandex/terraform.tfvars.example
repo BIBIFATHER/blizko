@@ -1,0 +1,25 @@
+# Copy to terraform.tfvars and fill in. terraform.tfvars is gitignored.
+
+# From: yc resource-manager cloud list
+cloud_id = "REPLACE_WITH_CLOUD_ID"
+
+# Current console folder (override if you create a dedicated PoC folder)
+folder_id = "b1g90oug1ndeq5i08hqq"
+
+# Lock SSH to your IP only — find it: curl -s ifconfig.me ; then append /32
+allowed_ssh_cidr = "REPLACE_WITH_YOUR_IP/32"
+
+# Path to the Terraform SA authorized key (see README step 3)
+sa_key_file = "sa-key.json"
+
+# Your SSH public key
+ssh_public_key_file = "~/.ssh/id_ed25519.pub"
+
+# Globally-unique bucket name
+bucket_name = "blizko-poc-synthetic"
+
+# Optional sizing overrides (defaults are grant-conscious)
+# vm_cores         = 2
+# vm_core_fraction = 20
+# vm_memory_gb     = 8
+# vm_disk_gb       = 30

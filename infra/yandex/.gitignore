@@ -1,0 +1,9 @@
+# Never commit state (may contain secrets) or credentials
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+sa-key.json
+*.auto.tfvars
+crash.log

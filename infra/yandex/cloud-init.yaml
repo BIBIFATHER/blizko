@@ -1,0 +1,39 @@
+#cloud-config
+# Blizko PoC — provisions Docker + self-hosted Supabase on first boot.
+# Synthetic-only. This is a PoC bootstrap, NOT a hardened production setup.
+#
+# ⚠️ PG VERSION GAP: the upstream supabase/docker stack ships PostgreSQL 15,
+# while Blizko prod is 17.6. For stack-compatibility PoC this is fine, but the
+# EU→RU dump test (T9) must use a PG-17 image OR YC Managed PostgreSQL 17.x.
+# Decide per docs/architecture/ru-core-yandex-cloud-poc.md before T6/T9.
+
+package_update: true
+package_upgrade: false
+
+packages:
+  - ca-certificates
+  - curl
+  - git
+  - jq
+
+runcmd:
+  # Docker Engine + compose plugin
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" > /etc/apt/sources.list.d/docker.list
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - systemctl enable --now docker
+  - usermod -aG docker ubuntu
+  # Fetch the Supabase self-host compose
+  - git clone --depth 1 https://github.com/supabase/supabase /opt/supabase
+  - cp -r /opt/supabase/docker /opt/supabase-docker
+  - cp /opt/supabase-docker/.env.example /opt/supabase-docker/.env
+  # ⚠️ MANUAL STEP after boot: edit /opt/supabase-docker/.env with strong
+  # POSTGRES_PASSWORD, JWT_SECRET, ANON_KEY, SERVICE_ROLE_KEY (generate fresh),
+  # SMTP/SMS hook (SMSAero), and S3 backend creds for YC Object Storage.
+  # Then: cd /opt/supabase-docker && docker compose up -d
+  - echo "Supabase compose fetched at /opt/supabase-docker. Configure .env then 'docker compose up -d'." > /etc/motd
+
+final_message: "Blizko PoC bootstrap done. SSH in, configure /opt/supabase-docker/.env, then docker compose up -d."

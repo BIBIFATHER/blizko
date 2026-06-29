@@ -26,19 +26,22 @@ This is a **PoC budget, not production**.
 
 - **Fits:** one Compute VM (~2 vCPU / 4–8 GB RAM / 20–30 GB SSD) running
   self-hosted Supabase in Docker; Object Storage (current 13 MB → negligible).
-- **Does NOT fit (later, on prod budget):** Managed PostgreSQL as a separate
-  service (would consume the grant alone), HA / replicas, ФСТЭК-attested segment.
-- **PostgreSQL stays self-hosted inside the Supabase compose**, pinned to
-  **17.x** (prod is 17.6 — dump compatibility is mandatory).
-- **Cost control:** YC budget alert at 10,000 ₽; single VM; stop/destroy the VM
-  at PoC end within the 2-month window; capture the Evidence Pack before teardown.
+- **PostgreSQL — decision pending two checks (console shows Managed PostgreSQL IS
+  available):** prefer **Managed Service for PostgreSQL** (built-in backup/PITR →
+  closes T6/T16 cleanly) IF (a) it offers **PG 17.x** (prod is 17.6 — dump
+  compatibility mandatory; YC often lags a version) AND (b) a burstable (b-class)
+  tier fits ~5,000 ₽/mo. Otherwise **fallback to self-host PG 17 in the Supabase
+  compose** on the VM. Pin 17.x either way.
+- **Does NOT fit (later, prod budget):** HA / replicas, ФСТЭК-attested segment.
+- **Cost control:** YC budget alert at 10,000 ₽; minimal tiers; stop/destroy
+  compute at PoC end within the 2-month window; capture Evidence Pack before teardown.
 
 ## Target stack (Yandex Cloud, synthetic)
 
 | Need | Yandex Cloud service | PoC note |
 |---|---|---|
 | Compute | Compute Cloud VM (Docker) | single VM, self-hosted Supabase (GoTrue, PostgREST, Realtime, Storage API, Kong, Studio) |
-| PostgreSQL | self-hosted in compose, **PG 17.x** | managed PG deferred (budget); pin version for dump compatibility |
+| PostgreSQL | **Managed Service for PostgreSQL** (preferred, if 17.x + burstable fits budget) ELSE self-host PG 17.x in compose | managed gives built-in backup/PITR (T6/T16); **verify YC managed offers 17.x** before choosing |
 | Object Storage | Object Storage (S3 API) | private buckets, **server-issued signed URLs**, object encryption |
 | OTP | SMSAero (RU) | GoTrue Send-SMS hook |
 | Secrets / KMS | Lockbox + KMS | minimal config; no secrets in code/logs (T12) |
@@ -46,6 +49,22 @@ This is a **PoC budget, not production**.
 | Network | Security Groups, TLS, SSH keys, MFA on console | minimal perimeter (T11) |
 | Backup/restore | YC backup + KMS-encrypted | RU, encrypted, restore drill (T6/T16) |
 | Frontend | Vercel — **public static only, no PD** | all PD-API (`api/data`, `api/ai*`, `api/payments/*`, `api/auth/*`, sign-doc, support) run in RU or stay disabled for real users; moving Supabase alone does NOT localize PD if Vercel functions/logs see payload/JWT |
+
+### AI plane (Yandex AI Studio) — strategic note, separate track
+
+YC console shows **Yandex AI Studio** with an **OpenAI-compatible API**, **Vision OCR**,
+SpeechKit, Translate, and models (YandexGPT 5.1 Pro, Qwen3.6, DeepSeek). This is a
+**RU-resident replacement for Google Gemini** and directly addresses the cross-border
+AI gate (RISK-008, `BLIZKO_CROSS_BORDER_AI_GATE_OPEN` / `BLIZKO_SENSITIVE_AI_FLOW_GATE_OPEN`):
+- moving AI inference to YC AI Studio keeps prompts/document images inside the RU
+  contour instead of egressing to Gemini (EU/US);
+- Vision OCR is relevant to nanny-document flows (special category — still gated on ИБ/УЗ);
+- the OpenAI-compatible API means `api/ai*` could switch with minimal code change.
+
+**Not in this PoC scope** (PoC = data-plane stack on synthetic). Tracked as a
+follow-up: evaluate YC AI Studio as the RU AI processor, add to PROCESSOR_REGISTER
+when adopted, keep gates default-closed until legal/ИБ sign-off. Billing for AI
+Studio is not yet bound in the console.
 
 ## T1–T16 acceptance (synthetic) — unchanged from memo §C
 

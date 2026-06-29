@@ -55,6 +55,7 @@ claude-code-templates
 # Supabase CLI local state
 supabase/.temp/
 supabase/.branches/
+supabase/config.toml
 
 # Local tool / test artifacts (never product code)
 .playwright-mcp/

@@ -44,8 +44,16 @@ merged to `main` and deployed to production.
     rollback runbook `scripts/sql/rollback_20260618090000.sql` (applied+reverted
     clean locally), `support_messages` INSERT pinned `TO authenticated`, RISK-009
     scope narrowed (broad `GRANT ALL` surface still open, separate pass).
-  - Deploy gated on: BLI-121 (close signups, still Backlog) + explicit owner
-    prod-DDL approval. Not deployed; no readiness claim.
+  - Codex re-review (2026-06-29) raised 2 more, both addressed: (A) postconditions
+    strengthened on forward (roles, helper search_path + grants) and rollback
+    (support_messages baseline); (B) match-chat provisioning flow risk — filed
+    BLI-134 (P1 pre-deploy blocker), cleaned dead otherUserId upsert in
+    `src/services/matchChat.ts` (now surfaces RLS error), tracked in RISK-009.
+    Re-verified local: clean apply + rollback, regression-guard-ok + matrix-ok,
+    tsc 0 / eslint 0 / 226 tests / build ok. NOTE: a final Codex verdict on these
+    last fixes is pending — Codex hit its subscription usage limit (reset ~Jul 29).
+  - Deploy gated on: BLI-121 (close signups, Backlog), BLI-134 (provisioning),
+    and explicit owner prod-DDL approval. Not deployed; no readiness claim.
 - **Audit findings (2026-06-17):** PostHog NOT loaded (ghost). Live loaders:
   Cloudflare Insights, Google Fonts, Unsplash (all IP egress). **C: Supabase
   `disable_signup=false` — entry OPEN at project config; only 3 owner accounts

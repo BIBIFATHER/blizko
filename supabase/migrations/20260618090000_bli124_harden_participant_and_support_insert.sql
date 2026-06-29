@@ -115,6 +115,10 @@ WITH CHECK (
 
 -- ── Postconditions (exact, not IF NOT EXISTS) ────────────────────────────────
 DO $$
+DECLARE
+  fn_oid oid;
+  fn_secdef boolean;
+  fn_config text[];
 BEGIN
   -- chat_participants INSERT must no longer be the bare self-check.
   IF EXISTS (
@@ -126,24 +130,50 @@ BEGIN
     RAISE EXCEPTION 'participants_insert_v2 still has the weak bare self-check';
   END IF;
 
-  -- support_messages INSERT must reference sender_type pinning.
+  -- chat_participants INSERT must target authenticated only.
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'chat_participants'
+      AND policyname = 'participants_insert_v2' AND cmd = 'INSERT'
+      AND roles = '{authenticated}'
+  ) THEN
+    RAISE EXCEPTION 'participants_insert_v2 is not scoped TO authenticated';
+  END IF;
+
+  -- support_messages INSERT must pin sender_type + sender_id and target authenticated.
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies
     WHERE schemaname = 'public' AND tablename = 'support_messages'
       AND policyname = 'messages_insert' AND cmd = 'INSERT'
-      AND with_check LIKE '%sender_type%'
+      AND with_check LIKE '%sender_type%' AND with_check LIKE '%auth.uid()%'
+      AND roles = '{authenticated}'
   ) THEN
-    RAISE EXCEPTION 'messages_insert did not pin sender_type';
+    RAISE EXCEPTION 'messages_insert did not pin sender_type/sender_id TO authenticated';
   END IF;
 
-  -- Helper must exist and be SECURITY DEFINER.
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_proc p
-    JOIN pg_namespace n ON n.oid = p.pronamespace
-    WHERE n.nspname = 'public' AND p.proname = 'can_current_user_join_thread'
-      AND p.prosecdef
-  ) THEN
-    RAISE EXCEPTION 'can_current_user_join_thread missing or not SECURITY DEFINER';
+  -- Helper must exist, be SECURITY DEFINER, set empty search_path, and have
+  -- least-privilege grants (no PUBLIC execute, authenticated execute).
+  SELECT p.oid, p.prosecdef, p.proconfig
+    INTO fn_oid, fn_secdef, fn_config
+  FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'public' AND p.proname = 'can_current_user_join_thread'
+    AND pg_get_function_identity_arguments(p.oid) = 'p_thread_id uuid, p_role text';
+
+  IF fn_oid IS NULL THEN
+    RAISE EXCEPTION 'can_current_user_join_thread(uuid, text) missing';
+  END IF;
+  IF NOT fn_secdef THEN
+    RAISE EXCEPTION 'can_current_user_join_thread is not SECURITY DEFINER';
+  END IF;
+  IF fn_config IS NULL
+     OR NOT ('search_path=' = ANY(fn_config) OR 'search_path=""' = ANY(fn_config)) THEN
+    RAISE EXCEPTION 'can_current_user_join_thread must SET search_path = '''' (got %)', fn_config;
+  END IF;
+  IF has_function_privilege('public', fn_oid, 'EXECUTE') THEN
+    RAISE EXCEPTION 'PUBLIC must NOT have EXECUTE on can_current_user_join_thread';
+  END IF;
+  IF NOT has_function_privilege('authenticated', fn_oid, 'EXECUTE') THEN
+    RAISE EXCEPTION 'authenticated must have EXECUTE on can_current_user_join_thread';
   END IF;
 END $$;
 

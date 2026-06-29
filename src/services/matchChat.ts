@@ -18,9 +18,30 @@ export type MatchMessage = {
   created_at: string;
 };
 
-const ensureParticipant = async (threadId: string, userId: string, role: 'family' | 'nanny') => {
-  if (!supabase) return;
-  await supabase.from('chat_participants').upsert({ thread_id: threadId, user_id: userId, role });
+// A client may only add ITSELF as a participant, and only to a thread it
+// legitimately belongs to (BLI-124 / RISK-009: participants_insert_v2 +
+// can_current_user_join_thread). Adding the counterparty is intentionally NOT
+// attempted here — the other side self-joins on its own first open, authorized
+// by chat_threads.family_id / nanny_id. Surface the RLS failure instead of
+// swallowing it (DB protocol Phase 3), without logging the user id.
+const ensureSelfParticipant = async (
+  threadId: string,
+  userId: string,
+  role: 'family' | 'nanny',
+): Promise<boolean> => {
+  if (!supabase) return false;
+  const { error } = await supabase
+    .from('chat_participants')
+    .upsert({ thread_id: threadId, user_id: userId, role });
+  if (error) {
+    console.warn('[matchChat] self-participant join denied', {
+      threadId,
+      role,
+      code: error.code,
+    });
+    return false;
+  }
+  return true;
 };
 
 export async function getOrCreateMatchThread(params: {
@@ -41,17 +62,16 @@ export async function getOrCreateMatchThread(params: {
     .maybeSingle();
 
   if (existing) {
-    await ensureParticipant(existing.id, currentUserId, currentUserRole);
-    if (otherUserId) {
-      await ensureParticipant(
-        existing.id,
-        otherUserId,
-        currentUserRole === 'family' ? 'nanny' : 'family',
-      );
-    }
+    await ensureSelfParticipant(existing.id, currentUserId, currentUserRole);
     return existing as MatchThread;
   }
 
+  // ⚠️ BLI-134 (pre-deploy blocker for BLI-124): callers currently do not pass a
+  // verified otherUserId auth uid, so the counterparty id is NULL here. After the
+  // BLI-124 hardening migration, a thread created with nanny_id=NULL blocks the
+  // nanny's self-join (can_current_user_join_thread requires nanny_id=auth.uid()).
+  // Provisioning must set BOTH family_id and nanny_id to correct auth uids
+  // (entity id != auth.users.id) before that migration is deployed / real users open.
   const familyId = currentUserRole === 'family' ? currentUserId : otherUserId || currentUserId;
   const nannyId = currentUserRole === 'nanny' ? currentUserId : otherUserId || null;
 
@@ -63,14 +83,7 @@ export async function getOrCreateMatchThread(params: {
 
   if (!created) return null;
 
-  await ensureParticipant(created.id, currentUserId, currentUserRole);
-  if (otherUserId) {
-    await ensureParticipant(
-      created.id,
-      otherUserId,
-      currentUserRole === 'family' ? 'nanny' : 'family',
-    );
-  }
+  await ensureSelfParticipant(created.id, currentUserId, currentUserRole);
 
   return created as MatchThread;
 }

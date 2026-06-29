@@ -56,6 +56,18 @@ BEGIN
     RAISE EXCEPTION 'rollback: participants_insert_v2 not restored to baseline';
   END IF;
 
+  -- support_messages must be back to the baseline PUBLIC-target, no sender pin.
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname='public' AND tablename='support_messages'
+      AND policyname='messages_insert' AND cmd='INSERT'
+      AND roles='{public}'
+      AND with_check LIKE '%support_tickets%'
+      AND with_check NOT LIKE '%sender_type%'
+  ) THEN
+    RAISE EXCEPTION 'rollback: messages_insert not restored to baseline PUBLIC target';
+  END IF;
+
   IF EXISTS (
     SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
     WHERE n.nspname='public' AND p.proname='can_current_user_join_thread'

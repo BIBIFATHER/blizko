@@ -137,3 +137,11 @@ merged to `main` and deployed to production.
    template before any readiness claim.
 5. Next autonomous hardening step: complete BLI-124 DB deployment path only
    after owner approval and DB protocol gating.
+6. Phase 3 direction changed 2026-06-30: **Yandex Cloud** (10,000 ₽ / 2-mo grant)
+   replaces Timeweb as the RU data-plane PoC target. Plan:
+   `docs/architecture/ru-core-yandex-cloud-poc.md`. **Conditional Go — synthetic
+   PoC only** (single VM, self-host Supabase + PG 17.x, Object Storage, within
+   grant); **No-Go for real users / production** until BLI-121, BLI-124+BLI-134,
+   legal/privacy/RKN (BLI-123), and ИБ УЗ assessment (children/documents → high
+   УЗ + ФСТЭК). YC marked `planned / not active` in PROCESSOR_REGISTER (no real
+   PD yet). RISK-006 updated.

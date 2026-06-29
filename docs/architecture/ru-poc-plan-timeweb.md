@@ -1,5 +1,10 @@
 # RU data-plane PoC plan — Timeweb (Phase 3) — DRAFT
 
+> ⚠️ **SUPERSEDED 2026-06-30** by `docs/architecture/ru-core-yandex-cloud-poc.md`
+> after Yandex Cloud approved a 10,000 ₽ / 2-month grant. Timeweb is no longer the
+> PoC target; the T0–T16 acceptance matrix below is reused on Yandex Cloud. Kept
+> for history and the test matrix. See RISK-006.
+
 Дата: 2026-06-18. **План для ревью владельца.** Операционализирует memo §C
 (T1-T10) под выбранного провайдера **Timeweb** для пилота на ОБЫЧНЫХ данных.
 

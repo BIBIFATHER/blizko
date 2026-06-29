@@ -52,7 +52,7 @@ WITH CHECK (
 );
 
 DROP POLICY IF EXISTS "messages_insert" ON public.support_messages;
-CREATE POLICY "messages_insert" ON public.support_messages FOR INSERT
+CREATE POLICY "messages_insert" ON public.support_messages FOR INSERT TO authenticated
 WITH CHECK (
   auth.role() = 'service_role'
   OR (

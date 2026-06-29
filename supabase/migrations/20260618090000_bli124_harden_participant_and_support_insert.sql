@@ -2,6 +2,9 @@
 --
 -- DO NOT APPLY before BLI-121 (close open signups) is done + owner approval.
 -- Apply only via `supabase db push --linked` per .context/CODEX_DB_CHANGE_PROTOCOL.md.
+-- Rollback / forward-fix runbook: scripts/sql/rollback_20260618090000.sql
+-- (reverts both policies to baseline + drops the helper; prefer a forward dated
+-- migration over a full revert so the two closed exploit paths stay closed).
 -- Synthetic-only now (owner accounts only) → not actively exploited, but this
 -- closes two real prod RLS gaps that must be shut before any real users.
 --
@@ -95,6 +98,7 @@ DROP POLICY IF EXISTS "messages_insert" ON public.support_messages;
 CREATE POLICY "messages_insert"
 ON public.support_messages
 FOR INSERT
+TO authenticated
 WITH CHECK (
   auth.role() = 'service_role'
   OR (

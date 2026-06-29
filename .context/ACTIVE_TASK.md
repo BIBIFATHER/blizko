@@ -32,9 +32,20 @@ merged to `main` and deployed to production.
   - **#37** live-PD audit (A'+C) + CSP cleanup (`4f397d9`) — prod CSP verified
     clean of Yandex/doubleclick. See `docs/compliance/live-pd-audit-2026-06-17.md`.
 - **`main` HEAD `4f397d9`.**
-- BLI-124 hardening package now staged as checkpoint commit `ca3e62a`
-  (`Add RLS matrix for chat participant hardening`) with a passing RLS matrix
-  for `chat_participants` + `support_messages`.
+- BLI-124 hardening package staged (commits `df688fe`/`ca3e62a` + 2026-06-29
+  Codex-condition fixes). Status: `code ready` · `migration pending` ·
+  `blocked - owner approval required`. Migration `20260618090000` closes the two
+  INSERT exploit paths (participant self-join + support sender spoof).
+  - Phase-4 Local DONE (2026-06-29, owner started Docker): clean apply of all 8
+    migrations on fresh local DB; `regression-guard-ok` + `matrix-ok` (14 role
+    scenarios) via `docker exec psql` against the applied schema.
+  - Read-only prod re-verify: both gaps still live; helper not yet applied.
+  - Codex review: `Confirmed with conditions` → all 3 conditions CLOSED:
+    rollback runbook `scripts/sql/rollback_20260618090000.sql` (applied+reverted
+    clean locally), `support_messages` INSERT pinned `TO authenticated`, RISK-009
+    scope narrowed (broad `GRANT ALL` surface still open, separate pass).
+  - Deploy gated on: BLI-121 (close signups, still Backlog) + explicit owner
+    prod-DDL approval. Not deployed; no readiness claim.
 - **Audit findings (2026-06-17):** PostHog NOT loaded (ghost). Live loaders:
   Cloudflare Insights, Google Fonts, Unsplash (all IP egress). **C: Supabase
   `disable_signup=false` — entry OPEN at project config; only 3 owner accounts

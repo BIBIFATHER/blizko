@@ -52,6 +52,12 @@ merged to `main` and deployed to production.
     Re-verified local: clean apply + rollback, regression-guard-ok + matrix-ok,
     tsc 0 / eslint 0 / 226 tests / build ok. NOTE: a final Codex verdict on these
     last fixes is pending — Codex hit its subscription usage limit (reset ~Jul 29).
+  - Pre-deploy frontend-compat checks (2026-06-30): **supportEngine OK** —
+    `sendUserMessage` sends `sender_type='user'` + `sender_id=user.id` (=auth.uid,
+    confirmed via support_tickets ownership RLS) on an owned ticket → matches the
+    hardened policy, no change needed, error surfaced. **matchChat** was the only
+    real regression (nanny_id=null → BLI-134). PR #45 = this branch
+    `feat/bli-124-rls-hardening` (open; mixes BLI-124 + YC docs — note at merge).
   - Deploy gated on: BLI-121 (close signups, Backlog), BLI-134 (provisioning),
     and explicit owner prod-DDL approval. Not deployed; no readiness claim.
 - **Audit findings (2026-06-17):** PostHog NOT loaded (ghost). Live loaders:

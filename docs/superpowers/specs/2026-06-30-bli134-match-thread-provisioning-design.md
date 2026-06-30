@@ -81,3 +81,26 @@ Codex review before deploy. Owner approval for prod DDL/deploy.
 
 - Endpoint/client: revert commit (client falls back to broken-but-current behavior; acceptable pre-real-users).
 - Migration: `DROP INDEX chat_threads_match_uniq;` (runbook).
+
+## Self-adversarial review (2026-06-30 — does NOT replace the Codex gate, which is blocked on Codex usage limit until ~Jul 30)
+
+1. **Booking status:** `bookings.status` ∈ {pending,confirmed,active,completed,cancelled}.
+   Decision: status does NOT block provisioning — chat is participant communication,
+   allowed regardless of status (incl. cancelled, so parties can still talk). Product
+   call; revisit if chat must close on cancel.
+2. **Idempotency / ON CONFLICT:** Postgres supports `ON CONFLICT` on a **partial**
+   unique index via conflict-target inference (`ON CONFLICT (match_id) WHERE
+   type='match'`). Valid; second concurrent open conflicts → return existing thread.
+3. **Support threads NOT affected:** support uses `support_tickets` /
+   `support_messages` (separate tables), NOT `chat_threads`. `chat_threads` is
+   match-only in practice → removing the client insert from `matchChat` does not
+   touch support.
+4. **Null guard:** `bookings.parent_id` and `nanny_id` are BOTH nullable. Endpoint
+   MUST reject (422) if either is null — cannot provision a match thread without
+   both auth uids.
+5. **Confused-deputy:** caller passing another booking's id is blocked by the
+   `uid ∈ {parent_id, nanny_id}` authorization (403). service_role read is
+   server-only; the client never receives the counterparty uid.
+
+Open for Codex: deploy-order edge cases, any RLS bypass via the endpoint, whether
+422-null-guard should instead be a curator-side fix, test completeness.

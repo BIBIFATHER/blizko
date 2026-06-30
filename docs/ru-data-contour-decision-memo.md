@@ -688,6 +688,33 @@ Owner:
 - Развилка prod: если **AI на документах (OCR/LLM)** критичен → Yandex моно-вендор;
   если важнее **цена data-plane** → Timeweb (БД/Storage) + Yandex AI Studio как egress-AI (минус: 2 вендора = 2 поручения на обработку).
 
+### Exit-path Yandex → Timeweb — реалистичная оценка (Codex review 2026-06-30: «Rejected as written»)
+
+Первый черновой вывод («переезд = дни, low lock-in») был СЛИШКОМ оптимистичен.
+Codex (подтверждено кодом) показал: lock-in **moderate**, и «easy» только ПОСЛЕ
+закрытия гейтов ниже. Provider-neutral архитектура (self-host Supabase) помогает,
+но не отменяет их.
+
+| Область | Почему не «1:1» | Гейт перед переездом |
+|---|---|---|
+| **AI** | `api/ai.ts:112` + `api/ai-support.ts:206` — хардкод Gemini (`_gemini.js`, `GEMINI_API_KEY`); `aiGateway.ts` лишь зовёт `/api/ai`. Абстракции провайдера НЕТ → смена на YC AI Studio = код, не env | сначала сделать provider-neutral AI gateway |
+| **PostgreSQL** | cloud-init клонирует upstream `supabase/docker` = PG 15; прод 17.6. Дамп 17→15 несовместим | PG17 hard-gate (managed PG17 или кастомный образ) до T6/T9 |
+| **Auth** | bootstrap генерит свежие JWT/anon/service keys → сессии инвалидируются; нужен export `auth.users`/identities | стратегия: форс-релогин по умолчанию ИЛИ доказанная переносимость ключей/refresh |
+| **Storage** | `storage.buckets`/`objects`, public-флаги, политики, пути, MIME-лимиты — в SQL-метаданных, не только объекты | мигрировать метаданные + checksum + тест signed-URL owner-auth, не только `rclone` |
+| **Realtime** | publication membership не попадает в обычный дамп (`00000000000001_realtime_publication.sql`) | реплей publication + проверка подписок в cutover |
+| **API/Vercel-граница** | перенос БД не локализует ПДн, если Vercel-функции/логи видят payload/JWT (memo §3.2) | все PD-API в РФ или явно отключены |
+| **Backups/deletion** | 152-ФЗ обязательства по удалению + переносимость бэкапов | EU read-only retention → checksum → удаление EU |
+| **BLI-134** | `nanny_id=NULL` провижининг переносится с багом | остаётся pre-deploy/pre-real-user гейтом независимо от провайдера |
+
+**Cutover-runbook (минимум):** freeze writes → export Auth/DB/Storage-метаданные+объекты
+→ restore → checksum → форс-реавторизация при необходимости → smoke Auth/RLS/Storage/
+Realtime/payments → EU read-only на срок → удаление EU.
+
+**Скорректированный вердикт:** moderate lock-in. «Легко» — ТОЛЬКО после PG17-parity,
+Auth-reauth/ключей, Storage-метаданных, Realtime-replay, RU-API-границы,
+deletion/backups и AI-gateway абстракции. Грант сам по себе lock-in не создаёт
+(PoC синтетический на self-host; артефакты провайдер-нейтральны).
+
 Источники (2026-06-30): timeweb.cloud/services/postgresql (PG 14–18),
 it-world.ru (Timeweb УЗ-1, приказ ФСТЭК №21, янв-2026), Yandex Cloud console
 inventory (AI Studio, Security Deck, KMS/Lockbox/Audit Trails).

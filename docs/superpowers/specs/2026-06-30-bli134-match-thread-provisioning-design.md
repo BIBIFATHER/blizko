@@ -155,3 +155,49 @@ participant-insert failure surfaces to UI; full BLI-124 family/nanny/outsider
 matrix after provisioning.
 
 **Status:** design corrected; needs Codex re-review before implementation.
+
+## Codex design review #2 (2026-06-30): REJECTED on rollout safety — folded in
+
+Architecture confirmed correct (server-authoritative provisioning). Remaining issues
+are rollout-safety, not direction. Resolutions:
+
+### R1 — BLI-138 must fully precede a callable BLI-134 (High)
+- BLI-134 endpoint ships behind a **server-side default-OFF feature gate**; it is NOT
+  enabled until BLI-138 (booking integrity) is fully deployed + verified. A dormant
+  endpoint with no gate is still callable by booking participants → would provision
+  from attacker-modifiable authority. Gate is the control.
+
+### R2 — Close direct thread writes before/atomically with repair+index (High)
+- The service_role-only `chat_threads` INSERT lockdown (C1) must land **before or in
+  the same window as** data repair + unique-index creation; then reconcile AGAIN
+  after write-closure. Otherwise old clients create malformed threads in the gap
+  (unique index stops dup match_id but not orphan/identity-mismatch rows).
+
+### R3 — Booking participant lifecycle (Medium)
+- Define explicitly: booking participants are IMMUTABLE after creation, OR
+  reassignment is transactional + audited and reconciles the thread. "Immutable to
+  participants" alone is insufficient (curator reassignment could commit stale
+  participants). Owned by BLI-138.
+
+### R4 — Forward-fix, not rollback (Medium)
+- After direct INSERT is disabled, reverting the client does NOT restore behavior
+  (thread creation fails entirely). Rollback strategy = re-enable the feature gate
+  off / forward-fix, never re-open authenticated thread INSERT.
+
+### R5 — Old-client fail-closed (Medium)
+- Cached web bundles + installed Capacitor apps keep doing direct INSERT and will
+  fail after lockdown. Define explicit fail-closed UX + min-version/upgrade handling;
+  test both new and existing chats on an old client.
+
+### R6 — Explicit threads_insert_v2 replacement migration (Low)
+- The exclusivity change is currently design-only; the committed BLI-124 migration
+  touches only chat_participants + support_messages. Add a dedicated migration that
+  replaces `threads_insert_v2` with service_role-only INSERT, with exact policy/grant
+  postconditions + rollback/forward-fix runbook.
+
+### R7 — Re-verify prod "0 match threads" (Low)
+- Re-check live count immediately before repair/index work (read-only).
+
+**Status after #2:** direction Confirmed; 2 maker/checker cycles reached (stop-rule
+→ owner decision). NOT starting implementation. Awaiting owner: final round-3 verify
+vs accept-with-conditions → writing-plans. BLI-138 is a hard precedent (blocks BLI-134).

@@ -104,3 +104,54 @@ Codex review before deploy. Owner approval for prod DDL/deploy.
 
 Open for Codex: deploy-order edge cases, any RLS bypass via the endpoint, whether
 422-null-guard should instead be a curator-side fix, test completeness.
+
+## Codex design review #1 (2026-06-30): REJECTED — corrections folded in below
+
+Codex (verdict Rejected, all findings accepted) required the following before
+implementation. Design updated accordingly:
+
+### C1 — Exclusivity (was a hole)
+The endpoint is pointless if the client can still create threads directly.
+- BLI-124 migration (or a paired migration) MUST replace `threads_insert_v2`
+  (currently `TO authenticated WITH CHECK auth.uid()=family_id`) with
+  **service_role-only** INSERT on `chat_threads`. Client never inserts threads.
+- Endpoint: validate `bookingId` is a UUID; enforce method (POST only), CORS,
+  rate-limit, and the synthetic-admission gate.
+
+### C2 — Booking integrity is the root cause (precondition, separate task)
+Curator booking creation uses `nanny.userId ?? nanny.id` / `requesterId ?? id`
+(`AdminCuratorTab.tsx:94-95`) — entity-id fallback; `parent_id`/`nanny_id` nullable;
+local-only curator bookings may report success without sync.
+- Precondition task (filed separately): require REAL auth `userId`/`requesterId`;
+  do not report success for local-only bookings; participant assignment is
+  server/curator-controlled and immutable to participants; migrate
+  `bookings.parent_id`/`nanny_id` to `NOT NULL` after data cleanup.
+- The endpoint keeps the 422 null-guard as defense-in-depth, NOT as the fix.
+
+### C3 — Atomic conflict semantics (no identity overwrite)
+- Use native atomic SQL with the partial-index predicate explicit; the existing
+  row must MATCH the booking's participants. On mismatch return **409** — never
+  overwrite `family_id`/`nanny_id`. (Upsert that overwrites identities is forbidden.)
+
+### C4 — Data repair BEFORE the unique index
+- Find duplicate match_ids, reconcile all match threads against bookings, find
+  orphan/non-UUID match_ids; repair; THEN create + verify the partial unique index.
+  (Prod = 0 match threads → no-op, but the repair/verify step is mandatory.)
+
+### C5 — Safer staged rollout (replaces the 3-step order above)
+1. Deploy dormant endpoint.
+2. Run verified data repair.
+3. Add + verify unique index.
+4. Switch client to the endpoint.
+5. Disable direct client INSERT (service_role-only policy).
+6. Concurrent role-correct smoke tests.
+7. Apply BLI-124 hardening.
+
+### C6 — Extended tests
+Concurrent parent+nanny provisioning → one thread id; direct client INSERT denied;
+conflicting existing identities → 409; participants cannot reassign booking
+parent/nanny; null/orphan/malformed booking; cached/old-client behavior;
+participant-insert failure surfaces to UI; full BLI-124 family/nanny/outsider
+matrix after provisioning.
+
+**Status:** design corrected; needs Codex re-review before implementation.

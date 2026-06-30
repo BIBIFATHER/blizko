@@ -13,6 +13,10 @@ Codex should behave as a strong execution partner:
 - proposes model or research escalation when needed
 - keeps answers short and operational
 
+The shared Claude/Codex maker-checker model is defined in
+`.context/AI_OPERATING_MODEL.md`. Codex is responsible for evidence/risk control
+at required gates, not generic second opinions.
+
 ## Session Start
 
 Before meaningful work, read:
@@ -27,9 +31,11 @@ Before meaningful work, read:
 8. `.context/JOURNAL.md`
 9. `.context/CHANGELOG.md`
 10. `.context/AI_STACK.md`
-11. `.agents/workflows/model-orchestrator.md`
-12. `.agents/context/AGENT_SKILL_MAP.md`
-13. `.context/AGENT_COORDINATION.md`
+11. `.context/AI_OPERATING_MODEL.md`
+12. `.context/RISK_REGISTER.md`
+13. `.agents/workflows/model-orchestrator.md`
+14. `.agents/context/AGENT_SKILL_MAP.md`
+15. `.context/AGENT_COORDINATION.md`
 
 Before review work, also read:
 
@@ -83,6 +89,29 @@ silently. Keep the next change in a scoped set, and before starting a new task
 create a scoped checkpoint commit when the previous task is complete. Never use
 `git add .`; stage explicit paths only. If a task ends with remaining dirty
 files, report exactly which files were intentionally left unstaged and why.
+
+## Evidence Discipline
+
+For Auth, RLS, database, personal-data, analytics, payments, production deploy,
+legal/security, and release-readiness tasks, final status requires an evidence
+pack. Use `.context/EVIDENCE_PACK_TEMPLATE.md` unless the task is small enough
+for a compact equivalent.
+
+Codex findings should be structured as:
+
+```text
+[severity] claim
+Evidence: ...
+Risk: ...
+Required fix / acceptance: ...
+```
+
+Severity levels:
+
+- `P0 Blocker`: must not merge, deploy, open users, or claim readiness.
+- `P1 Must fix`: must be fixed before closing the task.
+- `P2 Follow-up`: track in Linear or `.context/ACTIVE_TASK.md`.
+- `P3 Note`: observation only.
 
 ## Task Routing
 

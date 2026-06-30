@@ -11,6 +11,16 @@ on synthetic data only**. We do not strip or hide product functionality — we k
 the full app working for completion and testing, and we close the contour so that
 no real user or real personal data can enter it.
 
+> **Caveat (audit 2026-06-17):** the closed contour is enforced by app-level
+> guards (`BLIZKO_SYNTHETIC_ONLY`, allow-listed test identities, server admission
+> gate) — these are ON. But the contour is NOT yet fully closed at the
+> infrastructure level: Supabase project `disable_signup=false`, so a stranger
+> can still create an `auth.users` row via email signup (client/server guards
+> block authenticated actions but not the signup write), and Cloudflare Web
+> Analytics still collects live visitor RUM. "No real user/PD can enter" becomes
+> literally true only after BLI-121 (disable signups + Cloudflare Analytics OFF,
+> owner dashboard) + RISK-002. Until then, state the caveated wording.
+
 ## Principles
 
 1. **Keep all features.** Forms, photo, documents, video, AI, matching, chat,

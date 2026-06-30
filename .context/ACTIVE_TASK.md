@@ -8,7 +8,7 @@ have changed.
 
 `MERGED + DEPLOYED` (four BLI-110/116 egress/PII slices shipped 2026-06-16/17)
 
-Last updated: 2026-06-17 (Europe/Moscow)
+Last updated: 2026-06-18 (Europe/Moscow)
 
 ## Objective
 
@@ -32,6 +32,34 @@ merged to `main` and deployed to production.
   - **#37** live-PD audit (A'+C) + CSP cleanup (`4f397d9`) — prod CSP verified
     clean of Yandex/doubleclick. See `docs/compliance/live-pd-audit-2026-06-17.md`.
 - **`main` HEAD `4f397d9`.**
+- BLI-124 hardening package staged (commits `df688fe`/`ca3e62a` + 2026-06-29
+  Codex-condition fixes). Status: `code ready` · `migration pending` ·
+  `blocked - owner approval required`. Migration `20260618090000` closes the two
+  INSERT exploit paths (participant self-join + support sender spoof).
+  - Phase-4 Local DONE (2026-06-29, owner started Docker): clean apply of all 8
+    migrations on fresh local DB; `regression-guard-ok` + `matrix-ok` (14 role
+    scenarios) via `docker exec psql` against the applied schema.
+  - Read-only prod re-verify: both gaps still live; helper not yet applied.
+  - Codex review: `Confirmed with conditions` → all 3 conditions CLOSED:
+    rollback runbook `scripts/sql/rollback_20260618090000.sql` (applied+reverted
+    clean locally), `support_messages` INSERT pinned `TO authenticated`, RISK-009
+    scope narrowed (broad `GRANT ALL` surface still open, separate pass).
+  - Codex re-review (2026-06-29) raised 2 more, both addressed: (A) postconditions
+    strengthened on forward (roles, helper search_path + grants) and rollback
+    (support_messages baseline); (B) match-chat provisioning flow risk — filed
+    BLI-134 (P1 pre-deploy blocker), cleaned dead otherUserId upsert in
+    `src/services/matchChat.ts` (now surfaces RLS error), tracked in RISK-009.
+    Re-verified local: clean apply + rollback, regression-guard-ok + matrix-ok,
+    tsc 0 / eslint 0 / 226 tests / build ok. NOTE: a final Codex verdict on these
+    last fixes is pending — Codex hit its subscription usage limit (reset ~Jul 29).
+  - Pre-deploy frontend-compat checks (2026-06-30): **supportEngine OK** —
+    `sendUserMessage` sends `sender_type='user'` + `sender_id=user.id` (=auth.uid,
+    confirmed via support_tickets ownership RLS) on an owned ticket → matches the
+    hardened policy, no change needed, error surfaced. **matchChat** was the only
+    real regression (nanny_id=null → BLI-134). PR #45 = this branch
+    `feat/bli-124-rls-hardening` (open; mixes BLI-124 + YC docs — note at merge).
+  - Deploy gated on: BLI-121 (close signups, Backlog), BLI-134 (provisioning),
+    and explicit owner prod-DDL approval. Not deployed; no readiness claim.
 - **Audit findings (2026-06-17):** PostHog NOT loaded (ghost). Live loaders:
   Cloudflare Insights, Google Fonts, Unsplash (all IP egress). **C: Supabase
   `disable_signup=false` — entry OPEN at project config; only 3 owner accounts
@@ -47,6 +75,12 @@ merged to `main` and deployed to production.
 - Release gate PASSED before each merge; Vercel deploys success; `www.blizko.app` 200.
 - Contour: synthetic-only ON, egress/PII gates default-closed. NOTE: closed-entry
   claim is FALSE until the owner closes open signups.
+- AI operating model now formalized:
+  - `.context/AI_OPERATING_MODEL.md` defines Claude as lead executor and Codex
+    as evidence/risk controller.
+  - `.context/EVIDENCE_PACK_TEMPLATE.md` defines required proof before
+    readiness claims on risk gates.
+  - `.context/RISK_REGISTER.md` tracks long-lived launch/legal/security risks.
 - Open follow-ups (no deadline): geocode auth/jurisdiction for the public path
   (legal Conditional-Go, needs counsel); analytics per-event allowlist edge
   follow-up = none (shipped); PostHog autocapture / Yandex Metrica minimization;
@@ -98,8 +132,22 @@ merged to `main` and deployed to production.
 
 ## Next Steps
 
-1. No open execution task. Both slices merged + deployed.
-2. Open follow-ups (no deadline): BLI-116 analytics allowlist; geocode
-   legal-acceptance before opening `BLIZKO_GEOCODE_EGRESS_GATE_OPEN`.
-3. Keep two-sided Claude/Codex review at risk gates; verify findings
-   independently. Deploy only via release-gate PASS + owner approval.
+1. Owner action: close Supabase open signups (`disable_signup=true`) and disable
+   or explicitly accept/document Cloudflare Web Analytics (BLI-121).
+2. Agent action after owner confirmation: verify Auth config, user inventory,
+   session behavior, and update `.context/RISK_REGISTER.md` / compliance
+   registers.
+3. Next autonomous work: B legal draft package (BLI-123) after current factual
+   processing is confirmed.
+4. Keep two-sided Claude/Codex review at risk gates; use the evidence pack
+   template before any readiness claim.
+5. Next autonomous hardening step: complete BLI-124 DB deployment path only
+   after owner approval and DB protocol gating.
+6. Phase 3 direction changed 2026-06-30: **Yandex Cloud** (10,000 ₽ / 2-mo grant)
+   replaces Timeweb as the RU data-plane PoC target. Plan:
+   `docs/architecture/ru-core-yandex-cloud-poc.md`. **Conditional Go — synthetic
+   PoC only** (single VM, self-host Supabase + PG 17.x, Object Storage, within
+   grant); **No-Go for real users / production** until BLI-121, BLI-124+BLI-134,
+   legal/privacy/RKN (BLI-123), and ИБ УЗ assessment (children/documents → high
+   УЗ + ФСТЭК). YC marked `planned / not active` in PROCESSOR_REGISTER (no real
+   PD yet). RISK-006 updated.

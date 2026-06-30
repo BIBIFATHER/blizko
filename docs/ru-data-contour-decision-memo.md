@@ -646,6 +646,95 @@ Owner:
 - `docs/adr/001-rf-availability.md` — отдельная проблема доступности из РФ;
 - `infra/nginx-rf-proxy.conf` — решение доступности, не локализации.
 
+## Timeweb vs Yandex Cloud — обновлённое сравнение (2026-06-30)
+
+Контекст: Yandex Cloud выдал грант 10 000 ₽ / 2 мес (account-447). Phase 3 PoC
+развёрнут в сторону Yandex (RISK-006, `ru-core-yandex-cloud-poc.md`, BLI-135).
+Ниже — фактическая сверка возможностей для prod-решения после PoC. Поправка к
+прежнему тезису «Timeweb = только цена»: **Timeweb тоже имеет УЗ-1**.
+
+| Возможность | Timeweb Cloud | Yandex Cloud |
+|---|---|---|
+| Managed PostgreSQL | **14–18** (вкл. 17/18 → совместим с прод 17.6); от 162₽/мес, бэкапы 6₽/GB, реплики, TLS by default | есть; точную версию проверить (бывает отстаёт) |
+| УЗ-1 / ФСТЭК (спецкатегории: дети, документы, биометрия) | ✅ подтверждён янв-2026 (приказ ФСТЭК №21, инфра-уровень; Москва/СПб/Новосиб) | ✅ аттестат ИСПДн + аттестованный сегмент (Security Deck) |
+| AI в РФ (OCR/LLM) | AI Agents + AI Gateway (скромнее) | **AI Studio: OpenAI-совм API + Vision OCR + модели** — снимает cross-border AI (RISK-008), OCR под документы нянь |
+| Security/compliance-tooling | DDoS, WAF | **KMS, Lockbox, Audit Trails, Security Deck, SIEM** (богаче) |
+| S3 Object Storage + signed URLs | ✅ | ✅ |
+| Цена | дешевле (managed PG от 162₽/мес) | дороже — но сейчас грант 10k |
+
+### Цены (2026-06-30, эквивалент 2 vCPU / 8 ГБ; курс ~90-95₽/$, динамично — сверять калькулятором)
+
+| Ресурс | Timeweb | Yandex |
+|---|---|---|
+| Managed PG 2/4 | 1 580 ₽/мес | ~$30 ≈ 2 800 ₽ |
+| Managed PG 4/8 | 3 160 ₽/мес | ~$60+ ≈ 5 500+ ₽ |
+| Managed PG 8/32 | ~6 000 ₽ | $253 ≈ 23 000 ₽ |
+| Compute VM 2/8 | ~900–1 300 ₽/мес | ~$32–40 ≈ 3 000–3 800 ₽ (burstable дешевле) |
+| Object Storage | 0.6 ₽/ГБ | ~1.5–2 ₽/ГБ |
+
+- Полная конфигурация (1 VM 2/8 + managed PG + ~30 ГБ): **Timeweb ~3 000–4 500 ₽/мес** vs **Yandex ~7 000–9 000 ₽/мес** без гранта.
+- Наш PoC (self-host Supabase на 1 VM, без managed PG): Timeweb ~1 000–1 300 ₽/мес · Yandex ~2 000–3 000 ₽/мес.
+- **Timeweb ~1.5–2× дешевле** при той же УЗ-1 и managed PG 17/18.
+- Грант 10k покрывает Yandex-PoC на 2 мес (~3k×2 < 10k) → для PoC Yandex бесплатен, цена не аргумент.
+
+**Важно:** УЗ-1 у обоих — на **инфра-уровне**. Оператор всё равно строит защиту
+в своём сегменте + регистрация в РКН + поручение на обработку. Аттестация
+провайдера ≠ автоматическая готовность ИСПДн.
+
+**Вывод / решение по prod (после PoC) — posture: Yandex-first unless disproven (Codex review 2026-06-30):**
+
+- **PoC — Yandex** (грант бесплатен 2 мес + сразу проверяем AI Studio/OCR). Тактически зафиксировано.
+- **Prod-дефолт — Yandex моно-вендор**, НЕ нейтральная развилка 50/50. Причина: профиль
+  данных Blizko (дети + документы + AI/OCR) = самый рискованный путь; Yandex — единственный
+  с RU-резидентным same-vendor стеком AI/OCR/security. Цена вторична, если document-AI — ядро.
+- **Timeweb перебивает Yandex ТОЛЬКО если** PoC покажет, что AI/OCR на документах периферийны
+  (лёгкий/не-документный AI) ИЛИ полный TCO Yandex неприемлем.
+- **Гибрид Timeweb-data + Yandex-AI = exception, не дефолтная экономия.** Для реальных
+  документов это вероятно ложная экономия: 2 поручения, 2 доказательства удаления/бэкапов,
+  2 инцидент-пути, 2 аудит-трейла + передача образов документов между вендорами. Требует
+  количественного legal/security ops-обоснования, а не «потому что дешевле».
+- **PG17 на Yandex:** доступен (Managed PG 17 поддерживается до ~2028, есть PG18) — прежнее
+  «может отсутствовать» снято; проверить только точный минор/расширения.
+- **TCO для prod-сравнения считать ШИРЕ VM/PG/S3:** + audit logs, KMS/secrets, SIEM/
+  security-tooling, backups/PITR, доказательства удаления, support, сбор compliance-артефактов.
+  На Timeweb часть этого надо строить руками — это скрытая стоимость.
+- **Предусловие честного сравнения:** BLI-136 (provider-neutral AI gateway) + RU-API-граница;
+  сегодня AI Gemini-образный, не провайдер-нейтральный → сравнивать «по-настоящему» нельзя.
+- **PoC-acceptance для AI Studio** (прежде чем считать его prod-сигналом): processor-terms,
+  retention/logging/stateless-режим, доказательство региона, качество OCR на синтетических
+  документах няни, failure modes, биллинг.
+
+### Exit-path Yandex → Timeweb — реалистичная оценка (Codex review 2026-06-30: «Rejected as written»)
+
+Первый черновой вывод («переезд = дни, low lock-in») был СЛИШКОМ оптимистичен.
+Codex (подтверждено кодом) показал: lock-in **moderate**, и «easy» только ПОСЛЕ
+закрытия гейтов ниже. Provider-neutral архитектура (self-host Supabase) помогает,
+но не отменяет их.
+
+| Область | Почему не «1:1» | Гейт перед переездом |
+|---|---|---|
+| **AI** | `api/ai.ts:112` + `api/ai-support.ts:206` — хардкод Gemini (`_gemini.js`, `GEMINI_API_KEY`); `aiGateway.ts` лишь зовёт `/api/ai`. Абстракции провайдера НЕТ → смена на YC AI Studio = код, не env | сначала сделать provider-neutral AI gateway |
+| **PostgreSQL** | cloud-init клонирует upstream `supabase/docker` = PG 15; прод 17.6. Дамп 17→15 несовместим | PG17 hard-gate (managed PG17 или кастомный образ) до T6/T9 |
+| **Auth** | bootstrap генерит свежие JWT/anon/service keys → сессии инвалидируются; нужен export `auth.users`/identities | стратегия: форс-релогин по умолчанию ИЛИ доказанная переносимость ключей/refresh |
+| **Storage** | `storage.buckets`/`objects`, public-флаги, политики, пути, MIME-лимиты — в SQL-метаданных, не только объекты | мигрировать метаданные + checksum + тест signed-URL owner-auth, не только `rclone` |
+| **Realtime** | publication membership не попадает в обычный дамп (`00000000000001_realtime_publication.sql`) | реплей publication + проверка подписок в cutover |
+| **API/Vercel-граница** | перенос БД не локализует ПДн, если Vercel-функции/логи видят payload/JWT (memo §3.2) | все PD-API в РФ или явно отключены |
+| **Backups/deletion** | 152-ФЗ обязательства по удалению + переносимость бэкапов | EU read-only retention → checksum → удаление EU |
+| **BLI-134** | `nanny_id=NULL` провижининг переносится с багом | остаётся pre-deploy/pre-real-user гейтом независимо от провайдера |
+
+**Cutover-runbook (минимум):** freeze writes → export Auth/DB/Storage-метаданные+объекты
+→ restore → checksum → форс-реавторизация при необходимости → smoke Auth/RLS/Storage/
+Realtime/payments → EU read-only на срок → удаление EU.
+
+**Скорректированный вердикт:** moderate lock-in. «Легко» — ТОЛЬКО после PG17-parity,
+Auth-reauth/ключей, Storage-метаданных, Realtime-replay, RU-API-границы,
+deletion/backups и AI-gateway абстракции. Грант сам по себе lock-in не создаёт
+(PoC синтетический на self-host; артефакты провайдер-нейтральны).
+
+Источники (2026-06-30): timeweb.cloud/services/postgresql (PG 14–18),
+it-world.ru (Timeweb УЗ-1, приказ ФСТЭК №21, янв-2026), Yandex Cloud console
+inventory (AI Studio, Security Deck, KMS/Lockbox/Audit Trails).
+
 Первичные внешние источники:
 
 - [152-ФЗ, статья 18](https://www.consultant.ru/document/cons_doc_LAW_61801/cbf4e15b7c330f9372e876cdf2bc928bad7950ef/)

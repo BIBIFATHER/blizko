@@ -1,4 +1,13 @@
-# BLI-138 — Целостность booking (server-authoritative) — Дизайн (ред. 2)
+# BLI-138 — Целостность booking — Дизайн (УСТАРЕЛ → см. эпик BLI-141)
+
+> **УСТАРЕЛ (2026-06-30).** Дизайн BLI-138 свёрнут в единый дизайн эпика
+> **BLI-141** (Booking integrity & lifecycle) после Codex review #2 + owner-решения
+> объединить BLI-138/139/140. Канонический документ:
+> [`2026-06-30-bli141-booking-integrity-lifecycle-epic-design.md`](2026-06-30-bli141-booking-integrity-lifecycle-epic-design.md).
+> Ключевое изменение: решение NOT NULL развёрнуто на nullable + conditional CHECK
+> (152-ФЗ удаление). Ниже — историческое содержимое ред. 2.
+
+---
 
 Дата: 2026-06-30 · Linear: BLI-138 · Блокирует: BLI-134 (жёсткое предусловие) ·
 Связано: RISK-009, BLI-139 (lifecycle удаления), BLI-140 (booking_confirmations).

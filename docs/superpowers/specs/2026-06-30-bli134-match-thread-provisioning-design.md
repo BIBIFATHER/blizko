@@ -201,3 +201,40 @@ are rollout-safety, not direction. Resolutions:
 **Status after #2:** direction Confirmed; 2 maker/checker cycles reached (stop-rule
 → owner decision). NOT starting implementation. Awaiting owner: final round-3 verify
 vs accept-with-conditions → writing-plans. BLI-138 is a hard precedent (blocks BLI-134).
+
+## Codex design review #3 (2026-06-30): REJECTED — architecture sound, do BLI-138 first
+
+Codex: architecture is sound, but the doc still lacks ONE safe rollout contract and
+complete BLI-138 lifecycle. Directive: write the BLI-138 design/plan first; do NOT
+start BLI-134 implementation from this spec yet.
+
+### CANONICAL ROLLOUT (supersedes ALL earlier ordering in this doc — "Deploy order", C4, C5, R1, R2)
+1. **BLI-138** booking integrity: deploy + verify fully (server-authoritative creation,
+   no local-only success, participant mutations/deletion owned + locked/audited,
+   `bookings.parent_id`/`nanny_id` → NOT NULL after cleanup).
+2. Deploy BLI-134 endpoint **gated OFF** (server-side default-off feature gate).
+3. Enable endpoint + deploy compatible client (client now calls endpoint).
+4. **Atomically** revoke authenticated `chat_threads` INSERT (service_role-only) together
+   with data repair + partial-unique-index creation.
+5. Reconcile threads vs bookings AGAIN after write-closure.
+6. Old-client enforcement (fail-closed, min-version).
+7. Role-correct concurrent smoke.
+8. Apply BLI-124 hardening.
+
+### Remaining corrections folded for the eventual plan
+- **Atomic, not upsert:** the endpoint contract's word "upsert" is superseded by C3 —
+  it is an atomic insert-or-return that, on an existing row, MUST match booking
+  participants (mismatch → 409), and MUST lock against booking mutation/deletion
+  between read and insert (no orphan/stale thread).
+- **BLI-138 owns ALL booking participant mutations AND deletion** (not just reassignment):
+  bookings_participant policy currently allows participant UPDATE/DELETE; deletion
+  between endpoint read and thread insert can orphan a thread.
+- **Old-client policy (R5) needs a real design:** version source (package.json is 0.0.0),
+  enforcement location, upgrade UX, behavior for new vs existing chats.
+- **Feature-gate tests:** missing/default-off config, disabled response, enablement only
+  after BLI-138, synthetic-admission rejection.
+- **DATA_REGISTER:** update Chat/Bookings paths — provisioning adds Vercel server processing.
+
+**Status after #3:** BLI-134 spec FROZEN pending BLI-138 design. Next action per Codex:
+brainstorm + design BLI-138 (its own spec → review → plan), then return to finalize
+BLI-134 against the canonical rollout above. 3 review cycles done.

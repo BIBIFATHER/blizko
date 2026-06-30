@@ -26,6 +26,7 @@ destroy` for clean teardown before the grant window ends.
 ## Terraform prerequisites
 
 3. **Create the Terraform service account + key** (one-time), e.g. via `yc` CLI:
+
    ```sh
    yc iam service-account create --name blizko-poc-tf
    # grant it editor on the folder (PoC scope)
@@ -34,6 +35,7 @@ destroy` for clean teardown before the grant window ends.
    # authorized key → sa-key.json (gitignored)
    yc iam key create --service-account-id <TF_SA_ID> --output infra/yandex/sa-key.json
    ```
+
    Get `cloud_id`: `yc resource-manager cloud list`.
 
 4. `cp terraform.tfvars.example terraform.tfvars` and fill `cloud_id`,

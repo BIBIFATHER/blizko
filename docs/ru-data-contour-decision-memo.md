@@ -646,6 +646,37 @@ Owner:
 - `docs/adr/001-rf-availability.md` — отдельная проблема доступности из РФ;
 - `infra/nginx-rf-proxy.conf` — решение доступности, не локализации.
 
+## Timeweb vs Yandex Cloud — обновлённое сравнение (2026-06-30)
+
+Контекст: Yandex Cloud выдал грант 10 000 ₽ / 2 мес (account-447). Phase 3 PoC
+развёрнут в сторону Yandex (RISK-006, `ru-core-yandex-cloud-poc.md`, BLI-135).
+Ниже — фактическая сверка возможностей для prod-решения после PoC. Поправка к
+прежнему тезису «Timeweb = только цена»: **Timeweb тоже имеет УЗ-1**.
+
+| Возможность | Timeweb Cloud | Yandex Cloud |
+|---|---|---|
+| Managed PostgreSQL | **14–18** (вкл. 17/18 → совместим с прод 17.6); от 162₽/мес, бэкапы 6₽/GB, реплики, TLS by default | есть; точную версию проверить (бывает отстаёт) |
+| УЗ-1 / ФСТЭК (спецкатегории: дети, документы, биометрия) | ✅ подтверждён янв-2026 (приказ ФСТЭК №21, инфра-уровень; Москва/СПб/Новосиб) | ✅ аттестат ИСПДн + аттестованный сегмент (Security Deck) |
+| AI в РФ (OCR/LLM) | AI Agents + AI Gateway (скромнее) | **AI Studio: OpenAI-совм API + Vision OCR + модели** — снимает cross-border AI (RISK-008), OCR под документы нянь |
+| Security/compliance-tooling | DDoS, WAF | **KMS, Lockbox, Audit Trails, Security Deck, SIEM** (богаче) |
+| S3 Object Storage + signed URLs | ✅ | ✅ |
+| Цена | дешевле (managed PG от 162₽/мес) | дороже — но сейчас грант 10k |
+
+**Важно:** УЗ-1 у обоих — на **инфра-уровне**. Оператор всё равно строит защиту
+в своём сегменте + регистрация в РКН + поручение на обработку. Аттестация
+провайдера ≠ автоматическая готовность ИСПДн.
+
+**Вывод / решение по prod (после PoC):**
+
+- **PoC — Yandex** (грант бесплатен 2 мес + сразу проверяем AI Studio/OCR). Тактически зафиксировано.
+- **Timeweb не списывать** — для prod data-plane может выйти дешевле при той же УЗ-1 и managed PG 17/18.
+- Развилка prod: если **AI на документах (OCR/LLM)** критичен → Yandex моно-вендор;
+  если важнее **цена data-plane** → Timeweb (БД/Storage) + Yandex AI Studio как egress-AI (минус: 2 вендора = 2 поручения на обработку).
+
+Источники (2026-06-30): timeweb.cloud/services/postgresql (PG 14–18),
+it-world.ru (Timeweb УЗ-1, приказ ФСТЭК №21, янв-2026), Yandex Cloud console
+inventory (AI Studio, Security Deck, KMS/Lockbox/Audit Trails).
+
 Первичные внешние источники:
 
 - [152-ФЗ, статья 18](https://www.consultant.ru/document/cons_doc_LAW_61801/cbf4e15b7c330f9372e876cdf2bc928bad7950ef/)

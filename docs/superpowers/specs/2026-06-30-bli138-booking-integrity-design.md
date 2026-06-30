@@ -78,3 +78,58 @@ DB protocol (bookings + миграция), legal/security (ПДн — booking с
 - Миграция: снять NOT NULL + восстановить прежнюю `bookings_participant` (runbook); предпочтительно forward-fix.
 
 **Статус:** черновик дизайна — перед реализацией нужен Codex review (mandatory gate).
+
+## Codex review дизайна #1 (2026-06-30): REJECTED — направление верное, свёрнуто ниже
+
+Server-authoritative подтверждён, но identity-provenance, безопасность cleanup,
+state-machine статусов, admin-чтения, legacy-клиенты и lifecycle удаления —
+архитектурные требования, не детали реализации. Свёрнуто:
+
+### D1 — Identity provenance: клиент НЕ шлёт auth-uid
+- Create-endpoint принимает `request_id`, nanny **entity-id** и idempotency-key —
+  НЕ participant auth-UUID. Сервер сам выводит `user_id` сторон.
+- В ОДНОЙ транзакции: lock/load строки parent и nanny → вывести их `user_id` →
+  проверить оба auth-аккаунта → валидировать связь request↔nanny →
+  idempotency/cardinality → insert server-генерируемых защищённых полей.
+- Рассмотреть хранение `nanny_profile_id` как FK для аудита провенанса участников.
+
+### D2 — Cleanup безопасный, без угадывания
+- Реконсилировать только детерминированные строки; неоднозначные — в карантин или
+  блокировать миграцию. Сначала переверить живые constraints + санитизированные счётчики.
+
+### D3 — State-machine статусов
+- Определить переходы по актёру (кто какой переход может); conditional update
+  `WHERE status = expected_status` (оптимистичная блокировка).
+
+### D4 — Admin-чтения через сервер
+- Добавить authenticated admin GET через сервер; сохранить прямой participant SELECT
+  для пользовательских дашбордов (BookingsTab/dashboard не ломать).
+
+### D5 — Убрать pending-merge + legacy local state
+- `booking.ts:81` мёрджит локальные pending-строки в remote-результаты → после
+  lockdown они продолжат всплывать как реальные. Убрать merge, мигрировать/очистить
+  legacy local booking state.
+
+### D6 — Old-client gate (P1)
+- Capacitor встраивает фронт → старые установки продолжат прямой upsert + ложный
+  local success после RLS-denial. Web SW network-first (менее критично). Нужен
+  gate: подтверждённый ноль установленных/реальных клиентов, форс-апдейт, или явно
+  принятое fail-closed поведение до lockdown.
+
+### D7 — Grants, не только RLS (P2)
+- `anon`/`authenticated` сейчас `GRANT ALL`. Revoke mutation-привилегии, оставить
+  только SELECT (least-privilege), без rollback к небезопасной политике.
+
+### D8 — Прочие инварианты
+- `request_id` и `date` тоже nullable, но required по типам → включить в NOT NULL.
+
+### Связанное, вынесено отдельными задачами (НЕ scope BLI-138, но Codex поднял)
+- **Account-deletion lifecycle (P1, 152-ФЗ):** bookings NO ACTION FK; удаление
+  аккаунта не удаляет/анонимизирует bookings до удаления auth-юзера → orphan/FK.
+  `api/auth/delete-account.ts`. → отдельный Linear.
+- **`booking_confirmations` integrity (P1):** та же ALL participant-policy +
+  клиент молча игнорит ошибки (`confirmations.ts:51`). → отдельный Linear.
+
+**Статус после #1:** направление Confirmed; дизайн переработать под D1-D8 (особенно
+provenance D1 — переворачивает контракт create). Связанные задачи вынесены. Нужен
+повторный Codex review переработанного дизайна перед реализацией.

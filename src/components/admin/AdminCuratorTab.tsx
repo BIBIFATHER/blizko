@@ -90,10 +90,13 @@ export const AdminCuratorTab: React.FC<AdminCuratorTabProps> = ({
 
     setAssigningId(nanny.id);
     try {
+      // BLI-141: клиент шлёт entity-id'ы; сервер выводит auth-uid. Ключ — один UUID на intent
+      // (клик), переиспользуется в транспортных ретраях; повторный клик = новый intent
+      // (серверная pair-cardinality не даст дубль активной пары). Без entity-id fallback.
       await createBooking({
-        parent_id: selectedParent.requesterId ?? selectedParent.id,
-        nanny_id: nanny.userId ?? nanny.id,
         request_id: selectedParent.id,
+        nanny_entity_id: nanny.id,
+        idempotency_key: crypto.randomUUID(),
         date: new Date().toISOString().slice(0, 10),
       });
       logAdminAction('curator_manual_match', {

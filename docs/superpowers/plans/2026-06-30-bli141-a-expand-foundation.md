@@ -17,6 +17,8 @@
 - Имя миграции: `supabase/migrations/20260630193000_bli141_expand_booking_integrity.sql`. Rollback: `scripts/sql/rollback_20260630193000.sql`.
 - Локальный DB-контейнер: `supabase_db_blizko_3`. Применение: `supabase db reset` (DB-only fallback при нездоровых контейнерах: `supabase db reset` пересоздаёт только БД из миграций). Guard-SQL — через `docker exec -i supabase_db_blizko_3 psql -U postgres -d postgres`.
 - Никаких секретов в миграциях/скриптах. Русский во всех артефактах; SQL-идентификаторы английские.
+- **Прод-precondition (Codex #4, для будущего прод-применения, НЕ локально):** «аддитивно» ≠ «без блокировок». `ALTER TABLE ... ADD CONSTRAINT UNIQUE` строит индекс со сканом `bookings` и берёт table-lock; на проде — сперва row-count/size-аудит `bookings`, задать `lock_timeout`, и решить normal vs `CREATE UNIQUE INDEX CONCURRENTLY` + `ADD CONSTRAINT ... USING INDEX` при значимой кардинальности/трафике. На локальной синтетике (текущая фаза) — normal DDL.
+- **Type-обновления (Codex #6):** репо имеет РУЧНЫЕ TS-интерфейсы booking/confirmation (`src/services/booking.ts`, `confirmations.ts` — касты через `as`). План A **не требует** правок TS: новые колонки nullable и не читаются/пишутся кодом до Плана B. Плановое обновление интерфейсов (добавить опциональные поля) делает **План B** при подключении endpoints — зафиксировано здесь явно, не «если используются».
 
 ---
 
@@ -37,28 +39,46 @@
 **Interfaces:**
 - Produces: таблица `public.account_deletions (user_id uuid PK, state text, attempts int, lease_until timestamptz, last_error text, created_at timestamptz, updated_at timestamptz)`; CHECK `state IN ('deleting','db_done','deleted','failed')`. Потребляется Планами B (deletion-guard) и C (lifecycle/reconciler).
 
+**ВАЖНО (Codex #1):** `account_deletions` — service-only таблица. Новые public-таблицы
+в Supabase получают дефолтный GRANT ALL для `anon`/`authenticated` (см.
+`remote_schema.sql` default privileges + `20260604140000_revoke_service_only_table_grants.sql`).
+Поэтому RLS + REVOKE делаются **в этой же задаче**, НЕ откладываются в План E — иначе
+таблица анонимно-писабельна (anon мог бы вставлять UUID, менять state, читать
+`last_error`, блокировать создание booking через deletion-guard). Паттерн — как `phone_otps`.
+
 - [ ] **Step 1: Write the failing guard**
 
-Создать `scripts/sql/bli141_expand_guards.sql` с первым ассертом:
+Создать `scripts/sql/bli141_expand_guards.sql` с первым (точным) ассертом:
 
 ```sql
--- BLI-141 expand-фаза постусловия. Каждый DO падает с ASSERT при несоответствии.
+-- BLI-141 expand-фаза постусловия. Точные ассерты (DB-протокол: IF NOT EXISTS
+-- мог бы оставить несовместимый объект — проверяем каталог явно). Каждый DO падает с ASSERT.
 DO $$
+DECLARE t_oid oid;
 BEGIN
-  -- account_deletions существует с нужными колонками
-  ASSERT (SELECT count(*) FROM information_schema.tables
-          WHERE table_schema='public' AND table_name='account_deletions') = 1,
-         'account_deletions missing';
-  ASSERT (SELECT data_type FROM information_schema.columns
-          WHERE table_schema='public' AND table_name='account_deletions' AND column_name='user_id') = 'uuid',
-         'account_deletions.user_id not uuid';
-  ASSERT (SELECT count(*) FROM information_schema.table_constraints
-          WHERE table_schema='public' AND table_name='account_deletions' AND constraint_type='PRIMARY KEY') = 1,
-         'account_deletions PK missing';
-  -- НЕ должно быть FK к auth.users
-  ASSERT (SELECT count(*) FROM information_schema.table_constraints
-          WHERE table_schema='public' AND table_name='account_deletions' AND constraint_type='FOREIGN KEY') = 0,
-         'account_deletions must NOT have FK';
+  SELECT c.oid INTO t_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relname='account_deletions';
+  ASSERT t_oid IS NOT NULL, 'account_deletions missing';
+  -- точные колонки/типы/nullability/defaults
+  ASSERT (SELECT format_type(atttypid,atttypmod) FROM pg_attribute
+          WHERE attrelid=t_oid AND attname='user_id') = 'uuid', 'user_id not uuid';
+  ASSERT (SELECT attnotnull FROM pg_attribute WHERE attrelid=t_oid AND attname='state'), 'state must be NOT NULL';
+  ASSERT (SELECT attnotnull FROM pg_attribute WHERE attrelid=t_oid AND attname='attempts'), 'attempts must be NOT NULL';
+  -- PK именно на user_id
+  ASSERT (SELECT string_agg(a.attname,',' ORDER BY a.attnum)
+          FROM pg_constraint con JOIN pg_attribute a ON a.attrelid=con.conrelid AND a.attnum=ANY(con.conkey)
+          WHERE con.conrelid=t_oid AND con.contype='p') = 'user_id', 'PK must be (user_id)';
+  -- state CHECK перечисляет ровно 4 состояния
+  ASSERT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid=t_oid AND contype='c'
+          AND pg_get_constraintdef(oid) ILIKE '%deleting%db_done%deleted%failed%'), 'state CHECK wrong';
+  -- НЕТ FK (переживает удаление auth.users)
+  ASSERT NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid=t_oid AND contype='f'), 'account_deletions must NOT have FK';
+  -- RLS включён
+  ASSERT (SELECT relrowsecurity FROM pg_class WHERE oid=t_oid), 'RLS not enabled on account_deletions';
+  -- НИ anon НИ authenticated не имеют привилегий
+  ASSERT NOT EXISTS (SELECT 1 FROM information_schema.role_table_grants
+          WHERE table_schema='public' AND table_name='account_deletions'
+            AND grantee IN ('anon','authenticated')), 'anon/authenticated must have NO grants';
   RAISE NOTICE 'Task1 guards passed';
 END $$;
 ```
@@ -71,13 +91,14 @@ docker exec -i supabase_db_blizko_3 psql -U postgres -d postgres -v ON_ERROR_STO
 ```
 Expected: FAIL — `ERROR: account_deletions missing` (таблицы ещё нет).
 
-- [ ] **Step 3: Write the migration (account_deletions)**
+- [ ] **Step 3: Write the migration (account_deletions + lockdown)**
 
 Создать `supabase/migrations/20260630193000_bli141_expand_booking_integrity.sql`:
 
 ```sql
 -- BLI-141 expand-фаза: аддитивный фундамент целостности booking.
--- ОБРАТИМО. Без NOT NULL/CHECK-активности/RLS/REVOKE (это План E contract).
+-- ОБРАТИМО. Без NOT NULL/CHECK-активности booking-инвариантов (это План E contract).
+-- account_deletions — service-only, поэтому RLS+REVOKE делаются здесь же.
 
 -- 1. Durable deletion workflow (дизайн §3.1). user_id БЕЗ FK к auth.users —
 --    строка переживает удаление identity (для reconciler/аудита).
@@ -92,6 +113,12 @@ CREATE TABLE IF NOT EXISTS public.account_deletions (
   updated_at  timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.account_deletions OWNER TO postgres;
+
+-- Service-only lockdown (как phone_otps): RLS + снять клиентские grants.
+-- Доступ только через service_role (обходит RLS/grants). Никаких policy для
+-- anon/authenticated → полный deny на привилегийном уровне.
+ALTER TABLE public.account_deletions ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.account_deletions FROM anon, authenticated;
 ```
 
 - [ ] **Step 4: Apply migration and run guard**
@@ -107,7 +134,7 @@ Expected: PASS — `NOTICE: Task1 guards passed`.
 
 ```bash
 git add supabase/migrations/20260630193000_bli141_expand_booking_integrity.sql scripts/sql/bli141_expand_guards.sql
-git commit -m "feat(bli141): expand — таблица account_deletions (durable deletion workflow)"
+git commit -m "feat(bli141): expand — таблица account_deletions (durable deletion workflow, RLS+REVOKE)"
 ```
 
 ---
@@ -120,31 +147,35 @@ git commit -m "feat(bli141): expand — таблица account_deletions (durabl
 
 **Interfaces:**
 - Consumes: существующая таблица `public.bookings` (`id uuid PK`, `parent_id`, `nanny_id`, `request_id`, `date`, `status`, `amount`, `created_at`).
-- Produces: новые nullable-колонки `bookings.idempotency_key text` (UNIQUE-индекс `bookings_idempotency_key_uq`), `idempotency_fingerprint text`, `nanny_profile_id text` (FK → `nannies(id) ON DELETE SET NULL`), `parent_erased_at timestamptz`, `nanny_erased_at timestamptz`. Потребляется Планом B (create пишет ключ/fingerprint/provenance) и Планом E (NOT NULL на idempotency_key).
+- Produces: новые nullable-колонки `bookings.idempotency_key text` (**named UNIQUE constraint `bookings_idempotency_key_key`** — совпадает с §4 дизайна, на который Plan B ветвится по имени constraint), `idempotency_fingerprint text`, `nanny_profile_id text` (FK `bookings_nanny_profile_id_fkey` → `nannies(id) ON DELETE SET NULL`), `parent_erased_at timestamptz`, `nanny_erased_at timestamptz`. Потребляется Планом B (create пишет ключ/fingerprint/provenance; ловит `bookings_idempotency_key_key`) и Планом E (NOT NULL на idempotency_key).
 
 - [ ] **Step 1: Write the failing guard**
 
-Добавить в `scripts/sql/bli141_expand_guards.sql` второй блок:
+Добавить в `scripts/sql/bli141_expand_guards.sql` второй (точный) блок:
 
 ```sql
 DO $$
+DECLARE b_oid oid;
 BEGIN
-  ASSERT (SELECT count(*) FROM information_schema.columns
-          WHERE table_schema='public' AND table_name='bookings'
-            AND column_name IN ('idempotency_key','idempotency_fingerprint',
-                                 'nanny_profile_id','parent_erased_at','nanny_erased_at')) = 5,
+  SELECT c.oid INTO b_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relname='bookings';
+  -- ровно 5 новых колонок присутствуют
+  ASSERT (SELECT count(*) FROM pg_attribute WHERE attrelid=b_oid AND NOT attisdropped
+            AND attname IN ('idempotency_key','idempotency_fingerprint',
+                            'nanny_profile_id','parent_erased_at','nanny_erased_at')) = 5,
          'bookings expand columns missing';
   -- idempotency_key пока NULLABLE (NOT NULL — План E)
-  ASSERT (SELECT is_nullable FROM information_schema.columns
-          WHERE table_schema='public' AND table_name='bookings' AND column_name='idempotency_key') = 'YES',
+  ASSERT NOT (SELECT attnotnull FROM pg_attribute WHERE attrelid=b_oid AND attname='idempotency_key'),
          'idempotency_key must stay nullable in expand';
-  -- UNIQUE-индекс на idempotency_key
-  ASSERT (SELECT count(*) FROM pg_indexes
-          WHERE schemaname='public' AND tablename='bookings' AND indexname='bookings_idempotency_key_uq') = 1,
-         'bookings_idempotency_key_uq missing';
-  -- FK nanny_profile_id -> nannies ON DELETE SET NULL
+  -- named UNIQUE constraint именно на (idempotency_key), имя совпадает с §4 дизайна
+  ASSERT EXISTS (SELECT 1 FROM pg_constraint
+          WHERE conrelid=b_oid AND conname='bookings_idempotency_key_key' AND contype='u'
+            AND (SELECT string_agg(a.attname,',' ORDER BY a.attnum)
+                 FROM pg_attribute a WHERE a.attrelid=b_oid AND a.attnum=ANY(pg_constraint.conkey))='idempotency_key'),
+         'bookings_idempotency_key_key must be UNIQUE(idempotency_key)';
+  -- FK nanny_profile_id -> nannies ON DELETE SET NULL, scoped по таблице
   ASSERT (SELECT confdeltype FROM pg_constraint
-          WHERE conname='bookings_nanny_profile_id_fkey') = 'n', -- 'n' = SET NULL
+          WHERE conrelid=b_oid AND conname='bookings_nanny_profile_id_fkey' AND contype='f') = 'n', -- 'n'=SET NULL
          'nanny_profile_id FK must be ON DELETE SET NULL';
   RAISE NOTICE 'Task2 guards passed';
 END $$;
@@ -164,6 +195,8 @@ Expected: FAIL — `bookings expand columns missing`.
 
 ```sql
 -- 2. bookings — новые nullable-колонки (дизайн §2). Без NOT NULL (План E).
+--    bookings — client-read под RLS (оставлена как есть в 20260604140000), новые
+--    nullable-колонки не меняют её grant-модель; REVOKE тут не нужен.
 ALTER TABLE public.bookings
   ADD COLUMN IF NOT EXISTS idempotency_key         text,
   ADD COLUMN IF NOT EXISTS idempotency_fingerprint text,
@@ -171,9 +204,11 @@ ALTER TABLE public.bookings
   ADD COLUMN IF NOT EXISTS parent_erased_at        timestamptz,
   ADD COLUMN IF NOT EXISTS nanny_erased_at         timestamptz;
 
--- Глобальный UNIQUE на idempotency_key (NULL допускается множественно в PG).
-CREATE UNIQUE INDEX IF NOT EXISTS bookings_idempotency_key_uq
-  ON public.bookings (idempotency_key);
+-- Named UNIQUE constraint (НЕ просто индекс) — имя bookings_idempotency_key_key
+-- совпадает с §4 дизайна, на которое Plan B ветвится по SQLSTATE 23505 constraint_name.
+-- NULL допускается множественно (глобальный ключ по non-null значениям).
+ALTER TABLE public.bookings
+  ADD CONSTRAINT bookings_idempotency_key_key UNIQUE (idempotency_key);
 
 -- Провенанс выбора няни → nannies(id) ON DELETE SET NULL (не RESTRICT).
 ALTER TABLE public.bookings
@@ -270,10 +305,16 @@ git commit -m "feat(bli141): expand — recipient-колонки booking_confirm
 
 **Files:**
 - Create: `scripts/sql/rollback_20260630193000.sql`
-- Modify: (regen) generated DB types, если используются в репо
+- Create: `scripts/sql/bli141_expand_revert_guard.sql`
+- Type-обновления: **нет** в Плане A (новые колонки nullable/неиспользуемые; ручные TS-интерфейсы booking/confirmation правит План B при подключении endpoints).
 
 **Interfaces:**
 - Produces: обратимость expand-миграции (apply → rollback → схема как до миграции).
+
+**Окно валидности rollback (Codex #5):** этот rollback безопасен **только до adoption** —
+пока Планы B-D не начали писать `account_deletions`/`idempotency_*`/`recipient_*`. После
+записи данных rollback уничтожит deletion-state, idempotency-доказательства и provenance →
+использовать forward-fix ИЛИ сперва экспортировать/сохранить затронутые данные.
 
 - [ ] **Step 1: Write the rollback script**
 
@@ -281,12 +322,13 @@ git commit -m "feat(bli141): expand — recipient-колонки booking_confirm
 
 ```sql
 -- Реверс BLI-141 expand-миграции 20260630193000. Только что добавленное снимается.
+-- ВНИМАНИЕ: безопасно ТОЛЬКО до adoption (Планы B-D ещё не писали данные).
 ALTER TABLE public.booking_confirmations
   DROP COLUMN IF EXISTS recipient_role,
   DROP COLUMN IF EXISTS recipient_user_id;
 
 ALTER TABLE public.bookings DROP CONSTRAINT IF EXISTS bookings_nanny_profile_id_fkey;
-DROP INDEX IF EXISTS public.bookings_idempotency_key_uq;
+ALTER TABLE public.bookings DROP CONSTRAINT IF EXISTS bookings_idempotency_key_key;
 ALTER TABLE public.bookings
   DROP COLUMN IF EXISTS idempotency_key,
   DROP COLUMN IF EXISTS idempotency_fingerprint,
@@ -350,12 +392,13 @@ git commit -m "feat(bli141): expand — rollback-скрипт + доказате
 
 ## Postconditions (Плана A)
 
-- `account_deletions` существует (PK, CHECK state, без FK к auth.users).
-- `bookings` имеет 5 новых nullable-колонок + UNIQUE-индекс idempotency_key + FK nanny_profile_id ON DELETE SET NULL.
+- `account_deletions` существует (PK на user_id, CHECK state 4 значения, без FK к auth.users, **RLS включён, anon/authenticated без привилегий** — service-only).
+- `bookings` имеет 5 новых nullable-колонок + named UNIQUE constraint `bookings_idempotency_key_key` + FK `bookings_nanny_profile_id_fkey` ON DELETE SET NULL. bookings остаётся client-read под RLS (grant-модель не изменена).
 - `booking_confirmations` имеет recipient_role/recipient_user_id (nullable).
-- Прод-поведение НЕ изменено (только аддитивный nullable-DDL).
+- Прод-поведение существующих потоков НЕ изменено: bookings/confirmations — аддитивные nullable-колонки под текущей RLS; account_deletions — новая, но залочена (RLS+REVOKE), не доступна клиенту.
+- Guard'ы проверяют ТОЧНЫЕ постусловия (pg_class/pg_attribute/pg_constraint/ACL/RLS), не только существование.
 - Доказана обратимость (apply→rollback→clean) и чистое forward-применение.
-- Никакого NOT NULL/CHECK-активности/RLS/REVOKE (это План E).
+- Никакого booking-инвариант-CHECK/NOT NULL/RLS-split bookings/REVOKE bookings (это План E).
 
 ## Out of scope (следующие планы)
 

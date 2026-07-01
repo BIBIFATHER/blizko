@@ -43,3 +43,37 @@ BEGIN
          'service_role must retain access';
   RAISE NOTICE 'Task1 guards passed';
 END $$;
+
+DO $$
+DECLARE b_oid oid; nannies_oid oid; expect text;
+BEGIN
+  SELECT c.oid INTO b_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relname='bookings';
+  SELECT c.oid INTO nannies_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relname='nannies';
+  -- ТОЧНЫЕ тип+nullability каждой из 5 колонок (format 'name:type:notnull')
+  expect := 'idempotency_key:text:false|idempotency_fingerprint:text:false|nanny_profile_id:text:false|'
+         || 'parent_erased_at:timestamp with time zone:false|nanny_erased_at:timestamp with time zone:false';
+  ASSERT (SELECT string_agg(attname||':'||format_type(atttypid,atttypmod)||':'||attnotnull::text,'|'
+                            ORDER BY array_position(ARRAY['idempotency_key','idempotency_fingerprint',
+                              'nanny_profile_id','parent_erased_at','nanny_erased_at'], attname))
+          FROM pg_attribute WHERE attrelid=b_oid AND NOT attisdropped
+            AND attname IN ('idempotency_key','idempotency_fingerprint',
+                            'nanny_profile_id','parent_erased_at','nanny_erased_at')) = expect,
+         'bookings expand columns: wrong type/nullability set';
+  -- named UNIQUE constraint именно на (idempotency_key), имя = §4 дизайна
+  ASSERT EXISTS (SELECT 1 FROM pg_constraint
+          WHERE conrelid=b_oid AND conname='bookings_idempotency_key_key' AND contype='u'
+            AND (SELECT string_agg(a.attname,',' ORDER BY a.attnum)
+                 FROM pg_attribute a WHERE a.attrelid=b_oid AND a.attnum=ANY(pg_constraint.conkey))='idempotency_key'),
+         'bookings_idempotency_key_key must be UNIQUE(idempotency_key)';
+  -- ПОЛНЫЙ FK-контракт: local col=nanny_profile_id, confrelid=public.nannies,
+  --   ref col=id, ON DELETE SET NULL
+  ASSERT EXISTS (SELECT 1 FROM pg_constraint con
+          WHERE con.conrelid=b_oid AND con.conname='bookings_nanny_profile_id_fkey' AND con.contype='f'
+            AND con.confrelid=nannies_oid AND con.confdeltype='n'
+            AND (SELECT a.attname FROM pg_attribute a WHERE a.attrelid=b_oid AND a.attnum=con.conkey[1])='nanny_profile_id'
+            AND (SELECT a.attname FROM pg_attribute a WHERE a.attrelid=nannies_oid AND a.attnum=con.confkey[1])='id'),
+         'nanny_profile_id FK contract wrong (col/ref/ondelete)';
+  RAISE NOTICE 'Task2 guards passed';
+END $$;

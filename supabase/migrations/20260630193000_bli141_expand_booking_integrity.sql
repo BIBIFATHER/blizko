@@ -22,3 +22,24 @@ ALTER TABLE public.account_deletions OWNER TO postgres;
 -- deny на привилегийном уровне (не только политикой).
 ALTER TABLE public.account_deletions ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.account_deletions FROM anon, authenticated;
+
+-- 2. bookings — новые nullable-колонки (дизайн §2). Без NOT NULL (План E).
+--    bookings — client-read под RLS (оставлена как есть в 20260604140000), новые
+--    nullable-колонки не меняют её grant-модель; REVOKE тут не нужен.
+ALTER TABLE public.bookings
+  ADD COLUMN IF NOT EXISTS idempotency_key         text,
+  ADD COLUMN IF NOT EXISTS idempotency_fingerprint text,
+  ADD COLUMN IF NOT EXISTS nanny_profile_id        text,
+  ADD COLUMN IF NOT EXISTS parent_erased_at        timestamptz,
+  ADD COLUMN IF NOT EXISTS nanny_erased_at         timestamptz;
+
+-- Named UNIQUE constraint (НЕ просто индекс) — имя bookings_idempotency_key_key
+-- совпадает с §4 дизайна, на которое Plan B ветвится по SQLSTATE 23505 constraint_name.
+-- NULL допускается множественно (глобальный ключ по non-null значениям).
+ALTER TABLE public.bookings
+  ADD CONSTRAINT bookings_idempotency_key_key UNIQUE (idempotency_key);
+
+-- Провенанс выбора няни → nannies(id) ON DELETE SET NULL (не RESTRICT).
+ALTER TABLE public.bookings
+  ADD CONSTRAINT bookings_nanny_profile_id_fkey
+  FOREIGN KEY (nanny_profile_id) REFERENCES public.nannies(id) ON DELETE SET NULL;

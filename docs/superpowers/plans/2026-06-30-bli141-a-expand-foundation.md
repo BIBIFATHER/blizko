@@ -178,8 +178,9 @@ BEGIN
   SELECT c.oid INTO nannies_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
     WHERE n.nspname='public' AND c.relname='nannies';
   -- ТОЧНЫЕ тип+nullability каждой из 5 колонок (format 'name:type:notnull')
-  expect := 'idempotency_key:text:f|idempotency_fingerprint:text:f|nanny_profile_id:text:f|'
-         || 'parent_erased_at:timestamp with time zone:f|nanny_erased_at:timestamp with time zone:f';
+  -- attnotnull::text рендерится как 'false'/'true' (не 'f'/'t')
+  expect := 'idempotency_key:text:false|idempotency_fingerprint:text:false|nanny_profile_id:text:false|'
+         || 'parent_erased_at:timestamp with time zone:false|nanny_erased_at:timestamp with time zone:false';
   ASSERT (SELECT string_agg(attname||':'||format_type(atttypid,atttypmod)||':'||attnotnull::text,'|'
                             ORDER BY array_position(ARRAY['idempotency_key','idempotency_fingerprint',
                               'nanny_profile_id','parent_erased_at','nanny_erased_at'], attname))
@@ -279,7 +280,7 @@ BEGIN
   SELECT c.oid INTO c_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
     WHERE n.nspname='public' AND c.relname='booking_confirmations';
   -- ТОЧНЫЕ тип+nullability обеих колонок (nullable в expand; CHECK/backfill — План D/E)
-  expect := 'recipient_role:text:f|recipient_user_id:uuid:f';
+  expect := 'recipient_role:text:false|recipient_user_id:uuid:false';
   ASSERT (SELECT string_agg(attname||':'||format_type(atttypid,atttypmod)||':'||attnotnull::text,'|'
                             ORDER BY array_position(ARRAY['recipient_role','recipient_user_id'], attname))
           FROM pg_attribute WHERE attrelid=c_oid AND NOT attisdropped

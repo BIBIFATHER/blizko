@@ -1,4 +1,4 @@
-# BLI-141 План B — Server-authoritative endpoints Implementation Plan (rev 6)
+# BLI-141 План B — Server-authoritative endpoints Implementation Plan (rev 7)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -429,7 +429,7 @@ Expected: PASS (все 6 веток, точные коды).
 
 ```bash
 git add api/bookings.ts api/bookings.test.ts .env.example
-git commit -m "feat(bli141): create booking endpoint — provenance, eligibility, deletion-guard, idempotency-first, pair-cardinality + default-closed gate"
+git commit -m "feat(bli141): create booking endpoint — idempotency-first, provenance, eligibility, deletion-guard, pair-cardinality + default-closed gate"
 ```
 
 ---
@@ -835,9 +835,13 @@ await L.query('SELECT id FROM parents WHERE id=$1 FOR UPDATE', [reqId]); // де
 // A и B стартуют, оба должны заблокироваться на "lock parents FOR UPDATE" в handler:
 const pA = handler(makeCreate(reqId, nannyId, uuidA), resA);
 const pB = handler(makeCreate(reqId, nannyId, uuidB), resB);
-// Явно дождаться, что РОВНО два бэкенда ждут именно этот row-lock (не таймер!):
+// waitFor — локальный poll-хелпер: крутит predicate до true или timeout (throw при таймауте):
+//   async function waitFor(p, {timeout}) { const t0=Date.now();
+//     while(!(await p())) { if(Date.now()-t0>timeout) throw new Error('waitFor timeout'); await sleep(50);} }
+// Observer читаем через L.query (L уже checked-out, держит txn — read-only SELECT
+// не требует нового client; иначе pool.query занял бы 4-й слот при max=3 → deadlock, Codex/owner P1):
 await waitFor(async () => {
-  const { rows } = await pool.query(
+  const { rows } = await L.query(
     `SELECT count(*)::int AS n FROM pg_stat_activity
      WHERE wait_event_type='Lock' AND state='active' AND query ILIKE '%parents%FOR UPDATE%'`);
   return rows[0].n === 2;                // доказывает: A и B оба взяли DB-client и ждут row-lock

@@ -250,3 +250,106 @@ describe('POST /api/bookings?op=create', () => {
     expect(String((res.body as { error: string }).error)).toMatch(/pair/i);
   });
 });
+
+type AuthMock = { mockResolvedValueOnce: (v: unknown) => void };
+
+describe('POST /api/bookings?op=status', () => {
+  // Codex round6 P1: сбрасывать connect ПЕРЕД каждым status-тестом.
+  beforeEach(() => connect.mockReset());
+  afterEach(() => vi.restoreAllMocks());
+  const statusReq = (body: unknown) =>
+    ({ method: 'POST', headers: {}, query: { op: 'status' }, body } as unknown as VercelRequest);
+
+  it('nanny moves confirmed → active (200)', async () => {
+    const { verifyBearerAdmin, verifyBearerUser } = await import('./_auth.js');
+    (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce(null);
+    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({ id: 'nanny-uid', email: 'n@x' });
+    connect.mockResolvedValue(
+      mockClient({
+        'FROM bookings WHERE id': {
+          rows: [{ id: 'b1', parent_id: 'p', nanny_id: 'nanny-uid', status: 'confirmed' }],
+          rowCount: 1,
+        },
+        'UPDATE bookings SET status': { rows: [{ id: 'b1', status: 'active' }], rowCount: 1 },
+        BEGIN: { rows: [] },
+        COMMIT: { rows: [] },
+        ROLLBACK: { rows: [] },
+      }),
+    );
+    const res = createMockResponse();
+    await handler(statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }), res);
+    expect(res.statusCode).toBe(200);
+  });
+
+  it('parent cannot move confirmed → active (403)', async () => {
+    const { verifyBearerAdmin, verifyBearerUser } = await import('./_auth.js');
+    (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce(null);
+    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({ id: 'parent-uid', email: 'p@x' });
+    connect.mockResolvedValue(
+      mockClient({
+        'FROM bookings WHERE id': {
+          rows: [{ id: 'b1', parent_id: 'parent-uid', nanny_id: 'n', status: 'confirmed' }],
+          rowCount: 1,
+        },
+        BEGIN: { rows: [] },
+        ROLLBACK: { rows: [] },
+      }),
+    );
+    const res = createMockResponse();
+    await handler(statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }), res);
+    expect(res.statusCode).toBe(403);
+  });
+
+  it('stale expected_status → 409 (real status ≠ expected)', async () => {
+    const { verifyBearerAdmin } = await import('./_auth.js');
+    (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce({ id: 'admin-1', email: 'admin@example.com' });
+    connect.mockResolvedValue(
+      mockClient({
+        'FROM bookings WHERE id': {
+          rows: [{ id: 'b1', parent_id: 'p', nanny_id: 'n', status: 'pending' }],
+          rowCount: 1,
+        },
+        'UPDATE bookings SET status': { rows: [], rowCount: 0 },
+        BEGIN: { rows: [] },
+        ROLLBACK: { rows: [] },
+      }),
+    );
+    const res = createMockResponse();
+    await handler(statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }), res);
+    expect(res.statusCode).toBe(409);
+  });
+
+  it('unauthenticated + malformed body → 401 (auth раньше presence)', async () => {
+    const { verifyBearerAdmin, verifyBearerUser } = await import('./_auth.js');
+    (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce(null);
+    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce(null);
+    const res = createMockResponse();
+    await handler(statusReq({}), res);
+    expect(res.statusCode).toBe(401);
+    expect(connect).not.toHaveBeenCalled();
+  });
+
+  it('non-admin invalid-pair → 400 (matrix ДО role; parent pending→active НЕ маскируется 403)', async () => {
+    const { verifyBearerAdmin, verifyBearerUser } = await import('./_auth.js');
+    (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce(null);
+    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({ id: 'parent-uid', email: 'p@x' });
+    const res = createMockResponse();
+    await handler(statusReq({ booking_id: 'b1', expected_status: 'pending', to_status: 'active' }), res);
+    expect(res.statusCode).toBe(400);
+    expect(connect).not.toHaveBeenCalled();
+  });
+});
+
+describe('GET /api/bookings (admin)', () => {
+  beforeEach(() => connect.mockReset());
+  it('admin GET returns all bookings (200)', async () => {
+    connect.mockResolvedValue(
+      mockClient({ 'FROM bookings': { rows: [{ id: 'b1' }, { id: 'b2' }], rowCount: 2 } }),
+    );
+    const req = { method: 'GET', headers: {}, query: {} } as unknown as VercelRequest;
+    const res = createMockResponse();
+    await handler(req, res);
+    expect(res.statusCode).toBe(200);
+    expect((res.body as { bookings: unknown[] }).bookings).toHaveLength(2);
+  });
+});

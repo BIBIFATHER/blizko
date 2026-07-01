@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createHash } from 'node:crypto';
 import { setCors } from './_cors.js';
 import { rateLimit } from './_rate-limit.js';
-import { verifyBearerAdmin } from './_auth.js';
+import { verifyBearerAdmin, verifyBearerUser } from './_auth.js';
 import { getDbPool } from './_db.js';
 import { logError } from './_logScrub.js';
 
@@ -162,6 +162,96 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
   }
 }
 
+// actor-transition matrix (§5). to_status → { допустимые from, роли }.
+type Role = 'parent' | 'nanny' | 'curator';
+const TRANSITIONS: Record<string, { from: string[]; roles: Role[] }> = {
+  confirmed: { from: ['pending'], roles: ['nanny', 'curator'] },
+  active: { from: ['confirmed'], roles: ['nanny', 'curator'] },
+  completed: { from: ['active'], roles: ['nanny', 'curator'] },
+  cancelled: { from: ['pending', 'confirmed', 'active'], roles: ['parent', 'nanny', 'curator'] },
+};
+
+async function updateStatus(req: VercelRequest, res: VercelResponse) {
+  const admin = await verifyBearerAdmin(req);
+  const user = admin ? null : await verifyBearerUser(req);
+  if (!admin && !user) return json(res, 401, { error: 'Unauthorized' });
+  const actorId = admin ? admin.id : user!.id;
+  const rl = rateLimit(req, { prefix: 'bookings-status:' + actorId, max: 30, windowMs: 60_000 });
+  if (!rl.ok) return json(res, 429, { error: 'Too many requests' });
+
+  const body = (req.body ?? {}) as Record<string, unknown>;
+  const booking_id = typeof body.booking_id === 'string' ? body.booking_id.trim() : '';
+  const to_status = typeof body.to_status === 'string' ? body.to_status.trim() : '';
+  const expected_status = typeof body.expected_status === 'string' ? body.expected_status.trim() : '';
+  const rule = TRANSITIONS[to_status];
+  // Нормативный порядок (C7): auth(401,выше) → presence+matrix(400) → load booking(404)
+  //   → role(403) → optimistic update(409). Matrix-membership (expected∈rule.from) ЗДЕСЬ,
+  //   ДО role — иначе невозможная пара маскируется 403 вместо 400.
+  if (!booking_id || !rule || !expected_status || !rule.from.includes(expected_status)) {
+    return json(res, 400, { error: 'booking_id + valid (expected_status → to_status) transition required' });
+  }
+
+  const client = await getDbPool().connect();
+  try {
+    await client.query('BEGIN');
+    const b = await client.query('SELECT id, parent_id, nanny_id, status FROM bookings WHERE id = $1 FOR UPDATE', [
+      booking_id,
+    ]);
+    if (b.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return json(res, 404, { error: 'booking not found' });
+    }
+    const row = b.rows[0];
+    // role: transition-outside-matrix (роль) → 403
+    const role: Role | null = admin
+      ? 'curator'
+      : user!.id === row.parent_id
+        ? 'parent'
+        : user!.id === row.nanny_id
+          ? 'nanny'
+          : null;
+    if (!role || !rule.roles.includes(role)) {
+      await client.query('ROLLBACK');
+      return json(res, 403, { error: 'actor not allowed for this transition' });
+    }
+    // optimistic: применяем только если реальный статус == expected_status клиента.
+    const upd = await client.query(`UPDATE bookings SET status = $1 WHERE id = $2 AND status = $3 RETURNING *`, [
+      to_status,
+      booking_id,
+      expected_status,
+    ]);
+    if (upd.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return json(res, 409, { error: 'stale status: booking is not in expected_status' });
+    }
+    await client.query('COMMIT');
+    return json(res, 200, { booking: upd.rows[0] });
+  } catch (e) {
+    await client.query('ROLLBACK').catch(() => {});
+    logError('[bookings] status failed:', e);
+    return json(res, 500, { error: 'Internal error' });
+  } finally {
+    client.release();
+  }
+}
+
+async function adminList(req: VercelRequest, res: VercelResponse) {
+  const admin = await verifyBearerAdmin(req);
+  if (!admin) return json(res, 401, { error: 'Unauthorized' });
+  const rl = rateLimit(req, { prefix: 'bookings-list:' + admin.id, max: 60, windowMs: 60_000 });
+  if (!rl.ok) return json(res, 429, { error: 'Too many requests' });
+  const client = await getDbPool().connect();
+  try {
+    const r = await client.query('SELECT * FROM bookings ORDER BY created_at DESC');
+    return json(res, 200, { bookings: r.rows });
+  } catch (e) {
+    logError('[bookings] admin list failed:', e);
+    return json(res, 500, { error: 'Internal error' });
+  } finally {
+    client.release();
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
@@ -173,6 +263,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const op = String((req.query as Record<string, unknown>)?.op || '');
   if (req.method === 'POST' && op === 'create') return createBooking(req, res);
-  // op=status (Task 3), GET (Task 4) добавляются в свои задачи.
+  if (req.method === 'POST' && op === 'status') return updateStatus(req, res);
+  if (req.method === 'GET') return adminList(req, res);
   return json(res, 405, { error: 'Method not allowed' });
 }

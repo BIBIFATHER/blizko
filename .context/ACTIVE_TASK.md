@@ -6,15 +6,28 @@ have changed.
 
 ## Status
 
-`MERGED + DEPLOYED` (four BLI-110/116 egress/PII slices shipped 2026-06-16/17)
+`BLI-141 PLAN B CODE COMPLETE` — isolated branch prepared; final PR review and
+CI pending. Production/cutover remain closed.
 
-Last updated: 2026-06-17 (Europe/Moscow)
+Last updated: 2026-07-01 (Europe/Moscow)
 
 ## Objective
 
-BLI-110/116 hardening: narrow, reversible egress / PII guards for the closed
-synthetic-only contour. Each slice self-reviewed via two-sided Claude/Codex,
-merged to `main` and deployed to production.
+BLI-141 booking integrity and lifecycle. Plan A expand migration and Plan B
+server-authoritative create/status/GET endpoints are implemented locally.
+
+## BLI-141 Checkpoint
+
+- Isolated branch: `codex/bli-141-plan-b`, based on current `origin/main`.
+- Tasks 1–7 implemented: expand migration, rollback/guards, create/status/GET,
+  client wiring, unit tests, and PG-backed integration tests.
+- Local evidence before branch split: 9/9 integration tests against local
+  Supabase PostgreSQL, targeted and full Vitest, typecheck, lint, Prettier,
+  build, and zero remaining synthetic fixtures.
+- Next action: rerun the acceptance pass on the isolated branch, push it, and
+  open one draft PR. Do not apply production DDL or enable the endpoint.
+- BLI-124, BLI-134, Yandex Cloud, tooling, and model-routing changes are not
+  part of this branch.
 
 ## Current State
 

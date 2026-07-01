@@ -6,8 +6,8 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN B CODE COMPLETE` — isolated branch prepared; final PR review and
-CI pending. Production/cutover remain closed.
+`BLI-141 PLAN B REVIEWED` — scoped implementation review is P1-free; draft PR
+#46 open. Production/cutover remain closed.
 
 Last updated: 2026-07-01 (Europe/Moscow)
 
@@ -24,8 +24,12 @@ server-authoritative create/status/GET endpoints are implemented locally.
 - Local evidence before branch split: 9/9 integration tests against local
   Supabase PostgreSQL, targeted and full Vitest, typecheck, lint, Prettier,
   build, and zero remaining synthetic fixtures.
-- Next action: rerun the acceptance pass on the isolated branch, push it, and
-  open one draft PR. Do not apply production DDL or enable the endpoint.
+- Draft PR: `#46` (`codex/bli-141-plan-b`). Initial CI/RLS/E2E/Vercel PASS.
+- Final scoped review found no new core P1. One contract omission was fixed:
+  `BOOKINGS_ENDPOINT_ENABLED` is now documented default-closed in `.env.example`.
+- Next action: verify CI after the final documentation fix, then leave the PR
+  draft until the owner chooses the next Plan C/cutover gate. Do not apply
+  production DDL or enable the endpoint.
 - BLI-124, BLI-134, Yandex Cloud, tooling, and model-routing changes are not
   part of this branch.
 

@@ -121,36 +121,36 @@ async function remoteFetchBookingById(bookingId: string): Promise<Booking | null
   return data as Booking;
 }
 
-// Create booking
+// Create booking — server-authoritative (BLI-141 Plan B). Клиент шлёт entity-id'ы +
+// idempotency_key; сервер выводит auth-uid сторон, применяет инварианты, возвращает истинный
+// результат. НЕТ local-first / ложного success: при ошибке — throw.
 export async function createBooking(data: {
-  parent_id: string;
-  nanny_id: string;
   request_id: string;
+  nanny_entity_id: string;
+  idempotency_key: string;
   date: string;
   amount?: string;
 }): Promise<Booking> {
-  const booking: Booking = {
-    id: crypto.randomUUID(),
-    ...data,
-    status: 'pending',
-    created_at: new Date().toISOString(),
-  };
+  const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
+  if (!token) throw new Error('Not authenticated');
 
-  upsertLocalBookings([booking]);
-  trackBookingCreated(booking.parent_id, booking.nanny_id);
-
-  try {
-    const remote = await remoteSaveBooking(booking);
-    if (remote) {
-      upsertLocalBookings([remote]);
-      clearPendingBooking(remote.id);
-      return remote;
-    }
-  } catch (e) {
-    console.error('[Booking] remote save failed:', e);
+  const response = await fetch('/api/bookings?op=create', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  const contentType = response.headers.get('content-type') || '';
+  const payload = contentType.includes('application/json')
+    ? await response.json().catch(() => null)
+    : null;
+  if (!response.ok || !payload?.booking) {
+    throw new Error((payload?.error as string) || `create failed (${response.status})`);
   }
 
-  markPendingBooking(booking.id);
+  const booking = payload.booking as Booking;
+  upsertLocalBookings([booking]);
+  clearPendingBooking(booking.id);
+  trackBookingCreated(booking.parent_id, booking.nanny_id); // только после истинного success
   return booking;
 }
 

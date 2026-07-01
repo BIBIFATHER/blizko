@@ -17,7 +17,7 @@
 - Имя миграции: `supabase/migrations/20260630193000_bli141_expand_booking_integrity.sql`. Rollback: `scripts/sql/rollback_20260630193000.sql`.
 - Локальный DB-контейнер: `supabase_db_blizko_3`. Применение: `supabase db reset` (DB-only fallback при нездоровых контейнерах: `supabase db reset` пересоздаёт только БД из миграций). Guard-SQL — через `docker exec -i supabase_db_blizko_3 psql -U postgres -d postgres`.
 - Никаких секретов в миграциях/скриптах. Русский во всех артефактах; SQL-идентификаторы английские.
-- **Прод-precondition (Codex #4, для будущего прод-применения, НЕ локально):** «аддитивно» ≠ «без блокировок». `ALTER TABLE ... ADD CONSTRAINT UNIQUE` строит индекс со сканом `bookings` и берёт table-lock; на проде — сперва row-count/size-аудит `bookings`, задать `lock_timeout`, и решить normal vs `CREATE UNIQUE INDEX CONCURRENTLY` + `ADD CONSTRAINT ... USING INDEX` при значимой кардинальности/трафике. На локальной синтетике (текущая фаза) — normal DDL.
+- **Прод-precondition (Codex #4/re#2, для будущего прод-применения, НЕ локально):** «аддитивно» ≠ «без блокировок». `ALTER TABLE ... ADD CONSTRAINT UNIQUE` строит индекс со сканом `bookings` и берёт table-lock. **Форма DDL фиксируется в прод-runbook ДО approval (не оставлять открытой):** если `count(*) bookings` ≤ порога (напр. 50k) и трафик низкий → normal `ADD CONSTRAINT` под `lock_timeout='3s'`; иначе → `CREATE UNIQUE INDEX CONCURRENTLY bookings_idempotency_key_key ON bookings(idempotency_key)` **вне транзакции миграции** (CONCURRENTLY нельзя в txn), затем `ALTER TABLE ... ADD CONSTRAINT bookings_idempotency_key_key UNIQUE USING INDEX ...`. Row-count/size-аудит `bookings` — обязательный шаг прод-runbook. На локальной синтетике (текущая фаза) — normal DDL в одной транзакции.
 - **Type-обновления (Codex #6):** репо имеет РУЧНЫЕ TS-интерфейсы booking/confirmation (`src/services/booking.ts`, `confirmations.ts` — касты через `as`). План A **не требует** правок TS: новые колонки nullable и не читаются/пишутся кодом до Плана B. Плановое обновление интерфейсов (добавить опциональные поля) делает **План B** при подключении endpoints — зафиксировано здесь явно, не «если используются».
 
 ---
@@ -68,17 +68,32 @@ BEGIN
   ASSERT (SELECT string_agg(a.attname,',' ORDER BY a.attnum)
           FROM pg_constraint con JOIN pg_attribute a ON a.attrelid=con.conrelid AND a.attnum=ANY(con.conkey)
           WHERE con.conrelid=t_oid AND con.contype='p') = 'user_id', 'PK must be (user_id)';
-  -- state CHECK перечисляет ровно 4 состояния
-  ASSERT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid=t_oid AND contype='c'
-          AND pg_get_constraintdef(oid) ILIKE '%deleting%db_done%deleted%failed%'), 'state CHECK wrong';
+  -- state CHECK структурно: нормализованное определение равно ожидаемому
+  ASSERT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid=t_oid AND contype='c' AND conname='account_deletions_state_check'
+          AND pg_get_constraintdef(oid) =
+          E'CHECK ((state = ANY (ARRAY[''deleting''::text, ''db_done''::text, ''deleted''::text, ''failed''::text])))'),
+         'state CHECK not exactly the 4 expected states';
   -- НЕТ FK (переживает удаление auth.users)
   ASSERT NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid=t_oid AND contype='f'), 'account_deletions must NOT have FK';
   -- RLS включён
   ASSERT (SELECT relrowsecurity FROM pg_class WHERE oid=t_oid), 'RLS not enabled on account_deletions';
-  -- НИ anon НИ authenticated не имеют привилегий
-  ASSERT NOT EXISTS (SELECT 1 FROM information_schema.role_table_grants
-          WHERE table_schema='public' AND table_name='account_deletions'
-            AND grantee IN ('anon','authenticated')), 'anon/authenticated must have NO grants';
+  -- EFFECTIVE привилегии (покрывает PUBLIC + членство, не только прямые grants):
+  --   anon/authenticated не имеют НИ ОДНОЙ табличной привилегии
+  ASSERT NOT (has_table_privilege('anon','public.account_deletions','SELECT')
+           OR has_table_privilege('anon','public.account_deletions','INSERT')
+           OR has_table_privilege('anon','public.account_deletions','UPDATE')
+           OR has_table_privilege('anon','public.account_deletions','DELETE')),
+         'anon must have NO effective privileges';
+  ASSERT NOT (has_table_privilege('authenticated','public.account_deletions','SELECT')
+           OR has_table_privilege('authenticated','public.account_deletions','INSERT')
+           OR has_table_privilege('authenticated','public.account_deletions','UPDATE')
+           OR has_table_privilege('authenticated','public.account_deletions','DELETE')),
+         'authenticated must have NO effective privileges';
+  --   service_role сохраняет доступ (сервер пишет через него; RLS он обходит, grants — НЕТ)
+  ASSERT has_table_privilege('service_role','public.account_deletions','INSERT')
+     AND has_table_privilege('service_role','public.account_deletions','SELECT')
+     AND has_table_privilege('service_role','public.account_deletions','UPDATE'),
+         'service_role must retain access';
   RAISE NOTICE 'Task1 guards passed';
 END $$;
 ```
@@ -115,8 +130,9 @@ CREATE TABLE IF NOT EXISTS public.account_deletions (
 ALTER TABLE public.account_deletions OWNER TO postgres;
 
 -- Service-only lockdown (как phone_otps): RLS + снять клиентские grants.
--- Доступ только через service_role (обходит RLS/grants). Никаких policy для
--- anon/authenticated → полный deny на привилегийном уровне.
+-- service_role сохраняет свои дефолтные grants и обходит ТОЛЬКО RLS (не grants);
+-- сервер пишет через него. anon/authenticated: без grants и без policy → полный
+-- deny на привилегийном уровне (не только политикой).
 ALTER TABLE public.account_deletions ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.account_deletions FROM anon, authenticated;
 ```
@@ -155,28 +171,36 @@ git commit -m "feat(bli141): expand — таблица account_deletions (durabl
 
 ```sql
 DO $$
-DECLARE b_oid oid;
+DECLARE b_oid oid; nannies_oid oid; expect text;
 BEGIN
   SELECT c.oid INTO b_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
     WHERE n.nspname='public' AND c.relname='bookings';
-  -- ровно 5 новых колонок присутствуют
-  ASSERT (SELECT count(*) FROM pg_attribute WHERE attrelid=b_oid AND NOT attisdropped
+  SELECT c.oid INTO nannies_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relname='nannies';
+  -- ТОЧНЫЕ тип+nullability каждой из 5 колонок (format 'name:type:notnull')
+  expect := 'idempotency_key:text:f|idempotency_fingerprint:text:f|nanny_profile_id:text:f|'
+         || 'parent_erased_at:timestamp with time zone:f|nanny_erased_at:timestamp with time zone:f';
+  ASSERT (SELECT string_agg(attname||':'||format_type(atttypid,atttypmod)||':'||attnotnull::text,'|'
+                            ORDER BY array_position(ARRAY['idempotency_key','idempotency_fingerprint',
+                              'nanny_profile_id','parent_erased_at','nanny_erased_at'], attname))
+          FROM pg_attribute WHERE attrelid=b_oid AND NOT attisdropped
             AND attname IN ('idempotency_key','idempotency_fingerprint',
-                            'nanny_profile_id','parent_erased_at','nanny_erased_at')) = 5,
-         'bookings expand columns missing';
-  -- idempotency_key пока NULLABLE (NOT NULL — План E)
-  ASSERT NOT (SELECT attnotnull FROM pg_attribute WHERE attrelid=b_oid AND attname='idempotency_key'),
-         'idempotency_key must stay nullable in expand';
-  -- named UNIQUE constraint именно на (idempotency_key), имя совпадает с §4 дизайна
+                            'nanny_profile_id','parent_erased_at','nanny_erased_at')) = expect,
+         'bookings expand columns: wrong type/nullability set';
+  -- named UNIQUE constraint именно на (idempotency_key), имя = §4 дизайна
   ASSERT EXISTS (SELECT 1 FROM pg_constraint
           WHERE conrelid=b_oid AND conname='bookings_idempotency_key_key' AND contype='u'
             AND (SELECT string_agg(a.attname,',' ORDER BY a.attnum)
                  FROM pg_attribute a WHERE a.attrelid=b_oid AND a.attnum=ANY(pg_constraint.conkey))='idempotency_key'),
          'bookings_idempotency_key_key must be UNIQUE(idempotency_key)';
-  -- FK nanny_profile_id -> nannies ON DELETE SET NULL, scoped по таблице
-  ASSERT (SELECT confdeltype FROM pg_constraint
-          WHERE conrelid=b_oid AND conname='bookings_nanny_profile_id_fkey' AND contype='f') = 'n', -- 'n'=SET NULL
-         'nanny_profile_id FK must be ON DELETE SET NULL';
+  -- ПОЛНЫЙ FK-контракт: local col=nanny_profile_id, confrelid=public.nannies,
+  --   ref col=id, ON DELETE SET NULL
+  ASSERT EXISTS (SELECT 1 FROM pg_constraint con
+          WHERE con.conrelid=b_oid AND con.conname='bookings_nanny_profile_id_fkey' AND con.contype='f'
+            AND con.confrelid=nannies_oid AND con.confdeltype='n'
+            AND (SELECT a.attname FROM pg_attribute a WHERE a.attrelid=b_oid AND a.attnum=con.conkey[1])='nanny_profile_id'
+            AND (SELECT a.attname FROM pg_attribute a WHERE a.attrelid=nannies_oid AND a.attnum=con.confkey[1])='id'),
+         'nanny_profile_id FK contract wrong (col/ref/ondelete)';
   RAISE NOTICE 'Task2 guards passed';
 END $$;
 ```
@@ -250,15 +274,22 @@ git commit -m "feat(bli141): expand — nullable-колонки bookings (idempo
 
 ```sql
 DO $$
+DECLARE c_oid oid; expect text;
 BEGIN
-  ASSERT (SELECT count(*) FROM information_schema.columns
-          WHERE table_schema='public' AND table_name='booking_confirmations'
-            AND column_name IN ('recipient_role','recipient_user_id')) = 2,
-         'booking_confirmations recipient columns missing';
-  ASSERT (SELECT data_type FROM information_schema.columns
-          WHERE table_schema='public' AND table_name='booking_confirmations'
-            AND column_name='recipient_user_id') = 'uuid',
-         'recipient_user_id not uuid';
+  SELECT c.oid INTO c_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relname='booking_confirmations';
+  -- ТОЧНЫЕ тип+nullability обеих колонок (nullable в expand; CHECK/backfill — План D/E)
+  expect := 'recipient_role:text:f|recipient_user_id:uuid:f';
+  ASSERT (SELECT string_agg(attname||':'||format_type(atttypid,atttypmod)||':'||attnotnull::text,'|'
+                            ORDER BY array_position(ARRAY['recipient_role','recipient_user_id'], attname))
+          FROM pg_attribute WHERE attrelid=c_oid AND NOT attisdropped
+            AND attname IN ('recipient_role','recipient_user_id')) = expect,
+         'booking_confirmations recipient columns: wrong type/nullability set';
+  -- никаких неожиданных FK на новых колонках (recipient_user_id обезличивается -> без FK к auth.users)
+  ASSERT NOT EXISTS (SELECT 1 FROM pg_constraint con WHERE con.conrelid=c_oid AND con.contype='f'
+            AND (SELECT a.attname FROM pg_attribute a WHERE a.attrelid=c_oid AND a.attnum=con.conkey[1])
+                IN ('recipient_role','recipient_user_id')),
+         'recipient columns must have NO FK';
   RAISE NOTICE 'Task3 guards passed';
 END $$;
 ```
@@ -402,7 +433,11 @@ git commit -m "feat(bli141): expand — rollback-скрипт + доказате
 
 ## Out of scope (следующие планы)
 
-- План B: create/status endpoints, idempotency-алгоритм, provenance-вывод.
+- План B: create/status endpoints, idempotency-алгоритм, provenance-вывод. **Обяз.
+  интеграционный тест (Codex re#2):** реальная форма ошибки `SQLSTATE 23505` от
+  Supabase/PostgREST — подтвердить, что `constraint_name` (`bookings_idempotency_key_key`
+  vs `bookings_active_pair_uq`) доступен структурно (поле `code`+`constraint`), а не
+  только парсингом текста `message/details`; ветвление endpoint строить на надёжном поле.
 - План C: delete-account lifecycle + reconciler (использует `account_deletions`).
 - План D: confirmations server-authoritative + authz по recipient.
 - План E: backfill → NOT NULL/canonical CHECK/partial unique active-index/FK SET NULL на uid/RLS-split/REVOKE grants (contract-lockdown).

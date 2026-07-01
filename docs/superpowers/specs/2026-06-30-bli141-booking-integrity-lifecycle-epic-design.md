@@ -140,11 +140,12 @@ CREATE TABLE account_deletions (
 - **State-machine:** `deleting` → (БД-cleanup COMMIT) → `db_done` → (Auth-delete ok)
   → `deleted`; ошибка Auth-delete → остаётся `db_done`, растёт `attempts`; после N
   попыток → `failed` + alert.
-- **Lock order (единый межпроцессный, против deadlock, Codex План B round6 P1):**
+- **Lock order (единый межпроцессный, против deadlock, Codex План B round6/7/8 P1):**
   строго по приоритету ТАБЛИЦ, одинаково в create И lifecycle:
   **`parents` → `nannies` → `account_deletions` → `bookings`**; при нескольких
-  строках одной таблицы — по возрастанию `id` внутри неё. НЕ сортировать по
-  id-значению МЕЖДУ таблицами (иначе create=parent-first и lifecycle=id-sort могут
+  строках одной таблицы — по возрастанию её КЛЮЧА: `parents.id`, `nannies.id`,
+  **`account_deletions.user_id`** (у неё НЕТ `id`), `bookings.id`. НЕ сортировать по
+  значению МЕЖДУ таблицами (иначе create=parent-first и lifecycle=key-sort могут
   взять разные первые строки → deadlock). Create лочит `parents(request_id)` затем
   `nannies(nanny_entity_id)` — это и есть канон; lifecycle обязан следовать тому же.
 - **Reconciler** (cron/worker): берёт `db_done` с истёкшим `lease_until`, ставит
@@ -242,10 +243,14 @@ Cron не используется (нет авто-`completed`); зависша
 
 0. **Discover без row-lock:** SELECT id/пары затронутых bookings уходящей стороны
    (какие `parents.id`/`nannies.id` участвуют) — только чтение, без `FOR UPDATE`.
-1. **Lock пары в порядке C10:** `SELECT … FOR UPDATE` на нужных `parents` (по `id` asc),
-   затем на `nannies` (по `id` asc). Это сериализует create↔delete по паре (create
-   лочит те же строки тем же порядком) — **этим** закрывается гонка create-vs-delete,
-   НЕ флагом-первым.
+1. **Lock в порядке C10, ВКЛЮЧАЯ СВОЮ profile-строку:** `SELECT … FOR UPDATE`
+   сначала на **собственной строке уходящего** — `parents` уходящего (если он
+   родитель) и/или `nannies` (если няня) — **безусловно, даже при нуле бронирований**
+   (Codex round8 P1): это точка сериализации, т.к. новый create для пары с этим
+   пользователем лочит ровно эту `parents(request_id)`/`nannies(nanny_entity_id)`
+   строку. Затем — `parents`/`nannies` затронутых пар (по ключу asc, порядок C10).
+   **Этим** (а не флагом-первым) закрывается гонка create-vs-delete: zero-booking
+   create не проскочит guard до флага, т.к. упрётся в лок profile-строки.
 2. **Поставить deletion-флаг:** upsert `account_deletions.state='deleting'` (§3.1)
    ПОСЛЕ parents/nannies-локов (C10). Флаг делает guard видимым для последующих create.
 3. **Удалить незавершённые без оплаты** (status='pending' AND нет подтверждённого

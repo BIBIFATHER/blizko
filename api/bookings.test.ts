@@ -33,7 +33,7 @@ const baseBody = {
   date: '2026-07-10',
 };
 const makeReq = (body: unknown) =>
-  ({ method: 'POST', headers: {}, query: { op: 'create' }, body } as unknown as VercelRequest);
+  ({ method: 'POST', headers: {}, query: { op: 'create' }, body }) as unknown as VercelRequest;
 
 function canonAmt(raw: string) {
   const [i, f = ''] = raw.split('.');
@@ -186,7 +186,10 @@ describe('POST /api/bookings?op=create', () => {
 
   it('400 on missing fields', async () => {
     const res = createMockResponse();
-    await handler(makeReq({ request_id: '', nanny_entity_id: '', idempotency_key: '', date: '' }), res);
+    await handler(
+      makeReq({ request_id: '', nanny_entity_id: '', idempotency_key: '', date: '' }),
+      res,
+    );
     expect(res.statusCode).toBe(400);
   });
 
@@ -221,7 +224,10 @@ describe('POST /api/bookings?op=create', () => {
   it('same-key different-payload → 409', async () => {
     connect.mockResolvedValue(
       mockClient({
-        'WHERE idempotency_key': { rows: [{ id: 'b1', idempotency_fingerprint: 'sha256:v1:OTHER' }], rowCount: 1 },
+        'WHERE idempotency_key': {
+          rows: [{ id: 'b1', idempotency_fingerprint: 'sha256:v1:OTHER' }],
+          rowCount: 1,
+        },
         BEGIN: { rows: [] },
         ROLLBACK: { rows: [] },
       }),
@@ -258,12 +264,15 @@ describe('POST /api/bookings?op=status', () => {
   beforeEach(() => connect.mockReset());
   afterEach(() => vi.restoreAllMocks());
   const statusReq = (body: unknown) =>
-    ({ method: 'POST', headers: {}, query: { op: 'status' }, body } as unknown as VercelRequest);
+    ({ method: 'POST', headers: {}, query: { op: 'status' }, body }) as unknown as VercelRequest;
 
   it('nanny moves confirmed → active (200)', async () => {
     const { verifyBearerAdmin, verifyBearerUser } = await import('./_auth.js');
     (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce(null);
-    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({ id: 'nanny-uid', email: 'n@x' });
+    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({
+      id: 'nanny-uid',
+      email: 'n@x',
+    });
     connect.mockResolvedValue(
       mockClient({
         'FROM bookings WHERE id': {
@@ -277,14 +286,20 @@ describe('POST /api/bookings?op=status', () => {
       }),
     );
     const res = createMockResponse();
-    await handler(statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }), res);
+    await handler(
+      statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }),
+      res,
+    );
     expect(res.statusCode).toBe(200);
   });
 
   it('parent cannot move confirmed → active (403)', async () => {
     const { verifyBearerAdmin, verifyBearerUser } = await import('./_auth.js');
     (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce(null);
-    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({ id: 'parent-uid', email: 'p@x' });
+    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({
+      id: 'parent-uid',
+      email: 'p@x',
+    });
     connect.mockResolvedValue(
       mockClient({
         'FROM bookings WHERE id': {
@@ -296,13 +311,19 @@ describe('POST /api/bookings?op=status', () => {
       }),
     );
     const res = createMockResponse();
-    await handler(statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }), res);
+    await handler(
+      statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }),
+      res,
+    );
     expect(res.statusCode).toBe(403);
   });
 
   it('stale expected_status → 409 (real status ≠ expected)', async () => {
     const { verifyBearerAdmin } = await import('./_auth.js');
-    (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce({ id: 'admin-1', email: 'admin@example.com' });
+    (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce({
+      id: 'admin-1',
+      email: 'admin@example.com',
+    });
     connect.mockResolvedValue(
       mockClient({
         'FROM bookings WHERE id': {
@@ -315,7 +336,10 @@ describe('POST /api/bookings?op=status', () => {
       }),
     );
     const res = createMockResponse();
-    await handler(statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }), res);
+    await handler(
+      statusReq({ booking_id: 'b1', expected_status: 'confirmed', to_status: 'active' }),
+      res,
+    );
     expect(res.statusCode).toBe(409);
   });
 
@@ -332,9 +356,15 @@ describe('POST /api/bookings?op=status', () => {
   it('non-admin invalid-pair → 400 (matrix ДО role; parent pending→active НЕ маскируется 403)', async () => {
     const { verifyBearerAdmin, verifyBearerUser } = await import('./_auth.js');
     (verifyBearerAdmin as unknown as AuthMock).mockResolvedValueOnce(null);
-    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({ id: 'parent-uid', email: 'p@x' });
+    (verifyBearerUser as unknown as AuthMock).mockResolvedValueOnce({
+      id: 'parent-uid',
+      email: 'p@x',
+    });
     const res = createMockResponse();
-    await handler(statusReq({ booking_id: 'b1', expected_status: 'pending', to_status: 'active' }), res);
+    await handler(
+      statusReq({ booking_id: 'b1', expected_status: 'pending', to_status: 'active' }),
+      res,
+    );
     expect(res.statusCode).toBe(400);
     expect(connect).not.toHaveBeenCalled();
   });

@@ -15,7 +15,9 @@ vi.mock('./supabase', () => ({
 }));
 
 const trackBookingCreated = vi.fn();
-vi.mock('./analytics', () => ({ trackBookingCreated: (...a: unknown[]) => trackBookingCreated(...a) }));
+vi.mock('./analytics', () => ({
+  trackBookingCreated: (...a: unknown[]) => trackBookingCreated(...a),
+}));
 vi.mock('./matchingFeedback', () => ({ recordMatchOutcome: vi.fn() }));
 
 import { createBooking } from './booking';

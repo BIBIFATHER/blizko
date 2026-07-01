@@ -6,7 +6,8 @@ import { verifyBearerAdmin, verifyBearerUser } from './_auth.js';
 import { getDbPool } from './_db.js';
 import { logError } from './_logScrub.js';
 
-const json = (res: VercelResponse, status: number, payload: unknown) => res.status(status).json(payload);
+const json = (res: VercelResponse, status: number, payload: unknown) =>
+  res.status(status).json(payload);
 
 const ACTIVE = ['pending', 'confirmed', 'active'];
 const ELIGIBLE_PARENT_STATUS = new Set(['new', 'in_review']); // NULL тоже eligible (C2)
@@ -55,9 +56,12 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
   if (!request_id || !nanny_entity_id || !idempotency_key || !date) {
     return json(res, 400, { error: 'request_id, nanny_entity_id, idempotency_key, date required' });
   }
-  if (!UUID_RE.test(idempotency_key)) return json(res, 400, { error: 'idempotency_key must be a UUID' });
-  if (!isValidCalendarDate(date)) return json(res, 400, { error: 'date must be a valid YYYY-MM-DD' });
-  if (request_id.length > 128 || nanny_entity_id.length > 128) return json(res, 400, { error: 'id too long' });
+  if (!UUID_RE.test(idempotency_key))
+    return json(res, 400, { error: 'idempotency_key must be a UUID' });
+  if (!isValidCalendarDate(date))
+    return json(res, 400, { error: 'date must be a valid YYYY-MM-DD' });
+  if (request_id.length > 128 || nanny_entity_id.length > 128)
+    return json(res, 400, { error: 'id too long' });
   // amount: present-but-not-string → 400 (не молча undefined); string → validate → canon NNNN.NN.
   let amount: string | undefined;
   if (body.amount != null) {
@@ -73,7 +77,9 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
     await client.query('BEGIN');
     // 1. IDEMPOTENCY-FIRST: проверить ключ ДО всех mutable-guards, чтобы replay был
     //    guard-независим (статус заявки/аккаунт мог измениться).
-    const existing = await client.query('SELECT * FROM bookings WHERE idempotency_key = $1', [idempotency_key]);
+    const existing = await client.query('SELECT * FROM bookings WHERE idempotency_key = $1', [
+      idempotency_key,
+    ]);
     if (existing.rowCount && existing.rowCount > 0) {
       const row = existing.rows[0];
       await client.query('ROLLBACK'); // read-only ветка
@@ -85,7 +91,9 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
       `SELECT user_id, payload->>'status' AS status FROM parents WHERE id = $1 FOR UPDATE`,
       [request_id],
     );
-    const n = await client.query('SELECT user_id FROM nannies WHERE id = $1 FOR UPDATE', [nanny_entity_id]);
+    const n = await client.query('SELECT user_id FROM nannies WHERE id = $1 FOR UPDATE', [
+      nanny_entity_id,
+    ]);
     if (p.rowCount === 0 || n.rowCount === 0) {
       await client.query('ROLLBACK');
       return json(res, 404, { error: 'request or nanny not found' });
@@ -102,7 +110,9 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
     //     одним ключом оба промахнулись на шаге 1 (до лока); после сериализации на
     //     parents/nannies-локе победитель уже вставил строку — проигравший обязан вернуть
     //     200 replay, НЕ упасть в pair-cardinality (409). Ключ теперь виден под локом.
-    const again = await client.query('SELECT * FROM bookings WHERE idempotency_key = $1', [idempotency_key]);
+    const again = await client.query('SELECT * FROM bookings WHERE idempotency_key = $1', [
+      idempotency_key,
+    ]);
     if (again.rowCount && again.rowCount > 0) {
       const row = again.rows[0];
       await client.query('ROLLBACK');
@@ -115,9 +125,10 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
       return json(res, 409, { error: 'request is not eligible for booking' });
     }
     // 5. deletion-guard (C4): любая строка на любую сторону (в т.ч. state='deleted')
-    const del = await client.query(`SELECT 1 FROM account_deletions WHERE user_id = ANY($1::uuid[]) LIMIT 1`, [
-      [parent_id, nanny_id],
-    ]);
+    const del = await client.query(
+      `SELECT 1 FROM account_deletions WHERE user_id = ANY($1::uuid[]) LIMIT 1`,
+      [[parent_id, nanny_id]],
+    );
     if (del.rowCount && del.rowCount > 0) {
       await client.query('ROLLBACK');
       return json(res, 409, { error: 'a party account is being deleted' });
@@ -137,7 +148,16 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
         `INSERT INTO bookings (parent_id, nanny_id, request_id, nanny_profile_id, date, amount,
                                status, idempotency_key, idempotency_fingerprint)
          VALUES ($1,$2,$3,$4,$5,$6,'pending',$7,$8) RETURNING *`,
-        [parent_id, nanny_id, request_id, nanny_entity_id, date, amount ?? null, idempotency_key, fingerprint],
+        [
+          parent_id,
+          nanny_id,
+          request_id,
+          nanny_entity_id,
+          date,
+          amount ?? null,
+          idempotency_key,
+          fingerprint,
+        ],
       );
       await client.query('COMMIT');
       return json(res, 201, { booking: ins.rows[0] });
@@ -145,7 +165,9 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
       await client.query('ROLLBACK');
       const err = e as { code?: string; constraint?: string };
       if (err?.code === '23505' && err?.constraint === 'bookings_idempotency_key_key') {
-        const ex = await client.query('SELECT * FROM bookings WHERE idempotency_key = $1', [idempotency_key]);
+        const ex = await client.query('SELECT * FROM bookings WHERE idempotency_key = $1', [
+          idempotency_key,
+        ]);
         if (ex.rowCount && ex.rows[0].idempotency_fingerprint === fingerprint) {
           return json(res, 200, { booking: ex.rows[0] });
         }
@@ -182,21 +204,25 @@ async function updateStatus(req: VercelRequest, res: VercelResponse) {
   const body = (req.body ?? {}) as Record<string, unknown>;
   const booking_id = typeof body.booking_id === 'string' ? body.booking_id.trim() : '';
   const to_status = typeof body.to_status === 'string' ? body.to_status.trim() : '';
-  const expected_status = typeof body.expected_status === 'string' ? body.expected_status.trim() : '';
+  const expected_status =
+    typeof body.expected_status === 'string' ? body.expected_status.trim() : '';
   const rule = TRANSITIONS[to_status];
   // Нормативный порядок (C7): auth(401,выше) → presence+matrix(400) → load booking(404)
   //   → role(403) → optimistic update(409). Matrix-membership (expected∈rule.from) ЗДЕСЬ,
   //   ДО role — иначе невозможная пара маскируется 403 вместо 400.
   if (!booking_id || !rule || !expected_status || !rule.from.includes(expected_status)) {
-    return json(res, 400, { error: 'booking_id + valid (expected_status → to_status) transition required' });
+    return json(res, 400, {
+      error: 'booking_id + valid (expected_status → to_status) transition required',
+    });
   }
 
   const client = await getDbPool().connect();
   try {
     await client.query('BEGIN');
-    const b = await client.query('SELECT id, parent_id, nanny_id, status FROM bookings WHERE id = $1 FOR UPDATE', [
-      booking_id,
-    ]);
+    const b = await client.query(
+      'SELECT id, parent_id, nanny_id, status FROM bookings WHERE id = $1 FOR UPDATE',
+      [booking_id],
+    );
     if (b.rowCount === 0) {
       await client.query('ROLLBACK');
       return json(res, 404, { error: 'booking not found' });
@@ -215,11 +241,10 @@ async function updateStatus(req: VercelRequest, res: VercelResponse) {
       return json(res, 403, { error: 'actor not allowed for this transition' });
     }
     // optimistic: применяем только если реальный статус == expected_status клиента.
-    const upd = await client.query(`UPDATE bookings SET status = $1 WHERE id = $2 AND status = $3 RETURNING *`, [
-      to_status,
-      booking_id,
-      expected_status,
-    ]);
+    const upd = await client.query(
+      `UPDATE bookings SET status = $1 WHERE id = $2 AND status = $3 RETURNING *`,
+      [to_status, booking_id, expected_status],
+    );
     if (upd.rowCount === 0) {
       await client.query('ROLLBACK');
       return json(res, 409, { error: 'stale status: booking is not in expected_status' });
@@ -256,7 +281,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(req.headers.origin, res);
   if (req.method === 'OPTIONS') return res.status(204).end();
   // C9 default-closed gate: маршрут неактивен, пока env не включён явно.
-  if (process.env.BOOKINGS_ENDPOINT_ENABLED !== 'true') return json(res, 404, { error: 'Not found' });
+  if (process.env.BOOKINGS_ENDPOINT_ENABLED !== 'true')
+    return json(res, 404, { error: 'Not found' });
   // Первый барьер — по IP (до auth). Actor-scoped лимит — внутри операций (C5).
   const rl = rateLimit(req, { max: 60, windowMs: 60_000, prefix: 'bookings-ip' });
   if (!rl.ok) return json(res, 429, { error: 'Too many requests' });

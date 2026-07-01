@@ -140,8 +140,13 @@ CREATE TABLE account_deletions (
 - **State-machine:** `deleting` → (БД-cleanup COMMIT) → `db_done` → (Auth-delete ok)
   → `deleted`; ошибка Auth-delete → остаётся `db_done`, растёт `attempts`; после N
   попыток → `failed` + alert.
-- **Lock order (детерминированный, против deadlock):** всегда parents/nannies
-  (`FOR UPDATE`, по возрастанию id) → затем `account_deletions` (upsert) → затем bookings.
+- **Lock order (единый межпроцессный, против deadlock, Codex План B round6 P1):**
+  строго по приоритету ТАБЛИЦ, одинаково в create И lifecycle:
+  **`parents` → `nannies` → `account_deletions` → `bookings`**; при нескольких
+  строках одной таблицы — по возрастанию `id` внутри неё. НЕ сортировать по
+  id-значению МЕЖДУ таблицами (иначе create=parent-first и lifecycle=id-sort могут
+  взять разные первые строки → deadlock). Create лочит `parents(request_id)` затем
+  `nannies(nanny_entity_id)` — это и есть канон; lifecycle обязан следовать тому же.
 - **Reconciler** (cron/worker): берёт `db_done` с истёкшим `lease_until`, ставит
   lease, повторяет Auth-delete, обновляет state. Idempotent.
 - **Create deletion-guard (§3 шаг 5):** отвергает create при **любой** строке

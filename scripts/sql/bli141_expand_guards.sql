@@ -77,3 +77,23 @@ BEGIN
          'nanny_profile_id FK contract wrong (col/ref/ondelete)';
   RAISE NOTICE 'Task2 guards passed';
 END $$;
+
+DO $$
+DECLARE c_oid oid; expect text;
+BEGIN
+  SELECT c.oid INTO c_oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND c.relname='booking_confirmations';
+  -- ТОЧНЫЕ тип+nullability обеих колонок (nullable в expand; CHECK/backfill — План D/E)
+  expect := 'recipient_role:text:false|recipient_user_id:uuid:false';
+  ASSERT (SELECT string_agg(attname||':'||format_type(atttypid,atttypmod)||':'||attnotnull::text,'|'
+                            ORDER BY array_position(ARRAY['recipient_role','recipient_user_id'], attname))
+          FROM pg_attribute WHERE attrelid=c_oid AND NOT attisdropped
+            AND attname IN ('recipient_role','recipient_user_id')) = expect,
+         'booking_confirmations recipient columns: wrong type/nullability set';
+  -- никаких неожиданных FK на новых колонках (recipient_user_id обезличивается -> без FK к auth.users)
+  ASSERT NOT EXISTS (SELECT 1 FROM pg_constraint con WHERE con.conrelid=c_oid AND con.contype='f'
+            AND (SELECT a.attname FROM pg_attribute a WHERE a.attrelid=c_oid AND a.attnum=con.conkey[1])
+                IN ('recipient_role','recipient_user_id')),
+         'recipient columns must have NO FK';
+  RAISE NOTICE 'Task3 guards passed';
+END $$;

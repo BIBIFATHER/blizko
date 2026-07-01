@@ -43,3 +43,9 @@ ALTER TABLE public.bookings
 ALTER TABLE public.bookings
   ADD CONSTRAINT bookings_nanny_profile_id_fkey
   FOREIGN KEY (nanny_profile_id) REFERENCES public.nannies(id) ON DELETE SET NULL;
+
+-- 3. booking_confirmations — явный адресат (дизайн §8). Nullable в expand;
+--    CHECK(recipient_role IN ('family','nanny')) и backfill — План D/E.
+ALTER TABLE public.booking_confirmations
+  ADD COLUMN IF NOT EXISTS recipient_role    text,
+  ADD COLUMN IF NOT EXISTS recipient_user_id uuid;

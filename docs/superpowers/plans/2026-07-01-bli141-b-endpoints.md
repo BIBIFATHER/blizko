@@ -1,4 +1,4 @@
-# BLI-141 План B — Server-authoritative endpoints Implementation Plan (rev 10)
+# BLI-141 План B — Server-authoritative endpoints Implementation Plan (rev 11)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -77,6 +77,10 @@ BEGIN
 2. SELECT user_id, (payload->>'status') AS status FROM parents WHERE id=$1 FOR UPDATE
    SELECT user_id FROM nannies WHERE id=$1 FOR UPDATE          → 404 если нет
 3. parent_id/nanny_id NULL → 422
+3.5 IDEMPOTENCY RE-CHECK под локом (Codex round9): тот же SELECT по ключу — теперь
+    победитель конкурентной гонки уже виден; нашли+fp совпал → 200 replay, иначе 409.
+    ← закрывает: два конкурентных запроса с одним ключом оба промахнулись на шаге 1,
+      проигравший иначе упал бы в pair-cardinality (409) вместо replay (200).
 4. eligibility: status ∉ {NULL,'new','in_review'} → 409 (C2)
 5. deletion-guard: любая строка account_deletions для [parent_id,nanny_id] → 409 (C4)
 6. pair-cardinality: активная бронь пары есть → 409 (C1)
@@ -350,6 +354,18 @@ async function createBooking(req: VercelRequest, res: VercelResponse) {
     if (!parent_id || !nanny_id) {
       await client.query('ROLLBACK');
       return json(res, 422, { error: 'both parties must have auth accounts' });
+    }
+    // 3.5. IDEMPOTENCY RE-CHECK под локом (Codex round9 P1): два конкурентных запроса с
+    //     одним ключом оба промахнулись на шаге 1 (до лока); после сериализации на
+    //     parents/nannies-локе победитель уже вставил строку — проигравший обязан вернуть
+    //     200 replay, НЕ упасть в pair-cardinality (409). Ключ теперь виден под локом.
+    const again = await client.query(
+      'SELECT * FROM bookings WHERE idempotency_key = $1', [idempotency_key]);
+    if (again.rowCount && again.rowCount > 0) {
+      const row = again.rows[0];
+      await client.query('ROLLBACK');
+      if (row.idempotency_fingerprint === fingerprint) return json(res, 200, { booking: row });
+      return json(res, 409, { error: 'idempotency key reused with different payload' });
     }
     // 4. eligibility (C2): NULL или new/in_review
     if (parentStatus != null && !ELIGIBLE_PARENT_STATUS.has(parentStatus)) {
@@ -867,6 +883,8 @@ try {
 }
 ```
 Assertion инвариантна к тому, кто выиграл гонку. `waitFor` по `pg_stat_activity` доказывает, что **оба** handler'а реально взяли DB-client и ждут именно row-lock (а не pool-коннект) — закрывает round5-дыру. DI — из Step 1 (единый pool `max>=3`, не app-singleton).
+
+8. **Concurrency same-key (Codex round9 P1):** тот же barrier-рецепт, но A и B шлют **ОДИН** `idempotency_key` (`uuidA === uuidB`) и одинаковый payload → assert `sort([resA,resB]) == [200, 201]` (победитель вставил 201; проигравший под локом сделал idempotency re-check шаг 3.5 → **200 replay**, НЕ 409). Доказывает, что re-check под локом закрывает конкурентную идемпотентность.
 
 - [ ] **Step 3: Run**
 

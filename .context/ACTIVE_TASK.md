@@ -6,9 +6,9 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN C EXECUTION` — owner approved local TDD execution of rev4.
-Tasks 1–7 pending; execute in three batches with task-scoped commits.
-Production/cutover remain closed.
+`BLI-141 PLAN C CODE-READY LOCALLY` — Tasks 1–7 implemented and verified.
+Independent Claude review, scheduler activation, production DDL/deploy and
+cutover remain closed gates.
 
 Last updated: 2026-07-02 (Europe/Moscow)
 
@@ -86,6 +86,25 @@ locally; Plan C covers status/readers migration and account-deletion lifecycle.
 - Claude pre-task challenge was retried after limits returned but produced no
   output for about two minutes and was terminated under the bounded-wait rule.
   Mandatory independent review remains due on the completed implementation.
+- Batch 3 complete: PG lifecycle harness `92c10ad`; restrictive RLS migration +
+  rollback `7385a1e`. Clean `supabase db reset` applied the full migration
+  history; rollback verified helper absent + 0/10 policies, then forward reapply
+  passed again. Final local PG evidence: bookings 9/9 + deletion lifecycle 7/7.
+- Final self-review found and fixed a real schema-contract defect in `d10187a`:
+  the old lifecycle attempted NULL writes into NOT NULL matching/chat identity
+  columns. It now deletes those personal rows and nulls referral/admin FK
+  blockers; the real-PG regression covers all paths. Compliance register and
+  changelog synced in `1bed03e`.
+- Consolidated evidence after the fix: 279 unit tests PASS; 16 real-PG tests
+  PASS; typecheck PASS; build PASS; lint 0 errors (two known admin
+  exhaustive-deps warnings); Prettier/diff PASS; working tree clean.
+- Completed-diff `review:claude` was attempted with a five-finding bounded
+  scope but produced no output for ~2 minutes and was terminated. Do not call
+  the mandatory independent gate complete; retry when the reviewer command is
+  responsive.
+- Production status: code-ready locally only. Migration `20260702210000` is not
+  applied remotely, no deploy/flags/cutover occurred, and the 10-minute
+  reconciler schedule still needs a verified Pro or approved scheduler.
 
 ## Current State
 

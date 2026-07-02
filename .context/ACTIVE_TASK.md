@@ -6,8 +6,8 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN C PLANNING` — rev4 narrow re-check Confirmed for the five
-round-2 findings. Implementation awaits explicit owner approval.
+`BLI-141 PLAN C EXECUTION` — owner approved local TDD execution of rev4.
+Tasks 1–7 pending; execute in three batches with task-scoped commits.
 Production/cutover remain closed.
 
 Last updated: 2026-07-02 (Europe/Moscow)
@@ -53,9 +53,15 @@ locally; Plan C covers status/readers migration and account-deletion lifecycle.
   expressions could evade `NOT LIKE` under PostgreSQL three-valued logic.
   Follow-up `7c37a2f` uses `IS DISTINCT FROM` and `COALESCE`; re-check of only
   the five round-2 fixes is now P1/P2-free (Confirmed).
-- Next gate: explicit owner approval to execute Tasks 1–7 with local TDD and
-  task-scoped commits. Do not apply production DDL, deploy, enable flags, or
-  perform cutover.
+- Execution gate passed: Tasks 1–7 may run with local TDD and task-scoped
+  commits. Do not apply production DDL, deploy, enable flags, or perform
+  cutover.
+- Owner approved execution on 2026-07-02. The required pre-task
+  `review:claude` invocation was attempted and failed because Claude's session
+  limit is exhausted until 11:50 Europe/Moscow. This is recorded as the
+  coordination fallback; repeat independent review after implementation.
+- Current execution order: Tasks 1–3 client status/readers/UI; Tasks 4–5
+  lifecycle/reconciler; Tasks 6–7 PG integration/RLS migration+rollback.
 
 ## Current State
 

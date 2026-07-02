@@ -6,8 +6,9 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN C PLANNING` — Codex round 2 scoped review Rejected (3 P1,
-2 P2). Production/cutover remain closed.
+`BLI-141 PLAN C PLANNING` — rev4 narrow re-check Confirmed for the five
+round-2 findings. Implementation awaits explicit owner approval.
+Production/cutover remain closed.
 
 Last updated: 2026-07-02 (Europe/Moscow)
 
@@ -43,17 +44,18 @@ locally; Plan C covers status/readers migration and account-deletion lifecycle.
   IDs, fetch-reject handling, resurrection guards, confirmed `user_not_found`
   semantics, reconciler state ownership, real concurrency/cascade tests, and a
   fail-closed deletion write barrier for existing JWTs.
-- Codex round 2 scoped review (`890d61b..778ce80`) verified the current direct
-  writer inventory: all 10 tables are listed; the C10 barrier uses a refreshed
-  `pg_stat_activity` snapshot correctly. Verdict: Rejected — PC7 uses substring
-  matching instead of exact JSON error-code parsing; Task 7 proves behavior only
-  for `parents`, not all 10 generated policies; the RLS migration lacks an
-  atomic apply + exact postconditions + rollback runbook. P2: integration cleanup
-  swallows failures/no residue assertion; reconciler counters ignore completion
-  UPDATE rowCount on stale-worker no-ops.
-- Next gate: fold only these five scoped findings into a new revision and commit
-  it separately, then one narrow re-check. Do not start Tasks 1–7 until scoped
-  review is Confirmed and the owner approves.
+- Codex round 2 scoped review (`890d61b..778ce80`) returned five findings.
+  Plan C rev4 folds all five in commit `3f1d339`: exact Auth 404 JSON-code
+  parsing, ten-table RLS catalog proof, atomic migration + rollback rehearsal,
+  strict integration cleanup/residue assertion, and rowCount-correct reconciler
+  counters.
+- Narrow re-check found one defect in the new SQL assertion itself: NULL policy
+  expressions could evade `NOT LIKE` under PostgreSQL three-valued logic.
+  Follow-up `7c37a2f` uses `IS DISTINCT FROM` and `COALESCE`; re-check of only
+  the five round-2 fixes is now P1/P2-free (Confirmed).
+- Next gate: explicit owner approval to execute Tasks 1–7 with local TDD and
+  task-scoped commits. Do not apply production DDL, deploy, enable flags, or
+  perform cutover.
 
 ## Current State
 

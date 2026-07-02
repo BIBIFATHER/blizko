@@ -100,13 +100,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       [userId],
     );
     await client.query('DELETE FROM support_tickets WHERE family_id = $1', [userId]);
-    await client.query('UPDATE matching_outcomes SET parent_id = NULL WHERE parent_id = $1', [
+    // These identity columns are NOT NULL in the real schema. Delete personal
+    // feedback/chat rows instead of issuing impossible NULL updates.
+    await client.query('DELETE FROM matching_outcomes WHERE parent_id = $1 OR nanny_id = $1', [
       userId,
     ]);
-    await client.query('UPDATE matching_outcomes SET nanny_id = NULL WHERE nanny_id = $1', [
-      userId,
-    ]);
-    await client.query('UPDATE chat_messages SET sender_id = NULL WHERE sender_id = $1', [userId]);
+    await client.query('DELETE FROM chat_threads WHERE family_id = $1 OR nanny_id = $1', [userId]);
+    await client.query('DELETE FROM chat_messages WHERE sender_id = $1', [userId]);
+    await client.query('DELETE FROM chat_participants WHERE user_id = $1', [userId]);
+
+    // Remove remaining auth.users FK blockers while retaining minimized audit
+    // and referral records whose non-departing subject may still need them.
+    await client.query(
+      'UPDATE referrals SET referrer_id = NULL, referrer_name = NULL WHERE referrer_id = $1',
+      [userId],
+    );
+    await client.query('UPDATE admin_actions SET admin_id = NULL WHERE admin_id = $1', [userId]);
 
     const { rows: stateRows } = await client.query<{ state: string }>(
       `UPDATE account_deletions SET state = 'db_done', updated_at = now()

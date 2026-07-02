@@ -10,6 +10,9 @@ import type { MockVercelResponse } from './_testUtils';
 const identities = vi.hoisted(() => ({
   parentUid: crypto.randomUUID(),
   nannyUid: crypto.randomUUID(),
+  threadId: crypto.randomUUID(),
+  referralId: crypto.randomUUID(),
+  adminActionId: crypto.randomUUID(),
 }));
 
 const PG_URL = process.env.INTEGRATION_PG_URL;
@@ -74,6 +77,8 @@ describe.skipIf(!PG_URL)('PG integration: delete-account lifecycle', () => {
       await pool.query('DELETE FROM account_deletions WHERE user_id = ANY($1::uuid[])', [
         [PARENT_UID, NANNY_UID],
       ]);
+      await pool.query('DELETE FROM referrals WHERE id = $1', [identities.referralId]);
+      await pool.query('DELETE FROM admin_actions WHERE id = $1', [identities.adminActionId]);
       await pool.query('DELETE FROM parents WHERE id = $1', [REQ_ID]);
       await pool.query('DELETE FROM nannies WHERE id = $1', [NANNY_ID]);
       await pool.query('DELETE FROM auth.users WHERE id = ANY($1::uuid[])', [
@@ -83,10 +88,19 @@ describe.skipIf(!PG_URL)('PG integration: delete-account lifecycle', () => {
         `SELECT
            (SELECT count(*)::int FROM bookings WHERE request_id = $1 OR nanny_id = $2) +
            (SELECT count(*)::int FROM account_deletions WHERE user_id = ANY($4::uuid[])) +
+           (SELECT count(*)::int FROM referrals WHERE id = $5) +
+           (SELECT count(*)::int FROM admin_actions WHERE id = $6) +
            (SELECT count(*)::int FROM parents WHERE id = $1) +
            (SELECT count(*)::int FROM nannies WHERE id = $3) +
            (SELECT count(*)::int FROM auth.users WHERE id = ANY($4::uuid[])) AS remaining`,
-        [REQ_ID, NANNY_UID, NANNY_ID, [PARENT_UID, NANNY_UID]],
+        [
+          REQ_ID,
+          NANNY_UID,
+          NANNY_ID,
+          [PARENT_UID, NANNY_UID],
+          identities.referralId,
+          identities.adminActionId,
+        ],
       );
       expect(rows[0].remaining).toBe(0);
     } finally {
@@ -104,6 +118,8 @@ describe.skipIf(!PG_URL)('PG integration: delete-account lifecycle', () => {
       REQ_ID,
     ]);
     await pool.query('DELETE FROM account_deletions WHERE user_id = $1', [PARENT_UID]);
+    await pool.query('DELETE FROM referrals WHERE id = $1', [identities.referralId]);
+    await pool.query('DELETE FROM admin_actions WHERE id = $1', [identities.adminActionId]);
   });
 
   const makeCreateReq = () =>
@@ -244,6 +260,71 @@ describe.skipIf(!PG_URL)('PG integration: delete-account lifecycle', () => {
       PARENT_UID,
     ]);
     expect(state.rows[0].state).toBe('deleted');
+  });
+
+  it('cleans NOT NULL identity rows and nulls remaining auth FK blockers', async () => {
+    await pool.query(
+      `INSERT INTO matching_outcomes (parent_id, nanny_id, outcome)
+       VALUES ($1, $2, 'hired')`,
+      [PARENT_UID, NANNY_UID],
+    );
+    await pool.query(
+      `INSERT INTO chat_threads (id, type, family_id, nanny_id)
+       VALUES ($1, 'match', $2, $3)`,
+      [identities.threadId, PARENT_UID, NANNY_UID],
+    );
+    await pool.query(
+      `INSERT INTO chat_participants (thread_id, user_id, role)
+       VALUES ($1, $2, 'family')`,
+      [identities.threadId, PARENT_UID],
+    );
+    await pool.query(
+      `INSERT INTO chat_messages (thread_id, sender_id, text)
+       VALUES ($1, $2, 'synthetic lifecycle fixture')`,
+      [identities.threadId, PARENT_UID],
+    );
+    await pool.query(
+      `INSERT INTO referrals (id, referrer_id, referrer_name, code)
+       VALUES ($1, $2, 'Synthetic Parent', $3)`,
+      [identities.referralId, PARENT_UID, `it-ref-${process.pid}`],
+    );
+    await pool.query(
+      `INSERT INTO admin_actions (id, admin_id, action)
+       VALUES ($1, $2, 'synthetic_lifecycle_fixture')`,
+      [identities.adminActionId, PARENT_UID],
+    );
+
+    stubAuthFetchOk();
+    const deletion = createMockResponse();
+    await deleteAccountHandler(makeDeleteReq(), deletion);
+    expect(deletion.statusCode).toBe(200);
+
+    expect(
+      (await pool.query('SELECT 1 FROM matching_outcomes WHERE parent_id = $1', [PARENT_UID])).rows,
+    ).toHaveLength(0);
+    expect(
+      (await pool.query('SELECT 1 FROM chat_threads WHERE id = $1', [identities.threadId])).rows,
+    ).toHaveLength(0);
+    expect(
+      (await pool.query('SELECT 1 FROM chat_messages WHERE sender_id = $1', [PARENT_UID])).rows,
+    ).toHaveLength(0);
+    expect(
+      (await pool.query('SELECT 1 FROM chat_participants WHERE user_id = $1', [PARENT_UID])).rows,
+    ).toHaveLength(0);
+    expect(
+      (
+        await pool.query('SELECT referrer_id, referrer_name FROM referrals WHERE id = $1', [
+          identities.referralId,
+        ])
+      ).rows[0],
+    ).toMatchObject({ referrer_id: null, referrer_name: null });
+    expect(
+      (
+        await pool.query('SELECT admin_id FROM admin_actions WHERE id = $1', [
+          identities.adminActionId,
+        ])
+      ).rows[0].admin_id,
+    ).toBeNull();
   });
 
   it('blocks an existing authenticated JWT from restoring data after deletion starts', async () => {

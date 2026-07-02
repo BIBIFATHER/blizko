@@ -42,8 +42,12 @@ const successfulDbSteps = () => ({
   'UPDATE nannies': { rows: [], rowCount: 0 },
   'DELETE FROM support_messages': { rows: [], rowCount: 0 },
   'DELETE FROM support_tickets': { rows: [], rowCount: 0 },
-  'UPDATE matching_outcomes': { rows: [], rowCount: 0 },
-  'UPDATE chat_messages': { rows: [], rowCount: 0 },
+  'DELETE FROM matching_outcomes': { rows: [], rowCount: 0 },
+  'DELETE FROM chat_threads': { rows: [], rowCount: 0 },
+  'DELETE FROM chat_messages': { rows: [], rowCount: 0 },
+  'DELETE FROM chat_participants': { rows: [], rowCount: 0 },
+  'UPDATE referrals': { rows: [], rowCount: 0 },
+  'UPDATE admin_actions': { rows: [], rowCount: 0 },
   'UPDATE account_deletions': { rows: [{ state: 'db_done' }], rowCount: 1 },
   BEGIN: { rows: [], rowCount: 0 },
   COMMIT: { rows: [], rowCount: 0 },
@@ -80,6 +84,11 @@ describe('DELETE /api/auth/delete-account', () => {
       sql.findIndex((value) => value.includes('FROM nannies')),
     );
     expect(sql.some((value) => /DELETE FROM bookings\s+WHERE status = 'pending'/.test(value))).toBe(
+      true,
+    );
+    expect(sql.some((value) => value.includes('DELETE FROM matching_outcomes'))).toBe(true);
+    expect(sql.some((value) => value.includes('DELETE FROM chat_threads'))).toBe(true);
+    expect(sql.some((value) => value.includes('UPDATE referrals SET referrer_id = NULL'))).toBe(
       true,
     );
   });

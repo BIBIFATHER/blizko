@@ -154,38 +154,43 @@ export async function createBooking(data: {
   return booking;
 }
 
-// Update booking status
+// Update booking status — server-authoritative (BLI-141 Plan C). The server
+// validates the actor role, expected status and transition matrix.
 export async function updateBookingStatus(
   bookingId: string,
-  status: Booking['status'],
-): Promise<Booking | null> {
-  const local = getLocalBookings();
-  const localPrev = local.find((booking) => booking.id === bookingId);
-  const remotePrev = localPrev ? null : await remoteFetchBookingById(bookingId);
-  const prev = localPrev || remotePrev;
-  if (!prev) return null;
+  expectedStatus: Booking['status'],
+  toStatus: Booking['status'],
+): Promise<Booking> {
+  const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
+  if (!token) throw new Error('Not authenticated');
 
-  const updated: Booking = { ...prev, status };
-  upsertLocalBookings([updated]);
-
-  try {
-    const remote = await remoteSaveBooking(updated);
-    if (remote) {
-      upsertLocalBookings([remote]);
-      clearPendingBooking(remote.id);
-      // Record hired only after the booking is durably saved remotely.
-      // Avoids a false positive in the learning loop when remote save fails.
-      if ((status === 'confirmed' || status === 'completed') && prev.status !== status) {
-        void recordMatchOutcome(prev.parent_id, prev.nanny_id, 'hired');
-      }
-      return remote;
-    }
-  } catch (e) {
-    console.error('[Booking] status update failed:', e);
+  const response = await fetch('/api/bookings?op=status', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      booking_id: bookingId,
+      expected_status: expectedStatus,
+      to_status: toStatus,
+    }),
+  });
+  const contentType = response.headers.get('content-type') || '';
+  const payload = contentType.includes('application/json')
+    ? await response.json().catch(() => null)
+    : null;
+  if (!response.ok || !payload?.booking) {
+    throw new Error((payload?.error as string) || `status update failed (${response.status})`);
   }
 
-  markPendingBooking(updated.id);
-  return updated;
+  const booking = payload.booking as Booking;
+  if (
+    (toStatus === 'confirmed' || toStatus === 'completed') &&
+    expectedStatus !== toStatus &&
+    booking.parent_id &&
+    booking.nanny_id
+  ) {
+    void recordMatchOutcome(booking.parent_id, booking.nanny_id, 'hired');
+  }
+  return booking;
 }
 
 // Get bookings for a user (as parent or nanny)

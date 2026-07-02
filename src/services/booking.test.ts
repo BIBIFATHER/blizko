@@ -18,9 +18,12 @@ const trackBookingCreated = vi.fn();
 vi.mock('./analytics', () => ({
   trackBookingCreated: (...a: unknown[]) => trackBookingCreated(...a),
 }));
-vi.mock('./matchingFeedback', () => ({ recordMatchOutcome: vi.fn() }));
+const recordMatchOutcome = vi.fn();
+vi.mock('./matchingFeedback', () => ({
+  recordMatchOutcome: (...args: unknown[]) => recordMatchOutcome(...args),
+}));
 
-import { createBooking } from './booking';
+import { createBooking, updateBookingStatus } from './booking';
 
 describe('createBooking → server endpoint', () => {
   beforeEach(() => {
@@ -80,6 +83,77 @@ describe('createBooking → server endpoint', () => {
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
     await expect(createBooking(args)).rejects.toThrow();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('updateBookingStatus → server endpoint', () => {
+  beforeEach(() => {
+    getSession.mockClear();
+    recordMatchOutcome.mockReset();
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  it('POSTs to /api/bookings?op=status with bearer + body, returns booking (200)', async () => {
+    const booking = { id: 'b1', parent_id: 'p', nanny_id: 'n', status: 'confirmed' };
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ booking }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await updateBookingStatus('b1', 'pending', 'confirmed');
+    expect(result).toEqual(booking);
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('/api/bookings?op=status');
+    expect(init.method).toBe('POST');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer tok');
+    expect(JSON.parse(init.body as string)).toEqual({
+      booking_id: 'b1',
+      expected_status: 'pending',
+      to_status: 'confirmed',
+    });
+  });
+
+  it('throws on non-2xx (stale/403/etc — no false success)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: false,
+        status: 409,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ error: 'stale status: booking is not in expected_status' }),
+      })),
+    );
+
+    await expect(updateBookingStatus('b1', 'pending', 'confirmed')).rejects.toThrow(/stale/i);
+    expect(recordMatchOutcome).not.toHaveBeenCalled();
+  });
+
+  it('calls recordMatchOutcome("hired") only after success, on confirmed transition', async () => {
+    const booking = { id: 'b1', parent_id: 'p', nanny_id: 'n', status: 'confirmed' };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: true,
+        status: 200,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ booking }),
+      })),
+    );
+
+    await updateBookingStatus('b1', 'pending', 'confirmed');
+    expect(recordMatchOutcome).toHaveBeenCalledWith('p', 'n', 'hired');
+  });
+
+  it('throws when no session token', async () => {
+    getSession.mockResolvedValueOnce({ data: { session: null } } as never);
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(updateBookingStatus('b1', 'pending', 'confirmed')).rejects.toThrow();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

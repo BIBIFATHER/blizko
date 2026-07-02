@@ -24,6 +24,7 @@
     "format:check": "prettier --check '**/*.{ts,tsx,js,json,css,md}'",
     "review:codex": "bash scripts/review-with-codex.sh",
     "review:claude": "bash scripts/review-with-claude.sh",
+    "agent:state": "node scripts/agent-workflow.mjs check",
     "guard:git-scope": "bash scripts/git-scope-guard.sh",
     "guard:git-scope:test": "bash scripts/__tests__/git-scope-guard.test.sh",
     "review:timeout:test": "node scripts/__tests__/run-with-timeout.test.mjs",

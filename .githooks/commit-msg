@@ -2,5 +2,5 @@
 set -euo pipefail
 
 root="$(git rev-parse --show-toplevel)"
+node "$root/scripts/agent-workflow.mjs" commit-check
 exec "$root/scripts/git-scope-guard.sh" "$1"
-

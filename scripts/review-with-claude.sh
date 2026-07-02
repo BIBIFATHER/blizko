@@ -5,6 +5,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLAUDE_BIN="${CLAUDE_BIN:-$(command -v claude || true)}"
 CLAUDE_REVIEW_MIN_VERSION="2.1.170"
 
+node "$ROOT_DIR/scripts/agent-workflow.mjs" review-preflight claude
+
 if [[ -z "$CLAUDE_BIN" || ! -x "$CLAUDE_BIN" ]]; then
   echo "Claude binary not found or not executable." >&2
   exit 1

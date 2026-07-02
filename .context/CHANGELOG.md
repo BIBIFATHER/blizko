@@ -2,6 +2,16 @@
 
 ---
 
+## 2026-07-02 — SHA-bound Claude/Codex workflow guard
+
+- Added a machine-readable maker/reviewer state machine bound to branch,
+  artifact commit SHA, review phase, next actor, and a two-round cap.
+- Review commands now reject stale/dirty/wrong-actor reviews before invoking a
+  model. The commit hook keeps reviewers read-only outside workflow verdict
+  files.
+- Added durable SHA-bound review artifacts and tests for stale branches,
+  invalid phases, stale SHAs, and review-loop limits.
+
 ## 2026-07-02 — BLI-141 Plan C local implementation
 
 - Switched booking status writes and readers to server-authoritative contracts;

@@ -62,6 +62,14 @@ locally; Plan C covers status/readers migration and account-deletion lifecycle.
   coordination fallback; repeat independent review after implementation.
 - Current execution order: Tasks 1–3 client status/readers/UI; Tasks 4–5
   lifecycle/reconciler; Tasks 6–7 PG integration/RLS migration+rollback.
+- Batch 1 complete: Task 1 `19fa7b7`, Task 2 `db2552b`, Task 3 `e2e8188`.
+  Booking status writes now use the server expected-status contract; readers
+  are server-authoritative with no local booking cache; nullable anonymized
+  participants and reader/status errors are handled in both admin surfaces and
+  the profile dashboard.
+- Batch 1 evidence: booking service 12/12 PASS, typecheck PASS, build PASS,
+  lint 0 errors (2 pre-existing exhaustive-deps warnings in the two admin
+  surfaces), Prettier/diff checks PASS. Next executable step is Task 4 TDD.
 
 ## Current State
 

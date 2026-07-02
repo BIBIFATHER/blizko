@@ -245,4 +245,95 @@ describe.skipIf(!PG_URL)('PG integration: delete-account lifecycle', () => {
     ]);
     expect(state.rows[0].state).toBe('deleted');
   });
+
+  it('blocks an existing authenticated JWT from restoring data after deletion starts', async () => {
+    await pool.query("INSERT INTO account_deletions (user_id, state) VALUES ($1, 'db_done')", [
+      PARENT_UID,
+    ]);
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query("SELECT set_config('request.jwt.claims', $1, true)", [
+        JSON.stringify({ sub: PARENT_UID, role: 'authenticated' }),
+      ]);
+      await client.query('SET LOCAL ROLE authenticated');
+
+      const update = await client.query(
+        `UPDATE parents SET payload = '{"resurrected":true}'::jsonb WHERE user_id = $1`,
+        [PARENT_UID],
+      );
+      expect(update.rowCount).toBe(0);
+
+      await expect(
+        client.query("INSERT INTO parents (id, payload, user_id) VALUES ($1, '{}'::jsonb, $2)", [
+          `${REQ_ID}_resurrect`,
+          PARENT_UID,
+        ]),
+      ).rejects.toMatchObject({ code: '42501' });
+    } finally {
+      await client.query('ROLLBACK').catch(() => {});
+      client.release();
+    }
+  });
+
+  it('has the exact restrictive deletion barrier contract on all writer tables', async () => {
+    const expectedTables = [
+      'parents',
+      'nannies',
+      'bookings',
+      'booking_confirmations',
+      'chat_threads',
+      'chat_messages',
+      'chat_participants',
+      'support_tickets',
+      'support_messages',
+      'matching_outcomes',
+    ];
+    const { rows } = await pool.query(
+      `SELECT c.relname AS table_name, c.relrowsecurity, p.permissive,
+              p.roles = ARRAY['authenticated']::name[] AS roles_ok,
+              p.cmd, p.qual, p.with_check
+       FROM pg_class c
+       JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = 'public'
+       JOIN pg_policies p ON p.schemaname = n.nspname
+                         AND p.tablename = c.relname
+                         AND p.policyname = c.relname || '_deletion_barrier'
+       WHERE c.relname = ANY($1::text[])
+       ORDER BY c.relname`,
+      [expectedTables],
+    );
+    expect(rows.map((row) => row.table_name)).toEqual([...expectedTables].sort());
+    for (const row of rows) {
+      expect(row.relrowsecurity).toBe(true);
+      expect(row.permissive).toBe('RESTRICTIVE');
+      expect(row.roles_ok).toBe(true);
+      expect(row.cmd).toBe('ALL');
+      expect(row.qual).toContain('NOT account_in_deletion()');
+      expect(row.with_check).toContain('NOT account_in_deletion()');
+    }
+
+    const helper = await pool.query(
+      `SELECT p.prosecdef, p.provolatile, p.proconfig,
+              has_function_privilege('authenticated', p.oid, 'EXECUTE') AS auth_exec,
+              has_function_privilege('anon', p.oid, 'EXECUTE') AS anon_exec,
+              NOT EXISTS (
+                SELECT 1
+                FROM aclexplode(COALESCE(p.proacl, acldefault('f', p.proowner))) acl
+                WHERE acl.grantee = 0 AND acl.privilege_type = 'EXECUTE'
+              ) AS public_revoked
+       FROM pg_proc p
+       JOIN pg_namespace n ON n.oid = p.pronamespace
+       WHERE n.nspname = 'public' AND p.proname = 'account_in_deletion'
+         AND p.pronargs = 0`,
+    );
+    expect(helper.rows).toHaveLength(1);
+    expect(helper.rows[0]).toMatchObject({
+      prosecdef: true,
+      provolatile: 's',
+      auth_exec: true,
+      anon_exec: false,
+      public_revoked: true,
+    });
+    expect(helper.rows[0].proconfig).toContain('search_path=public');
+  });
 });

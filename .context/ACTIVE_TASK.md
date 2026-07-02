@@ -6,8 +6,8 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN C PLANNING` — rev3 committed on an isolated stacked branch;
-Codex round 2 pending verification. Production/cutover remain closed.
+`BLI-141 PLAN C PLANNING` — Codex round 2 scoped review Rejected (3 P1,
+2 P2). Production/cutover remain closed.
 
 Last updated: 2026-07-02 (Europe/Moscow)
 
@@ -43,8 +43,17 @@ locally; Plan C covers status/readers migration and account-deletion lifecycle.
   IDs, fetch-reject handling, resurrection guards, confirmed `user_not_found`
   semantics, reconciler state ownership, real concurrency/cascade tests, and a
   fail-closed deletion write barrier for existing JWTs.
-- Next gate: verify Codex round 2 result against the actual plan diff. Do not
-  start Tasks 1–7 until scoped review is Confirmed and the owner approves.
+- Codex round 2 scoped review (`890d61b..778ce80`) verified the current direct
+  writer inventory: all 10 tables are listed; the C10 barrier uses a refreshed
+  `pg_stat_activity` snapshot correctly. Verdict: Rejected — PC7 uses substring
+  matching instead of exact JSON error-code parsing; Task 7 proves behavior only
+  for `parents`, not all 10 generated policies; the RLS migration lacks an
+  atomic apply + exact postconditions + rollback runbook. P2: integration cleanup
+  swallows failures/no residue assertion; reconciler counters ignore completion
+  UPDATE rowCount on stale-worker no-ops.
+- Next gate: fold only these five scoped findings into a new revision and commit
+  it separately, then one narrow re-check. Do not start Tasks 1–7 until scoped
+  review is Confirmed and the owner approves.
 
 ## Current State
 

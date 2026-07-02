@@ -24,6 +24,10 @@
     "format:check": "prettier --check '**/*.{ts,tsx,js,json,css,md}'",
     "review:codex": "bash scripts/review-with-codex.sh",
     "review:claude": "bash scripts/review-with-claude.sh",
+    "guard:git-scope": "bash scripts/git-scope-guard.sh",
+    "guard:git-scope:test": "bash scripts/__tests__/git-scope-guard.test.sh",
+    "review:timeout:test": "node scripts/__tests__/run-with-timeout.test.mjs",
+    "hooks:install": "git config core.hooksPath .githooks",
     "leads": "node scripts/nannyLeadRegistry.js",
     "seed": "node scripts/importHhNannies.js",
     "seed:hh": "node scripts/parseHhResponses.js"

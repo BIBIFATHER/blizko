@@ -37,6 +37,8 @@ Before any code or documentation edit:
 - never use `git add .` in this workspace;
 - every meaningful task should end with either a scoped commit or an explicit
   dirty-tree handoff listing what remains unstaged and why.
+- install the tracked hooks with `npm run hooks:install`; the commit scope guard
+  blocks Plan C/BLI-139 work from being committed on the Plan B branch.
 
 ## Release Hygiene
 

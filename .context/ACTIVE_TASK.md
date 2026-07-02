@@ -70,6 +70,22 @@ locally; Plan C covers status/readers migration and account-deletion lifecycle.
 - Batch 1 evidence: booking service 12/12 PASS, typecheck PASS, build PASS,
   lint 0 errors (2 pre-existing exhaustive-deps warnings in the two admin
   surfaces), Prettier/diff checks PASS. Next executable step is Task 4 TDD.
+- Batch 2 code complete: Task 4 `181db63` implements the C10-ordered database
+  lifecycle, durable `db_done/deleted` state machine, exact Auth 404 handling,
+  and 202 retry contract. Task 5 `dc9b4ea` adds the lease/attempt reconciler and
+  cron-router dispatch.
+- Batch 2 evidence: delete lifecycle 8/8 PASS; reconciler/router 13/13 targeted
+  PASS; full cron suite 18/18 PASS; typecheck PASS; lint 0 errors (same two
+  exhaustive-deps warnings); diff/Prettier PASS.
+- Infrastructure gate: the plan's `*/10` Vercel schedule was intentionally not
+  committed. The repository identifies the deployment as Vercel Hobby, and
+  official Vercel documentation (checked 2026-07-02) says Hobby rejects cron
+  expressions that run more than once daily. CLI credentials are unavailable,
+  so the live plan could not be re-verified. Before activation choose/verify
+  Vercel Pro or an approved scheduler; production remains untouched.
+- Claude pre-task challenge was retried after limits returned but produced no
+  output for about two minutes and was terminated under the bounded-wait rule.
+  Mandatory independent review remains due on the completed implementation.
 
 ## Current State
 

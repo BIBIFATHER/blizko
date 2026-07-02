@@ -6,9 +6,9 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN C CODE-READY LOCALLY` — Tasks 1–7 implemented and verified.
-Independent Claude review, scheduler activation, production DDL/deploy and
-cutover remain closed gates.
+`BLI-141 PLAN E REVIEW` — Plan E rev1 committed at `2b74ea7`; Codex round 1
+Rejected with four verified migration/harness findings. No Plan E execution or
+production action has started.
 
 Last updated: 2026-07-02 (Europe/Moscow)
 
@@ -105,6 +105,29 @@ locally; Plan C covers status/readers migration and account-deletion lifecycle.
 - Production status: code-ready locally only. Migration `20260702210000` is not
   applied remotely, no deploy/flags/cutover occurred, and the 10-minute
   reconciler schedule still needs a verified Pro or approved scheduler.
+
+## Plan E Checkpoint
+
+- Plan E rev1: `2b74ea7`. Scope: remove dead confirmations client, backfill and
+  contract migrations, role-correct PG tests, cutover runbook. Plan D/BLI-140
+  moved to product backlog because the client service has zero callers.
+- Codex round 1 verdict: Rejected (2026-07-02), four actionable findings:
+  1. PG test references `PARENT_UID` from a hoisted `vi.mock` factory; use
+     `vi.hoisted` identities to avoid TDZ/module-load failure.
+  2. INSERT/UPDATE/DELETE denial checks run in one transaction; the first 42501
+     aborts it, so later statements return 25P02. Use separate transactions or
+     savepoints.
+  3. Cutover has no direct-writer freeze between audit/backfill and contract.
+     A stale client can insert NULL/duplicate active rows in the gap and make
+     NOT NULL/index creation fail. Add a bounded write-freeze or make the
+     lockdown window atomic.
+  4. Backfill audit does not detect duplicate active `(parent_id,nanny_id)`
+     pairs before creating the unique partial index; add fail-closed audit and
+     an explicit owner resolution path. Integration cleanup also needs strict
+     errors and auth.users in zero-residue proof (P2 follow-through).
+- Next gate: maker folds these findings into rev2, separate commit/push/Linear,
+  then one scoped Codex round 2. Plan E execution remains owner-gated after
+  Confirmed; prod cutover remains a separate owner gate.
 
 ## Current State
 

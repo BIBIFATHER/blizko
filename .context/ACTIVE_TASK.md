@@ -6,15 +6,16 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN B REVIEWED` — scoped implementation review is P1-free; draft PR
-#46 open. Production/cutover remain closed.
+`BLI-141 PLAN E REVIEW` — Plan E rev1 committed at `2b74ea7`; Codex round 1
+Rejected with four verified migration/harness findings. No Plan E execution or
+production action has started.
 
-Last updated: 2026-07-01 (Europe/Moscow)
+Last updated: 2026-07-02 (Europe/Moscow)
 
 ## Objective
 
-BLI-141 booking integrity and lifecycle. Plan A expand migration and Plan B
-server-authoritative create/status/GET endpoints are implemented locally.
+BLI-141 booking integrity and lifecycle. Plan A and Plan B are implemented
+locally; Plan C covers status/readers migration and account-deletion lifecycle.
 
 ## BLI-141 Checkpoint
 
@@ -32,6 +33,101 @@ server-authoritative create/status/GET endpoints are implemented locally.
   production DDL or enable the endpoint.
 - BLI-124, BLI-134, Yandex Cloud, tooling, and model-routing changes are not
   part of this branch.
+
+## Plan C Checkpoint
+
+- Isolated stacked branch: `codex/bli-141-plan-c`, based on Plan B PR #46.
+- Plan C rev1: `890d61b`; Codex round 1 returned Rejected with 7 verified
+  findings. Rev2 edits were not checkpointed separately; rev2+rev3 were mixed
+  into `778ce80`. No history rewrite: the boundary error is documented here.
+- Rev3 folds the verified findings and owner decisions: nullable participant
+  IDs, fetch-reject handling, resurrection guards, confirmed `user_not_found`
+  semantics, reconciler state ownership, real concurrency/cascade tests, and a
+  fail-closed deletion write barrier for existing JWTs.
+- Codex round 2 scoped review (`890d61b..778ce80`) returned five findings.
+  Plan C rev4 folds all five in commit `3f1d339`: exact Auth 404 JSON-code
+  parsing, ten-table RLS catalog proof, atomic migration + rollback rehearsal,
+  strict integration cleanup/residue assertion, and rowCount-correct reconciler
+  counters.
+- Narrow re-check found one defect in the new SQL assertion itself: NULL policy
+  expressions could evade `NOT LIKE` under PostgreSQL three-valued logic.
+  Follow-up `7c37a2f` uses `IS DISTINCT FROM` and `COALESCE`; re-check of only
+  the five round-2 fixes is now P1/P2-free (Confirmed).
+- Execution gate passed: Tasks 1–7 may run with local TDD and task-scoped
+  commits. Do not apply production DDL, deploy, enable flags, or perform
+  cutover.
+- Owner approved execution on 2026-07-02. The required pre-task
+  `review:claude` invocation was attempted and failed because Claude's session
+  limit is exhausted until 11:50 Europe/Moscow. This is recorded as the
+  coordination fallback; repeat independent review after implementation.
+- Current execution order: Tasks 1–3 client status/readers/UI; Tasks 4–5
+  lifecycle/reconciler; Tasks 6–7 PG integration/RLS migration+rollback.
+- Batch 1 complete: Task 1 `19fa7b7`, Task 2 `db2552b`, Task 3 `e2e8188`.
+  Booking status writes now use the server expected-status contract; readers
+  are server-authoritative with no local booking cache; nullable anonymized
+  participants and reader/status errors are handled in both admin surfaces and
+  the profile dashboard.
+- Batch 1 evidence: booking service 12/12 PASS, typecheck PASS, build PASS,
+  lint 0 errors (2 pre-existing exhaustive-deps warnings in the two admin
+  surfaces), Prettier/diff checks PASS. Next executable step is Task 4 TDD.
+- Batch 2 code complete: Task 4 `181db63` implements the C10-ordered database
+  lifecycle, durable `db_done/deleted` state machine, exact Auth 404 handling,
+  and 202 retry contract. Task 5 `dc9b4ea` adds the lease/attempt reconciler and
+  cron-router dispatch.
+- Batch 2 evidence: delete lifecycle 8/8 PASS; reconciler/router 13/13 targeted
+  PASS; full cron suite 18/18 PASS; typecheck PASS; lint 0 errors (same two
+  exhaustive-deps warnings); diff/Prettier PASS.
+- Infrastructure gate: the plan's `*/10` Vercel schedule was intentionally not
+  committed. The repository identifies the deployment as Vercel Hobby, and
+  official Vercel documentation (checked 2026-07-02) says Hobby rejects cron
+  expressions that run more than once daily. CLI credentials are unavailable,
+  so the live plan could not be re-verified. Before activation choose/verify
+  Vercel Pro or an approved scheduler; production remains untouched.
+- Claude pre-task challenge was retried after limits returned but produced no
+  output for about two minutes and was terminated under the bounded-wait rule.
+  Mandatory independent review remains due on the completed implementation.
+- Batch 3 complete: PG lifecycle harness `92c10ad`; restrictive RLS migration +
+  rollback `7385a1e`. Clean `supabase db reset` applied the full migration
+  history; rollback verified helper absent + 0/10 policies, then forward reapply
+  passed again. Final local PG evidence: bookings 9/9 + deletion lifecycle 7/7.
+- Final self-review found and fixed a real schema-contract defect in `d10187a`:
+  the old lifecycle attempted NULL writes into NOT NULL matching/chat identity
+  columns. It now deletes those personal rows and nulls referral/admin FK
+  blockers; the real-PG regression covers all paths. Compliance register and
+  changelog synced in `1bed03e`.
+- Consolidated evidence after the fix: 279 unit tests PASS; 16 real-PG tests
+  PASS; typecheck PASS; build PASS; lint 0 errors (two known admin
+  exhaustive-deps warnings); Prettier/diff PASS; working tree clean.
+- Completed-diff `review:claude` was attempted with a five-finding bounded
+  scope but produced no output for ~2 minutes and was terminated. Do not call
+  the mandatory independent gate complete; retry when the reviewer command is
+  responsive.
+- Production status: code-ready locally only. Migration `20260702210000` is not
+  applied remotely, no deploy/flags/cutover occurred, and the 10-minute
+  reconciler schedule still needs a verified Pro or approved scheduler.
+
+## Plan E Checkpoint
+
+- Plan E rev1: `2b74ea7`. Scope: remove dead confirmations client, backfill and
+  contract migrations, role-correct PG tests, cutover runbook. Plan D/BLI-140
+  moved to product backlog because the client service has zero callers.
+- Codex round 1 verdict: Rejected (2026-07-02), four actionable findings:
+  1. PG test references `PARENT_UID` from a hoisted `vi.mock` factory; use
+     `vi.hoisted` identities to avoid TDZ/module-load failure.
+  2. INSERT/UPDATE/DELETE denial checks run in one transaction; the first 42501
+     aborts it, so later statements return 25P02. Use separate transactions or
+     savepoints.
+  3. Cutover has no direct-writer freeze between audit/backfill and contract.
+     A stale client can insert NULL/duplicate active rows in the gap and make
+     NOT NULL/index creation fail. Add a bounded write-freeze or make the
+     lockdown window atomic.
+  4. Backfill audit does not detect duplicate active `(parent_id,nanny_id)`
+     pairs before creating the unique partial index; add fail-closed audit and
+     an explicit owner resolution path. Integration cleanup also needs strict
+     errors and auth.users in zero-residue proof (P2 follow-through).
+- Next gate: maker folds these findings into rev2, separate commit/push/Linear,
+  then one scoped Codex round 2. Plan E execution remains owner-gated after
+  Confirmed; prod cutover remains a separate owner gate.
 
 ## Current State
 

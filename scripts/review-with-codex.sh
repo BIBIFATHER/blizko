@@ -4,6 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CODEX_BIN="${CODEX_BIN:-/Applications/Codex.app/Contents/Resources/codex}"
 
+node "$ROOT_DIR/scripts/agent-workflow.mjs" review-preflight codex
+CODEX_REVIEW_TIMEOUT_SECONDS="${CODEX_REVIEW_TIMEOUT_SECONDS:-900}"
+
 if [[ ! -x "$CODEX_BIN" ]]; then
   echo "Codex binary not found or not executable: $CODEX_BIN" >&2
   exit 1
@@ -20,7 +23,7 @@ if [[ -z "${REVIEW_CONTEXT// }" ]]; then
   exit 1
 fi
 
-"$CODEX_BIN" exec \
+node "$ROOT_DIR/scripts/run-with-timeout.mjs" "$CODEX_REVIEW_TIMEOUT_SECONDS" "$CODEX_BIN" exec \
   --cd "$ROOT_DIR" \
   --sandbox read-only \
   --ephemeral \
@@ -41,4 +44,6 @@ Return:
 3. Required corrections.
 4. Verdict: Confirmed / Confirmed with conditions / Rejected.
 
-Do not restate the lead report without independently checking it."
+Do not restate the lead report without independently checking it. Keep the
+final response under 3000 tokens. If the scope cannot be reviewed within this
+budget, report the exact missing evidence instead of broadening the review."

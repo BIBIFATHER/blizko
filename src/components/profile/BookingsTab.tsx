@@ -28,6 +28,8 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
   const [nannyNames, setNannyNames] = useState<Record<string, string>>({});
   const [reviewedBookingIds, setReviewedBookingIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user.id) return;
@@ -35,6 +37,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
     let cancelled = false;
     const load = async () => {
       setLoading(true);
+      setLoadError(null);
       try {
         const [items, nannies] = await Promise.all([
           getBookingsForUser(user.id),
@@ -61,6 +64,10 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
         setBookingNannyMap(nextBookingNannyMap);
         setNannyNames(nextNannyNames);
         setReviewedBookingIds(Array.from(new Set(reviewedIds)));
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError(error instanceof Error ? error.message : 'Не удалось загрузить брони.');
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -85,10 +92,12 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
 
   const getCounterpartyName = (booking: ServiceBooking) => {
     if (isNanny) {
+      if (!booking.parent_id) return lang === 'ru' ? 'Аккаунт удалён' : 'Account deleted';
       const shortId = booking.parent_id.slice(0, 6);
       return lang === 'ru' ? `Семья #${shortId}` : `Family #${shortId}`;
     }
 
+    if (!booking.nanny_id) return lang === 'ru' ? 'Аккаунт удалён' : 'Account deleted';
     return (
       nannyNames[booking.nanny_id] ||
       (lang === 'ru'
@@ -148,9 +157,17 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
     );
   };
 
-  const handleBookingStatusChange = async (bookingId: string, status: ServiceBooking['status']) => {
-    const updated = await updateBookingStatus(bookingId, status);
-    if (updated) patchBooking(updated);
+  const handleBookingStatusChange = async (
+    booking: ServiceBooking,
+    status: ServiceBooking['status'],
+  ) => {
+    setStatusError(null);
+    try {
+      const updated = await updateBookingStatus(booking.id, booking.status, status);
+      patchBooking(updated);
+    } catch (error) {
+      setStatusError(error instanceof Error ? error.message : 'Не удалось изменить статус брони.');
+    }
   };
 
   const handleReviewSubmit = async (review: Review) => {
@@ -169,6 +186,16 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
           <Card className="p-4! bg-white border border-stone-100 text-sm text-stone-500">
             {lang === 'ru' ? 'Загружаем реальные бронирования…' : 'Loading real bookings…'}
           </Card>
+        )}
+        {loadError && (
+          <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            {loadError}
+          </div>
+        )}
+        {statusError && (
+          <div className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            {statusError}
+          </div>
         )}
         {isNanny ? (
           <div className="space-y-4">
@@ -228,13 +255,13 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                   {booking.status === 'pending' && (
                     <div className="flex gap-2">
                       <Button
-                        onClick={() => void handleBookingStatusChange(booking.id, 'confirmed')}
+                        onClick={() => void handleBookingStatusChange(booking, 'confirmed')}
                         className="py-2 text-sm flex-1 bg-stone-800 text-white hover:bg-stone-700"
                       >
                         {text.accept}
                       </Button>
                       <Button
-                        onClick={() => void handleBookingStatusChange(booking.id, 'cancelled')}
+                        onClick={() => void handleBookingStatusChange(booking, 'cancelled')}
                         variant="outline"
                         className="py-2 text-sm flex-1"
                       >
@@ -244,7 +271,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                   )}
                   {booking.status === 'confirmed' && (
                     <Button
-                      onClick={() => void handleBookingStatusChange(booking.id, 'active')}
+                      onClick={() => void handleBookingStatusChange(booking, 'active')}
                       className="py-2 text-sm w-full bg-emerald-600 text-white hover:bg-emerald-500"
                     >
                       {lang === 'ru' ? 'Начать заказ' : 'Start booking'}
@@ -252,7 +279,7 @@ export const BookingsTab: React.FC<BookingsTabProps> = ({ user, lang, onReviewSu
                   )}
                   {booking.status === 'active' && (
                     <Button
-                      onClick={() => void handleBookingStatusChange(booking.id, 'completed')}
+                      onClick={() => void handleBookingStatusChange(booking, 'completed')}
                       className="py-2 text-sm w-full bg-emerald-600 text-white hover:bg-emerald-500"
                     >
                       {lang === 'ru' ? 'Завершить заказ' : 'Complete booking'}

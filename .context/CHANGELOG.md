@@ -2,6 +2,27 @@
 
 ---
 
+## 2026-07-02 — SHA-bound Claude/Codex workflow guard
+
+- Added a machine-readable maker/reviewer state machine bound to branch,
+  artifact commit SHA, review phase, next actor, and a two-round cap.
+- Review commands now reject stale/dirty/wrong-actor reviews before invoking a
+  model. The commit hook keeps reviewers read-only outside workflow verdict
+  files.
+- Added durable SHA-bound review artifacts and tests for stale branches,
+  invalid phases, stale SHAs, and review-loop limits.
+
+## 2026-07-02 — BLI-141 Plan C local implementation
+
+- Switched booking status writes and readers to server-authoritative contracts;
+  removed the local booking cache and made anonymized participant IDs nullable.
+- Implemented the BLI-139 account-deletion lifecycle, durable Auth-delete
+  reconciler, and fail-closed RESTRICTIVE RLS barrier across ten writer tables.
+- Account deletion now respects real NOT NULL/FK contracts: matching/chat rows
+  are deleted, while referral/admin identity links are minimized to NULL.
+- Added unit and real-PostgreSQL lifecycle, cascade, concurrency, catalog, and
+  authenticated-role barrier tests. Production DDL/deploy remain gated.
+
 ## 2026-06-16 (Tue) — Stateless notification egress guard (BLI-110 follow-up)
 
 - Added `api/_notificationEgress.ts`: a no-persistence jurisdiction guard for

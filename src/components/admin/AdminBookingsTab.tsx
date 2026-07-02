@@ -12,7 +12,11 @@ interface AdminBookingsTabProps {
   bookings: Booking[];
   parents: ParentRequest[];
   nannies: NannyProfile[];
-  onStatusChange: (bookingId: string, status: Booking['status']) => void;
+  onStatusChange: (
+    bookingId: string,
+    expectedStatus: Booking['status'],
+    newStatus: Booking['status'],
+  ) => void;
 }
 
 const statusConfig: Record<
@@ -39,12 +43,14 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
   const [draggingBookingId, setDraggingBookingId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<Booking['status'] | null>(null);
 
-  const parentLabel = (parentId: string) => {
+  const parentLabel = (parentId: string | null) => {
+    if (!parentId) return 'Аккаунт удалён';
     const p = parents.find((pr) => pr.id === parentId || pr.requesterId === parentId);
     return p ? `${p.city}, ${p.childAge}` : `#${parentId.slice(0, 8)}`;
   };
 
-  const nannyLabel = (nannyId: string) => {
+  const nannyLabel = (nannyId: string | null) => {
+    if (!nannyId) return 'Аккаунт удалён';
     const n = nannies.find((np) => np.id === nannyId || np.userId === nannyId);
     return n ? n.name : `#${nannyId.slice(0, 8)}`;
   };
@@ -57,7 +63,7 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
       confirmLabel: 'Перевести',
     });
     if (!ok) return;
-    onStatusChange(booking.id, newStatus);
+    onStatusChange(booking.id, booking.status, newStatus);
   };
 
   const handleBookingDrop = (newStatus: Booking['status']) => async (e: React.DragEvent) => {
@@ -82,8 +88,8 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
         const nLabel = nannyLabel(b.nanny_id).toLowerCase();
         return (
           b.id.toLowerCase().includes(q) ||
-          b.parent_id.toLowerCase().includes(q) ||
-          b.nanny_id.toLowerCase().includes(q) ||
+          (b.parent_id?.toLowerCase().includes(q) ?? false) ||
+          (b.nanny_id?.toLowerCase().includes(q) ?? false) ||
           pLabel.includes(q) ||
           nLabel.includes(q)
         );
@@ -162,13 +168,13 @@ export const AdminBookingsTab: React.FC<AdminBookingsTabProps> = ({
         <div className="mb-3 grid grid-cols-2 gap-2 text-xs text-stone-500">
           <div className="flex items-start gap-1">
             <User size={12} className="mt-0.5 shrink-0" />
-            <span className="truncate" title={booking.parent_id}>
+            <span className="truncate" title={booking.parent_id ?? undefined}>
               {parentLabel(booking.parent_id)}
             </span>
           </div>
           <div className="flex items-start gap-1">
             <User size={12} className="mt-0.5 shrink-0" />
-            <span className="truncate" title={booking.nanny_id}>
+            <span className="truncate" title={booking.nanny_id ?? undefined}>
               {nannyLabel(booking.nanny_id)}
             </span>
           </div>

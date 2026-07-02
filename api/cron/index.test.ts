@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { VercelRequest } from '@vercel/node';
 
 const ghostedOutcomes = vi.fn(async (_req: unknown, _res: unknown) => undefined);
+const reconcileAccountDeletions = vi.fn(async (_req: unknown, _res: unknown) => undefined);
 const updateMatchingWeights = vi.fn(async (_req: unknown, _res: unknown) => undefined);
 
 vi.mock('./_ghosted-outcomes.js', () => ({
@@ -10,6 +11,10 @@ vi.mock('./_ghosted-outcomes.js', () => ({
 
 vi.mock('./_update-matching-weights.js', () => ({
   default: (req: unknown, res: unknown) => updateMatchingWeights(req, res),
+}));
+
+vi.mock('./_reconcile-account-deletions.js', () => ({
+  default: (req: unknown, res: unknown) => reconcileAccountDeletions(req, res),
 }));
 
 import handler from './index';
@@ -26,6 +31,7 @@ function makeReq(job?: string | string[]): VercelRequest {
 describe('api/cron router', () => {
   beforeEach(() => {
     ghostedOutcomes.mockReset();
+    reconcileAccountDeletions.mockReset();
     updateMatchingWeights.mockReset();
   });
 
@@ -53,6 +59,18 @@ describe('api/cron router', () => {
     expect(updateMatchingWeights).toHaveBeenCalledTimes(1);
     expect(updateMatchingWeights).toHaveBeenCalledWith(req, res);
     expect(ghostedOutcomes).not.toHaveBeenCalled();
+  });
+
+  it('dispatches ?job=reconcile-account-deletions to the deletion reconciler', async () => {
+    const req = makeReq('reconcile-account-deletions');
+    const res = createMockResponse();
+
+    await handler(req, res);
+
+    expect(reconcileAccountDeletions).toHaveBeenCalledTimes(1);
+    expect(reconcileAccountDeletions).toHaveBeenCalledWith(req, res);
+    expect(ghostedOutcomes).not.toHaveBeenCalled();
+    expect(updateMatchingWeights).not.toHaveBeenCalled();
   });
 
   it('normalizes an array job param to its first value', async () => {

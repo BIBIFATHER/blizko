@@ -4,6 +4,11 @@ This file is the shared operating contract for Claude Code and Codex.
 
 ## Default Ownership
 
+Before any maker/reviewer action, run `npm run agent:state`. The command must
+pass. `.context/AGENT_STATE.json` is the machine-readable authority for current
+work item, phase, artifact SHA, review round, and next actor; chat summaries are
+never sufficient authority.
+
 Claude Code is the default lead agent for Blizko. Anton normally gives each
 task to Claude once. Claude owns planning, implementation, coordination,
 routine corrections, and the final consolidated response.
@@ -47,6 +52,10 @@ Both agents have read-only review commands:
 npm run review:codex -- "Claude's conclusion or implementation report"
 npm run review:claude -- "Codex's conclusion or implementation report"
 ```
+
+Both commands run the SHA-bound workflow preflight first. They refuse review
+when the branch/artifact is stale, the tree is dirty, the phase is not
+`review_requested`, the wrong reviewer is active, or the review cap is spent.
 
 The commands invoke the other local agent in repository read-only mode. Codex
 uses its filesystem sandbox without user config or user MCPs. Claude Code
@@ -107,6 +116,13 @@ handoff file instead.
 - Durable decisions: `.context/`, ADRs, and `memory/YYYY-MM-DD.md`.
 - Work status and owner-facing milestones: Linear.
 - Temporary task-specific handoff: `.context/<TASK>_HANDOFF.md`.
+- Active maker/reviewer state: `.context/AGENT_STATE.json` plus a SHA-bound
+  verdict in `.context/reviews/`.
+
+Only the maker edits plan/product files. The reviewer is read-only and may
+commit only workflow state, ACTIVE_TASK, and review verdict artifacts. The Git
+hook enforces this boundary. A rejected verdict returns control to the maker; a
+confirmed verdict moves to owner gate. Maximum automatic review rounds: two.
 
 Do not paste long agent transcripts into permanent context. Record decisions,
 evidence, unresolved blockers, and the next executable action.

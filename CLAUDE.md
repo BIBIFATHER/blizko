@@ -17,6 +17,8 @@ Before code changes, read only the smallest relevant set:
 - `BOOTSTRAP.md`
 - `CLAUDE.md`
 - `.context/ACTIVE_TASK.md` when it exists
+- `.context/AGENT_STATE.json`; run `npm run agent:state` before acting and stop
+  on mismatch
 - `.context/AGENT_COORDINATION.md`
 - `README.md`
 - `.context/DNA.md`

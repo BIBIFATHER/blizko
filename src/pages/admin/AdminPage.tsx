@@ -110,7 +110,7 @@ const AdminPageContent: React.FC<{
   loadMoreActionFeed,
   logAdminAction,
 }) => {
-  const { confirmAction, reportSuccess } = useAdminWorkflowUI();
+  const { confirmAction, reportSuccess, reportError } = useAdminWorkflowUI();
   const navigate = useNavigate();
   const location = useLocation();
   const { tab = 'overview' } = useParams<{ tab?: string }>();
@@ -137,26 +137,28 @@ const AdminPageContent: React.FC<{
   const [onlyProblematic, setOnlyProblematic] = useState(false);
 
   const loadData = async () => {
-    const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
-    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    const [remoteParents, remoteNannies, remoteAnalytics] = await Promise.all([
-      fetchAdminDataResource<ParentRequest>('parents', headers),
-      fetchAdminDataResource<NannyProfile>('nannies', headers),
-      fetchRemoteAnalyticsEvents(30, token),
-    ]);
+      const [remoteParents, remoteNannies, remoteAnalytics] = await Promise.all([
+        fetchAdminDataResource<ParentRequest>('parents', headers),
+        fetchAdminDataResource<NannyProfile>('nannies', headers),
+        fetchRemoteAnalyticsEvents(30, token),
+      ]);
 
-    const [p, n] = await Promise.all([
-      remoteParents ?? getParentRequests(),
-      remoteNannies ?? getNannyProfiles(),
-    ]);
-    setParents(p);
-    setNannies(n);
-    setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
-
-    setUnseenParentsCount(countUnseenParents(p));
-
-    setBookings(await getAllBookings());
+      const [p, n] = await Promise.all([
+        remoteParents ?? getParentRequests(),
+        remoteNannies ?? getNannyProfiles(),
+      ]);
+      setParents(p);
+      setNannies(n);
+      setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
+      setUnseenParentsCount(countUnseenParents(p));
+      setBookings(await getAllBookings());
+    } catch (error) {
+      reportError(error instanceof Error ? error.message : 'Не удалось загрузить данные админки.');
+    }
   };
 
   useEffect(() => {
@@ -344,10 +346,17 @@ const AdminPageContent: React.FC<{
                 bookings={bookings}
                 parents={parents}
                 nannies={nannies}
-                onStatusChange={async (id, status) => {
-                  await updateBookingStatus(id, status);
-                  logAdminAction('booking_status_change', { id, status });
-                  await loadData();
+                onStatusChange={async (id, expectedStatus, status) => {
+                  try {
+                    await updateBookingStatus(id, expectedStatus, status);
+                    logAdminAction('booking_status_change', { id, status });
+                    await loadData();
+                    reportSuccess('Статус брони обновлён.');
+                  } catch (error) {
+                    reportError(
+                      error instanceof Error ? error.message : 'Не удалось изменить статус брони.',
+                    );
+                  }
                 }}
               />
             )}

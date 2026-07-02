@@ -17,6 +17,8 @@ Codex should behave as a strong execution partner:
 
 Before meaningful work, read:
 
+0. Run `npm run agent:state`; stop on any mismatch.
+
 1. `.context/ACTIVE_TASK.md` when it exists
 2. `SOUL.md`
 3. `USER.md`
@@ -83,6 +85,9 @@ silently. Keep the next change in a scoped set, and before starting a new task
 create a scoped checkpoint commit when the previous task is complete. Never use
 `git add .`; stage explicit paths only. If a task ends with remaining dirty
 files, report exactly which files were intentionally left unstaged and why.
+The actor named by `.context/AGENT_STATE.json` is authoritative. Codex must not
+edit plan/product files while it is the reviewer; Claude must not request review
+until the artifact commit is frozen and recorded by SHA.
 
 ## Task Routing
 

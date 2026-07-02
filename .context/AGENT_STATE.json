@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "task_id": "BLI-141",
+  "work_item": "PLAN E",
+  "branch": "codex/bli-141-plan-c",
+  "phase": "changes_requested",
+  "maker": "claude",
+  "reviewer": "codex",
+  "next_actor": "claude",
+  "artifact_sha": "2b74ea7",
+  "review_round": 1,
+  "max_review_rounds": 2,
+  "verdict": "rejected",
+  "verdict_checkpoint_sha": "e77e794"
+}

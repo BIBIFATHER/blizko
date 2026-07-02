@@ -2018,9 +2018,11 @@ BEGIN
                            AND pol.polname = t.table_name || '_deletion_barrier'
     WHERE c.oid IS NULL OR NOT c.relrowsecurity OR pol.oid IS NULL
        OR pol.polpermissive OR pol.polcmd <> '*'
-       OR pol.polroles <> ARRAY[(SELECT oid FROM pg_roles WHERE rolname = 'authenticated')]
-       OR pg_get_expr(pol.polqual, pol.polrelid) NOT LIKE '%NOT account_in_deletion()%'
-       OR pg_get_expr(pol.polwithcheck, pol.polrelid) NOT LIKE '%NOT account_in_deletion()%'
+       OR pol.polroles IS DISTINCT FROM ARRAY[(SELECT oid FROM pg_roles WHERE rolname = 'authenticated')]
+       OR COALESCE(pg_get_expr(pol.polqual, pol.polrelid), '')
+            NOT LIKE '%NOT account_in_deletion()%'
+       OR COALESCE(pg_get_expr(pol.polwithcheck, pol.polrelid), '')
+            NOT LIKE '%NOT account_in_deletion()%'
   ) THEN
     RAISE EXCEPTION 'deletion barrier policy contract mismatch';
   END IF;

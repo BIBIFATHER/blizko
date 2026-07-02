@@ -1,17 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Storage — in-memory mock (node env, нет localStorage).
-const store = new Map<string, string>();
-vi.mock('@/core/platform/storage', () => ({
-  getItem: (k: string) => store.get(k) ?? null,
-  setItem: (k: string, v: string) => void store.set(k, v),
-  removeItem: (k: string) => void store.delete(k),
-}));
-
 const getSession = vi.fn(async () => ({ data: { session: { access_token: 'tok' } } }));
 vi.mock('./supabase', () => ({
   hasSupabaseClient: true,
-  supabase: { auth: { getSession: () => getSession() } },
+  supabase: { auth: { getSession: () => getSession() }, from: vi.fn() },
 }));
 
 const trackBookingCreated = vi.fn();
@@ -23,11 +15,10 @@ vi.mock('./matchingFeedback', () => ({
   recordMatchOutcome: (...args: unknown[]) => recordMatchOutcome(...args),
 }));
 
-import { createBooking, updateBookingStatus } from './booking';
+import { createBooking, getAllBookings, getBookingsForUser, updateBookingStatus } from './booking';
 
 describe('createBooking → server endpoint', () => {
   beforeEach(() => {
-    store.clear();
     trackBookingCreated.mockReset();
     getSession.mockClear();
   });
@@ -84,6 +75,96 @@ describe('createBooking → server endpoint', () => {
     vi.stubGlobal('fetch', fetchMock);
     await expect(createBooking(args)).rejects.toThrow();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('getAllBookings → admin GET endpoint', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('GETs /api/bookings with bearer, returns bookings array', async () => {
+    const bookings = [{ id: 'b1' }, { id: 'b2' }];
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ bookings }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await getAllBookings();
+    expect(result).toEqual(bookings);
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('/api/bookings');
+    expect(init.method).toBe('GET');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer tok');
+  });
+
+  it('throws on non-2xx (no silent empty-array fallback)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: false,
+        status: 401,
+        headers: { get: () => 'application/json' },
+        json: async () => ({ error: 'Unauthorized' }),
+      })),
+    );
+
+    await expect(getAllBookings()).rejects.toThrow(/Unauthorized/i);
+  });
+});
+
+describe('getBookingsForUser → participant SELECT (Supabase RLS)', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('returns bookings for parent-or-nanny, sorted by created_at desc', async () => {
+    const { supabase: sb } = await import('./supabase');
+    const order = vi.fn(async () => ({
+      data: [
+        { id: 'b2', created_at: '2026-02-01T00:00:00Z' },
+        { id: 'b1', created_at: '2026-01-01T00:00:00Z' },
+      ],
+      error: null,
+    }));
+    const or = vi.fn(() => ({ order }));
+    const select = vi.fn(() => ({ or }));
+    (sb!.from as unknown as ReturnType<typeof vi.fn>) = vi.fn(() => ({ select }));
+
+    const result = await getBookingsForUser('u1');
+    expect(result.map((booking) => booking.id)).toEqual(['b2', 'b1']);
+    expect(or).toHaveBeenCalledWith('parent_id.eq.u1,nanny_id.eq.u1');
+  });
+
+  it('throws on Supabase error (no local fallback)', async () => {
+    const { supabase: sb } = await import('./supabase');
+    const order = vi.fn(async () => ({ data: null, error: { message: 'RLS denied' } }));
+    const or = vi.fn(() => ({ order }));
+    const select = vi.fn(() => ({ or }));
+    (sb!.from as unknown as ReturnType<typeof vi.fn>) = vi.fn(() => ({ select }));
+
+    await expect(getBookingsForUser('u1')).rejects.toThrow(/RLS denied/i);
+  });
+
+  it('accepts a row with anonymized null parent_id', async () => {
+    const { supabase: sb } = await import('./supabase');
+    const order = vi.fn(async () => ({
+      data: [
+        {
+          id: 'b1',
+          parent_id: null,
+          nanny_id: 'n1',
+          status: 'cancelled',
+          created_at: '2026-01-01T00:00:00Z',
+        },
+      ],
+      error: null,
+    }));
+    const or = vi.fn(() => ({ order }));
+    const select = vi.fn(() => ({ or }));
+    (sb!.from as unknown as ReturnType<typeof vi.fn>) = vi.fn(() => ({ select }));
+
+    const result = await getBookingsForUser('n1');
+    expect(result[0].parent_id).toBeNull();
   });
 });
 

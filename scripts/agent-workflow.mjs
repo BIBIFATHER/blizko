@@ -46,6 +46,17 @@ function loadState() {
   return state;
 }
 
+function loadCommitState(fallback) {
+  if (process.env.AGENT_PREVIOUS_STATE_PATH) {
+    return JSON.parse(readFileSync(process.env.AGENT_PREVIOUS_STATE_PATH, 'utf8'));
+  }
+  try {
+    return JSON.parse(git(['show', 'HEAD:.context/AGENT_STATE.json']));
+  } catch {
+    return fallback;
+  }
+}
+
 function validateBase(state) {
   const branch = process.env.AGENT_WORKFLOW_BRANCH || git(['branch', '--show-current']);
   if (branch !== state.branch) fail(`state branch ${state.branch} != current branch ${branch}`);
@@ -82,9 +93,10 @@ function reviewPreflight(state, reviewer) {
 
 function commitCheck(state) {
   validateBase(state);
-  const staged = git(['diff', '--cached', '--name-only', '--diff-filter=ACMR'])
-    .split('\n')
-    .filter(Boolean);
+  const stagedText =
+    process.env.AGENT_WORKFLOW_STAGED_FILES ??
+    git(['diff', '--cached', '--name-only', '--diff-filter=ACMR']);
+  const staged = stagedText.split('\n').filter(Boolean);
   if (state.next_actor !== state.reviewer || staged.length === 0) return;
   const invalid = staged.filter(
     (file) =>
@@ -95,8 +107,9 @@ function commitCheck(state) {
   if (invalid.length) fail(`reviewer is read-only; forbidden staged files: ${invalid.join(', ')}`);
 }
 
-const state = loadState();
+const workingState = loadState();
 const command = process.argv[2] || 'check';
+const state = command === 'commit-check' ? loadCommitState(workingState) : workingState;
 if (command === 'check') {
   validateBase(state);
 } else if (command === 'review-preflight') {

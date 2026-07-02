@@ -24,6 +24,25 @@ function run(args, state = JSON.parse(readFileSync(statePath, 'utf8')), env = {}
   });
 }
 
+function runCommitCheck(previousState, stagedFiles) {
+  const directory = mkdtempSync(join(tmpdir(), 'agent-workflow-commit-'));
+  const currentPath = join(directory, 'current.json');
+  const previousPath = join(directory, 'previous.json');
+  writeFileSync(currentPath, JSON.stringify(previousState));
+  writeFileSync(previousPath, JSON.stringify(previousState));
+  return spawnSync(process.execPath, [script, 'commit-check'], {
+    cwd: root,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      AGENT_STATE_PATH: currentPath,
+      AGENT_PREVIOUS_STATE_PATH: previousPath,
+      AGENT_WORKFLOW_BRANCH: branch,
+      AGENT_WORKFLOW_STAGED_FILES: stagedFiles,
+    },
+  });
+}
+
 let checks = 0;
 
 const current = run(['check']);
@@ -53,6 +72,21 @@ staleArtifactState.artifact_sha = '0000000000000000000000000000000000000000';
 const staleArtifact = run(['check'], staleArtifactState);
 assert.equal(staleArtifact.status, 1);
 assert.match(staleArtifact.stderr, /is not an ancestor/);
+checks += 1;
+
+const reviewerState = JSON.parse(readFileSync(statePath, 'utf8'));
+reviewerState.phase = 'review_requested';
+reviewerState.next_actor = 'codex';
+const reviewerProductCommit = runCommitCheck(reviewerState, 'api/bookings.ts');
+assert.equal(reviewerProductCommit.status, 1);
+assert.match(reviewerProductCommit.stderr, /reviewer is read-only/);
+checks += 1;
+
+const reviewerVerdictCommit = runCommitCheck(
+  reviewerState,
+  '.context/AGENT_STATE.json\n.context/reviews/verdict.md',
+);
+assert.equal(reviewerVerdictCommit.status, 0, reviewerVerdictCommit.stderr);
 checks += 1;
 
 console.log(`agent-workflow: ${checks} checks passed`);

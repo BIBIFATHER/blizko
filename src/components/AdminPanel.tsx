@@ -55,7 +55,7 @@ const AdminPanelContent: React.FC<{
   loadMoreActionFeed,
   logAdminAction,
 }) => {
-  const { confirmAction, reportSuccess } = useAdminWorkflowUI();
+  const { confirmAction, reportSuccess, reportError } = useAdminWorkflowUI();
   const [parents, setParents] = useState<ParentRequest[]>([]);
   const [nannies, setNannies] = useState<NannyProfile[]>([]);
   const [tab, setTab] = useState<AdminTab>('overview');
@@ -68,35 +68,37 @@ const AdminPanelContent: React.FC<{
   const [analyticsEvents, setAnalyticsEvents] = useState<AnalyticsEventRecord[]>([]);
 
   const loadData = async () => {
-    const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
-    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const token = (await supabase?.auth.getSession())?.data?.session?.access_token;
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    const [pr, nr, remoteAnalytics] = await Promise.all([
-      fetch('/api/data?resource=parents', { headers })
-        .then((r) => (r.ok ? r.json() : { items: [] }))
-        .catch(() => ({ items: [] })),
-      fetch('/api/data?resource=nannies', { headers })
-        .then((r) => (r.ok ? r.json() : { items: [] }))
-        .catch(() => ({ items: [] })),
-      fetchRemoteAnalyticsEvents(30, token),
-    ]);
+      const [pr, nr, remoteAnalytics] = await Promise.all([
+        fetch('/api/data?resource=parents', { headers })
+          .then((r) => (r.ok ? r.json() : { items: [] }))
+          .catch(() => ({ items: [] })),
+        fetch('/api/data?resource=nannies', { headers })
+          .then((r) => (r.ok ? r.json() : { items: [] }))
+          .catch(() => ({ items: [] })),
+        fetchRemoteAnalyticsEvents(30, token),
+      ]);
 
-    const p = Array.isArray(pr?.items) ? pr.items : [];
-    const n = Array.isArray(nr?.items) ? nr.items : [];
+      const p = Array.isArray(pr?.items) ? pr.items : [];
+      const n = Array.isArray(nr?.items) ? nr.items : [];
 
-    setParents(p);
-    setNannies(n);
-    setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
+      setParents(p);
+      setNannies(n);
+      setAnalyticsEvents(remoteAnalytics.length ? remoteAnalytics : getAnalyticsEvents());
 
-    const seenTs = Number(getItem(ADMIN_PARENTS_SEEN_TS_KEY) || '0');
-    const unseen = p.filter(
-      (item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs,
-    ).length;
-    setUnseenParentsCount(unseen);
+      const seenTs = Number(getItem(ADMIN_PARENTS_SEEN_TS_KEY) || '0');
+      const unseen = p.filter(
+        (item: ParentRequest) => Number(item.updatedAt || item.createdAt || 0) > seenTs,
+      ).length;
+      setUnseenParentsCount(unseen);
 
-    // Load bookings
-    const bk = await getAllBookings();
-    setBookings(bk);
+      setBookings(await getAllBookings());
+    } catch (error) {
+      reportError(error instanceof Error ? error.message : 'Не удалось загрузить данные админки.');
+    }
   };
 
   useEffect(() => {
@@ -334,10 +336,17 @@ const AdminPanelContent: React.FC<{
           {tab === 'bookings' && (
             <AdminBookingsTab
               bookings={bookings}
-              onStatusChange={async (id, status) => {
-                await updateBookingStatus(id, status);
-                logAdminAction('booking_status_change', { id, status });
-                await loadData();
+              onStatusChange={async (id, expectedStatus, status) => {
+                try {
+                  await updateBookingStatus(id, expectedStatus, status);
+                  logAdminAction('booking_status_change', { id, status });
+                  await loadData();
+                  reportSuccess('Статус брони обновлён.');
+                } catch (error) {
+                  reportError(
+                    error instanceof Error ? error.message : 'Не удалось изменить статус брони.',
+                  );
+                }
               }}
             />
           )}

@@ -109,6 +109,7 @@ export function buildDashboardMetrics(params: {
 
   const repeatFamilies = Object.values(
     params.bookings.reduce<Record<string, number>>((acc, booking) => {
+      if (!booking.parent_id) return acc;
       acc[booking.parent_id] = (acc[booking.parent_id] || 0) + 1;
       return acc;
     }, {}),

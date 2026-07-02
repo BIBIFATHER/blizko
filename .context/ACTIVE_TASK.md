@@ -6,15 +6,15 @@ have changed.
 
 ## Status
 
-`BLI-141 PLAN B REVIEWED` — scoped implementation review is P1-free; draft PR
-#46 open. Production/cutover remain closed.
+`BLI-141 PLAN C PLANNING` — rev3 committed on an isolated stacked branch;
+Codex round 2 pending verification. Production/cutover remain closed.
 
-Last updated: 2026-07-01 (Europe/Moscow)
+Last updated: 2026-07-02 (Europe/Moscow)
 
 ## Objective
 
-BLI-141 booking integrity and lifecycle. Plan A expand migration and Plan B
-server-authoritative create/status/GET endpoints are implemented locally.
+BLI-141 booking integrity and lifecycle. Plan A and Plan B are implemented
+locally; Plan C covers status/readers migration and account-deletion lifecycle.
 
 ## BLI-141 Checkpoint
 
@@ -32,6 +32,19 @@ server-authoritative create/status/GET endpoints are implemented locally.
   production DDL or enable the endpoint.
 - BLI-124, BLI-134, Yandex Cloud, tooling, and model-routing changes are not
   part of this branch.
+
+## Plan C Checkpoint
+
+- Isolated stacked branch: `codex/bli-141-plan-c`, based on Plan B PR #46.
+- Plan C rev1: `890d61b`; Codex round 1 returned Rejected with 7 verified
+  findings. Rev2 edits were not checkpointed separately; rev2+rev3 were mixed
+  into `778ce80`. No history rewrite: the boundary error is documented here.
+- Rev3 folds the verified findings and owner decisions: nullable participant
+  IDs, fetch-reject handling, resurrection guards, confirmed `user_not_found`
+  semantics, reconciler state ownership, real concurrency/cascade tests, and a
+  fail-closed deletion write barrier for existing JWTs.
+- Next gate: verify Codex round 2 result against the actual plan diff. Do not
+  start Tasks 1–7 until scoped review is Confirmed and the owner approves.
 
 ## Current State
 
